@@ -1,51 +1,56 @@
+
 //
-//  random_number_generator.h
-//  RNAMake
-//
-//  Created by Joseph Yesselman on 3/1/15.
-//  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
+// Created by Joseph Yesselman on 12/17/17.
 //
 
-#ifndef RNAMake_random_number_generator_h
-#define RNAMake_random_number_generator_h
+#ifndef RNAMAKE_NEW_RANDOM_NUMBER_GENERATOR_H
+#define RNAMAKE_NEW_RANDOM_NUMBER_GENERATOR_H
+
 #include <random>
-#include <ctime>
+
 #include <math/xyz_vector.h>
 
 namespace util {
 
-class RandomNumberGenerator {
-public:
-    RandomNumberGenerator() {
-        srand(unsigned(time(NULL)));
-        std::random_device rd;
-        std::mt19937 mt(rd());
-        std::uniform_real_distribution<float> dist(0, 1);
+  class RandomNumberGenerator {
+  public:
+      RandomNumberGenerator() {
+          srand(unsigned(time(NULL)));
+          std::random_device rd;
+          std::mt19937 mt(rd());
+          std::uniform_real_distribution<double> dist(0, 1);
 
-        mt_ = mt;
-        dist_ = dist;
-    }
+          mt_ = mt;
+          dist_ = dist;
+      }
+
+      inline
+      double
+      rand() { return dist_(mt_); }
+
+      inline
+      int
+      randrange(int i) { return (int) (i * rand()); }
 
 
-    inline
-    float
-    rand() { return dist_(mt_); }
 
-    inline
-    int
-    randrange(int i) {
-        val_ = (int) (i * this->rand());
-        if(val_ == i) { return i-1; }
-        else          { return val_; }
-    }
+  private:
+      std::mt19937 mt_;
+      std::uniform_real_distribution<double> dist_;
 
-private:
-    std::mt19937 mt_;
-    std::uniform_real_distribution<float> dist_;
-    int val_;
+  };
 
-};
+  math::Point
+  get_random_point(
+          RandomNumberGenerator & rng,
+          int bound) {
+      auto x = bound - rng.rand()*2*bound;
+      auto y = bound - rng.rand()*2*bound;
+      auto z = bound - rng.rand()*2*bound;
+      return math::Point(x, y, z);
+  }
+
 
 }
 
-#endif
+#endif //RNAMAKE_NEW_RANDOM_NUMBER_GENERATOR_H

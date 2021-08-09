@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#ifndef __RNAMake__all_atom_residue__
-#define __RNAMake__all_atom_residue__
+#ifndef __RNAMake__structure_residue__
+#define __RNAMake__structure_residue__
 
 #include <stdio.h>
 
@@ -27,9 +27,9 @@ namespace structure {
   center(
           Atoms const &);
 
-  math::Point
-  center(
-          AtomOPs const &);
+//  math::Point
+//  center(
+//          AtomOPs const &);
 
 
 /**
@@ -49,7 +49,7 @@ namespace structure {
  *  std::cout << r->name() << std::endl; //OUTPUT: "G"
  *
  *  //getting a specific atom from residue
- *  auto a = r->get_atom("C1'");
+ *  auto a = r->gFet_atom("C1'");
  *  std::cout << a->coords() << std::endl; //OUTPUT: "-23.806 -50.289  86.732"
  *
  *  auto beads = r->get_beads();
@@ -60,7 +60,7 @@ namespace structure {
  *  std::cout << r->to_pdb_str() << std::endl; //OUTPUT -->
  *  ATOM      1 O5'  G   A 103     -26.469 -47.756  84.669  1.00  0.00
  *  ATOM      2 C5'  G   A 103     -25.050 -47.579  84.775  1.00  0.00
- *  ATOM      3 C4'  G   A 103     -24.521 -48.156  86.068  1.00  0.00
+ *  ATOM      3 C4'  G   A 103     -24.521 -48.156  86.068  1.00  0.00F
  *  ATOM      4 O4'  G   A 103     -24.861 -49.568  86.118  1.00  0.00
  *  ATOM      5 C3'  G   A 103     -23.009 -48.119  86.281  1.00  0.00
  *  ATOM      6 O3'  G   A 103     -22.548 -46.872  86.808  1.00  0.00
@@ -87,11 +87,11 @@ namespace structure {
               char chain_id,
               char i_code,
               ResidueTypeCOP res_type,
-              Atoms const &atoms,
+              Atoms &atoms,
               util::Uuid const &uuid) :
               primitives::Residue(name, num, chain_id, i_code, uuid),
-              res_type_(res_type),
-              atoms_(atoms) {
+              _res_type(res_type),
+              _atoms(std::move(atoms)) {
           _build_beads();
       }
 
@@ -101,10 +101,10 @@ namespace structure {
        */
       Residue(
               Residue const &r) :
-              primitives::Residue(r.name_, r.num_, r.chain_id_, r.i_code_, r.uuid_),
-              res_type_(r.res_type_),
-              atoms_(r.atoms_),
-              beads_(r.beads_) {}
+              primitives::Residue(r._name, r._num, r._chain_id, r._i_code, r._uuid),
+              _res_type(r._res_type),
+              _atoms(r._atoms),
+              _beads(r._beads) {}
 
       /**
        * Construction from String, used in reading data from files
@@ -117,42 +117,25 @@ namespace structure {
               primitives::Residue() {
 
           auto spl = base::split_str_by_delimiter(s, ",");
-          res_type_ = rts.get_residue_type(spl[0]);
-          name_ = spl[1][0];
-          num_ = std::stoi(spl[2]);
-          chain_id_ = spl[3][0];
-          i_code_ = spl[4][0];
-          uuid_ = util::Uuid();
-          atoms_ = Atoms();
+          _res_type = rts.get_residue_type(spl[0]);
+          _name = spl[1][0];
+          _num = std::stoi(spl[2]);
+          _chain_id = spl[3][0];
+          _i_code = spl[4][0];
+          _uuid = util::Uuid();
+          _atoms = Atoms();
           int i = 5;
           while (i < spl.size()) {
               if (spl[i].size() <= 1) {
                   i++;
                   continue;
               }
-              atoms_.push_back(Atom(spl[i]));
+              _atoms.push_back(Atom(spl[i]));
               i++;
           }
+//          _replace_missing_phosphate_backbone(_atoms, rts);
           _build_beads();
       }
-
-//        Residue(
-//                json::JSON &j,
-//                ResidueTypeSet const &rts) :
-//                primitives::Residue() {
-//            res_type_ = rts.get_residue_type(j["res_type"].ToString());
-//            name_ = (char) j["name"].ToInt();
-//            num_ = (int) j["num"].ToInt();
-//            chain_id_ = (char) j["chain_id"].ToInt();
-//            i_code_ = (char) j["i_code"].ToInt();
-//            uuid_ = util::Uuid();
-//            atoms_ = Atoms();
-//            auto &atoms_json = j["atoms"];
-//            for (int i = 0; i < atoms_json.size(); i++) {
-//                atoms_.push_back(Atom(atoms_json[i]));
-//            }
-//        }
-
 
       /**
        * Empty deconstructor
@@ -162,15 +145,15 @@ namespace structure {
   public: //iterator stuff
       typedef Atoms::const_iterator const_iterator;
 
-      const_iterator begin() const noexcept { return atoms_.begin(); }
+      const_iterator begin() const noexcept { return _atoms.begin(); }
 
-      const_iterator end() const noexcept { return atoms_.end(); }
+      const_iterator end() const noexcept { return _atoms.end(); }
 
       typedef util::Beads::const_iterator bead_const_iterator;
 
-      bead_const_iterator bead_begin() const noexcept { return beads_.begin(); }
+      bead_const_iterator bead_begin() const noexcept { return _beads.begin(); }
 
-      bead_const_iterator bead_end() const noexcept { return beads_.end(); }
+      bead_const_iterator bead_end() const noexcept { return _beads.end(); }
 
   public:
 
@@ -193,8 +176,8 @@ namespace structure {
       operator<<(
               std::ostream &stream,
               Residue const &r) {
-          stream << r.num_ << r.chain_id_;
-          if (r.i_code_ != ' ') { stream << "(" << r.i_code_ << ")"; }
+          stream << r._num << r._chain_id;
+          if (r._i_code != ' ') { stream << "(" << r._i_code << ")"; }
           return stream;
       }
 
@@ -227,13 +210,13 @@ namespace structure {
       is_equal(
               Residue const &r,
               bool check_uuid = true) const {
-          if (check_uuid && uuid_ != r.uuid_) { return false; }
-          if (name_ != r.name_) { return false; }
-          if (num_ != r.num_) { return false; }
-          if (chain_id_ != r.chain_id_) { return false; }
-          if (i_code_ != r.i_code_) { return false; }
-          for (int i = 0; i < atoms_.size(); i++) {
-              if (atoms_[i] != r.atoms_[i]) { return false; }
+          if (check_uuid && _uuid != r._uuid) { return false; }
+          if (_name != r._name) { return false; }
+          if (_num != r._num) { return false; }
+          if (_chain_id != r._chain_id) { return false; }
+          if (_i_code != r._i_code) { return false; }
+          for (int i = 0; i < _atoms.size(); i++) {
+              if (_atoms[i] != r._atoms[i]) { return false; }
           }
           return true;
       }
@@ -256,19 +239,18 @@ namespace structure {
       Atom const &
       get_atom(
               String const &name) const {
-          //TODO Figure out why it shifts by 3
-          int index = res_type_->get_atom_index(name) - 3;
+          int index = _res_type->get_atom_index(name);
           if (index == -1) {
               throw ResidueException("atom name: " + name + " does not exist in this residue");
           }
-          return atoms_[index];
+          return _atoms[index];
       }
 
       inline
       Atom const &
       get_atom(
               Index index) const {
-          return atoms_[index];
+          return _atoms[index];
       }
 
       inline
@@ -282,7 +264,7 @@ namespace structure {
       util::Bead const &
       get_bead(
               util::BeadType bead_type) const {
-          for (auto const &b : beads_) {
+          for (auto const &b : _beads) {
               if (b.get_type() == bead_type) { return b; }
           }
           throw ResidueException(
@@ -295,32 +277,27 @@ namespace structure {
       inline
       void
       set_chain_id(T &id) {
-          chain_id_ = id;
+          _chain_id = id;
       }
 
       inline
       void
       set_num(int &num) {
-          num_ = num;
+          _num = num;
       }
 
       inline
       void
       set_uuid(util::Uuid const &id) {
-          uuid_ = id;
+          _uuid = id;
       }
 
-      //        inline
-      //        AtomOPs const &
-      //        get_atoms() const {
-      //            return atoms_;
-      //        }
-
+      //TODO need to remove this function
       inline
       AtomOPs
       get_atoms() {
           AtomOPs atom_ptrs;
-          for (auto const &a : atoms_) {
+          for (auto const &a : _atoms) {
               AtomOP atom_ptr = std::make_shared<Atom>(a);
               atom_ptrs.push_back(atom_ptr);
           }
@@ -329,19 +306,19 @@ namespace structure {
 
       inline
       math::Point
-      get_center() const { return center(atoms_); }
+      get_center() const { return center(_atoms); }
 
       inline
       size_t
-      get_num_atoms() const { return atoms_.size(); }
+      get_num_atoms() const { return _atoms.size(); }
 
       inline
       String const &
-      get_res_name() const { return res_type_->get_name(); }
+      get_res_name() const { return _res_type->get_name(); }
 
       inline
       SetType
-      get_res_set_type() const { return res_type_->get_set_type(); }
+      get_res_set_type() const { return _res_type->get_set_type(); }
 
 
       /**
@@ -373,8 +350,8 @@ namespace structure {
       String
       get_pdb_str(
               int acount) const {
-          auto num = num_;
-          auto chain_id = chain_id_;
+          auto num = _num;
+          auto chain_id = _chain_id;
           return get_pdb_str(acount, num, chain_id);
       }
 
@@ -424,8 +401,8 @@ namespace structure {
       void
       move(
               math::Point const &p) {
-          for (auto &a : atoms_) { a.move(p); }
-          for (auto &b : beads_) { b.move(p); }
+          for (auto &a : _atoms) { a.move(p); }
+          for (auto &b : _beads) { b.move(p); }
       }
 
       inline
@@ -434,8 +411,8 @@ namespace structure {
               math::Matrix const &r,
               math::Vector const &t,
               math::Point &dummy) {
-          for (auto &a : atoms_) { a.transform(r, t, dummy); }
-          for (auto &b : beads_) { b.transform(r, t, dummy); }
+          for (auto &a : _atoms) { a.transform(r, t, dummy); }
+          for (auto &b : _beads) { b.transform(r, t, dummy); }
       }
 
       inline
@@ -449,7 +426,7 @@ namespace structure {
 
       inline
       void
-      remove_beads() { beads_ = util::Beads(); }
+      remove_beads() { _beads = util::Beads(); }
 
       inline
       void
@@ -457,7 +434,7 @@ namespace structure {
 
       inline
       void
-      new_uuid() { uuid_ = util::Uuid(); }
+      new_uuid() { _uuid = util::Uuid(); }
 
 
   public: // getters
@@ -476,24 +453,124 @@ namespace structure {
       void
       _build_beads_RNA();
 
+      //TODO Need to remove this function later
+
+      std::map<String, std::shared_ptr<Residue>> _ref_residues;
+
+//      bool
+//      _replace_missing_phosphate_backbone(
+//              std::vector<Atom> &atoms,
+//              ResidueTypeCOP res_type) const {
+//
+//          auto ref_res = _ref_residues.at(res_type->get_name());
+//
+//          // if these atoms do not exist cannot build res ref frame
+////          if(atoms[ res_type->get_atom_index("C1'")] == nullptr) { return false; }
+////          if (res_type->get_short_name() == 'A' || res_type->get_short_name() == 'G') {
+////              if(atoms[ res_type->get_atom_index("N9")] == nullptr) { return false; }
+////          }
+////          else {
+////              if(atoms[ res_type->get_atom_index("N1")] == nullptr) { return false; }
+////          }
+//            bool found_C1 = false;
+//          for (Atom const &atom : atoms) {
+//              if(atom.get_name() == "C1'") {
+//                  found_C1 = true;
+//              }
+//          }
+//
+//          auto ref_frame_1 = _get_res_ref_frame_from_atoms(atoms, res_type);
+//          auto ref_frame_2 = _get_res_ref_frame(ref_res);
+//          auto rot = dot(ref_frame_1.transpose(), ref_frame_2);
+//          auto r_t = rot.transpose();
+//          auto t = -ref_res->get_center();
+//          auto c4p_atom = atoms[res_type->get_atom_index("C4'")];
+//          if (c4p_atom == nullptr) { return false; }
+//
+//          ref_res->transform(r_t, t);
+//          ref_res->move(c4p_atom.get_coords() - ref_res->get_coords("C4'"));
+//
+//          for (int i = 0; i < 5; i++) {
+//              atoms[i] = new Atom(ref_res->get_atom(i).get_name(),
+//                                  ref_res->get_atom(i).get_coords());
+//          }
+//          return true;
+//      }
+//
+//      math::Matrix
+//      _get_res_ref_frame(std::shared_ptr<Residue const> r) const {
+//          auto vec1 = math::Point();
+//          auto vec2 = math::Point();
+//          if (r->get_name() == 'A' || r->get_name() == 'G') {
+//              vec1 = (r->get_coords("N9") - r->get_coords("C1'")).normalize();
+//              vec2 = (r->get_coords("N9") - r->get_bead(util::BeadType::BASE).get_center()).normalize();
+//          } else {
+//              vec1 = (r->get_coords("N1") - r->get_coords("C1'")).normalize();
+//              vec2 = (r->get_coords("N1") - r->get_bead(util::BeadType::BASE).get_center()).normalize();
+//          }
+//          auto cross = vec1.cross(vec2);
+//          auto m = math::Matrix(
+//                  vec1.get_x(), vec1.get_y(), vec1.get_z(),
+//                  vec2.get_x(), vec2.get_y(), vec2.get_z(),
+//                  cross.get_x(), cross.get_y(), cross.get_z());
+//          m.unitarize();
+//          return m;
+//      }
+//
+//      math::Matrix
+//      _get_res_ref_frame_from_atoms(
+//              std::vector<Atom> const &atoms,
+//              ResidueTypeCOP res_type) const {
+//
+//          auto vec1 = math::Point();
+//          auto vec2 = math::Point();
+//          auto base_center = math::Point();
+//          int count = 0;
+//          for (int i = 12; i < res_type->get_num_atoms(); i++) {
+//              if (atoms[i] == nullptr) { continue; }
+//              base_center += atoms[i].get_coords();
+//              count += 1;
+//          }
+//          base_center /= float(count);
+//          auto c1p_atom = atoms[res_type->get_atom_index("C1'")];
+//
+//          if (res_type->get_short_name() == 'A' || res_type->get_short_name() == 'G') {
+//              auto n9_atom = atoms[res_type->get_atom_index("N9")];
+//              vec1 = (n9_atom.get_coords() - c1p_atom.get_coords()).normalize();
+//              vec2 = (n9_atom.get_coords() - base_center).normalize();
+//          } else {
+//              auto n1_atom = atoms[res_type->get_atom_index("N1")];
+//              vec1 = (n1_atom.get_coords() - c1p_atom.get_coords()).normalize();
+//              vec2 = (n1_atom.get_coords() - base_center).normalize();
+//          }
+//
+//          auto cross = vec1.cross(vec2);
+//          auto m = math::Matrix(
+//                  vec1.get_x(), vec1.get_y(), vec1.get_z(),
+//                  vec2.get_x(), vec2.get_y(), vec2.get_z(),
+//                  cross.get_x(), cross.get_y(), cross.get_z());
+//          m.unitarize();
+//          return m;
+//      }
+
 
       //TODO Change it to private
   public:
       /**
        * residue type object which explains what atoms in belong in this residue.
        */
-      ResidueTypeCOP res_type_;
+      ResidueTypeCOP _res_type;
 
       /**
        * vector of the atom objects that belong to this residue
        */
-      Atoms atoms_;
+      Atoms _atoms;
 
 
       /**
        * vector of bead objects for sterics
        */
-      util::Beads beads_;
+      util::Beads _beads;
 
   };
 
@@ -548,41 +625,7 @@ namespace structure {
 
       return false;
   }
-  //TODO Need to remove this function later
 
-//  bool
-//  _replace_missing_phosphate_backbone(
-//          std::vector<Atom const *> & atoms,
-//          ResidueTypeCOP res_type) const {
-//
-//      auto ref_res = ref_residues_.at(res_type->get_name());
-//
-//      // if these atoms do not exist cannot build res ref frame
-//      if(atoms[ res_type->get_atom_index("C1'")] == nullptr) { return false; }
-//      if (res_type->get_short_name() == 'A' || res_type->get_short_name() == 'G') {
-//          if(atoms[ res_type->get_atom_index("N9")] == nullptr) { return false; }
-//      }
-//      else {
-//          if(atoms[ res_type->get_atom_index("N1")] == nullptr) { return false; }
-//      }
-//
-//      auto ref_frame_1 = _get_res_ref_frame_from_atoms(atoms, res_type);
-//      auto ref_frame_2 = _get_res_ref_frame(ref_res);
-//      auto rot = dot(ref_frame_1.transpose(), ref_frame_2);
-//      auto r_t = rot.transpose();
-//      auto t = -ref_res->get_center();
-//      auto c4p_atom =  atoms[ res_type->get_atom_index("C4'") ];
-//      if(c4p_atom == nullptr) { return false; }
-//
-//      ref_res->transform(r_t, t);
-//      ref_res->move(c4p_atom->get_coords() - ref_res->get_coords("C4'"));
-//
-//      for(int i = 0; i < 5; i++) {
-//          atoms[i] = new Atom(ref_res->get_atom(i).get_name(),
-//                              ref_res->get_atom(i).get_coords());
-//      }
-//      return true;
-//  }
 
 //  ResidueOP
 //  _setup_residue(
@@ -620,4 +663,4 @@ namespace structure {
 //      }
 }
 
-#endif /* defined(__RNAMake__all_atom_residue__) */
+#endif /* defined(__RNAMake__structure_residue__) */

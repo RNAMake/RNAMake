@@ -5,6 +5,7 @@
 #include <base/log.h>
 #include "structure/structure.h"
 #include "structure/pdb_parser.h"
+#include "doctest.h"
 
 namespace structure {
 
@@ -18,10 +19,10 @@ namespace structure {
       auto i = -1;
       auto pos = 0;
       auto anscii_num = int(chain_id);
-      for(auto const & r : residues_) {
+      for(auto const & r : _residues) {
           i++;
           s += r.get_pdb_str(acount, rnum, chain_id);
-          if (cut_points_[pos] == i) {
+          if (_cut_points[pos] == i) {
               anscii_num += 1;
               chain_id = char(anscii_num);
           }
@@ -45,17 +46,17 @@ namespace structure {
           String const & fname) {
 
       auto acount = 1;
-      auto rnum = residues_[0].get_num();
-      auto chain_id = residues_[0].get_chain_id();
+      auto rnum = _residues[0].get_num();
+      auto chain_id = _residues[0].get_chain_id();
 
       auto s = String();
       auto i = -1;
       auto pos = 0;
       auto anscii_num = int(chain_id);
-      for(auto const & r : residues_) {
+      for(auto const & r : _residues) {
           i++;
           s += r.get_bead_pdb_str(acount, rnum, chain_id);
-          if (cut_points_[pos] == i) {
+          if (_cut_points[pos] == i) {
               anscii_num += 1;
               chain_id = char(anscii_num);
           }
@@ -77,9 +78,11 @@ namespace structure {
       auto o3 = String("O3'");
       auto p  = String("P");
       // 5' to 3'
-      if (r1.get_coords(o3).distance(r2.get_coords(p)) < 3.0) { return 1; }
+      if (r1.get_coords(o3).distance(r2.get_coords(p)) < 5.0) {
+          return 1; }
       // 3' to 5'
-      if (r2.get_coords(o3).distance(r1.get_coords(p)) < 3.0) { return -1; }
+      if (r2.get_coords(o3).distance(r1.get_coords(p)) < 5.0) {
+          return -1; }
       return 0;
   }
 

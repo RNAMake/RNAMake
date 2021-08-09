@@ -13,7 +13,7 @@
 
 String
 structure::Atom::get_str() const {
-    return name_ + " " + math::vector_to_str(coords_)   ;
+    return _name + " " + math::vector_to_str(_coords)   ;
 }
 //
 //json::JSON
@@ -25,8 +25,8 @@ String
 structure::Atom::to_pdb_str(int acount) const {
 
     char buffer[200];
-    std::sprintf(buffer, "ATOM %6d  P   C   A   1 %11.3f%8.3f%8.3f  1.00 62.18           P\n", acount, coords_[0],
-                 coords_[1], coords_[2]);
+    std::sprintf(buffer, "ATOM %6d  P   C   A   1 %11.3f%8.3f%8.3f  1.00 62.18           P\n", acount, _coords[0],
+                 _coords[1], _coords[2]);
     return String(buffer);
 }
 

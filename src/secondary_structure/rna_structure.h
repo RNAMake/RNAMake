@@ -102,16 +102,16 @@ public:
     BasepairOPs
     get_basepair(
         String const &);
-    
+
     BasepairOPs
     get_basepair(
         util::Uuid const &);
-    
+
     BasepairOPs
     get_basepair(
         ResidueOP const &,
         ResidueOP const &);
-    
+
     BasepairOPs
     get_basepair(
         util::Uuid const &,
@@ -126,9 +126,9 @@ public:
     void
     replace_sequence(
         String const &);
-    
+
 public: //wrappers for structure
-    
+
     inline
     ResidueOP
     get_residue(
@@ -137,7 +137,7 @@ public: //wrappers for structure
         String const & i_code) {
         return structure_->get_residue(num, chain_id, i_code);
     }
-    
+
     inline
     ResidueOP
     get_residue(
@@ -148,55 +148,55 @@ public: //wrappers for structure
     inline
     String
     sequence() { return structure_->sequence(); }
-    
+
     inline
     String
     dot_bracket() { return structure_->dot_bracket(); }
-    
+
     inline
     ChainOPs const &
     chains() { return structure_->chains(); }
-    
+
     inline
     ResidueOPs
     residues() { return structure_->residues(); }
-    
+
     inline
     StructureOP
     structure() { return structure_; }
-    
+
 public: //getters
-    
+
     inline
     BasepairOPs const &
     basepairs() { return basepairs_; }
-    
+
     inline
     BasepairOPs const &
     ends() { return ends_; }
-    
+
     inline
     String const &
     name() { return name_; }
-    
+
     inline
     Strings const &
     end_ids() { return end_ids_; }
 
 public: //setters
-    
+
     inline
     void
     name(String const & name) { name_ = name; }
-    
+
     inline
     void
     path(String const & path) { path_ = path; }
-    
+
     inline
     void
     end_ids(Strings const & end_ids) { end_ids_ = end_ids; }
-    
+
 protected:
     StructureOP structure_;
     BasepairOPs basepairs_, ends_;

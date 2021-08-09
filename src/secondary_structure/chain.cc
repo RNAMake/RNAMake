@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include <memory.h>
-
-#include "base/string.h"
 #include "secondary_structure/chain.h"
+
+namespace secondary_structure {
+}

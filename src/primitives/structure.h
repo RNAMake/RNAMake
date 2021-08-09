@@ -24,12 +24,12 @@ public:
 
 namespace primitives {
 
-  template<typename Restype>
+  template<typename Chaintype, typename Restype>
   class Structure {
   public:
       typedef std::vector<Restype>                          Residues;
-//      typedef base::VectorContainer<Chaintype>              Chains;
-//      typedef base::VectorContainerOP<Chaintype>            ChainsOP;
+      typedef base::VectorContainer<Chaintype>              Chains;
+      typedef base::VectorContainerOP<Chaintype>            ChainsOP;
 
 
   public:
@@ -37,14 +37,14 @@ namespace primitives {
       Structure(
               Residues const & res,
               Cutpoints const cut_points):
-              residues_(std::move(res)),
-              cut_points_(cut_points) {}
+              _residues(std::move(res)),
+              _cut_points(cut_points) {}
 
       inline
       Structure(
               Structure const & s):
-              residues_(s.residues_),
-              cut_points_(s.cut_points_) {}
+              _residues(s._residues),
+              _cut_points(s._cut_points) {}
 
 
       inline
@@ -53,11 +53,11 @@ namespace primitives {
 
           auto spl = base::split_str_by_delimiter(s, ";");
           for(Index i = 0; i < spl.size()-1; i++) {
-              residues_.push_back(Restype(spl[i]));
+              _residues.push_back(Restype(spl[i]));
           }
           auto cut_point_spl = base::split_str_by_delimiter(spl.back(), " ");
           for(auto const & cut_point_s : cut_point_spl) {
-              cut_points_.push_back(std::stoi(cut_point_s));
+              _cut_points.push_back(std::stoi(cut_point_s));
           }
       }
 
@@ -67,14 +67,14 @@ namespace primitives {
   protected:
       inline
       Structure():
-              residues_(Residues()),
-              cut_points_(Cutpoints()) {}
+              _residues(Residues()),
+              _cut_points(Cutpoints()) {}
 
   public: //res iterator
       typedef typename Residues::const_iterator const_iterator;
 
-      const_iterator begin() const { return residues_.begin(); }
-      const_iterator end() const { return residues_.end(); }
+      const_iterator begin() const { return _residues.begin(); }
+      const_iterator end() const { return _residues.end(); }
 
   public: //get_residue interface
       Restype const &
@@ -83,7 +83,7 @@ namespace primitives {
               char chain_id,
               char i_code) const{
 
-          for (auto const & r : residues_) {
+          for (auto const & r : _residues) {
               if (num == r.get_num() && chain_id == r.get_chain_id() && i_code == r.get_i_code()) {
                   return r;
               }
@@ -98,7 +98,7 @@ namespace primitives {
       get_residue(
               util::Uuid const & uuid) const {
 
-          for (auto const & r : residues_) {
+          for (auto const & r : _residues) {
               if (r.get_uuid() == uuid) { return r; }
           }
 
@@ -110,18 +110,18 @@ namespace primitives {
               Index index) const {
 
           expects<StructureException>(
-                  index < residues_.size(),
-                  "cannot get residue " + std::to_string(index) + " only " + std::to_string(residues_.size()) +
+                  index < _residues.size(),
+                  "cannot get residue " + std::to_string(index) + " only " + std::to_string(_residues.size()) +
                   " total residues");
 
-          return residues_[index];
+          return _residues[index];
       }
 
       int
       get_res_index(
               Restype const & res) const {
           int i = -1;
-          for (auto const & r : residues_) {
+          for (auto const & r : _residues) {
               i++;
               if (r == res) { return i; }
           }
@@ -129,46 +129,46 @@ namespace primitives {
       }
 
   public:
-//      ChainsOP
-//      get_chains() const {
-//          auto pos = 0;
-//          auto res = Residues();
-//          auto chains = std::vector<Chaintype>();
-//          auto i = 0;
-//          for(auto const & r : residues_) {
-//              if (cut_points_[pos] == i) {
-//                  auto c = Chaintype(res);
-//                  chains.push_back(c);
-//                  res = Residues{Restype(r)};
-//                  pos += 1;
-//              } else {
-//                  res.push_back(Restype(r));
-//              }
-//              i++;
-//          }
-//          if(res.size() > 0) { chains.push_back(Chaintype(res)); }
-//          return std::make_shared<Chains>(chains);
-//      }
+      ChainsOP
+      get_chains() const {
+          auto pos = 0;
+          auto res = Residues();
+          auto chains = std::vector<Chaintype>();
+          auto i = 0;
+          for(auto const & r : _residues) {
+              if (_cut_points[pos] == i) {
+                  auto c = Chaintype(res);
+                  chains.push_back(c);
+                  res = Residues{Restype(r)};
+                  pos += 1;
+              } else {
+                  res.push_back(Restype(r));
+              }
+              i++;
+          }
+          if(res.size() > 0) { chains.push_back(Chaintype(res)); }
+          return std::make_shared<Chains>(chains);
+      }
 
       Cutpoints const &
       get_cutpoints() const {
-          return cut_points_;
+          return _cut_points;
       }
 
       size_t
-      get_num_residues() const { return residues_.size(); }
+      get_num_residues() const { return _residues.size(); }
 
       size_t
-      get_num_chains() const { return cut_points_.size(); }
+      get_num_chains() const { return _cut_points.size(); }
 
       String
       get_sequence() const {
           auto i = -1;
           auto seq = String("");
           auto pos = 0;
-          for(auto const & r : residues_) {
+          for(auto const & r : _residues) {
               i++;
-              if(cut_points_[pos] == i) {
+              if(_cut_points[pos] == i) {
                   seq += "&";
                   pos++;
               }
@@ -182,7 +182,7 @@ namespace primitives {
               Restype const & r) const {
           auto res_index = get_res_index(r);
           if(res_index == 0 ) { return true; }
-          for(auto const c : cut_points_) {
+          for(auto const c : _cut_points) {
               if(res_index == c) { return true; }
           }
           return false;
@@ -193,7 +193,7 @@ namespace primitives {
       is_residue_end_of_chain(
               Restype const & r) const {
           auto res_index = get_res_index(r);
-          for(auto const c : cut_points_) {
+          for(auto const c : _cut_points) {
               if(res_index == c-1) { return true; }
           }
           return false;
@@ -201,12 +201,11 @@ namespace primitives {
 
   protected:
 
-      Residues residues_;
-      Cutpoints cut_points_;
+      Residues _residues;
+      Cutpoints _cut_points;
   };
 
-//  typedef Structure<PrimitiveChain, PrimitiveResidue> PrimitiveStructure;
-  typedef Structure<PrimitiveResidue> PrimitiveStructure;
+  typedef Structure<PrimitiveChain, PrimitiveResidue> PrimitiveStructure;
 
 
 }

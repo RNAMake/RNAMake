@@ -6,26 +6,64 @@
 #include "base/settings.h"
 #include "structure/structure.h"
 #include "structure/basepair.h"
+#include "structure/pdb_parser.h"
 #include "structure/is_equal.h"
+#include "util/random_number_generator.h"
 
 
-TEST_CASE( "Test Basepairs for Structure" ) {
-    auto path = base::unittest_resource_dir() + "/structure/test_str_to_structure.dat";
-    auto lines =base::get_lines_from_file(path);
+TEST_CASE ("Test base pair ") {
+
     auto rts = structure::ResidueTypeSet();
-    auto s = std::make_shared<structure::Structure>(lines[0], rts);
+    auto parser = structure::PDBParser(rts);
 
-    SUBCASE("Test creation from resiudes") {
-        auto res1 = s->get_residue(103, "A", "");
-        auto res2 = s->get_residue(104, "A", "");
-        auto r = math::Matrix(0.0);
+    auto path = base::unittest_resources_path() + "/structure/p4p6.pdb";
+    auto residues = parser.parse(path);
+    auto s = structure::get_structure_from_residues(residues->RNA_residues);
 
-        auto bp = std::make_shared<structure::Basepair>(res1, res2, r, "c...");
+    auto x = util::X3dna();
+    auto x3dna_basepairs = x.get_basepairs(path);
 
-        CHECK(bp->get_res1_uuid() == res1->get_uuid());
-        CHECK(bp->get_res2_uuid() == res2->get_uuid());
+    auto bps = structure::get_basepairs_from_x3dna(x3dna_basepairs, *s);
+
+    SUBCASE("test sync between basepair and residues") {
+
+        auto bp = bps->at(0);
+        auto bp_res = structure::Residues();
+        bp_res.push_back(s->get_residue(bp.get_res1_uuid()));
+        bp_res.push_back(s->get_residue(bp.get_res2_uuid()));
+
+        auto rng = util::RandomNumberGenerator();
+        for (int i = 0; i < 100; i++) {
+            auto rot = math::get_random_rotation_matrix();
+            auto dist = util::get_random_point(rng, 10);
+
+            bp.transform(rot, dist);
+            bp_res[0].transform(rot, dist);
+            bp_res[1].transform(rot, dist);
+        }
+
+// calculate center of base pair
+        auto center = math::Point();
+        auto count = 0;
+        for (auto const &a : bp_res[0]) {
+            center += a.get_coords();
+            count += 1;
+        }
+        for (auto const &a : bp_res[1]) {
+            center += a.get_coords();
+            count += 1;
+        }
+        center /= count;
+
+        CHECK(math::are_points_equal(bp.get_center(), center));
+
+        CHECK(math::are_points_equal(bp.get_res1_c1_prime_coord(),
+                                     bp_res[0].get_coords("C1'")));
+
+        CHECK(math::are_points_equal(bp.get_res2_c1_prime_coord(),
+                                     bp_res[1].get_coords("C1'")));
+
     }
 
 }
-
 
