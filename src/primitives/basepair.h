@@ -39,31 +39,31 @@ namespace primitives {
                 util::Uuid const & uuid,
                 BasepairType const & bp_type,
                 base::SimpleStringCOP const & name):
-                res1_uuid_(res1_uuid),
-                res2_uuid_(res2_uuid),
-                uuid_(uuid),
-                bp_type_(bp_type),
-                name_(name){}
+                _res1_uuid(res1_uuid),
+                _res2_uuid(res2_uuid),
+                _uuid(uuid),
+                _bp_type(bp_type),
+                _name(name){}
 
         inline
         Basepair(
                 Basepair const & bp):
-                res1_uuid_(bp.res1_uuid_),
-                res2_uuid_(bp.res2_uuid_),
-                uuid_(bp.uuid_),
-                bp_type_(bp.bp_type_),
-                name_(bp.name_) {}
+                _res1_uuid(bp._res1_uuid),
+                _res2_uuid(bp._res2_uuid),
+                _uuid(bp._uuid),
+                _bp_type(bp._bp_type),
+                _name(bp._name) {}
 
         inline
         Basepair(
                 util::Uuid const & res1_uuid,
                 util::Uuid const & res2_uuid,
                 util::Uuid const & uuid):
-                res1_uuid_(res1_uuid),
-                res2_uuid_(res2_uuid),
-                uuid_(uuid),
-                bp_type_(BasepairType::NC),
-                name_(base::SimpleStringOP(nullptr)) {}
+                _res1_uuid(res1_uuid),
+                _res2_uuid(res2_uuid),
+                _uuid(uuid),
+                _bp_type(BasepairType::NC),
+                _name(base::SimpleStringOP(nullptr)) {}
 
         virtual
         ~Basepair() {}
@@ -80,13 +80,13 @@ namespace primitives {
         inline
         bool
         operator==(Basepair const & other) const {
-            return uuid_ == other.uuid_;
+            return _uuid == other._uuid;
         }
 
         inline
         bool
         operator!=(Basepair const & other) const {
-            return uuid_ != other.uuid_;
+            return _uuid != other._uuid;
         }
 
     public:
@@ -95,33 +95,33 @@ namespace primitives {
 
         inline
         BasepairType const &
-        get_bp_type() const { return bp_type_; }
+        get_bp_type() const { return _bp_type; }
 
         inline
         util::Uuid const &
-        get_uuid() const { return uuid_; }
+        get_uuid() const { return _uuid; }
 
         inline
         base::SimpleStringCOP
-        get_name() const { return name_; }
+        get_name() const { return _name; }
 
         String
-        get_name_str() const{ return name_->get_str(); }
+        get_name_str() const{ return _name->get_str(); }
 
         inline
         util::Uuid const &
-        get_res1_uuid() const { return res1_uuid_; }
+        get_res1_uuid() const { return _res1_uuid; }
 
         inline
         util::Uuid const &
-        get_res2_uuid() const { return res2_uuid_; }
+        get_res2_uuid() const { return _res2_uuid; }
 
 
     protected:
-        util::Uuid uuid_;
-        util::Uuid res1_uuid_, res2_uuid_;
-        BasepairType bp_type_;
-        base::SimpleStringCOP name_;
+        util::Uuid _uuid;
+        util::Uuid _res1_uuid, _res2_uuid;
+        BasepairType _bp_type;
+        base::SimpleStringCOP _name;
     };
 
     typedef Basepair                             PrimitiveBasepair;

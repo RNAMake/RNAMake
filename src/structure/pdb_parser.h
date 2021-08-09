@@ -51,29 +51,29 @@ namespace structure {
   public:
       PDBParser(
               ResidueTypeSet const & rts) :
-              rts_(rts),
-              atom_name_corrections_(std::map<String, String>()),
-              ions_(std::map<String, int>()) {
+              _rts(rts),
+              _atom_name_corrections(std::map<String, String>()),
+              _ions(std::map<String, int>()) {
 
-          ions_["MG"] = 1;
-          ions_["K"] = 1;
-          ions_["BR"] = 1;
-          ions_["ZN"] = 1;
-          ions_["MN"] = 1;
-          ions_["NA"] = 1;
-          ions_["CL"] = 1;
-          ions_["PO4"] = 1;
-          ions_["SO4"] = 1;
-          ions_["NH4"] = 1;
-          ions_["NO3"] = 1;
+          _ions["MG"] = 1;
+          _ions["K"] = 1;
+          _ions["BR"] = 1;
+          _ions["ZN"] = 1;
+          _ions["MN"] = 1;
+          _ions["NA"] = 1;
+          _ions["CL"] = 1;
+          _ions["PO4"] = 1;
+          _ions["SO4"] = 1;
+          _ions["NH4"] = 1;
+          _ions["NO3"] = 1;
 
-          atom_name_corrections_["O1P"] = "OP1";
-          atom_name_corrections_["O2P"] = "OP2";
+          _atom_name_corrections["O1P"] = "OP1";
+          _atom_name_corrections["O2P"] = "OP2";
 
           auto path = base::resources_path() + "/ideal_residues/";
           auto names = Strings{"ADE", "CYT", "GUA", "URA"};
           for(auto const & name : names) {
-              ref_residues_[name] = _setup_ref_residue(path + name + ".pdb");
+              _ref_residues[name] = _setup_ref_residue(path + name + ".pdb");
           }
       }
 
@@ -84,6 +84,7 @@ namespace structure {
       PDBParserResiduesOP
       parse(
               String const &) const;
+
 
   private:
       void
@@ -117,10 +118,10 @@ namespace structure {
 
 
   private:
-      ResidueTypeSet const & rts_;
-      std::map<String, ResidueOP> ref_residues_;
-      std::map<String, String> atom_name_corrections_;
-      std::map<String, int> ions_;
+      ResidueTypeSet const & _rts;
+      std::map<String, ResidueOP> _ref_residues;
+      std::map<String, String> _atom_name_corrections;
+      std::map<String, int> _ions;
 
 
   };

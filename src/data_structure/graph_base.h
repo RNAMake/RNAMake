@@ -9,7 +9,6 @@
 
 #include <base/types.h>
 #include <base/assertions.h>
-#include <stdexcept>
 
 namespace data_structure {
 
@@ -64,21 +63,12 @@ struct NodeIndexandEdge {
     Index node_index;
     Index edge_index;
 
-    inline
-    bool
-    operator == (
-            NodeIndexandEdge const & nie) const {
-        return(nie.node_index == node_index && nie.edge_index == edge_index);
-    }
-
     String
     to_str() const {
         return "node_index: " + std::to_string(node_index) + " edge_index: " + std::to_string(edge_index);
     }
 };
 
-
-//TODO why is it data_structure::NodeIndexandEdge not NodeIndexandEdge
 struct NodeIndexandEdgeCompare {
     bool operator () (
             data_structure::NodeIndexandEdge const & nie1,

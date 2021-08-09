@@ -1,94 +1,139 @@
 //
-//  pose.h
-//  RNAMake
-//
-//  Created by Joseph Yesselman on 12/7/15.
-//  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
+// Created by Joseph Yesselman on 10/27/17.
 //
 
-#ifndef __RNAMake_sec_pose__
-#define __RNAMake_sec_pose__
+#ifndef RNAMAKE_NEW_RNA_STRUCTURE_H
+#define RNAMAKE_NEW_RNA_STRUCTURE_H
 
-#include <stdio.h>
-
-// RNAMake Headers
-#include "secondary_structure/rna_structure.h"
-#include "secondary_structure/motif.h"
+#include <primitives/pose.h>
+#include <secondary_structure/residue.h>
+#include <secondary_structure/chain.h>
+#include <secondary_structure/basepair.h>
+#include <secondary_structure/structure.h>
 
 namespace secondary_structure {
 
-class Pose : public RNAStructure {
-public:
-    Pose() :
-            RNAStructure() {}
+  class Pose : public primitives::Pose<Basepair, Structure, Chain, Residue> {
+  public:
+      typedef primitives::Pose<Basepair, Structure, Chain, Residue> BaseClass;
 
-    Pose(
-            StructureOP const & structure,
-            BasepairOPs const & basepairs,
-            BasepairOPs const & ends) :
-            RNAStructure(structure, basepairs, ends) {}
+  public:
+      inline
+      Pose(
+              Structure const & s,
+              std::vector<Basepair> const & basepairs,
+              Indexes const & end_indexes,
+              base::SimpleStringCOPs const & end_ids,
+              base::SimpleStringCOP name) :
+              BaseClass(s, basepairs, end_indexes, end_ids, name) {}
 
-    Pose(
-            StructureOP const & structure,
-            BasepairOPs const & basepairs,
-            BasepairOPs const & ends,
-            MotifOPs const & motifs) :
-            RNAStructure(structure, basepairs, ends),
-            motifs_(motifs) {}
+      inline
+      Pose(
+              Pose const & rs) : BaseClass(rs) {}
 
-    Pose(
-            RNAStructureOP const & rs,
-            MotifOPs const & motifs) :
-            motifs_(motifs) {
-        this->structure_ = rs->structure();
-        this->basepairs_ = rs->basepairs();
-        this->ends_ = rs->ends();
-        this->end_ids_ = rs->end_ids();
-    }
+  public:
 
+      bool
+      operator==(
+              Pose const & rs) const {
 
-public:
-    MotifOPs const &
-    helices() {
-        if (helices_.size() == 0) {
-            _build_helices();
-        }
-        return helices_;
-    }
+          if (structure_ != rs.structure_) { return false; }
+          if (basepairs_.size() != rs.basepairs_.size()) { return false; }
+          if (*name_ != *rs.name_) { return false; }
+          if (end_indexes_.size() != rs.end_indexes_.size()) { return false; }
+          if (end_ids_.size() != rs.end_ids_.size()) { return false; }
 
-    MotifOPs const &
-    motifs() const { return motifs_; }
+          for (auto i = 0; i < basepairs_.size(); i++) {
+              if (basepairs_[i] != rs.basepairs_[i]) { return false; }
+          }
+          for (auto i = 0; i < end_ids_.size(); i++) {
+              if (*end_ids_[i] != *rs.end_ids_[i]) { return false; }
+          }
+          return true;
+      }
 
-    MotifOP
-    motif(
-            util::Uuid const & uuid) {
-        for (auto const & m : motifs_) {
-            if (m->id() == uuid) { return m; }
-        }
-        return nullptr;
-    }
-
-    void
-    replace_sequence(
-            String const &);
-
-    void
-    update_motif(
-            util::Uuid const &);
+      inline
+      bool
+      operator!=(
+              Pose const & rs) const {
+          return !(*this == rs);
+      }
 
 
-private:
-    void
-    _build_helices();
+  public:
+      inline
+      String
+      get_dot_bracket() const {
+          return structure_.get_dot_bracket();
+      }
 
-private:
-    MotifOPs motifs_;
-    MotifOPs helices_;
+
+  public: //setters
+      void
+      set_sequence(
+              String const & sequence) {
+          structure_.set_sequence(sequence);
+      }
+
+      inline
+      void
+      set_residue_identity(
+              Index residue_index,
+              char name) {
+          structure_.set_residue_identity(residue_index, name);
+      }
+
+  private:
+      /*std::unique_ptr<String>
+      _get_basepair_str(
+              Basepair const & bp) {
+          auto s = std::unique_ptr<String>(new String(""));
+          auto res = get_bp_res(bp);
+          *s += bp.get_str() + ";";
+          *s += std::to_string(res->at(0).get_num()) + "|" + res->at(0).get_chain_id() + "|" + res->at(0).get_i_code() +
+                ";";
+          *s += std::to_string(res->at(1).get_num()) + "|" + res->at(1).get_chain_id() + "|" + res->at(1).get_i_code() +
+                "@";
+          return s;
+      }
+      Basepair *
+      _bp_from_str(
+              String const & s) {
+          auto bp_spl = base::split_str_by_delimiter(s, ";");
+          expects<PoseException>(
+                  bp_spl.size() == 3,
+                  "incorrect number of sections in basepair string");
+          auto r1_info = base::split_str_by_delimiter(bp_spl[1], "|");
+          auto r2_info = base::split_str_by_delimiter(bp_spl[2], "|");
+          auto & res1 = structure_.get_residue(std::stoi(r1_info[0]), r1_info[1][0], r1_info[2][0]);
+          auto & res2 = structure_.get_residue(std::stoi(r2_info[0]), r2_info[1][0], r2_info[2][0]);
+          return new Basepair(bp_spl[0], util::Uuid(), res1.get_uuid(), res2.get_uuid());
+      }*/
 
 
-};
+  };
 
-typedef std::shared_ptr<Pose> PoseOP;
+  typedef std::shared_ptr<Pose> PoseOP;
+  typedef std::unique_ptr<Pose> PoseUP;
+
+  inline
+  base::VectorContainerOP<Index>
+  get_ends_from_basepairs(
+          Structure const & s,
+          Basepairs const & bps) {
+      return primitives::get_end_indexes_from_basepairs<Basepair, Structure>(s, bps);
+  }
+
+  inline
+  String
+  generate_end_id(
+          Structure const & s,
+          Basepairs const & bps,
+          Basepair const & end) {
+      return primitives::generate_end_id<Structure, Chain, Basepair, Residue>(s, bps, end);
+  }
 
 }
-#endif /* defined(__RNAMake__pose__) */
+
+
+#endif //RNAMAKE_NEW_RNA_STRUCTURE_H

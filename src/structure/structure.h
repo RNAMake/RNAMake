@@ -14,9 +14,9 @@
 
 namespace structure {
 
-  class Structure : public primitives::Structure<Residue> {
+  class Structure : public primitives::Structure<Chain, Residue> {
   public:
-      typedef primitives::Structure<Residue> ParentClass;
+      typedef primitives::Structure<Chain, Residue> ParentClass;
 
   public:
       inline
@@ -25,7 +25,7 @@ namespace structure {
               Cutpoints const & cut_points): ParentClass(residues, cut_points) {}
       inline
       Structure(
-              Structure const & structure): ParentClass(structure.residues_, structure.cut_points_) {}
+              Structure const & structure): ParentClass(structure._residues, structure._cut_points) {}
       inline
       Structure(
               String const & s,
@@ -33,11 +33,11 @@ namespace structure {
 
           auto spl = base::split_str_by_delimiter(s, ";");
           for(Index i = 0; i < spl.size()-1; i++) {
-              residues_.push_back(Residue(spl[i], rts));
+              _residues.push_back(Residue(spl[i], rts));
           }
           auto cut_point_spl = base::split_str_by_delimiter(spl.back(), " ");
           for(auto const & cut_point_s : cut_point_spl) {
-              cut_points_.push_back(std::stoi(cut_point_s));
+              _cut_points.push_back(std::stoi(cut_point_s));
           }
       }
 
@@ -65,15 +65,15 @@ namespace structure {
               Structure const & s,
               bool check_uuid = true) const {
 
-          if(residues_.size() != s.residues_.size() ) { return false; }
-          if(cut_points_.size() != s.cut_points_.size() ) { return false; }
+          if(_residues.size() != s._residues.size() ) { return false; }
+          if(_cut_points.size() != s._cut_points.size() ) { return false; }
 
-          for(int i = 0; i < residues_.size(); i++) {
-              if(!(residues_[i].is_equal(s.residues_[i], check_uuid))) { return false; }
+          for(int i = 0; i < _residues.size(); i++) {
+              if(!(_residues[i].is_equal(s._residues[i], check_uuid))) { return false; }
           }
 
-          for(int i = 0; i < cut_points_.size(); i++) {
-              if(cut_points_[i] != s.cut_points_[i]) { return false; }
+          for(int i = 0; i < _cut_points.size(); i++) {
+              if(_cut_points[i] != s._cut_points[i]) { return false; }
           }
           return true;
 
@@ -83,7 +83,7 @@ namespace structure {
       void
       move(
               math::Point const & p) {
-          for(auto & r : residues_) { r.move(p); }
+          for(auto & r : _residues) { r.move(p); }
       }
 
       void
@@ -92,7 +92,7 @@ namespace structure {
               math::Vector const & t,
               math::Point & dummy) {
 
-          for(auto & res : residues_) { res.transform(r, t, dummy); }
+          for(auto & res : _residues) { res.transform(r, t, dummy); }
       }
 
       inline
@@ -112,12 +112,12 @@ namespace structure {
 
           auto & r = get_residue(r_uuid);
           auto i =  get_res_index(r);
-          residues_[i].remove_beads();
+          _residues[i].remove_beads();
       }
 
       void
       new_uuids() {
-          for(auto & r : residues_) { r.new_uuid(); }
+          for(auto & r : _residues) { r.new_uuid(); }
       }
 
   public: //getters
@@ -125,30 +125,18 @@ namespace structure {
       String
       get_str() {
           auto s = String();
-          for(auto const & r : residues_) {
+          for(auto const & r : _residues) {
               s += r.get_str() + ";";
           }
           int i = 0;
-          for(auto const & c : cut_points_) {
+          for(auto const & c : _cut_points) {
               s += std::to_string(c);
-              if(i != cut_points_.size()) { s += " "; }
+              if(i != _cut_points.size()) { s += " "; }
           }
           s += ";";
           return s;
       }
 
-//      json::JSON
-//      get_json() const {
-//          auto j_res = json::Array();
-//          auto j_cuts = json::Array();
-//          for(auto const & r : residues_) { j_res.append(r.get_json()); }
-//          for(auto const & i : cut_points_) { j_cuts.append(i); }
-//          auto j = json::Object();
-//          return json::JSON{
-//                  "residues", j_res,
-//                  "cutpoints", j_cuts};
-//
-//      }
 
       String
       get_pdb_str(
@@ -160,8 +148,8 @@ namespace structure {
       String
       get_pdb_str(
               int acount = 0) const {
-          auto num = residues_[0].get_num();
-          auto chain_id = residues_[0].get_chain_id();
+          auto num = _residues[0].get_num();
+          auto chain_id = _residues[0].get_chain_id();
           return get_pdb_str(acount, num, chain_id);
       }
 

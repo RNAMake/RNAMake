@@ -9,6 +9,7 @@
 #include <base/vector_container.h>
 #include <math/xyz_matrix.h>
 #include <math/xyz_vector.h>
+#include <math/numerical.h>
 #include <util/x3dna.h>
 #include <primitives/basepair.h>
 #include <structure/residue.h>
@@ -29,10 +30,10 @@ namespace structure {
               math::Point const &center,
               math::Points const &c1_prime_coords) :
               primitives::Basepair(res1_uuid, res2_uuid, uuid, bp_type, name),
-              ref_frame_(ref_frame),
-              center_(center),
-              c1_prime_coords_(c1_prime_coords),
-              x3dna_type_(x3dna_type) {}
+              _ref_frame(ref_frame),
+              _center(center),
+              _c1_prime_coords(c1_prime_coords),
+              _x3dna_type(x3dna_type) {}
 
       inline
       Basepair(
@@ -41,17 +42,17 @@ namespace structure {
               util::Uuid const &res2_uuid,
               util::Uuid const &uuid) :
               primitives::Basepair() {
-          uuid_ = uuid;
-          res1_uuid_ = res1_uuid;
-          res2_uuid_ = res2_uuid;
-          center_ = math::Point(j[0]);
-          ref_frame_ = math::Matrix(j[1]);
-          c1_prime_coords_ = math::Points(2);
-          c1_prime_coords_[0] = math::Point(j[2]);
-          c1_prime_coords_[1] = math::Point(j[3]);
-          bp_type_ = static_cast<primitives::BasepairType>(j[4].ToInt());
-          x3dna_type_ = static_cast<util::X3dnaBPType>(j[5].ToInt());
-          name_ = std::make_shared<base::SimpleString>(j[6].ToString());
+          _uuid = uuid;
+          _res1_uuid = res1_uuid;
+          _res2_uuid = res2_uuid;
+          _center = math::Point(j[0]);
+          _ref_frame = math::Matrix(j[1]);
+          _c1_prime_coords = math::Points(2);
+          _c1_prime_coords[0] = math::Point(j[2]);
+          _c1_prime_coords[1] = math::Point(j[3]);
+          _bp_type = static_cast<primitives::BasepairType>(j[4].ToInt());
+          _x3dna_type = static_cast<util::X3dnaBPType>(j[5].ToInt());
+          _name = std::make_shared<base::SimpleString>(j[6].ToString());
       }
 
 
@@ -61,15 +62,15 @@ namespace structure {
               Basepair const &bp,
               bool check_uuid = true) const {
           if (check_uuid) {
-              if (uuid_ != bp.uuid_) { return false; };
-              if (res1_uuid_ != bp.res1_uuid_) { return false; }
-              if (res2_uuid_ != bp.res2_uuid_) { return false; }
+              if (_uuid != bp._uuid) { return false; };
+              if (_res1_uuid != bp._res1_uuid) { return false; }
+              if (_res2_uuid != bp._res2_uuid) { return false; }
           }
 
-          if (!math::are_points_equal(center_, bp.center_)) { return false; }
-          if (!math::are_matrices_equal(ref_frame_, bp.ref_frame_)) { return false; }
-          if (!math::are_points_equal(c1_prime_coords_[0], bp.c1_prime_coords_[0])) { return false; }
-          if (!math::are_points_equal(c1_prime_coords_[1], bp.c1_prime_coords_[1])) { return false; }
+          if (!math::are_points_equal(_center, bp._center)) { return false; }
+          if (!math::are_matrices_equal(_ref_frame, bp._ref_frame)) { return false; }
+          if (!math::are_points_equal(_c1_prime_coords[0], bp._c1_prime_coords[0])) { return false; }
+          if (!math::are_points_equal(_c1_prime_coords[1], bp._c1_prime_coords[1])) { return false; }
           return true;
 
       }
@@ -81,9 +82,9 @@ namespace structure {
       void
       move(
               math::Point const &p) {
-          center_ = center_ + p;
-          c1_prime_coords_[0] = c1_prime_coords_[0] + p;
-          c1_prime_coords_[1] = c1_prime_coords_[1] + p;
+          _center = _center + p;
+          _c1_prime_coords[0] = _c1_prime_coords[0] + p;
+          _c1_prime_coords[1] = _c1_prime_coords[1] + p;
       }
 
       inline
@@ -92,17 +93,17 @@ namespace structure {
               math::Matrix const &r,
               math::Vector const &t,
               math::Point &dummy) {
-          math::dot_vector(r, center_, dummy);
-          center_ = dummy + t;
+          math::dot_vector(r, _center, dummy);
+          _center = dummy + t;
 
-          math::dot_vector(r, c1_prime_coords_[0], dummy);
-          c1_prime_coords_[0] = dummy + t;
+          math::dot_vector(r, _c1_prime_coords[0], dummy);
+          _c1_prime_coords[0] = dummy + t;
 
-          math::dot_vector(r, c1_prime_coords_[1], dummy);
-          c1_prime_coords_[1] = dummy + t;
+          math::dot_vector(r, _c1_prime_coords[1], dummy);
+          _c1_prime_coords[1] = dummy + t;
 
-          ref_frame_ = math::dot(ref_frame_, r);
-          ref_frame_.unitarize();
+          _ref_frame = math::dot(_ref_frame, r);
+          _ref_frame.unitarize();
       }
 
       inline
@@ -117,14 +118,14 @@ namespace structure {
       inline
       void
       swap_residue_positions() {
-          std::swap(res1_uuid_, res2_uuid_);
-          std::swap(c1_prime_coords_[0], c1_prime_coords_[1]);
+          std::swap(_res1_uuid, _res2_uuid);
+          std::swap(_c1_prime_coords[0], _c1_prime_coords[1]);
       }
 
       inline
       void
       invert_reference_frame() {
-          ref_frame_ = ref_frame_.get_flip_orientation();
+          _ref_frame = _ref_frame.get_flip_orientation();
       }
 
       inline
@@ -132,60 +133,60 @@ namespace structure {
       new_uuids(
               util::Uuid const &r1_uuid,
               util::Uuid const &r2_uuid) {
-          res1_uuid_ = r1_uuid;
-          res2_uuid_ = r2_uuid;
-          uuid_ = util::Uuid();
+          _res1_uuid = r1_uuid;
+          _res2_uuid = r2_uuid;
+          _uuid = util::Uuid();
       }
 
   public:
       json::JSON
       get_json() const {
           return json::Array(
-                  center_.get_json(), ref_frame_.get_json(), c1_prime_coords_[0].get_json(),
-                  c1_prime_coords_[1].get_json(), (int) bp_type_, (int) x3dna_type_, name_->get_str());
+                  _center.get_json(), _ref_frame.get_json(), _c1_prime_coords[0].get_json(),
+                  _c1_prime_coords[1].get_json(), (int) _bp_type, (int) _x3dna_type, _name->get_str());
       }
 
 
   public: // getters
       inline
       math::Matrix const &
-      get_ref_frame() const { return ref_frame_; }
+      get_ref_frame() const { return _ref_frame; }
 
       inline
       math::Point const &
-      get_center() const { return center_; }
+      get_center() const { return _center; }
 
       inline
       math::Points const &
-      get_c1_prime_coords() const { return c1_prime_coords_; }
+      get_c1_prime_coords() const { return _c1_prime_coords; }
 
       inline
       math::Point const &
-      get_res1_c1_prime_coord() const { return c1_prime_coords_[0]; }
+      get_res1_c1_prime_coord() const { return _c1_prime_coords[0]; }
 
       inline
       math::Point const &
-      get_res2_c1_prime_coord() const { return c1_prime_coords_[1]; }
+      get_res2_c1_prime_coord() const { return _c1_prime_coords[1]; }
 
   //TODO Remove setters
   public: //setters
       inline
       void
       set_ref_frame(math::Matrix r) {
-          ref_frame_ = r;
+          _ref_frame = r;
       }
 
       inline
       void
       set_uuid(util::Uuid const & id) {
-          uuid_ = id;
+          _uuid = id;
       }
 
   private:
-      math::Point center_;
-      math::Points c1_prime_coords_;
-      math::Matrix ref_frame_;
-      util::X3dnaBPType x3dna_type_;
+      math::Point _center;
+      math::Points _c1_prime_coords;
+      math::Matrix _ref_frame;
+      util::X3dnaBPType _x3dna_type;
 
   };
 

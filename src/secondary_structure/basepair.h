@@ -1,121 +1,94 @@
 //
-//  basepair.h
-//  RNAMake
-//
-//  Created by Joseph Yesselman on 8/2/15.
-//  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
+// Created by Joseph Yesselman on 10/26/17.
 //
 
-#ifndef __RNAMake__ss_basepair__
-#define __RNAMake__ss_basepair__
-#include <stdio.h>
-#include <sstream>
+#ifndef RNAMAKE_NEW_BASEPAIR_H
+#define RNAMAKE_NEW_BASEPAIR_H
 
-//RNAMake Headers
-#include "secondary_structure/residue.h"
+#include <base/assertions.h>
+#include <base/string.h>
+#include <primitives/basepair.h>
 
 namespace secondary_structure {
 
-class Basepair {
-public:
-    inline
-    Basepair(
-        ResidueOP const & res1,
-        ResidueOP const & res2,
-        util::Uuid const & uuid):
-    res1_(res1),
-    res2_(res2),
-    uuid_(uuid)
-    {}
+  class Basepair : public primitives::Basepair {
+  public:
+      inline
+      Basepair(
+              util::Uuid const & res1_uuid,
+              util::Uuid const & res2_uuid,
+              util::Uuid const & uuid,
+              primitives::BasepairType const & bp_type,
+              base::SimpleStringCOP const & name):
+              primitives::Basepair(res1_uuid, res2_uuid, uuid, bp_type, name) {}
 
-        ~Basepair() {}
-    
-public:
-    
-    inline
-    String
-    name() {
-        std::stringstream ss;
-        ss << res1_->chain_id() << res1_->num() << res1_->i_code();
-        String str1 = ss.str();
-        ss.str("");
-        ss << res2_->chain_id() << res2_->num() << res2_->i_code();
-        String str2 = ss.str();
-        if(str1 < str2) { return str1+"-"+str2; }
-        else            { return str2+"-"+str1; }
-        
-    }
-    
-    inline
-    ResidueOP
-    partner(
-        ResidueOP const & r) {
-        
-        if     (r == res1_) { return res2_; }
-        else if(r == res2_) { return res1_; }
-        else {
-            throw std::runtime_error("called partner with a resiude not in basepair in secondary_structure");
-        }
-        
-    }
-    
-public:
-    
-    inline
-    ResidueOP &
-    res1() { return res1_; }
-    
-    inline
-    ResidueOP &
-    res2() { return res2_; }
-    
-    inline
-    ResidueOP const &
-    res1() const { return res1_; }
-    
-    inline
-    ResidueOP const &
-    res2() const { return res2_; }
-    
-    inline
-    util::Uuid const &
-    uuid() { return uuid_; }
-    
-private:
-    ResidueOP res1_, res2_;
-    util::Uuid uuid_;
-    
-};
+      inline
+      Basepair(
+              Basepair const & bp): primitives::Basepair(bp) {}
 
-typedef std::shared_ptr<Basepair> BasepairOP;
-typedef std::vector<BasepairOP>   BasepairOPs;
+      inline
+      Basepair(
+              String const & s,
+              util::Uuid const & res1_uuid,
+              util::Uuid const & res2_uuid,
+              util::Uuid const & uuid):
+              primitives::Basepair(res1_uuid, res2_uuid, uuid) {
+          auto spl = base::split_str_by_delimiter(s, " ");
+          expects<BasepairException>(
+                  spl.size() == 2,
+                  "basepair string requires two elements");
+          _bp_type = static_cast<primitives::BasepairType>(std::stoi(spl[0]));
+          _name    = std::make_shared<base::SimpleString>(spl[1]);
+      }
 
-inline
-bool
-is_gc_pair(BasepairOP const & bp) {
-    if     (bp->res1()->res_type() == ResType::GUA && bp->res2()->res_type() == ResType::CYT) { return true; }
-    else if(bp->res2()->res_type() == ResType::CYT && bp->res1()->res_type() == ResType::GUA) { return true; }
-    else { return false; }
-}
-    
-    
-inline
-bool
-is_au_pair(BasepairOP const & bp) {
-    if     (bp->res1()->res_type() == ResType::ADE && bp->res2()->res_type() == ResType::URA) { return true; }
-    else if(bp->res2()->res_type() == ResType::URA && bp->res1()->res_type() == ResType::ADE) { return true; }
-    else { return false; }
-}
-    
-inline
-bool
-is_gu_pair(BasepairOP const & bp) {
-    if     (bp->res1()->res_type() == ResType::GUA && bp->res2()->res_type() == ResType::URA) { return true; }
-    else if(bp->res2()->res_type() == ResType::URA && bp->res1()->res_type() == ResType::GUA) { return true; }
-    else { return false; }
-}
-    
-    
+      virtual
+      ~Basepair() {}
+
+  public:
+      inline
+      bool
+      operator == (
+              Basepair const & bp) const {
+          if(_res1_uuid != bp._res1_uuid) { return false; }
+          if(_res2_uuid != bp._res2_uuid) { return false; }
+          if(_uuid != bp._uuid) { return false; }
+          if(*_name != *bp._name) { return false; }
+          if(_bp_type != bp._bp_type) { return false; }
+          return true;
+      }
+
+      inline
+      bool
+      operator != (
+              Basepair const & bp) const {
+          return !(*this == bp);
+      }
+
+  public:
+
+      inline
+      bool
+      is_equal(
+              Basepair const & bp,
+              bool check_uuid = true) const {
+          if(check_uuid && _res1_uuid != bp._res1_uuid) { return false; }
+          if(check_uuid && _res2_uuid != bp._res2_uuid) { return false; }
+          if(check_uuid && _uuid != bp._uuid) { return false; }
+          if(*_name != *bp._name) { return false; }
+          if(_bp_type != bp._bp_type) { return false; }
+          return true;
+      }
+
+  public:
+      String
+      get_str() const {
+          return std::to_string(_bp_type) + " " + _name->get_str();
+      }
+
+  };
+
+  typedef std::vector<Basepair> Basepairs;
+
 }
 
-#endif /* defined(__RNAMake__basepair__) */
+#endif //RNAMAKE_NEW_BASEPAIR_H

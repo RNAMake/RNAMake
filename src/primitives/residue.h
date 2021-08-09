@@ -39,11 +39,11 @@ namespace primitives {
                 char chain_id,
                 char i_code,
                 util::Uuid const & uuid):
-                name_(name),
-                num_(num),
-                chain_id_(chain_id),
-                i_code_(i_code),
-                uuid_(uuid) {}
+                _name(name),
+                _num(num),
+                _chain_id(chain_id),
+                _i_code(i_code),
+                _uuid(uuid) {}
 
         /**
           * copy construtor for residue class
@@ -52,11 +52,11 @@ namespace primitives {
         inline
         Residue(
                 Residue const & r):
-                name_(r.name_),
-                num_(r.num_),
-                chain_id_(r.chain_id_),
-                uuid_(r.uuid_),
-                i_code_(r.i_code_) {}
+                _name(r._name),
+                _num(r._num),
+                _chain_id(r._chain_id),
+                _uuid(r._uuid),
+                _i_code(r._i_code) {}
 
         virtual
         ~Residue() {}
@@ -74,13 +74,13 @@ namespace primitives {
         inline
         bool
         operator==(Residue const & other) const {
-            return uuid_ == other.uuid_;
+            return _uuid == other._uuid;
         }
 
         inline
         bool
         operator!=(Residue const & other) const {
-            return uuid_ != other.uuid_;
+            return _uuid != other._uuid;
         }
 
     public: //getters
@@ -90,35 +90,35 @@ namespace primitives {
          */
         inline
         char
-        get_chain_id() const { return chain_id_; }
+        get_chain_id() const { return _chain_id; }
 
         /**
          * getter for the name of the residue, i.e. "A", "G" etc
          */
         inline
         char
-        get_name() const { return name_; }
+        get_name() const { return _name; }
 
         /**
          * getter for the residue num
          */
         inline
         int
-        get_num() const { return num_; }
+        get_num() const { return _num; }
 
         /**
          * getter for the residue insertion code
          */
         inline
         char
-        get_i_code() const { return i_code_; }
+        get_i_code() const { return _i_code; }
 
         /**
         * getter for residue unique indentifier
         */
         inline
         util::Uuid const &
-        get_uuid() const { return uuid_; }
+        get_uuid() const { return _uuid; }
 
         virtual
         String
@@ -126,11 +126,11 @@ namespace primitives {
 
     protected:
 
-        char name_;
-        int num_;
-        char chain_id_;
-        char i_code_;
-        util::Uuid uuid_;
+        char _name;
+        int _num;
+        char _chain_id;
+        char _i_code;
+        util::Uuid _uuid;
 
     };
 

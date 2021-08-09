@@ -8,7 +8,6 @@
 #include "structure/is_equal.h"
 #include "structure/pdb_parser.h"
 #include "structure/residue_type_set.h"
-#include "util/Uuid.h"
 
 TEST_CASE ("Test structure") {
     auto rts = structure::ResidueTypeSet();
@@ -20,17 +19,16 @@ TEST_CASE ("Test structure") {
             CHECK(s->get_num_chains() == 1);
             CHECK(s->get_num_residues() == 157);
 
-            SUBCASE("test protein structure") {
-                auto path = base::unittest_resource_dir() + "/structure/2lxe.pdb";
-                auto s = structure::get_structure_from_pdb(path, rts, SetType::PROTEIN);
-                CHECK(s->get_num_chains() == 1);
-
-    }
-
-
 }
 
+
+
 // TODO old tests check if need to be converted
+
+//SUBCASE("test protein structure") {
+//auto path = base::unittest_resource_dir() + "/structure/2lxe.pdb";
+//auto s = structure::get_structure_from_pdb(path, rts, SetType::PROTEIN);
+//CHECK(s->get_num_chains() == 1);
 
 //TEST_CASE ("Test Structure") {
 //    auto path = base::unittest_resource_dir() + "/structure/test_str_to_structure.dat";

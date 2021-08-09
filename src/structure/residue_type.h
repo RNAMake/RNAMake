@@ -66,27 +66,27 @@ public: //getters
     inline
     String
     const &
-    get_name() const { return name_; }
+    get_name() const { return _name; }
 
     inline
     char
-    get_short_name() const { return name_[0]; }
+    get_short_name() const { return _name[0]; }
 
     inline
     SetType
-    get_set_type() const { return set_type_; }
+    get_set_type() const { return _set_type; }
 
     inline
     size_t
-    get_num_atoms() const { return atom_name_map_.size(); }
+    get_num_atoms() const { return _atom_name_map.size(); }
 private:
 
 
 private:
-    String name_;
-    StringIntMap atom_name_map_;
-    Strings alt_names_;
-    SetType set_type_;
+    String _name;
+    StringIntMap _atom_name_map;
+    Strings _alt_names;
+    SetType _set_type;
 
 };
 
@@ -95,8 +95,7 @@ typedef std::shared_ptr<ResidueType const> ResidueTypeCOP;
 typedef std::vector<ResidueTypeOP>         ResidueTypeOPs;
 
 ResidueTypeCOP
-get_new_residue_type(
-        String const & res_name,
+get_new_residue_type(String const & res_name,
         Strings const & atom_names);
 
 

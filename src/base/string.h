@@ -1,3 +1,4 @@
+
 //
 //  string.h
 //  RNAMake
@@ -10,55 +11,56 @@
 #define __RNAMake__string__
 
 #include <stdio.h>
-#include <cctype>
 
 //RNAMake Headers
 #include <base/types.h>
 
 namespace base {
 
-Strings
-split_str_by_delimiter(
-        String,
-        String);
+  Strings
+  split_str_by_delimiter(
+          String,
+          String);
 
-Strings
-tokenize_line(
-        String const &
-        );
+  String
+  join_by_delimiter(
+          Strings const &,
+          String const &);
 
-String
-join_by_delimiter(
-        Strings const &,
-        String const &);
+  String
+  filename(
+          String const &);
 
-String
-filename(
-        String const &);
+  String
+  base_dir(
+          String const &);
 
-String
-base_dir(
-        String const &);
+  bool
+  is_number(
+          String const &);
 
+  String & ltrim(
+          String & s);
 
-DataType
-determine_string_data_type(
-        String const &);
+  String & rtrim(
+          String & s);
 
-bool
-is_number(
-        String const &);
+  String & trim(
+          String & s);
 
-String & ltrim(
-        String & s);
+  bool
+  is_char_in_string(
+          char,
+          String const &);
 
-String & rtrim(
-        String & s);
+  String
+  quoted_string(
+          String const &);
 
-String & trim(
-        String & s);
+  String
+  string_map_to_string(
+          StringStringMap const &);
 
-String& replace_all(String& , String const& , String const& );
 }
 
 #endif /* defined(__RNAMake__string__) */

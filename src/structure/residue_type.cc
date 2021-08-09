@@ -15,22 +15,22 @@ ResidueType::ResidueType(
         StringIntMap const & atom_name_map,
         SetType set_type,
         Strings const & extra_alt_names):
-        name_(name),
-        atom_name_map_(atom_name_map),
-        alt_names_(extra_alt_names),
-        set_type_(set_type) {
+        _name(name),
+        _atom_name_map(atom_name_map),
+        _alt_names(extra_alt_names),
+        _set_type(set_type) {
 
-    if (set_type_ == SetType::RNA) {
-        alt_names_.push_back(name_.substr(0, 1));
-        alt_names_.push_back("r" + name_.substr(0, 1));
-        alt_names_.push_back("D" + name_.substr(0, 1));
+    if (_set_type == SetType::RNA) {
+        _alt_names.push_back(_name.substr(0, 1));
+        _alt_names.push_back("r" + _name.substr(0, 1));
+        _alt_names.push_back("D" + _name.substr(0, 1));
     }
 }
 
 bool
 ResidueType::is_valid_atom_name(
         String const & atom_name)  const {
-    if(atom_name_map_.find(atom_name) != atom_name_map_.end()) { return true; }
+    if(_atom_name_map.find(atom_name) != _atom_name_map.end()) { return true; }
     else                                                       { return false; }
 }
 
@@ -40,13 +40,13 @@ ResidueType::get_atom_index(
     expects<ResidueTypeException>(
             is_valid_atom_name(name),
             "must supply valid atom name for residue type");
-    return atom_name_map_.find(name)->second;
+    return _atom_name_map.find(name)->second;
 }
 
 String
 ResidueType::get_atom_name_at_pos(
         Index index) const {
-    for(auto const & kv : atom_name_map_) {
+    for(auto const & kv : _atom_name_map) {
         if(kv.second == index) { return kv.first; }
     }
     throw ResidueTypeException("residue type: " + get_name() +" does not have an index: " + std::to_string(index));
@@ -55,8 +55,8 @@ ResidueType::get_atom_name_at_pos(
 bool
 ResidueType::is_valid_residue_name(
         String const & res_name) const {
-    if(res_name == name_) { return true; }
-    for(auto const & alt_name : alt_names_) {
+    if(res_name == _name) { return true; }
+    for(auto const & alt_name : _alt_names) {
         if(res_name == alt_name) { return true; }
     }
     return false;

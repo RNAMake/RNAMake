@@ -41,8 +41,8 @@ namespace structure {
               // do not save hydrogen atoms
               if(atom_name[0] == 'H') { continue; }
 
-              if(atom_name_corrections_.find(atom_name) != atom_name_corrections_.end()) {
-                  atom_name = atom_name_corrections_.at(atom_name);
+              if(_atom_name_corrections.find(atom_name) != _atom_name_corrections.end()) {
+                  atom_name = _atom_name_corrections.at(atom_name);
               }
 
               res_name = line.substr(17, 4);
@@ -51,7 +51,7 @@ namespace structure {
               if(res_name == "HOH") { continue; }
 
               //do not save ions
-              if(ions_.find(res_name) != ions_.end()) { continue; }
+              if(_ions.find(res_name) != _ions.end()) { continue; }
 
               chain_id = line.substr(21, 1);
               i_code = line.substr(26, 1);
@@ -97,7 +97,7 @@ namespace structure {
       auto & res_atoms = atoms.begin()->second;
       auto spl = base::split_str_by_delimiter(key, "|");
       auto res_name = spl[0][0];
-      auto res_type = rts_.get_residue_type(spl[0]);
+      auto res_type = _rts.get_residue_type(spl[0]);
       auto res_num = std::stoi(spl[1]);
       auto chain_id = spl[2][0];
       auto i_code = spl[3][0];
@@ -169,7 +169,7 @@ namespace structure {
           std::vector<Atom const *> & atoms,
           ResidueTypeCOP res_type) const {
 
-      auto ref_res = ref_residues_.at(res_type->get_name());
+      auto ref_res = _ref_residues.at(res_type->get_name());
 
       // if these atoms do not exist cannot build res ref frame
       if(atoms[ res_type->get_atom_index("C1'")] == nullptr) { return false; }
@@ -263,9 +263,9 @@ namespace structure {
       _parse_atoms_from_pdb_file(pdb_file, atoms);
       for(auto const & kv : atoms) {
           auto spl = base::split_str_by_delimiter(kv.first, "|");
-          auto has_res_type = rts_.contains_residue_type(spl[0]);
+          auto has_res_type = _rts.contains_residue_type(spl[0]);
           if(has_res_type) {
-              auto res_type = rts_.get_residue_type(spl[0]);
+              auto res_type = _rts.get_residue_type(spl[0]);
               if     (res_type->get_set_type() == SetType::RNA) {
                   auto r = _setup_residue(kv.first, kv.second, res_type);
                   if(r == nullptr) { continue; }
