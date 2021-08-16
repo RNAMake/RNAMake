@@ -17,7 +17,7 @@ namespace resources {
   class SegmentSqliteLibrary;
 }
 
-namespace structure {
+    namespace structure {
 
   class Segment : public primitives::Segment<Basepair, Structure, Chain, Residue>  {
   public:
