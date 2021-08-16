@@ -27,10 +27,6 @@ namespace structure {
   center(
           Atoms const &);
 
-//  math::Point
-//  center(
-//          AtomOPs const &);
-
 
 /**
  * Store residue information from pdb file, stores all Atom objects that
@@ -271,7 +267,7 @@ namespace structure {
                   "bead type: " + std::to_string((int) bead_type) + " does not exist in this residue");
       }
 
-      // TODO Temporary get rid of these
+      // TODO Temporary get rid of these setters
 
       template<typename T>
       inline

@@ -7,6 +7,7 @@
 
 #include <structure/residue_type_set.h>
 #include <structure/segment_factory.h>
+#include <structure/segment.h>
 
 TEST_CASE( "Test all atom segment") {
 
@@ -25,13 +26,13 @@ TEST_CASE( "Test all atom segment") {
             seg->write_pdb("test." + std::to_string(i) + ".pdb");
         }
 
-        auto j = seg->get_json();
-        auto seg2 = structure::Segment(j, rts);
-        CHECK(seg2.is_equal(*seg, false));
-
-        auto p = math::Point(2, 2, 2);
-        seg2.move(p);
-        CHECK(!seg2.is_equal(*seg, false));
+//        auto j = seg->get_json();
+//        auto seg2 = structure::Segment(j, rts);
+//        CHECK(seg2.is_equal(*seg, false));
+//
+//        auto p = math::Point(2, 2, 2);
+//        seg2.move(p);
+//        CHECK(!seg2.is_equal(*seg, false));
     }
 
     SUBCASE("test generating segments from components") {

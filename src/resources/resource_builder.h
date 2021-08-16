@@ -41,12 +41,12 @@ public:
     void
     build_basic_libraries();
 
-private:
-    void
-    _insert_segment_to_motif_table(
-            structure::Segment const &,
-            int,
-            util::sqlite::Connection &);
+//private:
+//    void
+//    _insert_segment_to_motif_table(
+//            structure::Segment const &,
+//            int,
+//            util::sqlite::Connection &);
 
     util::sqlite::TableDetails
     _generate_motif_table_details() {

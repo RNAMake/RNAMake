@@ -63,14 +63,6 @@ namespace structure {
           _coords = math::Point(std::stof(spl[1]), std::stof(spl[2]), std::stof(spl[3]));
       }
 
-
-//        inline
-//        Atom(
-//                json::JSON & j) {
-//            name_ = std::make_shared<base::SimpleString const>(j[0].ToString());
-//            coords_ = math::Point(j[1]);
-//        }
-
       /**
        * Copy constructor
        * @param   a   atom object to from
@@ -112,9 +104,6 @@ namespace structure {
        */
       String
       get_str() const;
-
-      json::JSON
-      get_json() const;
 
       /**
        * Strigifies atom into PDB format
@@ -161,14 +150,14 @@ namespace structure {
       void
       set_coords(math::Point const &coords) { _coords = coords; }
 
-      //        inline
-      //        void
-      //        transform(
-      //                math::Matrix const & r,
-      //                math::Vector const & t) {
-      //            auto dummy = math::dot_vector(r, coords_);
-      //            coords_ = dummy + t;
-      //        }
+      inline
+      void
+      transform(
+              math::Matrix const & r,
+              math::Vector const & t) {
+          auto dummy = math::dot_vector(r, _coords);
+          _coords = dummy + t;
+      }
 
   public: //accessors
 
@@ -179,9 +168,6 @@ namespace structure {
       String
       get_name() const { return _name; }
 
-//         inline
-//         String
-//         get_str_name() const { return name_->get_str(); }
 
       /**
        * Accessor for coords_
@@ -216,6 +202,8 @@ namespace structure {
       math::Point _coords;
 
   };
+
+  //TODO Need to remove these pointers
 
 /**
  * Shared pointer typedef for Atom. Only use shared pointers!

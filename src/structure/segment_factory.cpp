@@ -6,6 +6,7 @@
 #include <base/log.h>
 #include "util/segment_type.h"
 #include "structure/segment_factory.h"
+#include <primitives/pose.h>
 
 namespace structure {
 
