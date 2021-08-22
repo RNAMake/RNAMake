@@ -11,7 +11,7 @@
 
 //RNAMake Headers
 #include <structure/residue_type_set.h>
-#include <base/paths.h>
+#include <base/settings.h>
 
 namespace structure {
 

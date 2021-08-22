@@ -6,7 +6,7 @@
 #include <iostream>
 #include "../common.hpp"
 
-#include <base/paths.h>
+#include <base/settings.h>
 #include <base/log.h>
 #include <resources/resource_manager.h>
 #include <resources/segment_sqlite_library.h>

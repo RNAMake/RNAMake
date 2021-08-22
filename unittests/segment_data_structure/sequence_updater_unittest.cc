@@ -10,7 +10,7 @@
 #include <iostream>
 #include "../common.hpp"
 
-#include <base/paths.h>
+#include <base/settings.h>
 #include <base/log.h>
 #include <resources/resource_manager.h>
 #include <segment_data_structure/sequence_updater.h>
