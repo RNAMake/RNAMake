@@ -2,7 +2,7 @@
 // Created by Joseph Yesselman on 12/20/17.
 //
 
-#include <base/paths.h>
+#include <base/settings.h>
 #include <base/log.h>
 #include "util/segment_type.h"
 #include "structure/segment_factory.h"

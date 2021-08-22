@@ -5,7 +5,7 @@
 #ifndef RNAMAKE_NEW_RESOURCE_BUILDER_H
 #define RNAMAKE_NEW_RESOURCE_BUILDER_H
 
-#include <base/paths.h>
+#include <base/settings.h>
 #include <util/sqlite/connection.h>
 #include <structure/segment_factory.h>
 

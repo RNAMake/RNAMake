@@ -78,6 +78,19 @@ namespace math {
         auto q = get_random_quaternion();
         return q.get_rotation_matrix();
     }
+      template<>
+      bool
+      roughly_equal<double>(double const& v1, double const& v2, double tolerance) {
+          //TODO maybe add nan checking??
+          return std::abs(v1-v2) < tolerance;
+      }
+
+      template<>
+      bool
+      roughly_equal<float>(float const& v1, float const& v2, double tolerance) {
+          return std::abs(v1-v2) < tolerance;
+      }
+
     template<>
     bool
     roughly_equal<Matrix>(Matrix const& m1, Matrix const& m2, double tolerance) {
@@ -101,7 +114,5 @@ namespace math {
                roughly_equal(v1.get_y(),v2.get_y(),tolerance) &&
                roughly_equal(v1.get_z(),v2.get_z(),tolerance);
     }
-
-
 
 }

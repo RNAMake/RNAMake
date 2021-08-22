@@ -100,7 +100,6 @@ ResourceBuilder::build_basic_libraries() {
 //        util::sqlite::Connection & conn) {
 //
 //    auto insert_str = String("");
-//    //TODO Need to change this to not use json
 //    auto j = seg.get_json();
 //    auto j_str = j.dump_minimized();
 //    compressed_str_ = base::gzip::compress(j_str.c_str(), j_str.size());

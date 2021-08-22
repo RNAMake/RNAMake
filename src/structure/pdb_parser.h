@@ -13,7 +13,7 @@
 #include <map>
 
 //RNAMake Headers
-#include <base/paths.h>
+#include <base/settings.h>
 #include <math/xyz_matrix.h>
 #include <structure/residue.h>
 #include <structure/residue_type_set.h>
