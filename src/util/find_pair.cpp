@@ -78,9 +78,9 @@ namespace util {
       }
       auto reg = std::regex(
               "#\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)\\s+\\-\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)");
-      auto r = math::Matrix(rs[0].x(), rs[0].y(), rs[0].z(),
-                            rs[1].x(), rs[1].y(), rs[1].z(),
-                            rs[2].x(), rs[2].y(), rs[2].z());
+      auto r = math::Matrix(rs[0].get_x(), rs[0].get_y(), rs[0].get_z(),
+                            rs[1].get_x(), rs[1].get_y(), rs[1].get_z(),
+                            rs[2].get_x(), rs[2].get_y(), rs[2].get_z());
       auto res1 = X3dna::X3Residue{bp_info->res1_num, bp_info->res1_chain_id, ' '};
       auto res2 = X3dna::X3Residue{bp_info->res2_num, bp_info->res2_chain_id, ' '};
 
