@@ -100,6 +100,8 @@ namespace structure {
               x3dna_(util::X3dna()),
               pdb_parser_(PDBParser(rts)) {
           // dont need to rebuild x3dna files for ref motifs
+          //TODO Remove the x3dna::set_envs
+          util::X3dna::set_envs();
           x3dna_.set_rebuild_files(false);
           ref_motif_  = _setup_ref_motif();
           base_helix_ = _setup_base_helix();

@@ -1,44 +1,143 @@
 //
-// Created by Joseph Yesselman on 1/5/18.
+//  motif_sqlite_library.h
+//  RNAMake
+//
+//  Created by Joseph Yesselman on 8/8/15.
+//  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#ifndef RNAMAKE_NEW_MOTIF_SQLITE_LIBRARY_H
-#define RNAMAKE_NEW_MOTIF_SQLITE_LIBRARY_H
+#ifndef __RNAMake__motif_sqlite_library__
+#define __RNAMake__motif_sqlite_library__
 
-#include <structure/segment.h>
-#include <resources/sqlite_library.h>
+#include <stdio.h>
+#include <iostream>
+#include <filesystem>
+
+#include "util/random_number_generator.h"
+#include "motif/motif.h"
+#include "resources/motif_sqlite_connection.h"
+#include "resources/sqlite_library.h"
+#include "base/settings.h"
 
 namespace resources {
 
-class SegmentSqliteLibrary : public SqliteLibrary {
-public:
-    SegmentSqliteLibrary(
-            String const & db_path,
-            String const & table_name,
-            structure::ResidueTypeSet const & rts):
-            SqliteLibrary(db_path, table_name),
-            rts_(rts),
-            retrieved_columns_(Strings{"id", "data"}),
-            segments_(std::map<int, structure::SegmentOP>()) {}
+  static String dummy_name = "", dummy_end_id = "", dummy_end_name = "", dummy_id = "";
 
-    ~SegmentSqliteLibrary() {}
+  class MotifSqliteLibrary : public SqliteLibrary {
+  public:
 
-public:
-    structure::SegmentOP
-    get_segment(
-            StringStringMap const &) const;
+      MotifSqliteLibrary(
+              String const & libname) {
 
-    bool
-    contains_segment(
-            StringStringMap const &) const;
+          libnames_ = get_libnames();
+          rng_ = util::RandomNumberGenerator();
+          auto path = _get_path(libname);
+          MotifSqliteConnection conn(path);
+          connection_ = conn;
+          max_size_ = connection_.count();
+          //max_size_ = 1; // Does this matter? CJ
+      }
+      // added by CJ for validation purposes
+      MotifSqliteLibrary(
+              int i, // something to change the overloading
+              std::filesystem::path const & path) {
 
-protected:
-    Strings retrieved_columns_;
-    structure::ResidueTypeSet const & rts_;
-    mutable std::map<int, structure::SegmentOP> segments_; // ack this seems bad
+          libnames_ = get_libnames();
+          rng_ = util::RandomNumberGenerator();
 
-};
+          MotifSqliteConnection conn(path);
+          connection_ = conn;
+          max_size_ = connection_.count();
+          //max_size_ = 1; // Does this matter? CJ
+      }
+      ~MotifSqliteLibrary() {}
+
+  public: //iterator stuff
+
+      class iterator {
+      public:
+          iterator(
+                  std::map<String, motif::MotifOP>::iterator const & i) :
+                  i_(i) {}
+
+          iterator operator++() {
+              i_++;
+              return *this;
+          }
+
+          motif::MotifOP const & operator*() { return i_->second; }
+
+          bool operator==(iterator const & rhs) const { return i_ == rhs.i_; }
+
+          bool operator!=(iterator const & rhs) const { return i_ != rhs.i_; }
+
+      private:
+          std::map<String, motif::MotifOP>::iterator i_;
+
+      };
+
+
+      iterator begin() { return iterator(data_.begin()); }
+
+      iterator end() { return iterator(data_.end()); }
+
+
+  public:
+
+      static
+      StringStringMap
+      get_libnames();
+
+      motif::MotifOP
+      get(
+              String const & name = dummy_name,
+              String const & end_id = dummy_end_id,
+              String const & end_name = dummy_name,
+              String const & id = dummy_id);
+
+      motif::MotifOPs
+      get_multi(
+              String const & name = dummy_name,
+              String const & end_id = dummy_end_id,
+              String const & end_name = dummy_name,
+              String const & id = dummy_id);
+
+      int
+      contains(
+              String const & name = dummy_name,
+              String const & end_id = dummy_end_id,
+              String const & end_name = dummy_name,
+              String const & id = dummy_id);
+
+      motif::MotifOP
+      get_random();
+
+      void
+      load_all(
+              int limit = 99999);
+
+
+  private:
+
+      static String
+      _generate_query(
+              String const &,
+              String const &,
+              String const &,
+              String const &);
+
+
+  private:
+
+      MotifSqliteConnection connection_;
+      std::map<String, motif::MotifOP> data_;
+      util::RandomNumberGenerator rng_;
+
+  };
+
+
+  typedef std::shared_ptr<MotifSqliteLibrary> MotifSqliteLibraryOP;
 
 }
 
-#endif //RNAMAKE_NEW_MOTIF_SQLITE_LIBRARY_H
+#endif /* defined(__RNAMake__motif_sqlite_library__) */

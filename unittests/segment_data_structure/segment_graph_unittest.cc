@@ -12,6 +12,8 @@
 #include <resources/segment_sqlite_library.h>
 #include <segment_data_structure/segment_graph.h>
 
+//TODO Why test Sqlite connections here?
+
 
 TEST_CASE( "Test Graph Data Structure ") {
 
