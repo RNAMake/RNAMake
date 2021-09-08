@@ -24,12 +24,12 @@
 
 
 #include <structure/residue_type_set_manager.h>
-#include <resources/motif_sqlite_library.h>
+//#include <resources/motif_sqlite_library.h>
 #include <resources/sqlite_library.h>
 #include <motif/motif_factory.h>
 #include <structure/basepair_state.h>
 #include <motif_data_structure/motif_tree.h>
-#include <resources/resource_manager.h>
+//#include <resources/resource_manager.h>
 
 // external
 #include <CLI/CLI.hpp>

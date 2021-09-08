@@ -7,7 +7,7 @@
 
 #include <data_structure/graph.h>
 #include <structure/aligner.h>
-#include <resources/resource_manager.h>
+//#include <resources/resource_manager.h>
 #include <secondary_structure/segment.h>
 #include <secondary_structure/aligner.h>
 
@@ -340,91 +340,91 @@ get_extra_connections(
 
 }
 
-template <typename SegmentType, typename AlignerType>
-SegmentGraphOP<SegmentType, AlignerType>
-convert_ideal_helices_to_basepair_steps(
-        SegmentGraph<SegmentType, AlignerType> const & g,
-        resources::ResourceManager const & rm) {
-    typedef data_structure::NodeIndexandEdge NodeIndexandEdge;
-    auto new_g = std::make_shared<SegmentGraph<SegmentType, AlignerType>>();
-    auto index_convert = std::map<Index, Index>();
-    auto args = StringStringMap{{"name", "HELIX.IDEAL"}};
-    auto aligner = AlignerType();
-    auto seen_connections = std::map<String, int>();
-    for(auto const & n : g) {
-        if(g.has_parent(n->index())) {
-            auto pi = g.get_parent_index(n->index());
-            auto pei = g.get_parent_end_index(n->index());
-
-            auto key1 = data_structure::Edge(n->index(), pi, 0, pei).to_str();
-            auto key2 = data_structure::Edge(pi, n->index(), pei, 0).to_str();
-
-            seen_connections[key1] = 1; seen_connections[key2] = 1;
-
-        }
-
-        // not a helix or not idealized
-        if(n->data().get_segment_type() != util::SegmentType::HELIX) {
-            __helpers::add_motif(n->index(), g, *new_g, index_convert);
-            continue;
-        }
-        else if(n->data().get_name_str().substr(0, 5) != "HELIX") {
-            __helpers::add_motif(n->index(), g, *new_g, index_convert);
-            continue;
-        }
-
-        // ideal helix to break up
-        auto num_res = n->data().get_num_residues();
-        auto num_bp_steps = num_res / 2;
-
-        auto start = rm.get_segment(args);
-        auto pos = -1;
-        auto org_pei = 1;
-
-        if(g.has_parent(n->index())) {
-            auto pi = g.get_parent_index(n->index());
-            auto pei = g.get_parent_end_index(n->index());
-            auto new_pi = index_convert[pi];
-            pos = new_g->add_segment(*start, new_pi, new_g->get_segment_end_name(new_pi, pei));
-
-        }
-        else { // no parent but make sure its starting from the correct orientation
-            aligner.align(n->data().get_end(0), *start);
-            pos = new_g->add_segment(*start);
-        }
-
-        for(int i = 0; i < num_bp_steps-2; i++) {
-            auto ideal_bp_step = rm.get_segment(args);
-            pos = new_g->add_segment(*ideal_bp_step, pos, start->get_end_name(1));
-        }
-
-        index_convert[n->index()] = pos;
-
-    }
-
-    for(auto const & n : g) {
-        auto & connections = g.get_motif_connections(n->index());
-        for(auto const & c : connections) {
-            if(c == nullptr) { continue; }
-            auto key = c->to_str();
-            if(seen_connections.find(key) != seen_connections.end()) { continue; }
-
-            auto new_ni = index_convert[c->node_i];
-            auto new_nj = index_convert[c->node_j];
-
-            if(c->node_i == 0) { new_ni = 0; }
-            if(c->node_j == 0) { new_nj = 0; }
-
-            new_g->add_connection(data_structure::NodeIndexandEdge{new_ni, c->edge_i},
-                                  data_structure::NodeIndexandEdge{new_nj, c->edge_j});
-
-            seen_connections[key] = 1;
-
-        }
-    }
-
-    return new_g;
-}
+//template <typename SegmentType, typename AlignerType>
+//SegmentGraphOP<SegmentType, AlignerType>
+//convert_ideal_helices_to_basepair_steps(
+//        SegmentGraph<SegmentType, AlignerType> const & g,
+//        resources::ResourceManager const & rm) {
+//    typedef data_structure::NodeIndexandEdge NodeIndexandEdge;
+//    auto new_g = std::make_shared<SegmentGraph<SegmentType, AlignerType>>();
+//    auto index_convert = std::map<Index, Index>();
+//    auto args = StringStringMap{{"name", "HELIX.IDEAL"}};
+//    auto aligner = AlignerType();
+//    auto seen_connections = std::map<String, int>();
+//    for(auto const & n : g) {
+//        if(g.has_parent(n->index())) {
+//            auto pi = g.get_parent_index(n->index());
+//            auto pei = g.get_parent_end_index(n->index());
+//
+//            auto key1 = data_structure::Edge(n->index(), pi, 0, pei).to_str();
+//            auto key2 = data_structure::Edge(pi, n->index(), pei, 0).to_str();
+//
+//            seen_connections[key1] = 1; seen_connections[key2] = 1;
+//
+//        }
+//
+//        // not a helix or not idealized
+//        if(n->data().get_segment_type() != util::SegmentType::HELIX) {
+//            __helpers::add_motif(n->index(), g, *new_g, index_convert);
+//            continue;
+//        }
+//        else if(n->data().get_name_str().substr(0, 5) != "HELIX") {
+//            __helpers::add_motif(n->index(), g, *new_g, index_convert);
+//            continue;
+//        }
+//
+//        // ideal helix to break up
+//        auto num_res = n->data().get_num_residues();
+//        auto num_bp_steps = num_res / 2;
+//
+//        auto start = rm.get_segment(args);
+//        auto pos = -1;
+//        auto org_pei = 1;
+//
+//        if(g.has_parent(n->index())) {
+//            auto pi = g.get_parent_index(n->index());
+//            auto pei = g.get_parent_end_index(n->index());
+//            auto new_pi = index_convert[pi];
+//            pos = new_g->add_segment(*start, new_pi, new_g->get_segment_end_name(new_pi, pei));
+//
+//        }
+//        else { // no parent but make sure its starting from the correct orientation
+//            aligner.align(n->data().get_end(0), *start);
+//            pos = new_g->add_segment(*start);
+//        }
+//
+//        for(int i = 0; i < num_bp_steps-2; i++) {
+//            auto ideal_bp_step = rm.get_segment(args);
+//            pos = new_g->add_segment(*ideal_bp_step, pos, start->get_end_name(1));
+//        }
+//
+//        index_convert[n->index()] = pos;
+//
+//    }
+//
+//    for(auto const & n : g) {
+//        auto & connections = g.get_motif_connections(n->index());
+//        for(auto const & c : connections) {
+//            if(c == nullptr) { continue; }
+//            auto key = c->to_str();
+//            if(seen_connections.find(key) != seen_connections.end()) { continue; }
+//
+//            auto new_ni = index_convert[c->node_i];
+//            auto new_nj = index_convert[c->node_j];
+//
+//            if(c->node_i == 0) { new_ni = 0; }
+//            if(c->node_j == 0) { new_nj = 0; }
+//
+//            new_g->add_connection(data_structure::NodeIndexandEdge{new_ni, c->edge_i},
+//                                  data_structure::NodeIndexandEdge{new_nj, c->edge_j});
+//
+//            seen_connections[key] = 1;
+//
+//        }
+//    }
+//
+//    return new_g;
+//}
 
 template <typename SegmentType, typename AlignerType>
 secondary_structure::SegmentGraphOP
@@ -476,13 +476,13 @@ get_secondary_structure_graph(
 
 namespace structure {
 
-inline
-SegmentGraphOP
-convert_ideal_helices_to_basepair_steps(
-        SegmentGraph const & sg,
-        resources::ResourceManager const & rm) {
-    return segment_data_structure::convert_ideal_helices_to_basepair_steps<Segment, Aligner>(sg, rm);
-}
+//inline
+//SegmentGraphOP
+//convert_ideal_helices_to_basepair_steps(
+//        SegmentGraph const & sg,
+//        resources::ResourceManager const & rm) {
+//    return segment_data_structure::convert_ideal_helices_to_basepair_steps<Segment, Aligner>(sg, rm);
+//}
 
 inline
 secondary_structure::SegmentGraphOP

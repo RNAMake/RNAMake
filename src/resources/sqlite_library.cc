@@ -1,75 +1,88 @@
 //
-// Created by Joseph Yesselman on 1/3/18.
+//  sqlite_library.cc
+//  RNAMake
+//
+//  Created by Joseph Yesselman on 8/8/15.
+//  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include <resources/sqlite_library.h>
+#include <stdexcept>
+#include <sqlite3.h>
+//RNAMake Headers
+#include "base/settings.h"
+#include "resources/sqlite_library.h"
 
 namespace resources {
 
-SqliteLibrary::SqliteLibrary(
-        String const & db_path,
-        String const & table_name):
-        db_(util::sqlite::Database(db_path)),
-        conn_(util::sqlite::Connection(db_)),
-        table_details_(util::sqlite::TableDetails(table_name)) {
+String
+SqliteLibrary::_get_path(
+        String const & libname) {
 
-    if(conn_.is_database_created()) {
-        std::remove(db_path.c_str());
+    name_ = libname;
+    if (libnames_.find(libname) == libnames_.end()) {
+        auto options = String("");
+        for (auto const & kv : libnames_) {
+            options += kv.first + " ";
+        }
+
         throw SqliteLibraryException(
-                "SqliteLibrary expects an already built sqlite3 data with a given table, was given db_path: " +
-                db_path + " which does not exist!");
+                "cannot find library type in sqlite_library: " + libname +
+                " valid options are: " + options);
     }
+    return base::resources_path() + libnames_[libname];
 
-    table_details_ = *(conn_.get_table_details(table_name));
-}
-
-
-size_t
-SqliteLibrary::get_num_of_rows() {
-    query_string_ = "SELECT COUNT(*) FROM " + table_details_.name();
-    auto row = conn_.get_first_row(query_string_);
-    int count = row->at(0);
-    return (size_t)count;
 }
 
 void
-SqliteLibrary::_generate_query(
-        Strings const & retrieved_columns,
-        StringStringMap const & restraint_col_and_vals) const {
+build_sqlite_library(String const& path, std::vector<Strings>const & data, Strings const& keys, String const& primary_key) {
 
-    query_string_ = "SELECT ";
-    int i = 0;
-    for(auto const & col_name : retrieved_columns) {
-        i++;
-        if(! _is_valid_key(col_name) ) {
-            throw SqliteLibraryException(
-                    "attempting to use colunn key: " + col_name + " does not exist in sqlite library");
-        }
-        query_string_ += col_name + " ";
-        if(i != retrieved_columns.size()) { query_string_ += ","; }
+    if(data.empty()) {
+        LOGE<<"Error: no data provided. file write to "<<path<<" aborted";
+        return;
     }
-    query_string_ += " FROM " + table_details_.name() + " WHERE ";
-    i = 0;
-    for(auto const & kv : restraint_col_and_vals) {
-        i++;
-        if(! _is_valid_key(kv.first) ) {
-            throw SqliteLibraryException(
-                    "attempting to use colunn key: " + kv.first + " does not exist in sqlite library");
+
+    if(data[0].size() != keys.size()) {
+        throw SqliteLibraryException("length of each row must be the same length as keys");
+    }
+
+    if(!base::file_exists(path)) {
+        auto outfile = std::ofstream(path);
+        outfile<<'\0';
+        outfile.close();
+
+    }
+    try {
+
+        auto db = sqlite::database(path);
+        db<<"drop table if exists data_table;";
+        db<<("create table if not exists data_table("+base::join_by_delimiter(keys," text,")+" primary key (" + primary_key +"));");
+
+        auto ii(0);
+        for(auto&& entry : data)  {
+
+            auto line = base::join_by_delimiter(entry,"\',\'");
+            line.pop_back();
+            line.pop_back();
+
+            db<<("insert into data_table values(\'"+line+");");
         }
-        query_string_ += kv.first + "='" + kv.second + "' ";
-        if(i != restraint_col_and_vals.size()) {
-            query_string_ += "AND ";
-        }
+
+    } catch (std::runtime_error const& error ) {
+        LOGE<<"Error: "<<error.what();
     }
 }
 
-bool
-SqliteLibrary::_is_valid_key(
-        String const & key) const {
-    for(auto const & col : table_details_) {
-        if(col.name == key) { return true; }
-    }
-    return false;
+    void
+sqlite3_escape(String & unescaped_string ) {
+    unescaped_string = base::replace_all(unescaped_string, "\'", "\'\'");
 }
+
+void
+sqlite3_escape(Strings & unescaped_strings) {
+    for(auto& u_string : unescaped_strings) {
+        sqlite3_escape(u_string);
+    }
+}
+
 
 }

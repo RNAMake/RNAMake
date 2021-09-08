@@ -13,7 +13,7 @@
 
 #include "util/random_number_generator.h"
 #include "motif/motif_state.h"
-#include "resources/motif_sqlite_connection.h"
+#include "resources/segment_sqlite_connection.h"
 #include "resources/motif_sqlite_library.h"
 
 namespace resources {

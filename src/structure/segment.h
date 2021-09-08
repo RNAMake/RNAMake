@@ -45,8 +45,7 @@ namespace resources {
               small_molecules_(small_molecules),
               dot_bracket_(dot_bracket) {}
 
-      Segment(
-              Segment const & seg):
+      Segment(Segment const & seg):
               BaseClass(seg.structure_, seg.basepairs_, seg.end_indexes_, seg.end_ids_, seg.name_,
                         seg.segment_type_, seg.aligned_end_index_, seg.uuid_),
               proteins_(seg.proteins_),
@@ -267,11 +266,20 @@ namespace resources {
               int &,
               char &);
 
-//      json::JSON
-//      get_json() const {
-//          auto j_bps = json::Array();
-//          auto j_end_indexes = json::Array();
-//          auto j_end_ids = json::Array();
+      auto
+      get_str() const {
+          structure::Basepairs bps;
+          for(auto const & bp : basepairs_) {
+              auto bp_res = get_bp_res(bp);
+
+          }
+      }
+
+//      String
+//      get_str() const {
+//          auto bps = "";
+//          auto end_indexes = "";
+//          auto end_ids = "";
 //
 //          for(auto const & bp : basepairs_) {
 //              auto bp_res = get_bp_res(bp);
