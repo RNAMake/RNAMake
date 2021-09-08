@@ -16,7 +16,6 @@ namespace primitives {
       typedef Pose<BPtype, Structuretype, Chaintype, Restype> BaseClass;
       typedef std::vector<Restype>                 Residues;
       typedef base::VectorContainerOP<Restype>     ResiduesOP;
-      //typedef std::vector<BPtype>                  Basepairs;
       typedef base::VectorContainerOP<BPtype>      BasepairsOP;
 
 
@@ -35,9 +34,12 @@ namespace primitives {
               segment_type_(segment_type),
               aligned_end_index_(aligned_end_index) {}
 
-  protected:
+  // TODO Change back to private
+  public:
       // let dervived classes fill in members
       Segment(): BaseClass() {}
+
+      typedef std::vector<BPtype> Basepairs;
   public:
       inline
       Index

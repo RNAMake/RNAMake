@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#ifndef __RNAMake__motif_sqlite3_connection__
-#define __RNAMake__motif_sqlite3_connection__
+#ifndef __RNAMake__segment_sqlite3_connection__
+#define __RNAMake__segment_sqlite3_connection__
 
 #include <stdio.h>
 #include <iostream>
@@ -19,8 +19,8 @@
 
 namespace resources {
 
-struct MotifSqliteData {
-    MotifSqliteData() :
+struct SegmentSqliteData {
+    SegmentSqliteData() :
             data(""), name(""), end_name(""), end_id(""),
             id("0") {}
 
@@ -28,22 +28,22 @@ struct MotifSqliteData {
 
 };
 
-typedef std::shared_ptr<MotifSqliteData> MotifSqliteDataOP;
+typedef std::shared_ptr<SegmentSqliteData> SegmentSqliteDataOP;
 
-class MotifSqliteConnection : public util::Sqlite3Connection {
+class SegmentSqliteConnection : public util::Sqlite3Connection {
 public:
-    MotifSqliteConnection() {}
+    SegmentSqliteConnection() {}
 
-    MotifSqliteConnection(
+    SegmentSqliteConnection(
             String const & path):
             util::Sqlite3Connection(path),
-            data_(std::make_shared<MotifSqliteData>()) {}
+            data_(std::make_shared<SegmentSqliteData>()) {}
 public:
 
-    MotifSqliteDataOP const &
+    SegmentSqliteDataOP const &
     next();
 
-    MotifSqliteDataOP const &
+    SegmentSqliteDataOP const &
     contains();
 
     inline
@@ -55,9 +55,9 @@ public:
     }
 
 private:
-    MotifSqliteDataOP data_;
+    SegmentSqliteDataOP data_;
 };
 
 }
 
-#endif /* defined(__RNAMake__motif_sqlite3_connection__) */
+#endif /* defined(__RNAMake__segment_sqlite3_connection__) */

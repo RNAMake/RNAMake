@@ -79,6 +79,32 @@ public:
     }
 
 public:
+
+//    String
+//    get_json() const {
+//        auto j_bps = json::Array();
+//        auto j_end_indexes = json::Array();
+//        auto j_end_ids = json::Array();
+//
+//        for(auto const & bp : basepairs_) {
+//            auto bp_res = get_bp_res(bp);
+//            j_bps.append(json::Array(bp.get_json(), bp_res->at(0).get_num(), bp_res->at(0).get_chain_id(),
+//                                     bp_res->at(0).get_i_code(), bp_res->at(1).get_num(),
+//                                     bp_res->at(1).get_chain_id(), bp_res->at(1).get_i_code()));
+//        }
+//
+//        for(auto const & end_id : end_ids_) { j_end_ids.append(end_id->get_str()); }
+//        for(auto const & ei : end_indexes_) { j_end_indexes.append(ei); }
+//
+//        return json::JSON{
+//                "structure", structure_.get_json(),
+//                "basepairs", j_bps,
+//                "end_indexes", j_end_indexes,
+//                "end_ids", j_end_ids,
+//                "name", name_->get_str(),
+//                "proteins", proteins_.get_json(),
+//                "small_molecules", small_molecules_.get_json(),
+//                "dot_bracket", dot_bracket_->get_str() };
 public: // non const methods
     void
     move(

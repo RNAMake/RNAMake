@@ -1,121 +1,152 @@
+////
+////  resource_manager.h
+////  RNAMake
+////
+////  Created by Joseph Yesselman on 8/8/15.
+////  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
+////
 //
-// Created by Joseph Yesselman on 1/14/18.
+//#ifndef __RNAMake__resource_manager__
+//#define __RNAMake__resource_manager__
 //
-
-#ifndef RNAMAKE_NEW_RESOURCE_MANAGER_H
-#define RNAMAKE_NEW_RESOURCE_MANAGER_H
-
-#include <dirent.h>
-
-#include <structure/segment_factory.h>
-#include <resources/segment_sqlite_library.h>
-
-namespace resources {
-
-class ResourceManagerException : public std::runtime_error {
-public:
-    /**
-     * Standard constructor for ResourceManagerException
-     * @param   message   Error message for ResourceManager
-     */
-    ResourceManagerException(String const & message) :
-            std::runtime_error(message) {}
-};
-
-class ResourceManager {
-public:
-    ResourceManager():
-            rts_(structure::ResidueTypeSet()),
-            seg_f_(structure::SegmentFactory(rts_)) {
-        auto path = base::resources_path() + "/motif_libraries/";
-
-        DIR *pDIR = opendir(path.c_str());
-        struct dirent *entry;
-        while ((entry = readdir(pDIR)) != NULL) {
-            auto fname = String(entry->d_name);
-            if(fname[0] == '.') { continue; } // remove . and ..
-            auto seg_lib = std::make_shared<SegmentSqliteLibrary>(path+fname, "data_table", rts_);
-            sqlite_libraries_.push_back(seg_lib);
-        }
-
-        closedir(pDIR);
-        delete entry;
-
-    }
-
-    ~ResourceManager() {}
-
-public:
-    // only want one resource manager active at a time
-    ResourceManager(const ResourceManager&) = delete;
-    ResourceManager & operator = (const ResourceManager & ) { return *this; }
-
-public:    // load new segments from pdbs and components
-    inline
-    structure::SegmentOP
-    segment_from_pdb(
-            String const & pdb_path,
-            util::SegmentType segment_type = util::SegmentType::SEGMENT,
-            bool rebuild_x3dna_files = true) const {
-        return seg_f_.segment_from_pdb(pdb_path, segment_type, rebuild_x3dna_files);
-    }
-
-    inline
-    structure::SegmentOPs
-    all_segments_from_pdb(
-            String const & pdb_path,
-            util::SegmentType segment_type = util::SegmentType::SEGMENT,
-            bool rebuild_x3dna_files = true) const {
-        return seg_f_.all_segments_from_pdb(pdb_path, segment_type, rebuild_x3dna_files);
-    }
-
-    inline
-    structure::SegmentOP
-    segment_from_components(
-            String const & name,
-            structure::Structure const & rna_struc,
-            structure::Basepairs const & basepairs,
-            structure::Structure const & proteins,
-            structure::Structure const & small_molecules,
-            util::SegmentType segment_type = util::SegmentType::SEGMENT) const {
-        return seg_f_.segment_from_components(name, rna_struc, basepairs, proteins, small_molecules, segment_type);
-    }
-
-public: // get segments
-
-    inline
-    structure::SegmentOP
-    get_segment(
-            StringStringMap const & args) const {
-        for(auto & seg_lib : sqlite_libraries_) {
-            if(seg_lib->contains_segment(args)) { return seg_lib->get_segment(args); }
-        }
-
-        throw ResourceManagerException("cannot find segment: " + base::string_map_to_string(args));
-    }
-
-    inline
-    bool
-    contains_segment(
-            StringStringMap const & args) const {
-        for (auto & seg_lib : sqlite_libraries_) {
-            if(seg_lib->contains_segment(args)) { return true; }
-        }
-        return false;
-    }
-
-
-public:
-    structure::ResidueTypeSet const &
-    get_residue_type_set() { return rts_; }
-
-private:
-    structure::ResidueTypeSet rts_;
-    structure::SegmentFactory seg_f_;
-    std::vector<std::shared_ptr<SegmentSqliteLibrary>> sqlite_libraries_;
-};
-
-}
-
-
-#endif //RNAMAKE_NEW_RESOURCE_MANAGER_H
+//#include <stdio.h>
+//
+////RNAMake Headers
+//#include "base/types.h"
+////#include "motif/motif_factory.h"
+////#include "motif/motif_state.h"
+//#include "motif/motif_ensemble.h"
+//#include "resources/segment_sqlite_library.h"
+////#include "resources/motif_state_sqlite_library.h"
+////#include "resources/motif_state_ensemble_sqlite_library.h"
+////#include "resources/added_motif_library.h"
+//
+//namespace resources {
+//
+//class ResourceManagerException : public std::runtime_error {
+//public:
+//    ResourceManagerException(
+//            String const & message) :
+//            std::runtime_error(message) {}
+//};
+//
+//
+//class Manager { //RM for ResourceManager
+//protected:
+//
+//    Manager();
+//
+//    Manager(Manager const &); //Prevent construction
+//    void operator=(Manager const &);
+//
+//private:
+//
+//    ~Manager() {}
+//
+//public:
+//
+//    static Manager & instance() {
+//        static Manager instance;
+//        return instance;
+//    }
+//
+//public: // getting functions
+//    motif::MotifOP
+//    bp_step(
+//            String const &);
+//
+//    motif::MotifStateOP
+//    bp_step_state(
+//            String const &);
+//
+//    motif::MotifOP
+//    motif(
+//            String const & name = dummy_name,
+//            String const & end_id = dummy_end_id,
+//            String const & end_name = dummy_name);
+//
+//    motif::MotifStateOP
+//    motif_state(
+//            String const & name = dummy_name,
+//            String const & end_id = dummy_end_id,
+//            String const & end_name = dummy_name);
+//
+//    motif::MotifStateEnsembleOP
+//    motif_state_ensemble(
+//            String const & name = dummy_name);
+//
+//public: // adding functions
+//
+//    structure::RNAStructureOP
+//    get_structure(
+//            String const & path,
+//            String name = "",
+//            int force_num_chains = -1);
+//
+//    void
+//    add_motif(
+//            String const & path,
+//            String name = "",
+//            util::MotifType mtype = util::MotifType::UNKNOWN);
+//
+//    void
+//    add_motif(
+//            motif::MotifOP const & m,
+//            String name = "");
+//
+//    void
+//    register_motif(
+//            motif::MotifOP const &);
+//
+//    void
+//    register_extra_motif_ensembles(
+//            String const &);
+//
+//    int
+//    has_supplied_motif_ensemble(
+//            String const &,
+//            String const &);
+//
+//    motif::MotifEnsembleOP const &
+//    get_supplied_motif_ensemble(
+//            String const &,
+//            String const &);
+//
+//    String
+//    get_helix_name(
+//            String const &);
+//
+//public: // new functions that I would like in new code
+//
+//    motif::MotifOP
+//    get_motif_from_state(
+//            motif::MotifStateOP ms) {
+//        auto m = motif(ms->name(), "", ms->end_names()[0]);
+//        align_motif(ms->end_states()[0], m->ends()[0], m);
+//        return m;
+//    }
+//
+//
+//private:
+//    std::map<String, motif::MotifEnsembleOP> extra_me_;
+//    structure::SegmentFac mf_;
+//    AddedMotifLibrary added_motifs_;
+//
+//
+//};
+//
+//inline
+//motif::MotifOP
+//get_motif_from_resource_manager(
+//        String const & name = dummy_name,
+//        String const & end_id = dummy_end_id,
+//        String const & end_name = dummy_name) {
+//
+//    return Manager::instance().motif(name, end_id, end_name);
+//
+//}
+//
+//}
+//
+//
+//#endif /* defined(__RNAMake__resource_manager__) */

@@ -15,7 +15,6 @@
 #include "structure/residue_type_set.h"
 
 
-//TODO Remove X3DNA
 namespace structure {
 
   class SegmentFactoryException : public std::runtime_error {

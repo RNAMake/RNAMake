@@ -1,19 +1,21 @@
 //
-//  motif_sqlite_library.cc
+//  segment_sqlite_library.cc
 //  RNAMake
 //
 //  Created by Joseph Yesselman on 8/8/15.
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include "resources/motif_sqlite_library.h"
+#include "resources/segment_sqlite_library.h"
 #include "structure/residue_type_set_manager.h"
 
 namespace resources {
 
   StringStringMap
-  MotifSqliteLibrary::get_libnames() {
+  SegmentSqliteLibrary::get_libnames() {
       StringStringMap libnames;
+
+      //TODO change libs
 
       libnames["ideal_helices"] = "/motif_libraries_new/ideal_helices.db";
       libnames["ideal_helices_reversed"] = "/motif_libraries_new/ideal_helices_reversed.db";
@@ -32,8 +34,9 @@ namespace resources {
       return libnames;
   }
 
-  motif::MotifOP
-  MotifSqliteLibrary::get(
+
+  Segment::SegmentOP
+  SegmentSqliteLibrary::get(
           String const & name,
           String const & end_id,
           String const & end_name,
@@ -50,24 +53,24 @@ namespace resources {
       connection_.clear();
 
       if (data_.find(row->id) == data_.end()) {
-          data_[row->id] = std::make_shared<motif::Motif>(row->data,
+          data_[row->id] = std::make_shared<structure::Segment>(row->data,
                                                           structure::ResidueTypeSetManager::getInstance().residue_type_set());
       }
 
-      auto m = std::make_shared<motif::Motif>(*data_[row->id]);
+      auto m = std::make_shared<structure::Segment>(*data_[row->id]);
       m->new_res_uuids();
       return m;
 
   }
 
-  motif::MotifOPs
-  MotifSqliteLibrary::get_multi(
+  structure::SegmentOPs
+  SegmentSqliteLibrary::get_multi(
           String const & name,
           String const & end_id,
           String const & end_name,
           String const & id) {
 
-      auto motifs = motif::MotifOPs();
+      auto segments = structure::SegmentOPs();
       auto query = _generate_query(name, end_id, end_name, id);
       connection_.query(query);
       auto row = connection_.next();
@@ -79,26 +82,26 @@ namespace resources {
 
       while (row->data.length() != 0) {
           if (data_.find(row->id) == data_.end()) {
-              data_[row->id] = std::make_shared<motif::Motif>(row->data,
+              data_[row->id] = std::make_shared<structure::Segment>(row->data,
                                                               structure::ResidueTypeSetManager::getInstance().residue_type_set());
           }
 
-          motifs.push_back(std::make_shared<motif::Motif>(*data_[row->id]));
+          segments.push_back(std::make_shared<structure::Segment>(*data_[row->id]));
           row = connection_.next();
       }
 
       connection_.clear();
 
-      for (auto const & m : motifs) {
+      for (auto const & m : segments) {
           m->new_res_uuids();
       }
 
-      return motifs;
+      return segments;
 
   }
 
   int
-  MotifSqliteLibrary::contains(
+  SegmentSqliteLibrary::contains(
           String const & name,
           String const & end_id,
           String const & end_name,
@@ -116,15 +119,15 @@ namespace resources {
   }
 
 
-  motif::MotifOP
-  MotifSqliteLibrary::get_random() {
+  structure::SegmentOP
+  SegmentSqliteLibrary::get_random() {
       int pos = 1 + rng_.randrange(max_size_ - 1);
       return get("", "", "", std::to_string(pos));
 
   }
 
   void
-  MotifSqliteLibrary::load_all(
+  SegmentSqliteLibrary::load_all(
           int limit) {
 
       int count = 0;
@@ -137,7 +140,7 @@ namespace resources {
 
 
   String
-  MotifSqliteLibrary::_generate_query(
+  SegmentSqliteLibrary::_generate_query(
           String const & name,
           String const & end_id,
           String const & end_name,

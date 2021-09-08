@@ -1,59 +1,70 @@
 //
-// Created by Joseph Yesselman on 1/3/18.
+//  sqlite_library.h
+//  RNAMake
+//
+//  Created by Joseph Yesselman on 8/8/15.
+//  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#ifndef RNAMAKE_NEW_SQLITE_LIBRARY_H
-#define RNAMAKE_NEW_SQLITE_LIBRARY_H
+#ifndef __RNAMake__sqlite_library__
+#define __RNAMake__sqlite_library__
 
-#include <base/assertions.h>
-#include <util/sqlite/connection.h>
+#include <stdio.h>
+
+#include "base/types.h"
+#include <base/file_io.h>
+#include <base/string.h>
+#include <base/log.h>
+
+#include <sqlite3.h>
+#include <sqlite_modern/sqlite_modern_cpp.h>
 
 namespace resources {
+
+/*
+ * Exception for sqlite library
+ */
 
 
 class SqliteLibraryException : public std::runtime_error {
 public:
     /**
      * Standard constructor for SqliteLibraryException
-     * @param   message   Error message for SqliteLibrary
+     * @param   message   Error message for sqlite libraries
      */
     SqliteLibraryException(String const & message) :
             std::runtime_error(message) {}
 };
 
-
 class SqliteLibrary {
 public:
-    SqliteLibrary(
-            String const &,
-            String const &);
-
-    virtual
-    ~SqliteLibrary() {}
-
-public:
-    size_t
-    get_num_of_rows();
-
+    SqliteLibrary() {}
 
 protected:
     void
-    _generate_query(
-            Strings const &,
-            StringStringMap const &) const;
+    _setup(
+            String const &);
 
-    bool
-    _is_valid_key(
-            String const &) const;
+    String
+    _get_path(
+            String const &);
 
 protected:
-    util::sqlite::Database db_;
-    util::sqlite::TableDetails table_details_;
-    mutable util::sqlite::Connection conn_; // sqlite3 api commands cannot be const
-    mutable String query_string_;
+    StringStringMap libnames_;
+    String name_;
+    int max_size_;
+
 };
+
+void
+build_sqlite_library(String const& , std::vector<Strings>const & , Strings const& , String const& );
+
+void
+sqlite3_escape(String &);
+
+void
+sqlite3_escape(Strings &);
 
 }
 
-
-#endif //RNAMAKE_NEW_SQLITE_LIBRARY_H
+#endif /* defined(__RNAMake__sqlite_library__) */

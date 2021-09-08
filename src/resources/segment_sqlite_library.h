@@ -1,21 +1,19 @@
 //
-//  motif_sqlite_library.h
+//  segment_sqlite_library.h
 //  RNAMake
 //
-//  Created by Joseph Yesselman on 8/8/15.
-//  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
+//  Created by Hassan Abdelsamad on 8/26/21.
 //
 
-#ifndef __RNAMake__motif_sqlite_library__
-#define __RNAMake__motif_sqlite_library__
+#ifndef __RNAMake__segment_sqlite_library__
+#define __RNAMake__segment_sqlite_library__
 
 #include <stdio.h>
 #include <iostream>
-#include <filesystem>
 
 #include "util/random_number_generator.h"
-#include "motif/motif.h"
-#include "resources/motif_sqlite_connection.h"
+#include "structure/segment.h"
+#include "resources/segment_sqlite_connection.h"
 #include "resources/sqlite_library.h"
 #include "base/settings.h"
 
@@ -23,41 +21,29 @@ namespace resources {
 
   static String dummy_name = "", dummy_end_id = "", dummy_end_name = "", dummy_id = "";
 
-  class MotifSqliteLibrary : public SqliteLibrary {
+  class SegmentSqliteLibrary : public SqliteLibrary {
   public:
 
-      MotifSqliteLibrary(
+      SegmentSqliteLibrary(
               String const & libname) {
 
           libnames_ = get_libnames();
           rng_ = util::RandomNumberGenerator();
           auto path = _get_path(libname);
-          MotifSqliteConnection conn(path);
+          SegmentSqliteConnection conn(path);
           connection_ = conn;
           max_size_ = connection_.count();
           //max_size_ = 1; // Does this matter? CJ
       }
-      // added by CJ for validation purposes
-      MotifSqliteLibrary(
-              int i, // something to change the overloading
-              std::filesystem::path const & path) {
 
-          libnames_ = get_libnames();
-          rng_ = util::RandomNumberGenerator();
-
-          MotifSqliteConnection conn(path);
-          connection_ = conn;
-          max_size_ = connection_.count();
-          //max_size_ = 1; // Does this matter? CJ
-      }
-      ~MotifSqliteLibrary() {}
+      ~SegmentSqliteLibrary() {}
 
   public: //iterator stuff
 
       class iterator {
       public:
           iterator(
-                  std::map<String, motif::MotifOP>::iterator const & i) :
+                  std::map<String, structure::SegmentOP>::iterator const & i) :
                   i_(i) {}
 
           iterator operator++() {
@@ -65,14 +51,14 @@ namespace resources {
               return *this;
           }
 
-          motif::MotifOP const & operator*() { return i_->second; }
+          structure::SegmentOP const & operator*() { return i_->second; }
 
           bool operator==(iterator const & rhs) const { return i_ == rhs.i_; }
 
           bool operator!=(iterator const & rhs) const { return i_ != rhs.i_; }
 
       private:
-          std::map<String, motif::MotifOP>::iterator i_;
+          std::map<String, structure::SegmentOP>::iterator i_;
 
       };
 
@@ -88,14 +74,14 @@ namespace resources {
       StringStringMap
       get_libnames();
 
-      motif::MotifOP
+      structure::SegmentOP
       get(
               String const & name = dummy_name,
               String const & end_id = dummy_end_id,
               String const & end_name = dummy_name,
               String const & id = dummy_id);
 
-      motif::MotifOPs
+      structure::SegmentOPs
       get_multi(
               String const & name = dummy_name,
               String const & end_id = dummy_end_id,
@@ -109,7 +95,7 @@ namespace resources {
               String const & end_name = dummy_name,
               String const & id = dummy_id);
 
-      motif::MotifOP
+      structure::SegmentOP
       get_random();
 
       void
@@ -119,7 +105,7 @@ namespace resources {
 
   private:
 
-      static String
+      String
       _generate_query(
               String const &,
               String const &,
@@ -129,15 +115,15 @@ namespace resources {
 
   private:
 
-      MotifSqliteConnection connection_;
-      std::map<String, motif::MotifOP> data_;
+      SegmentSqliteConnection connection_;
+      std::map<String, structure::SegmentOP> data_;
       util::RandomNumberGenerator rng_;
 
   };
 
 
-  typedef std::shared_ptr<MotifSqliteLibrary> MotifSqliteLibraryOP;
+  typedef std::shared_ptr<SegmentSqliteLibrary> SegmentSqliteLibraryOP;
 
 }
 
-#endif /* defined(__RNAMake__motif_sqlite_library__) */
+#endif /* defined(__RNAMake__segment_sqlite_library__) */

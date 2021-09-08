@@ -8,12 +8,12 @@
 
 
 #include "base/settings.h"
-#include "resources/motif_sqlite_connection.h"
+#include "resources/segment_sqlite_connection.h"
 
 namespace resources {
 
-MotifSqliteDataOP const &
-MotifSqliteConnection::next() {
+SegmentSqliteDataOP const &
+SegmentSqliteConnection::next() {
     if (rc_ != SQLITE_ROW) {
         sqlite3_finalize(stmt_);
         data_->data = "";
@@ -28,8 +28,8 @@ MotifSqliteConnection::next() {
     return data_;
 }
 
-MotifSqliteDataOP const &
-MotifSqliteConnection::contains() {
+SegmentSqliteDataOP const &
+SegmentSqliteConnection::contains() {
     if (rc_ != SQLITE_ROW) {
         sqlite3_finalize(stmt_);
         data_->data = "";
