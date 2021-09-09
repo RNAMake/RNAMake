@@ -10,13 +10,12 @@
 //#define __RNAMake__sqlite_library__
 
 #include <stdio.h>
+#include <filesystem>
 
 #include "base/types.h"
 #include <base/file_io.h>
 #include <base/string.h>
 #include <base/log.h>
-
-//#include <sqlite3.h>
 #include <sqlite_modern/sqlite_modern_cpp.h>
 
 namespace resources {

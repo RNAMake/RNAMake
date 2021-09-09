@@ -17,7 +17,7 @@
 #include "structure/residue_type_set.h"
 #include "motif/motif.h"
 #include "motif/motif_type.h"
-#include "resources/segment_sqlite_connection.h"
+#include "resources/motif_sqlite_connection.h"
 
 typedef std::map<String, MotifOP> StringMotifMap;
 

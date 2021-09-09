@@ -21,6 +21,7 @@
 //#include "resources/motif_state_ensemble_sqlite_library.h"
 //#include "resources/added_motif_library.h"
 
+
 namespace resources {
 
 class ResourceManagerException : public std::runtime_error {
@@ -128,8 +129,12 @@ public: // new functions that I would like in new code
 
 
 private:
-    std::map<String, motif::MotifEnsembleOP> extra_me_;
-//    structure::SegmentFac mf_;
+
+//    std::map<String, MotifSqliteLibraryOP> mlibs_;
+//    std::map<String, MotifStateSqliteLibraryOP> ms_libs_;
+//    std::map<String, MotifStateEnsembleSqliteLibraryOP> mse_libs_;
+//    std::map<String, motif::MotifEnsembleOP> extra_me_;
+//    motif::MotifFactory mf_;
 //    AddedMotifLibrary added_motifs_;
 
 
