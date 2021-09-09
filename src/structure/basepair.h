@@ -146,6 +146,15 @@ namespace structure {
                   _c1_prime_coords[1].get_json(), (int) _bp_type, (int) _x3dna_type, _name->get_str());
       }
 
+      String
+      get_js_str() const {
+          String str = "";
+          str += _center.get_str() + " " + _ref_frame.get_str() + " " + _c1_prime_coords[0].get_str() + " " +
+                  _c1_prime_coords[1].get_str() + " " + std::to_string(_bp_type) + " " +
+                  std::to_string((int) _x3dna_type) + " " + _name->get_str();
+          return str;
+      }
+
 
   public: // getters
       inline
