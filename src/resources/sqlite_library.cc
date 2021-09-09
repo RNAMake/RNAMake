@@ -45,28 +45,41 @@ build_sqlite_library(String const& path, std::vector<Strings>const & data, Strin
         throw SqliteLibraryException("length of each row must be the same length as keys");
     }
 
-    if(!base::file_exists(path)) {
-        auto outfile = std::ofstream(path);
-        outfile<<'\0';
-        outfile.close();
-
+    if(std::filesystem::exists(path)) {
+        std::filesystem::remove(path);
     }
+
     try {
-
-        auto db = sqlite::database(path);
-        db<<"drop table if exists data_table;";
-        db<<("create table if not exists data_table("+base::join_by_delimiter(keys," text,")+" primary key (" + primary_key +"));");
-
-        auto ii(0);
-        for(auto&& entry : data)  {
-
+        auto insert_str = String{"INSERT INTO data_table("};
+        auto table_str = String{"CREATE TABLE data_table("};
+        //db<<("drop table if exists data_table;\n");
+        for(auto ii = 0; ii < keys.size(); ++ii ) {
+           table_str += keys[ii] + " TEXT,";
+           insert_str += keys[ii] + ",";
+        }
+        insert_str.pop_back();
+        table_str += "PRIMARY KEY (" + primary_key + "));";
+        insert_str += ") VALUES ";
+        for(int ii = 0; ii< data.size(); ++ii)  {
+            const auto& entry = data[ii];
             auto line = base::join_by_delimiter(entry,"\',\'");
             line.pop_back();
             line.pop_back();
 
-            db<<("insert into data_table values(\'"+line+");");
+            insert_str += "(\'"+line+")";
+
+            if(ii < data.size() - 1) {
+                insert_str += ",";
+            } else {
+                insert_str += ";";
+            }
+            insert_str += "\n";
+
         }
 
+        auto db = sqlite::database(path);
+        db<<table_str;
+        db<<insert_str;
     } catch (std::runtime_error const& error ) {
         LOGE<<"Error: "<<error.what();
     }

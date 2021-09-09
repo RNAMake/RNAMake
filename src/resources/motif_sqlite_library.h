@@ -1,47 +1,63 @@
 //
-//  motif_state_sqlite_library.h
+//  motif_sqlite_library.h
 //  RNAMake
 //
-//  Created by Joseph Yesselman on 9/2/15.
+//  Created by Joseph Yesselman on 8/8/15.
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#ifndef __RNAMake__motif_state_sqlite_library__
-#define __RNAMake__motif_state_sqlite_library__
+#ifndef __RNAMake__motif_sqlite_library__
+#define __RNAMake__motif_sqlite_library__
 
 #include <stdio.h>
+#include <iostream>
+#include <filesystem>
 
 #include "util/random_number_generator.h"
-#include "motif/motif_state.h"
+#include "motif/motif.h"
 #include "resources/motif_sqlite_connection.h"
-#include "resources/motif_sqlite_library.h"
+#include "resources/sqlite_library.h"
+#include "base/settings.h"
 
 namespace resources {
 
-class MotifStateSqliteLibrary : public SqliteLibrary {
+static String dummy_name = "", dummy_end_id = "", dummy_end_name = "", dummy_id = "";
+
+class MotifSqliteLibrary : public SqliteLibrary {
 public:
 
-    MotifStateSqliteLibrary(
+    MotifSqliteLibrary(
             String const & libname) {
 
         libnames_ = get_libnames();
         rng_ = util::RandomNumberGenerator();
-        name_ = libname;
         auto path = _get_path(libname);
         MotifSqliteConnection conn(path);
         connection_ = conn;
         max_size_ = connection_.count();
-
+        //max_size_ = 1; // Does this matter? CJ
     }
+    // added by CJ for validation purposes
+    MotifSqliteLibrary(
+            int i, // something to change the overloading
+            std::filesystem::path const & path) {
 
-    ~MotifStateSqliteLibrary() {}
+        libnames_ = get_libnames();
+        rng_ = util::RandomNumberGenerator();
+
+        MotifSqliteConnection conn(path);
+        connection_ = conn;
+        max_size_ = connection_.count();
+        //max_size_ = 1; // Does this matter? CJ
+    }
+    ~MotifSqliteLibrary() {}
 
 public: //iterator stuff
 
     class iterator {
     public:
         iterator(
-                std::map<String, motif::MotifStateOP>::iterator const & i) :
+                std::map<String, motif::MotifOP>::iterator const & i) :
                 i_(i) {}
 
         iterator operator++() {
@@ -49,14 +65,14 @@ public: //iterator stuff
             return *this;
         }
 
-        motif::MotifStateOP const & operator*() { return i_->second; }
+        motif::MotifOP const & operator*() { return i_->second; }
 
         bool operator==(iterator const & rhs) const { return i_ == rhs.i_; }
 
         bool operator!=(iterator const & rhs) const { return i_ != rhs.i_; }
 
     private:
-        std::map<String, motif::MotifStateOP>::iterator i_;
+        std::map<String, motif::MotifOP>::iterator i_;
 
     };
 
@@ -72,14 +88,14 @@ public:
     StringStringMap
     get_libnames();
 
-    motif::MotifStateOP
+    motif::MotifOP
     get(
             String const & name = dummy_name,
             String const & end_id = dummy_end_id,
             String const & end_name = dummy_name,
             String const & id = dummy_id);
 
-    motif::MotifStateOPs
+    motif::MotifOPs
     get_multi(
             String const & name = dummy_name,
             String const & end_id = dummy_end_id,
@@ -93,38 +109,35 @@ public:
             String const & end_name = dummy_name,
             String const & id = dummy_id);
 
-    motif::MotifStateOP
+    motif::MotifOP
     get_random();
 
     void
     load_all(
             int limit = 99999);
 
-    String const &
-    get_name() { return name_; }
-
 
 private:
 
-    String
+    static String
     _generate_query(
             String const &,
             String const &,
             String const &,
             String const &);
 
+
 private:
 
     MotifSqliteConnection connection_;
-    std::map<String, motif::MotifStateOP> data_;
+    std::map<String, motif::MotifOP> data_;
     util::RandomNumberGenerator rng_;
-    String name_;
 
 };
 
 
-typedef std::shared_ptr<MotifStateSqliteLibrary> MotifStateSqliteLibraryOP;
+typedef std::shared_ptr<MotifSqliteLibrary> MotifSqliteLibraryOP;
 
 }
 
-#endif /* defined(__RNAMake__motif_state_sqlite_library__) */
+#endif /* defined(__RNAMake__motif_sqlite_library__) */
