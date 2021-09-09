@@ -61,6 +61,10 @@ namespace base {
   string_map_to_string(
           StringStringMap const &);
 
+  String & replace_all(
+          String& , String const& , String const&);
+
+
 }
 
 #endif /* defined(__RNAMake__string__) */
