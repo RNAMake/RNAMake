@@ -96,6 +96,4 @@ sqlite3_escape(Strings & unescaped_strings) {
         sqlite3_escape(u_string);
     }
 }
-
-
 }

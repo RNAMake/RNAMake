@@ -157,5 +157,16 @@ namespace base {
       return s;
   }
 
+  String& replace_all(String& context, String const& from, String const& to)
+  {
+      std::size_t lookHere = 0;
+      std::size_t foundHere;
+      while((foundHere = context.find(from, lookHere)) != String::npos)
+      {
+          context.replace(foundHere, from.size(), to);
+          lookHere = foundHere + to.size();
+      }
+      return context;
+  }
 
 }
