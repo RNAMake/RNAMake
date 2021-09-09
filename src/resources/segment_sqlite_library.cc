@@ -35,7 +35,7 @@ namespace resources {
   }
 
 
-  Segment::SegmentOP
+  structure::SegmentOP
   SegmentSqliteLibrary::get(
           String const & name,
           String const & end_id,

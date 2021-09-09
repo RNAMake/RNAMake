@@ -52,6 +52,46 @@ namespace resources {
               small_molecules_(seg.small_molecules_),
               dot_bracket_(seg.dot_bracket_) {}
 
+//      Segment(String const & str, ResidueTypeSet const & rts):
+//              BaseClass(),
+//              proteins_(Structure()),
+//              small_molecules_(Structure()) {
+//
+//          uuid_ = util::Uuid();
+//          std::istringstream iss(str);
+//
+//          for (std::string line; std::getline(iss, line); )
+//          {
+//              std::cout << "Line: " << line << "\n";
+//          }
+//          structure_ = Structure(j["structure"], rts);
+//          name_ = std::make_shared<base::SimpleString const>(j["name"].ToString());
+//          dot_bracket_ = std::make_shared<base::SimpleString const>(j["dot_bracket"].ToString());
+//          segment_type_ = static_cast<util::SegmentType>(j["segment_type"].ToInt());
+//          aligned_end_index_ = j["aligned_end_index"].ToInt();
+//          basepairs_ = Basepairs();
+//          end_indexes_ = Indexes();
+//          end_ids_ = base::SimpleStringCOPs();
+//
+//          auto & j_bps = j["basepairs"];
+//          auto & j_end_indexes = j["end_indexes"];
+//          auto & j_end_ids = j["end_ids"];
+//
+//          for(int i = 0; i < j_bps.size(); i++) {
+//              auto & r1 = get_residue(j_bps[i][1].ToInt(), (char)j_bps[i][2].ToInt(), (char)j_bps[i][3].ToInt());
+//              auto & r2 = get_residue(j_bps[i][4].ToInt(), (char)j_bps[i][5].ToInt(), (char)j_bps[i][6].ToInt());
+//              basepairs_.push_back(Basepair(j_bps[i][0], r1.get_uuid(), r2.get_uuid(), util::Uuid()));
+//          }
+//
+//          for(int i = 0; i < j_end_indexes.size(); i++) {
+//              end_indexes_.push_back(j_end_indexes[i].ToInt());
+//          }
+//
+//          for(int i = 0; i < j_end_ids.size(); i++) {
+//              end_ids_.push_back(std::make_shared<base::SimpleString const>(j_end_ids[i].ToString()));
+//          }
+//      }
+
 
   public:
 
@@ -267,12 +307,35 @@ namespace resources {
               char &);
 
       auto
-      get_str() const {
+      get_js_str() const {
           structure::Basepairs bps;
+          String str = "";
+          String bps_str = "";
+          String end_indexes = "";
+          String end_ids = "";
           for(auto const & bp : basepairs_) {
               auto bp_res = get_bp_res(bp);
-
+              bps_str += bp.get_js_str() + " " + std::to_string(bp_res->at(0).get_num()) + " " +
+                      bp_res->at(0).get_chain_id() + " " + bp_res->at(0).get_i_code() + " " +
+                      std::to_string(bp_res->at(1).get_num()) + " " + bp_res->at(1).get_chain_id() + " " +
+                      bp_res->at(1).get_i_code();
           }
+          for(auto const & end_id : end_ids_) { end_indexes.append(end_id->get_str()); }
+          for(auto const & ei : end_indexes_) { end_ids.append(std::to_string(ei)); }
+
+
+          str = "structure " + structure_.get_str() + "\n" +
+                  "basepairs " + bps_str + "\n" +
+                  "end_indexes " + end_indexes + "\n" +
+                  "end_ids " + end_ids + "\n" +
+                  "name " + name_->get_str() + "\n" +
+                  "proteins " + proteins_.get_str() + "\n" +
+                  "small_molecules " + small_molecules_.get_str() + "\n" +
+                  "dot_bracket " + dot_bracket_->get_str() + "\n" +
+                  "segment_type " + std::to_string((int)segment_type_) + "\n" +
+                  "aligned_end_index " + std::to_string(aligned_end_index_) + "\n";
+
+          return str;
       }
 
 //      String

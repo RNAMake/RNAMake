@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#ifndef __RNAMake__sqlite_library__
-#define __RNAMake__sqlite_library__
+//#ifndef __RNAMake__sqlite_library__
+//#define __RNAMake__sqlite_library__
 
 #include <stdio.h>
 
@@ -16,7 +16,7 @@
 #include <base/string.h>
 #include <base/log.h>
 
-#include <sqlite3.h>
+//#include <sqlite3.h>
 #include <sqlite_modern/sqlite_modern_cpp.h>
 
 namespace resources {
@@ -67,4 +67,4 @@ sqlite3_escape(Strings &);
 
 }
 
-#endif /* defined(__RNAMake__sqlite_library__) */
+//#endif /* defined(__RNAMake__sqlite_library__) */

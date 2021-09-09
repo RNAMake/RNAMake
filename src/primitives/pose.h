@@ -40,7 +40,7 @@ namespace primitives {
 
       typedef std::vector<Restype>                 Residues;
       typedef base::VectorContainerOP<Restype>     ResiduesOP;
-      //typedef std::vector<BPtype>                  Basepairs;
+      typedef std::vector<BPtype>                  Basepairs;
       typedef base::VectorContainerOP<BPtype>      BasepairsOP;
 
 

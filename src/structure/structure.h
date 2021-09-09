@@ -123,7 +123,7 @@ namespace structure {
   public: //getters
 
       String
-      get_str() {
+      get_str() const{
           auto s = String();
           for(auto const & r : _residues) {
               s += r.get_str() + ";";

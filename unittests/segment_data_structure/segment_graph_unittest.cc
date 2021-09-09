@@ -16,12 +16,12 @@
 
 TEST_CASE("Test Graph Data Structure") {
 
-//    SUBCASE("test ability to load all motifs from libaries") {
-//        for(auto const & kv : resources::SegmentSqliteLibrary::get_libnames()) {
-//            auto mlib = resources::SegmentSqliteLibrary(kv.first);
-//                    REQUIRE_NOTHROW(mlib.load_all(10));
-//        }
-//    }
+    SUBCASE("test ability to load all motifs from libaries") {
+        for(auto const & kv : resources::SegmentSqliteLibrary::get_libnames()) {
+            auto mlib = resources::SegmentSqliteLibrary(kv.first);
+                    REQUIRE_NOTHROW(mlib.load_all(10));
+        }
+    }
 
     SUBCASE("basic tests") {
         auto rts = structure::ResidueTypeSet();

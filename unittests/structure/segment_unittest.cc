@@ -30,11 +30,11 @@ TEST_CASE( "Test all atom segment") {
 
 
 
-        //TODO change the get_json to to a string function
-//        auto j = seg->get_json();
-//        auto seg2 = structure::Segment(j, rts);
+        auto j = seg->get_js_str();
+        std::cout << j;
+        auto seg2 = structure::Segment(j, rts);
 //        CHECK(seg2.is_equal(*seg, false));
-
+//
 //        auto p = math::Point(2, 2, 2);
 //        seg2.move(p);
 //        CHECK(!seg2.is_equal(*seg, false));
