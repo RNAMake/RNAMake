@@ -7,7 +7,7 @@
 //
 
 #include <stdexcept>
-#include <sqlite3.h>
+//#include <sqlite3.h>
 //RNAMake Headers
 #include "base/settings.h"
 #include "resources/sqlite_library.h"
