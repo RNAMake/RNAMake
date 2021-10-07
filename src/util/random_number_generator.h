@@ -40,15 +40,15 @@ namespace util {
 
   };
 
-  math::Point
-  get_random_point(
-          RandomNumberGenerator & rng,
-          int bound) {
-      auto x = bound - rng.rand()*2*bound;
-      auto y = bound - rng.rand()*2*bound;
-      auto z = bound - rng.rand()*2*bound;
-      return math::Point(x, y, z);
-  }
+//  math::Point
+//  get_random_point(
+//          RandomNumberGenerator & rng,
+//          int bound) {
+//      auto x = bound - rng.rand()*2*bound;
+//      auto y = bound - rng.rand()*2*bound;
+//      auto z = bound - rng.rand()*2*bound;
+//      return math::Point(x, y, z);
+//  }
 
 
 }
