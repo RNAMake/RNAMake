@@ -15,8 +15,6 @@ namespace resources {
   SegmentSqliteLibrary::get_libnames() {
       StringStringMap libnames;
 
-      //TODO change libs
-
       libnames["ideal_helices"] = "/motif_libraries_new/ideal_helices.db";
       libnames["ideal_helices_reversed"] = "/motif_libraries_new/ideal_helices_reversed.db";
       libnames["twoway"] = "/motif_libraries_new/twoway.db";
@@ -58,7 +56,7 @@ namespace resources {
       }
 
       auto m = std::make_shared<structure::Segment>(*data_[row->id]);
-      m->new_res_uuids();
+      m->new_uuids();
       return m;
 
   }
@@ -93,7 +91,7 @@ namespace resources {
       connection_.clear();
 
       for (auto const & m : segments) {
-          m->new_res_uuids();
+          m->new_uuids();
       }
 
       return segments;

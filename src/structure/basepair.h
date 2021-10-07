@@ -55,6 +55,29 @@ namespace structure {
           _name = std::make_shared<base::SimpleString>(j[6].ToString());
       }
 
+      inline
+      Basepair(
+              Residue const & res1,
+              Residue const & res2,
+              String const & basepair_state,
+              String const & bptype) :
+              primitives::Basepair() {
+
+          _res1_uuid = res1.get_uuid();
+          _res2_uuid = res2.get_uuid();
+
+          Strings strs = base::split_str_by_delimiter(basepair_state, ";");
+          if (strs.size() < 3) {
+              throw "cannot load BasepairState from String, not the right number of elements\n";
+          }
+
+          _center = math::vector_from_str(strs[0]);
+          //TODO Add the matrix from string function.
+//          math::Matrix r = math::matrix_from_str(strs[1]);
+//          math::Vectors sug = math::vectors_from_str(strs[2]);
+
+      }
+
 
   public:
       bool

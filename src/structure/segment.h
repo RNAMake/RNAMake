@@ -52,6 +52,39 @@ namespace resources {
               small_molecules_(seg.small_molecules_),
               dot_bracket_(seg.dot_bracket_) {}
 
+      Segment(String const & s, ResidueTypeSet const & rts):
+                BaseClass(),
+                proteins_(Structure()),
+                small_molecules_(Structure()) {
+
+          auto spl = base::split_str_by_delimiter(s, "&");
+
+            //TODO Need to change implement a fucntion to for creating structures from strings
+          auto structure = std::make_shared<structure::Structure>(spl[5], rts);
+          auto basepair_str = base::split_str_by_delimiter(spl[6], "@");
+          for (auto const & bp_str : basepair_str) {
+              auto bp_spl = base::split_str_by_delimiter(bp_str, ",");
+              auto res_spl = base::split_str_by_delimiter(bp_spl[0], "-");
+              auto res1_id = res_spl[0].substr(0, 1);
+              auto res2_id = res_spl[1].substr(0, 1);
+              auto res1_num = std::stoi(res_spl[0].substr(1));
+              auto res2_num = std::stoi(res_spl[1].substr(1));
+              // TODO Make sure to have the get_residue working for the string
+              auto res1 = structure->get_residue(res1_num, res1_id, "");
+              auto res2 = structure->get_residue(res2_num, res2_id, "");
+//              auto bpstate = structure::str_to_basepairstate(bp_spl[1]);
+              //Hack to stop memory out of bounds
+              //TODO look into why this is happening!
+              if (bp_spl.size() == 2) { bp_spl.push_back("c..."); }
+
+              //TODO Uncomment these when fixing above issues
+              auto bp = structure::Basepair(res1, res2, bp_spl[1], bp_spl[2]);
+              basepairs_.push_back(bp);
+          }
+      }
+
+
+//      //TODO Ask about the structure in
 //      Segment(String const & str, ResidueTypeSet const & rts):
 //              BaseClass(),
 //              proteins_(Structure()),

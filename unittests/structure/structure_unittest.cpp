@@ -21,6 +21,8 @@ TEST_CASE ("Test structure") {
 
 }
 
+// TODO need to test converting strings into structure
+
 
 
 // TODO old tests check if need to be converted

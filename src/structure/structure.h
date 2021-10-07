@@ -19,6 +19,10 @@ namespace structure {
       typedef primitives::Structure<Chain, Residue> ParentClass;
 
   public:
+
+      inline
+      Structure() : ParentClass() {}
+
       inline
       Structure(
               Residues const & residues,

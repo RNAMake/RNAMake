@@ -33,19 +33,25 @@ namespace primitives {
 
 
   public:
+
+      // TODO ask joe aboutt empty consturctors for the structure
+      // Make it take empty residues and Cutpoints
+
+      inline
+      Structure() = default;
+
       inline
       Structure(
               Residues const & res,
               Cutpoints const cut_points):
               _residues(std::move(res)),
-              _cut_points(cut_points) {}
+              _cut_points(std::move(cut_points)) {}
 
       inline
       Structure(
               Structure const & s):
               _residues(s._residues),
               _cut_points(s._cut_points) {}
-
 
       inline
       Structure(
@@ -64,11 +70,11 @@ namespace primitives {
       virtual
       ~Structure() {}
 
-  protected:
-      inline
-      Structure():
-              _residues(Residues()),
-              _cut_points(Cutpoints()) {}
+//  private:
+//      inline
+//      Structure():
+//              _residues(Residues()),
+//              _cut_points(Cutpoints()) {}
 
   public: //res iterator
       typedef typename Residues::const_iterator const_iterator;
@@ -85,6 +91,24 @@ namespace primitives {
 
           for (auto const & r : _residues) {
               if (num == r.get_num() && chain_id == r.get_chain_id() && i_code == r.get_i_code()) {
+                  return r;
+              }
+          }
+
+          auto ss = std::stringstream();
+          ss << "cannot find residue with num: " << num << " chain id: " << chain_id << " and i_code";
+          throw StructureException(ss.str());
+      }
+
+      //TODO Need to remove this function and only use char
+      Restype const &
+      get_residue(
+              int num,
+              String chain_id,
+              String i_code) const{
+
+          for (auto const & r : _residues) {
+              if (num == r.get_num() && chain_id[0] == r.get_chain_id() && i_code[0] == r.get_i_code()) {
                   return r;
               }
           }
