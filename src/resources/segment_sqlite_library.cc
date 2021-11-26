@@ -40,6 +40,7 @@ namespace resources {
           String const & end_name,
           String const & id) {
 
+        std::cout << "Test new Doctest \n";
       auto query = _generate_query(name, end_id, end_name, id);
       connection_.query(query);
       auto row = connection_.next();
@@ -56,7 +57,10 @@ namespace resources {
       }
 
       auto m = std::make_shared<structure::Segment>(*data_[row->id]);
-      m->new_uuids();
+
+      //TODO Uncomment this
+//      m->new_uuids();
+
       return m;
 
   }

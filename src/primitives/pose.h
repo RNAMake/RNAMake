@@ -16,6 +16,7 @@
 #include <util/uuid.h>
 #include <primitives/structure.h>
 #include <primitives/basepair.h>
+#include "doctest.h"
 
 /*
  * Exception for RNA Structure
@@ -351,6 +352,10 @@ namespace primitives {
                   index < end_indexes_.size(),
                   "trying to get end: " + std::to_string(index) + " there are only " +
                   std::to_string(end_indexes_.size()));
+
+          std::cout << index << " " << basepairs_.size() << " " << end_indexes_.size() << std::endl;
+          std::cout << end_indexes_[index] << std::endl;
+          std::cout << basepairs_[end_indexes_[index]].get_name_str() << std::endl;
 
           return basepairs_[end_indexes_[index]];
       }

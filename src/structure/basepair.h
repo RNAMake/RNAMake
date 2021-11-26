@@ -202,6 +202,19 @@ namespace structure {
 
   //TODO Remove setters
   public: //setters
+
+      inline
+      void
+      set_name(std::string const & s) {
+          _name = std::make_shared<base::SimpleString>(s);
+      }
+
+      inline
+      void
+      set_center(math::Point p) {
+          _center = p;
+      }
+
       inline
       void
       set_ref_frame(math::Matrix r) {

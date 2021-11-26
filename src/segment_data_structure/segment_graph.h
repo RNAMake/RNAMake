@@ -197,7 +197,11 @@ public:
     get_segment_end_name(
             Index n_index,
             Index end_index) const {
-        return graph_.get_node_data(n_index).get_end(end_index).get_name_str();
+        auto temp = graph_.get_node_data(n_index).get_end(end_index).get_name_str();
+
+        std::cout << "Inside get_segment_end_nake: " << temp << std::endl;
+
+        return temp;
     }
 
 public:

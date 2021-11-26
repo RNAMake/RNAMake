@@ -58,33 +58,54 @@ namespace resources {
                 small_molecules_(Structure()) {
 
           auto spl = base::split_str_by_delimiter(s, "&");
-
-            //TODO Need to change implement a fucntion to for creating structures from strings
           auto structure = std::make_shared<structure::Structure>(spl[5], rts);
           auto basepair_str = base::split_str_by_delimiter(spl[6], "@");
-          for (auto const & bp_str : basepair_str) {
-              auto bp_spl = base::split_str_by_delimiter(bp_str, ",");
-              auto res_spl = base::split_str_by_delimiter(bp_spl[0], "-");
-              auto res1_id = res_spl[0].substr(0, 1);
-              auto res2_id = res_spl[1].substr(0, 1);
-              auto res1_num = std::stoi(res_spl[0].substr(1));
-              auto res2_num = std::stoi(res_spl[1].substr(1));
-              // TODO Make sure to have the get_residue working for the string
-              auto res1 = structure->get_residue(res1_num, res1_id, "");
-              auto res2 = structure->get_residue(res2_num, res2_id, "");
-//              auto bpstate = structure::str_to_basepairstate(bp_spl[1]);
-              //Hack to stop memory out of bounds
-              //TODO look into why this is happening!
-              if (bp_spl.size() == 2) { bp_spl.push_back("c..."); }
+          basepairs_ = Basepairs();
+          end_indexes_ = Indexes();
 
-              //TODO Uncomment these when fixing above issues
-              auto bp = structure::Basepair(res1, res2, bp_spl[1], bp_spl[2]);
-              basepairs_.push_back(bp);
-          }
+          for (auto const & bp_str : basepair_str) {
+                  auto bp_spl = base::split_str_by_delimiter(bp_str, ",");
+                  auto res_spl = base::split_str_by_delimiter(bp_spl[0], "-");
+                  auto strs = base::split_str_by_delimiter(bp_spl[1], ";");
+                  auto res1_id = res_spl[0].substr(0, 1);
+                  auto res2_id = res_spl[1].substr(0, 1);
+
+                  auto res1_num = std::stoi(res_spl[0].substr(1));
+                  auto res2_num = std::stoi(res_spl[1].substr(1));
+
+                  auto res1 = structure->get_residue(res1_num, res1_id, "");
+                  auto res2 = structure->get_residue(res2_num, res2_id, "");
+
+                  // Auto bpstate = structure::str_to_basepairstate(bp_spl[1]);
+                  // Hack to stop memory out of bounds
+                  // TODO look into why this is happening!
+
+
+                  if (bp_spl.size() == 2) { bp_spl.push_back("c..."); }
+//                  std::cout << "Test: " << coords[0] << std::endl;
+                  math::xyzVector d = math::xyzVector(strs[0]);
+                  math::xyzMatrix r = math::matrix_from_str(strs[1]);
+                  math::Vectors sug = math::vectors_from_str(strs[2]);
+                  auto center = math::Matrix();
+                  auto bp = structure::Basepair(res1.get_uuid(), res2.get_uuid(), util::Uuid(), bp_spl[0], "A1-A8" ,"cW-W", );
+//                  basepairs_.push_back(bp);
+              }
+              Strings end_indexes_strings_ = base::split_str_by_delimiter(spl[7], " ");
+
+              for (auto const & index : end_indexes_strings_) {
+                  end_indexes_.push_back(stoi(index));
+              }
+
+              Strings end_ids_strings_ = base::split_str_by_delimiter(spl[8], " ");
+              for (auto const & index : end_ids_strings_) {
+                  end_ids_.push_back(std::make_shared<base::SimpleString const>(index));
+              }
+
+            dot_bracket_ = std::make_shared<base::SimpleString const>(spl[9]);
+
       }
 
 
-//      //TODO Ask about the structure in
 //      Segment(String const & str, ResidueTypeSet const & rts):
 //              BaseClass(),
 //              proteins_(Structure()),
