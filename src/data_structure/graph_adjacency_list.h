@@ -184,6 +184,7 @@ public:
     DataType const &
     get_node_data(
             Index ni) const {
+        std::cout << "I am in get node data" << std::endl;
         expects<GraphException>(
                 nodes_.find(ni) != nodes_.end(),
                 "cannot find node of index: " + std::to_string(ni));
@@ -193,6 +194,7 @@ public:
     DataType &
     get_node_data(
             Index ni) {
+        std::cout << "I am in get node data" << std::endl;
         expects<GraphException>(
                 nodes_.find(ni) != nodes_.end(),
                 "cannot find node of index: " + std::to_string(ni));

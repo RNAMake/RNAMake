@@ -8,9 +8,11 @@
 
 #include <dirent.h>
 #include <fstream>
+#include <algorithm>
 
 //RNAMake Headers
 #include <structure/residue_type_set.h>
+#include <util/string_util.h>
 #include <base/settings.h>
 
 namespace structure {
@@ -79,11 +81,25 @@ namespace structure {
     ResidueTypeSet::get_residue_type(
             String const & resname) const {
 
+        std::string res = "blank";
+
         for (auto restype : residue_types_) {
-            if (restype->is_valid_residue_name(resname)) { return restype; }
+            if (resname[0] == ':') {
+                //TODO remove these string manipulation, string should be passed as expected.
+                res = replace_char(resname, ':', ' ');
+                res.erase(0, 1);
+                if (restype->is_valid_residue_name(res)) {
+                    return restype;
+                }
+            } else {
+                res = resname;
+                if (restype->is_valid_residue_name(resname)) {
+                    return restype;
+                }
+            }
         }
 
-        throw ResidueTypeException("cannot find residue with name :" + resname);
+        throw ResidueTypeException("cannot find residue with name: " + res);
     }
 
 

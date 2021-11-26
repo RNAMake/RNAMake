@@ -39,10 +39,10 @@ namespace structure {
           for(Index i = 0; i < spl.size()-1; i++) {
               _residues.push_back(Residue(spl[i], rts));
           }
-          auto cut_point_spl = base::split_str_by_delimiter(spl.back(), " ");
-          for(auto const & cut_point_s : cut_point_spl) {
-              _cut_points.push_back(std::stoi(cut_point_s));
-          }
+//          auto cut_point_spl = base::split_str_by_delimiter(spl.back(), " ");
+//          for(auto const & cut_point_s : cut_point_spl) {
+//              _cut_points.push_back(std::stoi(cut_point_s));
+//          }
       }
 
 
