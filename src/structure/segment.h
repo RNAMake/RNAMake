@@ -82,13 +82,13 @@ namespace resources {
 
 
                   if (bp_spl.size() == 2) { bp_spl.push_back("c..."); }
-//                  std::cout << "Test: " << coords[0] << std::endl;
-                  math::xyzVector d = math::xyzVector(strs[0]);
-                  math::xyzMatrix r = math::matrix_from_str(strs[1]);
-                  math::Vectors sug = math::vectors_from_str(strs[2]);
-                  auto center = math::Matrix();
-                  auto bp = structure::Basepair(res1.get_uuid(), res2.get_uuid(), util::Uuid(), bp_spl[0], "A1-A8" ,"cW-W", );
-//                  basepairs_.push_back(bp);
+                    auto sug = math::vectors_from_str(strs[2]);
+                    auto coords = base::split_str_by_delimiter(bp_spl[1], ";");
+                    auto center = math::Point(coords[0]);
+                    auto ref = math::Matrix(coords[1]);
+                    auto x3dna_type = util::get_x3dna_by_type(bp_spl[2]);
+                    auto bp = structure::Basepair(res1.get_uuid(), res2.get_uuid(), util::Uuid(), primitives::BasepairType::WC, std::make_shared<base::SimpleString const>(bp_spl[0]), x3dna_type, ref, center, sug);
+                    basepairs_.push_back(bp);
               }
               Strings end_indexes_strings_ = base::split_str_by_delimiter(spl[7], " ");
 

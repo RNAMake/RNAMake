@@ -28,38 +28,35 @@ TEST_CASE("Test Graph Data Structure") {
         auto sg = structure::SegmentGraph();
         sg.add_segment(*seg1);
 
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 10; i++) {
             auto seg = seg_lib.get("", "", "", std::to_string(i));
-            std::cout << "Here 1 is fine\n" << std::endl;
-//            std::cout << sg.get_segment_end_name(i, 1);
             sg.add_segment(*seg, i, sg.get_segment_end_name(i, 1));
-            std::cout << "After add segment" << std::endl;
         }
 
-//        CHECK(sg.get_num_segments() == 11);
-//
-//        auto sg2 = structure::SegmentGraph(sg);
-//        CHECK(sg2.get_num_segments() == 11);
-//
-//        sg.remove_segment(5);
-//        CHECK(sg2.get_num_segments() == 11);
-//
-//        auto path = Indexes();
-//        auto target = Indexes{0, 1, 2, 3, 4, 6, 7, 8, 9, 10};
-//        for (auto const & n : sg) {
-//            path.push_back(n->index());
-//        }
-//
-//        CHECK(path == target);
-//
-//        // is copying messing up transveral
-//        path = Indexes();
-//        auto target_2 = Indexes{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-//        for (auto const & n : sg2) {
-//            path.push_back(n->index());
-//        }
-//
-//        CHECK(path == target_2);
+        CHECK(sg.get_num_segments() == 11);
+
+        auto sg2 = structure::SegmentGraph(sg);
+        CHECK(sg2.get_num_segments() == 11);
+
+        sg.remove_segment(5);
+        CHECK(sg2.get_num_segments() == 11);
+
+        auto path = Indexes();
+        auto target = Indexes{0, 1, 2, 3, 4, 6, 7, 8, 9, 10};
+        for (auto const & n : sg) {
+            path.push_back(n->index());
+        }
+
+        CHECK(path == target);
+
+        // is copying messing up transveral
+        path = Indexes();
+        auto target_2 = Indexes{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        for (auto const & n : sg2) {
+            path.push_back(n->index());
+        }
+
+        CHECK(path == target_2);
 
     }
 

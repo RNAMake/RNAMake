@@ -35,10 +35,22 @@ namespace structure {
               String const & s,
               ResidueTypeSet const & rts) : ParentClass() {
 
-          auto spl = base::split_str_by_delimiter(s, ";");
-          for(Index i = 0; i < spl.size()-1; i++) {
-              _residues.push_back(Residue(spl[i], rts));
+          auto spl_chain = base::split_str_by_delimiter(s, ":");
+          for(Index i = 0; i < spl_chain.size()-1; i++) {
+              if(i != 0) {
+                  _cut_points.push_back(_residues.size() + 1);
+              }
+              auto spl = base::split_str_by_delimiter(spl_chain[i], ";");
+              for(Index j = 0; i < spl.size()-1; j++) {
+                  _residues.push_back(Residue(spl[j], rts));
+              }
           }
+
+//          auto spl = base::split_str_by_delimiter(s, ";");
+//          std::cout << "This the sql string in structure: " << s << std::endl;
+//          for(Index i = 0; i < spl.size()-1; i++) {
+//              _residues.push_back(Residue(spl[i], rts));
+//          }
 //          auto cut_point_spl = base::split_str_by_delimiter(spl.back(), " ");
 //          for(auto const & cut_point_s : cut_point_spl) {
 //              _cut_points.push_back(std::stoi(cut_point_s));
