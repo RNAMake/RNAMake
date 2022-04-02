@@ -8,7 +8,7 @@
 //
 //#include <base/types.h>
 //
-//namespace base {
+// namespace base {
 //
 //  String
 //  get_os_name();

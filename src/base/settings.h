@@ -11,32 +11,25 @@
 
 #include <stdio.h>
 
-//RNAMake Headers
+// RNAMake Headers
 #include "base/types.h"
 
 namespace base {
 
-String
-get_os_name();
+String get_os_name();
 
-String
-base_dir();
+String base_dir();
 
-String
-resources_path();
+String resources_path();
 
-String
-lib_path();
+String lib_path();
 
-String
-motif_dirs();
+String motif_dirs();
 
-String
-x3dna_path();
+String x3dna_path();
 
-String
-unittest_resource_dir();
+String unittest_resource_dir();
 
-}
+}  // namespace base
 
 #endif /* defined(__RNAMake__settings__) */

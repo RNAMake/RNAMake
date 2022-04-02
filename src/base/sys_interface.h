@@ -8,29 +8,25 @@
 #ifndef __SYS_INTERFACE_H__
 #define __SYS_INTERFACE_H__
 
+#include <base/types.h>
+
+#include <array>
 #include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <memory>
+#include <nlohmann/json.hpp>
 #include <stdexcept>
 #include <string>
-#include <array>
-#include <cstdlib>
-
-
-#include <nlohmann/json.hpp>
-#include <base/types.h>
 
 namespace base {
 
-String execute_command( const char* );
-String execute_command( String const &);
+String execute_command(const char*);
+String execute_command(String const&);
 
-nlohmann::json
-execute_command_json( const char* );
+nlohmann::json execute_command_json(const char*);
 
-nlohmann::json
-execute_command_json( String const &);
+nlohmann::json execute_command_json(String const&);
 
-
-}
-#endif // __SYS_INTERFACE_H__
+}  // namespace base
+#endif  // __SYS_INTERFACE_H__

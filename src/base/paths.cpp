@@ -5,7 +5,7 @@
 //#include <base/assertions.h>
 //#include <base/settings.h>
 //
-//namespace base {
+// namespace base {
 //
 //  String
 //  get_os_name() {

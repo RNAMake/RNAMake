@@ -9,41 +9,30 @@
 #ifndef __ENV_MANAGER_H__
 #define __ENV_MANAGER_H__
 
-#include <cstdlib>
-#include <unistd.h>
-#include <iostream>
-#include <unistd.h>
-
-
-#include <base/types.h>
-#include <base/settings.h>
 #include <base/log.h>
+#include <base/settings.h>
+#include <base/types.h>
+#include <unistd.h>
 
-
+#include <cstdlib>
+#include <iostream>
 
 namespace base {
 
-class EnvManager{
-    private:
-        Strings env_vars_;
-    
-    public:
-        EnvManager(Strings const& env_vars ) : 
-            env_vars_(env_vars) { }
-    public: 
-        void
-        add_env(String const& env) {
-            env_vars_.push_back(std::move(env));
-        }
+class EnvManager {
+ private:
+  Strings env_vars_;
 
-    public:
-        void
-        set_envs();
+ public:
+  EnvManager(Strings const& env_vars) : env_vars_(env_vars) {}
+
+ public:
+  void add_env(String const& env) { env_vars_.push_back(std::move(env)); }
+
+ public:
+  void set_envs();
 };
 
+}  // namespace base
 
-}
-
-
-
-#endif // __ENV_MANAGER_H__
+#endif  // __ENV_MANAGER_H__
