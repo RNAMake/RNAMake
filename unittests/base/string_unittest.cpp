@@ -11,8 +11,8 @@
 
 #include <iostream>
 #include "../common.hpp"
-#include <base/string.h>
-#include <base/types.h>
+#include "base/string.h"
+#include "base/types.h"
 
 TEST_CASE("test string functions") {
     SUBCASE("test determine_string_data_type") {
