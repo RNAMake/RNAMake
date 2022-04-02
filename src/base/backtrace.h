@@ -6,18 +6,18 @@
 #ifndef BASE_LIB_BACKTRACE_H
 #define BASE_LIB_BACKTRACE_H
 
-#include <fstream>
-#include <iostream>
-#include <stdio.h>
-
+#include <base/file_io.h>
 #include <base/log.h>
 #include <base/types.h>
-#include <base/file_io.h>
+#include <stdio.h>
+
+#include <fstream>
+#include <iostream>
 
 #if defined(_WIN32) || defined(_WIN64)
 
-#include <windows.h>
 #include <dbghelp.h>
+#include <windows.h>
 
 #else
 #include <execinfo.h>
@@ -25,17 +25,13 @@
 
 #include <cxxabi.h>
 
-
 namespace base {
 
-std::string
-demangle( std::string );
+std::string demangle(std::string);
 
-void
-print_backtrace();
+void print_backtrace();
 
-void
-save_backtrace();
+void save_backtrace();
 
-}
-#endif //BASE_LIB_BACKTRACE_H
+}  // namespace base
+#endif  // BASE_LIB_BACKTRACE_H

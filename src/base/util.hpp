@@ -9,15 +9,13 @@
 #ifndef base_util_h
 #define base_util_h
 
-#include <vector>
-#include <map>
 #include <algorithm>
+#include <map>
+#include <vector>
 
-template<typename T>
-bool
-element_in_vector(T const & element, std::vector<T> const & vec) {
-    return std::find(vec.begin(), vec.end(), element) != vec.end();
+template <typename T>
+bool element_in_vector(T const& element, std::vector<T> const& vec) {
+  return std::find(vec.begin(), vec.end(), element) != vec.end();
 }
-
 
 #endif /* base_util_h */

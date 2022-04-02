@@ -10,29 +10,24 @@
 #define command_line_parser_hpp
 
 #include <stdio.h>
-#include "base/string.h"
-#include "base/option.h"
+
 #include "base/cl_option.h"
+#include "base/option.h"
+#include "base/string.h"
 
 namespace base {
 
 class CommandLineParser {
-public:
-    CommandLineParser() {}
+ public:
+  CommandLineParser() {}
 
-    ~CommandLineParser() {}
+  ~CommandLineParser() {}
 
-public:
-
-    void
-    assign_options(
-            CommandLineOptions const & cl_options,
-            Options & options,
-            String prefix = "");
-
-
+ public:
+  void assign_options(CommandLineOptions const& cl_options, Options& options,
+                      String prefix = "");
 };
 
-}
+}  // namespace base
 
 #endif /* command_line_parser_hpp */
