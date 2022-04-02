@@ -11,75 +11,47 @@
 
 #include <stdio.h>
 
-#include "util/x3dna.h"
 #include "motif/motif_factory.h"
 #include "motif/pose.h"
+#include "util/x3dna.h"
 
 namespace motif {
 
 class PoseFactory {
-public:
-    PoseFactory() :
-            mf_(MotifFactory()),
-            clash_radius_(2.9) {
-        throw std::runtime_error("Pose factory is not supported anymore!");
+ public:
+  PoseFactory() : mf_(MotifFactory()), clash_radius_(2.9) {
+    throw std::runtime_error("Pose factory is not supported anymore!");
+  }
 
-    }
+  ~PoseFactory() {}
 
-    ~PoseFactory() {}
+ public:
+  PoseOP pose_from_motif_tree(
+      structure::StructureOP const &, structure::BasepairOPs const &,
+      motif::MotifOPs const &,
+      std::map<util::Uuid, int, util::UuidCompare> const &);
 
-public:
-    PoseOP
-    pose_from_motif_tree(
-            structure::StructureOP const &,
-            structure::BasepairOPs const &,
-            motif::MotifOPs const &,
-            std::map<util::Uuid, int, util::UuidCompare> const &);
+  PoseOP pose_from_file(String const &path, int gu_are_helix = 1,
+                        int signlet_bp_seperation = 0);
 
-    PoseOP
-    pose_from_file(
-            String const & path,
-            int gu_are_helix = 1,
-            int signlet_bp_seperation = 0);
+ private:
+  void _setup_motifs_from_x3dna(PoseOP &, int, int);
 
-private:
-    void
-    _setup_motifs_from_x3dna(
-            PoseOP &,
-            int,
-            int);
+  void _add_motifs_to_pose(PoseOP &, motif::MotifOPs const &);
 
-    void
-    _add_motifs_to_pose(
-            PoseOP &,
-            motif::MotifOPs const &);
+  void _add_secondary_structure_motifs(PoseOP &);
 
-    void
-    _add_secondary_structure_motifs(
-            PoseOP &);
+  void _standardize_prepose(MotifOP &);
 
-    void
-    _standardize_prepose(
-            MotifOP &);
+  int _steric_clash(MotifOP const &, MotifOP const &);
 
-    int
-    _steric_clash(
-            MotifOP const &,
-            MotifOP const &);
+  MotifOP _convert_x3dna_to_motif(util::X3dna::X3Motif const &, PoseOP const &);
 
-    MotifOP
-    _convert_x3dna_to_motif(
-            util::X3dna::X3Motif const &,
-            PoseOP const &);
-
-
-private:
-    MotifFactory mf_;
-    float clash_radius_;
-
+ private:
+  MotifFactory mf_;
+  float clash_radius_;
 };
 
-}
-
+}  // namespace motif
 
 #endif /* defined(__RNAMake__pose_factory__) */

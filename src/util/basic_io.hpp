@@ -15,15 +15,10 @@
 
 namespace util {
 
-String
-points_to_pdb_str(
-        math::Points const &);
+String points_to_pdb_str(math::Points const &);
 
-void
-points_to_pdb(
-        String const &,
-        math::Points const &);
+void points_to_pdb(String const &, math::Points const &);
 
-}
+}  // namespace util
 
 #endif /* basic_io_hpp */

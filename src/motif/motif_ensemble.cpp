@@ -6,32 +6,29 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+#include "motif/motif_ensemble.h"
+
 #include "base/file_io.h"
 #include "base/log.h"
-#include "util/csv.h"
-#include "motif/motif_ensemble.h"
 #include "motif/motif_factory.h"
+#include "util/csv.h"
 
 namespace motif {
 
-MotifStateEnsembleOP
-MotifEnsemble::get_state() {
+MotifStateEnsembleOP MotifEnsemble::get_state() {
   auto motif_states = MotifStateOPs();
   auto energies = Floats();
 
-  for(auto const & mem : members_) {
+  for (auto const& mem : members_) {
     motif_states.push_back(mem->motif->get_state());
     energies.push_back(mem->energy);
   }
 
   return std::make_shared<MotifStateEnsemble>(motif_states, energies);
-
 }
 
-void
-motif_ensemble_from_csv_file(
-  String const & csv_file,
-  std::vector<MotifEnsembleOP> & mes) {
+void motif_ensemble_from_csv_file(String const& csv_file,
+                                  std::vector<MotifEnsembleOP>& mes) {
   auto mf = motif::MotifFactory();
   auto in = io::CSVReader<4>(csv_file);
   String path, end_0, end_1, end_2;
@@ -44,43 +41,42 @@ motif_ensemble_from_csv_file(
   auto weights = Floats();
   auto i = 0;
   LOG_INFO << "in ensemble file: " << csv_file;
-  while(in.read_row(path, end_0, end_1, end_2)) {
-    if(!base::file_exists(path)) {
+  while (in.read_row(path, end_0, end_1, end_2)) {
+    if (!base::file_exists(path)) {
       LOG_ERROR << "invalid pdb path: " << path;
       exit(1);
     }
-    LOG_INFO << path << " " << end_0 << " "  << end_1;
+    LOG_INFO << path << " " << end_0 << " " << end_1;
     auto motifs = motif::get_standardize_motifs(mf, path);
     auto found_0 = false, found_1 = false, found_2 = false;
-    for(auto const & m : motifs) {
-      if(i == 0) {
+    for (auto const& m : motifs) {
+      if (i == 0) {
         m->name(fname);
-      }
-      else {
+      } else {
         m->name(fname + "_" + std::to_string(i));
       }
-      if(m->end_name(0) == end_0) {
+      if (m->end_name(0) == end_0) {
         end_0_motifs.push_back(m);
         found_0 = true;
       }
-      if(m->end_name(0) == end_1) {
+      if (m->end_name(0) == end_1) {
         end_1_motifs.push_back(m);
         found_1 = true;
       }
-      if(m->end_name(0) == end_2) {
+      if (m->end_name(0) == end_2) {
         end_2_motifs.push_back(m);
         found_2 = true;
       }
     }
-    if(!found_0 && !end_0.empty()) {
+    if (!found_0 && !end_0.empty()) {
       LOG_ERROR << "cannot find end " << end_0 << " in motif " << path;
       exit(1);
     }
-    if(!found_1 && !end_1.empty()) {
+    if (!found_1 && !end_1.empty()) {
       LOG_ERROR << "cannot find end " << end_1 << " in motif " << path;
       exit(1);
     }
-    if(!found_2 && !end_2.empty()) {
+    if (!found_2 && !end_2.empty()) {
       LOG_ERROR << "cannot find end " << end_2 << " in motif " << path;
       exit(1);
     }
@@ -89,10 +85,10 @@ motif_ensemble_from_csv_file(
   }
   mes.push_back(std::make_shared<motif::MotifEnsemble>(end_0_motifs, weights));
   mes.push_back(std::make_shared<motif::MotifEnsemble>(end_1_motifs, weights));
-  if(!end_2_motifs.empty()) {
-    mes.push_back(std::make_shared<motif::MotifEnsemble>(end_2_motifs, weights));
+  if (!end_2_motifs.empty()) {
+    mes.push_back(
+        std::make_shared<motif::MotifEnsemble>(end_2_motifs, weights));
   }
-
 }
 
-}
+}  // namespace motif

@@ -12,69 +12,52 @@
 #include <fstream>
 #include <iostream>
 
-//RNAMake Headers
+// RNAMake Headers
 #include "base/types.h"
 
 namespace util {
 
 class Uuid {
-public:
-    Uuid();
+ public:
+  Uuid();
 
-    ~Uuid() {}
+  ~Uuid() {}
 
-public:
-    inline
-    String const &
-    s_uuid() const { return s_uuid_; }
+ public:
+  inline String const &s_uuid() const { return s_uuid_; }
 
-    inline
-    bool
-    operator==(Uuid const & uuid) const {
-        return s_uuid_.compare(uuid.s_uuid_) == 0;
-    }
+  inline bool operator==(Uuid const &uuid) const {
+    return s_uuid_.compare(uuid.s_uuid_) == 0;
+  }
 
-    inline
-    bool
-    operator==(Uuid & uuid) {
-        return s_uuid_.compare(uuid.s_uuid_) == 0;
-    }
+  inline bool operator==(Uuid &uuid) {
+    return s_uuid_.compare(uuid.s_uuid_) == 0;
+  }
 
-    inline
-    bool
-    operator!=(Uuid const & uuid) const {
-        return s_uuid_.compare(uuid.s_uuid_) != 0;
-    }
+  inline bool operator!=(Uuid const &uuid) const {
+    return s_uuid_.compare(uuid.s_uuid_) != 0;
+  }
 
+  inline bool operator!=(Uuid &uuid) {
+    return s_uuid_.compare(uuid.s_uuid_) != 0;
+  }
 
-    inline
-    bool
-    operator!=(Uuid & uuid) {
-        return s_uuid_.compare(uuid.s_uuid_) != 0;
-    }
+  inline bool operator<(Uuid const &uuid) const {
+    return s_uuid_.compare(uuid.s_uuid());
+  }
 
-    inline
-    bool
-    operator<(Uuid const & uuid) const {
-        return s_uuid_.compare(uuid.s_uuid());
-    }
-
-private:
-    String s_uuid_;
-
+ private:
+  String s_uuid_;
 };
 
-std::ostream &
-operator<<(std::ostream &, Uuid const &);
+std::ostream &operator<<(std::ostream &, Uuid const &);
 
 struct UuidCompare {
-    bool operator()(
-            Uuid const & u1,
-            Uuid const & u2) const {
-        return u1.s_uuid() < u2.s_uuid();
-    }
+  bool operator()(Uuid const &u1, Uuid const &u2) const {
+    return u1.s_uuid() < u2.s_uuid();
+  }
 };
 
-}
+}  // namespace util
 
 #endif

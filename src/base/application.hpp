@@ -11,118 +11,92 @@
 
 #include <stdio.h>
 
-#include "base/option.h"
 #include "base/command_line_parser.hpp"
+#include "base/option.h"
 
 namespace base {
 
 class ApplicationException : public std::runtime_error {
-public:
-    ApplicationException(
-            String const & message):
-            std::runtime_error(message) {}
+ public:
+  ApplicationException(String const &message) : std::runtime_error(message) {}
 };
-
 
 class Application {
-public:
-    inline
-    Application() :
-            options_(Options()),
-            cl_options_(CommandLineOptions()),
-            cl_parser_(CommandLineParser()) {}
+ public:
+  inline Application()
+      : options_(Options()),
+        cl_options_(CommandLineOptions()),
+        cl_parser_(CommandLineParser()) {}
 
-    ~Application() {}
+  ~Application() {}
 
-public:
-    virtual
-    void
-    setup_options() = 0;
+ public:
+  virtual void setup_options() = 0;
 
+  virtual void parse_command_line(int argc, const char **argv) {
+    cl_options_.parse_command_line(argc, argv);
+    cl_parser_.assign_options(cl_options_, options_);
+  }
 
-    virtual
-    void
-    parse_command_line(
-            int argc,
-            const char **argv) {
+  virtual void run() = 0;
 
-        cl_options_.parse_command_line(argc, argv);
-        cl_parser_.assign_options(cl_options_, options_);
+ public:  // option wrappers
+  template <typename T>
+  void add_option(String const &name, T const &val, OptionType const &type,
+                  bool required = false) {
+    options_.add_option(name, val, type);
+    cl_options_.add_option(name, val, type, required);
+  }
 
+  void add_cl_options(Options const &opts, String prefix = "") {
+    if (prefix.length() == 0) {
+      cl_options_.add_options(opts);
+      return;
     }
 
-    virtual
-    void
-    run() = 0;
+    for (auto const &opt : opts) {
+      auto name = prefix + "." + opt->name();
 
-public: //option wrappers
-
-    template<typename T>
-    void
-    add_option(
-            String const & name,
-            T const & val,
-            OptionType const & type,
-            bool required = false) {
-
-        options_.add_option(name, val, type);
-        cl_options_.add_option(name, val, type, required);
+      if (opt->type() == OptionType::STRING) {
+        cl_options_.add_option(name, opt->get_string(),
+                               base::OptionType::STRING, false);
+      } else if (opt->type() == OptionType::FLOAT) {
+        cl_options_.add_option(name, opt->get_float(), base::OptionType::FLOAT,
+                               false);
+      } else if (opt->type() == OptionType::INT) {
+        cl_options_.add_option(name, opt->get_int(), base::OptionType::INT,
+                               false);
+      } else if (opt->type() == OptionType::BOOL) {
+        cl_options_.add_option(name, opt->get_bool(), base::OptionType::BOOL,
+                               false);
+      }
     }
+  }
 
-    void
-    add_cl_options(
-            Options const & opts,
-            String prefix = "") {
+  inline float get_int_option(String const &name) {
+    return options_.get_int(name);
+  }
 
-        if (prefix.length() == 0) {
-            cl_options_.add_options(opts);
-            return;
-        }
+  inline float get_float_option(String const &name) {
+    return options_.get_float(name);
+  }
 
-        for (auto const & opt : opts) {
-            auto name = prefix + "." + opt->name();
+  inline String get_string_option(String const &name) {
+    return options_.get_string(name);
+  }
 
-            if (opt->type() == OptionType::STRING) {
-                cl_options_.add_option(name, opt->get_string(), base::OptionType::STRING, false);
-            } else if (opt->type() == OptionType::FLOAT) {
-                cl_options_.add_option(name, opt->get_float(), base::OptionType::FLOAT, false);
-            } else if (opt->type() == OptionType::INT) {
-                cl_options_.add_option(name, opt->get_int(), base::OptionType::INT, false);
-            } else if (opt->type() == OptionType::BOOL) {
-                cl_options_.add_option(name, opt->get_bool(), base::OptionType::BOOL, false);
+  inline bool get_bool_option(String const &name) {
+    return options_.get_bool(name);
+  }
 
-            }
+ protected:
+  Options options_;
+  CommandLineOptions cl_options_;
+  CommandLineParser cl_parser_;
 
-        }
-    }
-
-    inline
-    float
-    get_int_option(String const & name) { return options_.get_int(name); }
-
-    inline
-    float
-    get_float_option(String const & name) { return options_.get_float(name); }
-
-    inline
-    String
-    get_string_option(String const & name) { return options_.get_string(name); }
-
-    inline
-    bool
-    get_bool_option(String const & name) { return options_.get_bool(name); }
-
-
-protected:
-    Options options_;
-    CommandLineOptions cl_options_;
-    CommandLineParser cl_parser_;
-
-private:
-
-
+ private:
 };
 
-}
+}  // namespace base
 
 #endif /* application_hpp */

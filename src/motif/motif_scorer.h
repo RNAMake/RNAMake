@@ -9,41 +9,36 @@
 #ifndef __RNAMake__motif_scorer__
 #define __RNAMake__motif_scorer__
 
-#include <map>
 #include <stdio.h>
 
-//RNAMake Headers
+#include <map>
+
+// RNAMake Headers
 #include "base/types.h"
-#include "structure/basepair.h"
 #include "motif/motif.h"
+#include "structure/basepair.h"
 
 namespace motif {
 
 class MotifScorer {
-public:
-    MotifScorer();
+ public:
+  MotifScorer();
 
-    ~MotifScorer() {}
+  ~MotifScorer() {}
 
-public:
-    float
-    score(
-            MotifOP const &);
+ public:
+  float score(MotifOP const &);
 
-private:
+ private:
+  float _score_cWW_bp(structure::BasepairOP const &);
 
-    float
-    _score_cWW_bp(
-            structure::BasepairOP const &);
+  void _bp_reference_energy_table();
 
-    void
-    _bp_reference_energy_table();
-
-private:
-    StringFloatMap bp_ref_energy_;
-    float unpaired_pentalty_;
+ private:
+  StringFloatMap bp_ref_energy_;
+  float unpaired_pentalty_;
 };
 
-}
+}  // namespace motif
 
 #endif /* defined(__RNAMake__motif_scorer__) */

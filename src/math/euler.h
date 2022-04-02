@@ -9,34 +9,25 @@
 #ifndef RNAMake_euler_h
 #define RNAMake_euler_h
 
-#include "math/xyz_vector.h"
 #include "math/xyz_matrix.h"
+#include "math/xyz_vector.h"
 
 namespace math {
 
 const double _EPS = 2.22044604925e-16 * 4.0;
 
-//assumes 3x3 matrices
-void
-calc_euler(
-        Matrix & M,
-        Vector & euler);
+// assumes 3x3 matrices
+void calc_euler(Matrix &M, Vector &euler);
 
 struct AxisAngle {
-    float angle;
-    Point axis;
+  float angle;
+  Point axis;
 };
 
-void
-axis_angle_from_matrix(
-        Matrix &,
-        AxisAngle &);
+void axis_angle_from_matrix(Matrix &, AxisAngle &);
 
-float
-degrees(
-        float);
+float degrees(float);
 
-}
+}  // namespace math
 
 #endif
-

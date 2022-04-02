@@ -101,8 +101,14 @@ PairFinder::_write_fpmst(
     //          << bp_info->res2_name << std::endl;
 
     auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cWUW};
-    bps.push_back(bp);
-
+    // hack to stop tetraloop bp
+    // 224 U 152 A
+    if(bp_info->res1_num == 224 && bp_info->res2_num == 152) {
+	std::cout << "skipping messed up tetraloop/receptor bp" << std::endl;
+    }
+    else {
+        bps.push_back(bp);
+    }
   }
   else {
 
