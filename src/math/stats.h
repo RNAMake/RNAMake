@@ -9,32 +9,19 @@
 
 namespace math {
 
-double
-sum(
-        std::vector<double> const &);
+double sum(std::vector<double> const &);
 
-double
-sqsum(
-        std::vector<double> const &);
+double sqsum(std::vector<double> const &);
 
-double
-stdev(
-        std::vector<double> const &);
+double stdev(std::vector<double> const &);
 
-double
-mean(
-        std::vector<double> const &);
+double mean(std::vector<double> const &);
 
-double
-pearson_coeff(
-        std::vector<double> const &,
-        std::vector<double> const &);
+double pearson_coeff(std::vector<double> const &, std::vector<double> const &);
 
-double
-avg_unsigned_diff(
-        std::vector<double> const &,
-        std::vector<double> const &);
+double avg_unsigned_diff(std::vector<double> const &,
+                         std::vector<double> const &);
 
-}
+}  // namespace math
 
-#endif //TEST_STATS_H
+#endif  // TEST_STATS_H
