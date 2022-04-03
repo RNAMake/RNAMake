@@ -6,12 +6,11 @@
 // Created by Joseph Yesselman on 3/10/19.
 //
 
-#include "base/string.h"
-
+#include <base/string.hpp>
+#include <base/types.hpp>
 #include <iostream>
 
 #include "../common.hpp"
-#include "base/types.h"
 
 TEST_CASE("test string functions") {
   SUBCASE("test determine_string_data_type") {

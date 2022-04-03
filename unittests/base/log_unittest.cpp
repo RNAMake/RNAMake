@@ -2,11 +2,12 @@
 // Created by Joseph Yesselman on 3/10/19.
 //
 
-#include "base/log.h"
 
 #include <iostream>
 
 #include "../common.hpp"
+
+#include "base/log.hpp"
 
 TEST_CASE("Test logging functions") {
   base::init_logging(base::LogLevel::INFO);
