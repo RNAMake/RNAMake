@@ -6,9 +6,11 @@
 //  Copyright © 2016 Joseph Yesselman. All rights reserved.
 //
 
-#include <base/backtrace.h>
+#include <base/backtrace.hpp>
 
-inline std::string base::demangle(std::string trace) {
+namespace base {
+
+inline std::string demangle(std::string trace) {
   std::string::size_type begin, end;
 
   // find the beginning and the end of the useful part of the trace
@@ -62,7 +64,7 @@ inline std::string base::demangle(std::string trace) {
 //   -- rhiju, 2014.
 ////////////////////////////////////////////////////////////////////
 
-void base::print_backtrace() {
+void print_backtrace() {
 #if defined(_WIN32) || defined(_WIN64)
   LoadLibraryA("backtrace.dll");
 #else
@@ -97,7 +99,7 @@ void base::print_backtrace() {
 #endif
 }
 
-void base::save_backtrace() {
+void save_backtrace() {
   auto ii(0);
   auto outfile_name = String{"stack.0"};
   while (base::file_exists(outfile_name)) {
@@ -132,4 +134,6 @@ void base::save_backtrace() {
 
   LOGF << "Fatal error encountered. Stack trace can be found in "
        << outfile_name;
+}
+
 }
