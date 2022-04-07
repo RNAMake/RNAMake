@@ -262,6 +262,8 @@ public: //designing functions
             String const & seq) {
         auto dss = designable_secondary_structure();
         dss->replace_sequence(seq);
+        std::cout << dss->sequence() << std::endl;
+        std::cout << dss->dot_bracket() << std::endl;
         replace_helical_sequence(dss);
     }
 

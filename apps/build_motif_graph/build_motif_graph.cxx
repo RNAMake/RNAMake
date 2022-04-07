@@ -90,6 +90,7 @@ BuildMotifGraph::run() {
   if(_parameters.sequence.empty()) {
     LOG_INFO << "completed, writing pdb to \"test.pdb\"";
     mg.to_pdb("test.pdb", 1, 1);
+    exit(0);
   }
 
   mg.replace_ideal_helices();
@@ -229,6 +230,10 @@ BuildMotifGraph::build_motif_graph_from_csv(
     }
     else {
       m = _rm.motif(motif, "", align_end);
+    }
+    auto spl = base::split_str_by_delimiter(m->name(), ".");
+    if(spl[0] == "HELIX") {
+      m->mtype(util::MotifType::HELIX);
     }
 
     if(!parent_end_name.empty()) {

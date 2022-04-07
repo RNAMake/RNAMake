@@ -581,7 +581,6 @@ MotifGraph::replace_ideal_helices() {
                 other = n->connections()[1]->partner(n->index());
                 other_end_index = n->connections()[1]->end_index(other->index());
             }
-
             //TODO look at resiude size instead of this mess!!
             auto name_spl = base::split_str_by_delimiter(n->data()->name(), ".");
             int count = 1;
