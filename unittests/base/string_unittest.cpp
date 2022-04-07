@@ -13,26 +13,12 @@
 #include "../common.hpp"
 
 TEST_CASE("test string functions") {
-  SUBCASE("test determine_string_data_type") {
-    SUBCASE("should be a string") {
-      CHECK(base::determine_string_data_type("") == DataType::STRING);
-      CHECK(base::determine_string_data_type(" ") == DataType::STRING);
-      CHECK(base::determine_string_data_type("a") == DataType::STRING);
-      // two dots in a row
-      CHECK(base::determine_string_data_type("1..0") == DataType::STRING);
-      // char at the end
-      CHECK(base::determine_string_data_type("1.0x") == DataType::STRING);
-      // plus sign in the middle
-      CHECK(base::determine_string_data_type("2+5") == DataType::STRING);
-    }
-    // should be ints
-    CHECK(base::determine_string_data_type("1") == DataType::INT);
-
-    // should be floats
-    CHECK(base::determine_string_data_type("1.0") == DataType::FLOAT);
+  SUBCASE("Test splitting") {
+    String test = "test1 test2 test3";
+    Strings spl = base::string::split(test, " ");
   }
 
-  SUBCASE("Testing trim methods") {
+  /*SUBCASE("Testing trim methods") {
     SUBCASE("left trim") {
       const auto target = String{"trimmed"};
       auto untrimmed = String{" trimmed"};
@@ -149,5 +135,5 @@ TEST_CASE("test string functions") {
         CHECK(*targ_it == *actual_it);
       }
     }
-  }
+  }*/
 }

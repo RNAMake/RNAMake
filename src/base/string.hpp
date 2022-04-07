@@ -15,19 +15,15 @@
 // RNAMake Headers
 #include <base/types.hpp>
 
-namespace base {
+namespace base::string {
 
-Strings split_str_by_delimiter(String, String);
-
-Strings tokenize_line(String const &);
+Strings split(String, String const &);
 
 String join_by_delimiter(Strings const &, String const &);
 
 String filename(String const &);
 
 String base_dir(String const &);
-
-DataType determine_string_data_type(String const &);
 
 bool is_number(String const &);
 
@@ -45,6 +41,6 @@ String string_map_to_string(StringStringMap const &);
 
 String &replace_all(String &, String const &, String const &);
 
-}  // namespace base
+} // namespace base
 
 #endif /* defined(__RNAMake__string__) */
