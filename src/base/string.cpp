@@ -14,7 +14,8 @@
 
 namespace base::string {
 
-Strings split(String s, String const & delimiter) {
+// @brief splits string with a delimiter
+Strings split(String s, String const &delimiter) {
   String token;
   std::vector<String> tokens;
   size_t pos;
@@ -23,19 +24,20 @@ Strings split(String s, String const & delimiter) {
     tokens.push_back(token);
     s.erase(0, pos + delimiter.length());
   }
-
   if (s.length() > 0) {
     tokens.push_back(s);
   }
-
+  // to be consistent would be nice to always have at least 1 element
+  if (tokens.empty()) {
+    tokens.emplace_back();
+  }
   return tokens;
 }
 
-
-String join_by_delimiter(Strings const& strs, String const& delimiter) {
+String join(Strings const &strs, String const &delimiter) {
   String return_s;
   int i = 0;
-  for (auto const& s : strs) {
+  for (auto const &s : strs) {
     return_s += s;
     if (i != strs.size() - 1) {
       return_s += delimiter;
@@ -45,12 +47,12 @@ String join_by_delimiter(Strings const& strs, String const& delimiter) {
   return return_s;
 }
 
-String filename(String const& path) {
+String filename(String const &path) {
   Strings path_spl = split(path, "/");
   return path_spl.back();
 }
 
-String base_dir(String const& path) {
+String base_dir(String const &path) {
   auto path_spl = split(path, "/");
   auto base_path = String();
   for (int i = 0; i < path_spl.size() - 1; i++) {
@@ -63,8 +65,8 @@ String base_dir(String const& path) {
   return base_path;
 }
 
-bool is_number(String const& s) {
-  for (auto const& c : s) {
+bool is_number(String const &s) {
+  for (auto const &c : s) {
     if (!std::isdigit(c)) {
       return false;
     }
@@ -82,7 +84,7 @@ bool is_number(String const& s) {
  * @param[out] s The String to trim
  * @return The modified String&
  */
-String& ltrim(String& s) {
+String &ltrim(String &s) {
   s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
             return !std::isspace(ch);
           }));
@@ -96,7 +98,7 @@ String& ltrim(String& s) {
  * @param[out] s The String to trim
  * @return The modified String&
  */
-String& rtrim(String& s) {
+String &rtrim(String &s) {
   s.erase(std::find_if(s.rbegin(), s.rend(),
                        [](unsigned char ch) { return !std::isspace(ch); })
               .base(),
@@ -111,9 +113,9 @@ String& rtrim(String& s) {
  * @param[out] s The String to trim
  * @return The modified String&
  */
-String& trim(String& s) { return ltrim(rtrim(s)); }
+String &trim(String &s) { return ltrim(rtrim(s)); }
 
-bool is_char_in_string(char c, String const& s) {
+bool is_char_in_string(char c, String const &s) {
   int pos = s.find(c);
   if (pos == std::string::npos) {
     return false;
@@ -122,17 +124,17 @@ bool is_char_in_string(char c, String const& s) {
   }
 }
 
-String quoted_string(String const& s) { return String("'") + s + String("'"); }
+String quoted_string(String const &s) { return String("'") + s + String("'"); }
 
-String string_map_to_string(StringStringMap const& ssm) {
+String string_map_to_string(StringStringMap const &ssm) {
   auto s = String("");
-  for (auto const& kv : ssm) {
+  for (auto const &kv : ssm) {
     s += kv.first + "=" + kv.second + " ";
   }
   return s;
 }
 
-String& replace_all(String& context, String const& from, String const& to) {
+String &replace_all(String &context, String const &from, String const &to) {
   std::size_t lookHere = 0;
   std::size_t foundHere;
   while ((foundHere = context.find(from, lookHere)) != String::npos) {
@@ -142,4 +144,4 @@ String& replace_all(String& context, String const& from, String const& to) {
   return context;
 }
 
-}  // namespace base
+} // namespace base::string

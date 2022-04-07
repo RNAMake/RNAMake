@@ -19,7 +19,7 @@ namespace base::string {
 
 Strings split(String, String const &);
 
-String join_by_delimiter(Strings const &, String const &);
+String join(Strings const &, String const &);
 
 String filename(String const &);
 
