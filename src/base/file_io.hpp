@@ -28,6 +28,7 @@
 
 #include <base/types.hpp>
 
+// This all needs to be replaced by https://en.cppreference.com/w/cpp/filesystem/path
 namespace base {
 
 inline bool file_exists(String const& name) {
