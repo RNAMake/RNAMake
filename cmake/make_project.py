@@ -239,8 +239,8 @@ if __name__ == "__main__":
             ),
             build_libraries(libs, depends, base_dir + "/src", static),
             build_unittests(libs, base_dir + "/unittests", static),
-            build_integration_tests(base_dir + "/integration_tests", static),
-            build_apps(base_dir, static),
+            #build_integration_tests(base_dir + "/integration_tests", static),
+            #build_apps(base_dir, static),
         ]
     )
 #

@@ -12,12 +12,12 @@
 // RNAMake Headers
 #include <base/string.hpp>
 
-namespace base {
+namespace base::string {
 
-Strings split_str_by_delimiter(String s, String delimiter) {
+Strings split(String s, String const & delimiter) {
   String token;
   std::vector<String> tokens;
-  size_t pos = 0;
+  size_t pos;
   while ((pos = s.find(delimiter)) != String::npos) {
     token = s.substr(0, pos);
     tokens.push_back(token);
@@ -31,41 +31,6 @@ Strings split_str_by_delimiter(String s, String delimiter) {
   return tokens;
 }
 
-Strings tokenize_line(String const& raw_line) {
-  // note that this is specific to the CIF format grammar. DO NOT use this
-  // elsewhere
-  auto tokens = Strings{};
-  auto token = String{};
-  const auto whitespace = std::string(" \f\v\t\r\n");
-  const auto line_len = raw_line.size();
-
-  for (auto it = 0; it < line_len;) {
-    char ch = raw_line[it];
-    const auto is_ws = whitespace.find(ch) != std::string::npos;
-
-    if ((ch == ';' || ch == '\'') && token.empty()) {
-      const auto matching = raw_line.find(ch, it + 1);
-      tokens.push_back(raw_line.substr(it + 1, matching - it - 1));
-      it = matching + 1;
-      token = "";
-
-    } else if (is_ws || (it == (line_len - 1))) {
-      if (!token.empty()) {
-        if (!is_ws && it == line_len - 1) {
-          token += ch;
-        }
-        tokens.push_back(token);
-        token = "";
-      }
-      ++it;
-    } else if (!is_ws) {
-      token += ch;
-      ++it;
-    }
-  }
-
-  return tokens;
-}
 
 String join_by_delimiter(Strings const& strs, String const& delimiter) {
   String return_s;
@@ -81,12 +46,12 @@ String join_by_delimiter(Strings const& strs, String const& delimiter) {
 }
 
 String filename(String const& path) {
-  Strings path_spl = split_str_by_delimiter(path, "/");
+  Strings path_spl = split(path, "/");
   return path_spl.back();
 }
 
 String base_dir(String const& path) {
-  auto path_spl = split_str_by_delimiter(path, "/");
+  auto path_spl = split(path, "/");
   auto base_path = String();
   for (int i = 0; i < path_spl.size() - 1; i++) {
     base_path += path_spl[i] + "/";
@@ -109,105 +74,6 @@ bool is_number(String const& s) {
   // return !s.empty() && std::find_if(s.begin(),
   //                                   s.end(), [](char c) { return
   //                                   !std::isdigit(c); }) == s.end();
-}
-
-// adapted from
-// https://www.geeksforgeeks.org/check-given-string-valid-number-integer-floating-point/
-DataType determine_string_data_type(String const& str) {
-  int i = 0, j = str.length() - 1;
-
-  // Handling whitespaces
-  while (i < str.length() && str[i] == ' ') {
-    i++;
-  }
-  while (j >= 0 && str[j] == ' ') {
-    j--;
-  }
-
-  if (i > j) {
-    return DataType::STRING;
-  }
-
-  // if string is of length 1 and the only
-  // character is not a digit
-  if (i == j && !(str[i] >= '0' && str[i] <= '9')) {
-    return DataType::STRING;
-  }
-
-  // If the 1st char is not '+', '-', '.' or digit
-  if (str[i] != '.' && str[i] != '+' && str[i] != '-' &&
-      !(str[i] >= '0' && str[i] <= '9')) {
-    return DataType::STRING;
-  }
-
-  // To check if a '.' or 'e' is found in given
-  // string. We use this flag to make sure that
-  // either of them appear only once.
-  bool flagDotOrE = false;
-  bool has_dot = false;
-  int char_count = 0;
-
-  for (; i <= j; i++) {
-    // If any of the char does not belong to
-    // {digit, +, -, ., e}
-    if (str[i] != 'e' && str[i] != '.' && str[i] != '+' && str[i] != '-' &&
-        !(str[i] >= '0' && str[i] <= '9')) {
-      return DataType::STRING;
-    }
-
-    if (str[i] == '.') {
-      has_dot = true;
-      // checks if the char 'e' has already
-      // occurred before '.' If yes, return 0.
-      if (flagDotOrE == true) {
-        return DataType::STRING;
-      }
-
-      // If '.' is the last character.
-      if (i + 1 > str.length()) {
-        return DataType::STRING;
-      }
-
-      // if '.' is not followed by a digit.
-      if (!(str[i + 1] >= '0' && str[i + 1] <= '9')) {
-        return DataType::STRING;
-      }
-    }
-
-    else if (str[i] == 'e') {
-      // set flagDotOrE = 1 when e is encountered.
-      flagDotOrE = true;
-
-      // if there is no digit before 'e'.
-      if (!(str[i - 1] >= '0' && str[i - 1] <= '9')) {
-        return DataType::STRING;
-      }
-
-      // If 'e' is the last Character
-      if (i + 1 > str.length()) {
-        return DataType::STRING;
-      }
-
-      // if e is not followed either by
-      // '+', '-' or a digit
-      if (str[i + 1] != '+' && str[i + 1] != '-' &&
-          (str[i + 1] >= '0' && str[i] <= '9')) {
-        return DataType::STRING;
-      }
-    }
-
-    if (char_count > 0 && (str[i] == '+' || str[i] == '-')) {
-      return DataType::STRING;
-    }
-
-    char_count++;
-  }
-
-  if (flagDotOrE || has_dot) {
-    return DataType::FLOAT;
-  } else {
-    return DataType::INT;
-  }
 }
 
 /**
