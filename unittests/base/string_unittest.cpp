@@ -47,6 +47,24 @@ TEST_CASE("test string functions") {
       Strings spl = base::string::split(test, " ");
       CHECK(spl.size() == 1);
     }
+    SUBCASE("escape characters") {
+      String test = R"("\0\t\t\t\a")";
+      Strings spl = base::string::split(test, R"("\t")");
+      CHECK(spl.size() == 1);
+    }
+  }
+
+  SUBCASE("test string joining") {
+    SUBCASE("test trivial case") {
+      Strings spl = {"test1", "test2", "test3"};
+      String test = base::string::join(spl, " ");
+      CHECK(test == "test1 test2 test3");
+    }
+    SUBCASE("test empty vector") {
+      Strings spl = {};
+      String test = base::string::join(spl, " ");
+      CHECK(test == "");
+    }
   }
 
   /*SUBCASE("Testing trim methods") {
@@ -94,35 +112,6 @@ TEST_CASE("test string functions") {
   }
 
   SUBCASE("testing string splitting methods") {
-    SUBCASE("leading spaces") {
-      // trailing space(s)
-      const auto raw_line = String{"1 2 3 4 5 6 "};
-      const auto target = Strings{"1", "2", "3", "4", "5", "6"};
-      const auto actual = base::tokenize_line(raw_line);
-
-      CHECK(target.size() == actual.size());
-      auto targ_it = target.cbegin();
-      auto actual_it = actual.cbegin();
-
-      for (; targ_it != target.cend(); ++targ_it, ++actual_it) {
-        CHECK(*targ_it == *actual_it);
-      }
-    }
-
-    SUBCASE("spaces on both sides") {
-      // leading space(s)
-      const auto raw_line = String{"     f s _ $ % "};
-      const auto target = Strings{"f", "s", "_", "$", "%"};
-      const auto actual = base::tokenize_line(raw_line);
-
-      CHECK(target.size() == actual.size());
-      auto targ_it = target.cbegin();
-      auto actual_it = actual.cbegin();
-
-      for (; targ_it != target.cend(); ++targ_it, ++actual_it) {
-        CHECK(*targ_it == *actual_it);
-      }
-    }
 
     SUBCASE("empty string") {
       // leading space(s)

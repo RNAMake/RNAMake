@@ -15,9 +15,10 @@
 namespace base::string {
 
 // @brief splits string with a delimiter
+// Known issue with escaped characters, will not work properly.
 Strings split(String s, String const &delimiter) {
   String token;
-  std::vector<String> tokens;
+  Strings tokens;
   size_t pos;
   while ((pos = s.find(delimiter)) != String::npos) {
     token = s.substr(0, pos);
@@ -34,6 +35,7 @@ Strings split(String s, String const &delimiter) {
   return tokens;
 }
 
+// @brief joins a vector of strings with a delimiter
 String join(Strings const &strs, String const &delimiter) {
   String return_s;
   int i = 0;
@@ -42,106 +44,41 @@ String join(Strings const &strs, String const &delimiter) {
     if (i != strs.size() - 1) {
       return_s += delimiter;
     }
+    i += 1;
   }
-
   return return_s;
 }
 
-String filename(String const &path) {
-  Strings path_spl = split(path, "/");
-  return path_spl.back();
-}
-
-String base_dir(String const &path) {
-  auto path_spl = split(path, "/");
-  auto base_path = String();
-  for (int i = 0; i < path_spl.size() - 1; i++) {
-    base_path += path_spl[i] + "/";
-  }
-  if (base_path == "") {
-    base_path = "./";
-  }
-
-  return base_path;
-}
-
-bool is_number(String const &s) {
-  for (auto const &c : s) {
-    if (!std::isdigit(c)) {
-      return false;
-    }
-  }
-  return true;
-
-  // return !s.empty() && std::find_if(s.begin(),
-  //                                   s.end(), [](char c) { return
-  //                                   !std::isdigit(c); }) == s.end();
-}
-
-/**
- * @brief Left Trim
- * Trims whitespace from the left end of the provided String
- * @param[out] s The String to trim
- * @return The modified String&
- */
-String &ltrim(String &s) {
+// @brief Trims whitespace from the left end of the provided String
+String left_trim(String s) {
   s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
             return !std::isspace(ch);
           }));
-
   return s;
 }
 
-/**
- * @brief Right Trim
- * Trims whitespace from the right end of the provided String
- * @param[out] s The String to trim
- * @return The modified String&
- */
-String &rtrim(String &s) {
+// @brief Trims whitespace from the right end of the provided String
+String right_trim(String s) {
   s.erase(std::find_if(s.rbegin(), s.rend(),
                        [](unsigned char ch) { return !std::isspace(ch); })
               .base(),
           s.end());
-
   return s;
 }
 
-/**
- * @brief Trim
- * Trims whitespace from both ends of the provided String
- * @param[out] s The String to trim
- * @return The modified String&
- */
-String &trim(String &s) { return ltrim(rtrim(s)); }
-
-bool is_char_in_string(char c, String const &s) {
-  int pos = s.find(c);
-  if (pos == std::string::npos) {
-    return false;
-  } else {
-    return true;
-  }
-}
-
-String quoted_string(String const &s) { return String("'") + s + String("'"); }
-
-String string_map_to_string(StringStringMap const &ssm) {
-  auto s = String("");
-  for (auto const &kv : ssm) {
-    s += kv.first + "=" + kv.second + " ";
-  }
+// @brief Trims whitespace from both ends of the provided String
+String trim(String s) {
+  s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
+            return !std::isspace(ch);
+          }));
+  s.erase(std::find_if(s.rbegin(), s.rend(),
+                       [](unsigned char ch) { return !std::isspace(ch); })
+              .base(),
+          s.end());
   return s;
 }
 
-String &replace_all(String &context, String const &from, String const &to) {
-  std::size_t lookHere = 0;
-  std::size_t foundHere;
-  while ((foundHere = context.find(from, lookHere)) != String::npos) {
-    context.replace(foundHere, from.size(), to);
-    lookHere = foundHere + to.size();
-  }
-  return context;
-}
+// @brief adds quotes to around the string. string -> 'string'
+String quoted(String const &s) { return String("'") + s + String("'"); }
 
-} // namespace base::string
+}
