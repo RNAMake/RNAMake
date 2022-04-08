@@ -10,7 +10,7 @@
 #define __REDESIGNC__xyzVector__
 
 #include <iostream>
-// C++ headers
+// std headers
 #include <cassert>
 #include <cmath>
 #include <fstream>
@@ -38,10 +38,10 @@ class xyzVector {
   inline xyzVector(xyzVector const &v) = default;
 
   inline xyzVector(double const x, double const &y, double const &z)
-      : x_(x), y_(y), z_(z) {}
+      : _x(x), _y(y), _z(z) {}
 
   inline explicit xyzVector(std::vector<double> const &v)
-      : x_(v[0]), y_(v[1]), z_(v[2]) {}
+      : _x(v[0]), _y(v[1]), _z(v[2]) {}
 
  public:  // deletion //////////////////////////////////////////////////////////
   inline ~xyzVector() = default;
@@ -50,110 +50,107 @@ class xyzVector {
   /// @brief Copy assignment
   inline xyzVector &operator=(xyzVector const &v) {
     if (this != &v) {
-      x_ = v.x_;
-      y_ = v.y_;
-      z_ = v.z_;
+      _x = v._x;
+      _y = v._y;
+      _z = v._z;
     }
     return *this;
   }
   /// @brief Copy assignment
-  template <typename U>
   inline xyzVector &operator=(xyzVector const &v) {
-    x_ = v.x_;
-    y_ = v.y_;
-    z_ = v.z_;
+    _x = v._x;
+    _y = v._y;
+    _z = v._z;
     return *this;
   }
   /// @brief += xyzVector
-  template <typename U>
   inline xyzVector &operator+=(xyzVector const &v) {
-    x_ += v.x_;
-    y_ += v.y_;
-    z_ += v.z_;
+    _x += v._x;
+    _y += v._y;
+    _z += v._z;
     return *this;
   }
   /// @brief -= xyzVector
-  template <typename U>
   inline xyzVector &operator-=(xyzVector const &v) {
-    x_ -= v.x_;
-    y_ -= v.y_;
-    z_ -= v.z_;
+    _x -= v._x;
+    _y -= v._y;
+    _z -= v._z;
     return *this;
   }
   // @brief = double
   inline xyzVector &operator=(double const &t) {
-    x_ = y_ = z_ = t;
+    _x = _y = _z = t;
     return *this;
   }
   /// @brief += double
   inline xyzVector &operator+=(double const &t) {
-    x_ += t;
-    y_ += t;
-    z_ += t;
+    _x += t;
+    _y += t;
+    _z += t;
     return *this;
   }
   /// @brief -= double
   inline xyzVector &operator-=(double const &t) {
-    x_ -= t;
-    y_ -= t;
-    z_ -= t;
+    _x -= t;
+    _y -= t;
+    _z -= t;
     return *this;
   }
   /// @brief *= double
   inline xyzVector &operator*=(double const &t) {
-    x_ *= t;
-    y_ *= t;
-    z_ *= t;
+    _x *= t;
+    _y *= t;
+    _z *= t;
     return *this;
   }
   /// @brief /= double
   inline xyzVector &operator/=(double const &t) {
     assert(t != double(0));
     double const inv_t(1.0f / t);
-    x_ *= inv_t;
-    y_ *= inv_t;
-    z_ *= inv_t;
+    _x *= inv_t;
+    _y *= inv_t;
+    _z *= inv_t;
     return *this;
   }
   /// @brief -xyzVector (negated copy)
-  inline xyzVector operator-() const { return {-x_, -y_, -z_}; }
+  inline xyzVector operator-() const { return {-_x, -_y, -_z}; }
   /// @brief xyzVector + xyzVector
   friend inline xyzVector operator+(xyzVector const &a, xyzVector const &b) {
-    return {a.x_ + b.x_, a.y_ + b.y_, a.z_ + b.z_};
+    return {a._x + b._x, a._y + b._y, a._z + b._z};
   }
   /// @brief xyzVector + double
   friend inline xyzVector operator+(xyzVector const &v, double const &t) {
-    return {v.x_ + t, v.y_ + t, v.z_ + t};
+    return {v._x + t, v._y + t, v._z + t};
   }
   /// @brief double + xyzVector
   friend inline xyzVector operator+(double const &t, xyzVector const &v) {
-    return {t + v.x_, t + v.y_, t + v.z_};
+    return {t + v._x, t + v._y, t + v._z};
   }
   /// @brief xyzVector - xyzVector
   friend inline xyzVector operator-(xyzVector const &a, xyzVector const &b) {
-    return {a.x_ - b.x_, a.y_ - b.y_, a.z_ - b.z_};
+    return {a._x - b._x, a._y - b._y, a._z - b._z};
   }
   /// @brief xyzVector - double
   friend inline xyzVector operator-(xyzVector const &v, double const &t) {
-    return {v.x_ - t, v.y_ - t, v.z_ - t};
+    return {v._x - t, v._y - t, v._z - t};
   }
   /// @brief double - xyzVector
   friend inline xyzVector operator-(double const &t, xyzVector const &v) {
-    return {t - v.x_, t - v.y_, t - v.z_};
+    return {t - v._x, t - v._y, t - v._z};
   }
   /// @brief xyzVector * double
   friend inline xyzVector operator*(xyzVector const &v, double const &t) {
-    return {v.x_ * t, v.y_ * t, v.z_ * t};
+    return {v._x * t, v._y * t, v._z * t};
   }
   /// @brief double * xyzVector
   friend inline xyzVector operator*(double const &t, xyzVector const &v) {
-    return {t * v.x_, t * v.y_, t * v.z_};
+    return {t * v._x, t * v._y, t * v._z};
   }
   /// @brief xyzVector / double
   friend inline xyzVector operator/(xyzVector const &v, double const &t) {
     assert(t != double(0));
     double const inv_t(double(1) / t);
-    return {v.x_ * inv_t, v.y_ * inv_t, v.z_ * inv_t};
+    return {v._x * inv_t, v._y * inv_t, v._z * inv_t};
   }
   friend inline std::ostream &operator<<(std::ostream &stream,
                                          xyzVector const &v) {
@@ -164,25 +161,25 @@ class xyzVector {
  public:  // methods  //////////////////////////////////////////////////////////
   /// @brief Zero
   inline xyzVector &zero() {
-    x_ = y_ = z_ = double(0);
+    _x = _y = _z = double(0);
     return *this;
   }
   /// @brief Negate
   inline xyzVector &negate() {
-    x_ = -x_;
-    y_ = -y_;
-    z_ = -z_;
+    _x = -_x;
+    _y = -_y;
+    _z = -_z;
     return *this;
   }
 
   /// @brief Negated copy
-  [[nodiscard]] inline xyzVector negated() const { return {-x_, -y_, -z_}; }
+  [[nodiscard]] inline xyzVector negated() const { return {-_x, -_y, -_z}; }
 
   /// @brief Negated: Return via argument (slightly faster)
   inline void negated(xyzVector &a) const {
-    a.x_ = -x_;
-    a.y_ = -y_;
-    a.z_ = -z_;
+    a._x = -_x;
+    a._y = -_y;
+    a._z = -_z;
   }
 
   /// @brief Normalize
@@ -190,124 +187,112 @@ class xyzVector {
     double const length_ = get_length();
     assert(length_ != double(0));
     double const inv_length(double(1) / length_);
-    x_ *= inv_length;
-    y_ *= inv_length;
-    z_ *= inv_length;
+    _x *= inv_length;
+    _y *= inv_length;
+    _z *= inv_length;
     return *this;
   }
 
   /// @brief Distance
   [[nodiscard]] inline double distance(xyzVector const &v) const {
-    return std::sqrt(square(x_ - v.x_) + square(y_ - v.y_) + square(z_ - v.z_));
+    return std::sqrt(square(_x - v._x) + square(_y - v._y) + square(_z - v._z));
   }
 
   /// @brief Distance squared
   [[nodiscard]] inline double distance_squared(xyzVector const &v) const {
-    return square(x_ - v.x_) + square(y_ - v.y_) + square(z_ - v.z_);
+    return square(_x - v._x) + square(_y - v._y) + square(_z - v._z);
   }
 
   /// @brief Dot product
   [[nodiscard]] inline double dot(xyzVector const &v) const {
-    return (x_ * v.x_) + (y_ * v.y_) + (z_ * v.z_);
+    return (_x * v._x) + (_y * v._y) + (_z * v._z);
   }
 
   /// @brief Cross product
   [[nodiscard]] inline xyzVector cross(xyzVector const &v) const {
-    return {(y_ * v.z_) - (z_ * v.y_), (z_ * v.x_) - (x_ * v.z_),
-            (x_ * v.y_) - (y_ * v.x_)};
+    return {(_y * v._z) - (_z * v._y), (_z * v._x) - (_x * v._z),
+            (_x * v._y) - (_y * v._x)};
   }
 
  public:  // Properties: accessors
 
  public:
   [[nodiscard]] inline String get_str() const {
-    return std::to_string(x_) + " " + std::to_string(y_) + " " +
-           std::to_string(z_);
+    return std::to_string(_x) + " " + std::to_string(_y) + " " +
+           std::to_string(_z);
   }
 
   /// @brief double x const
-  [[nodiscard]] inline double get_x() const { return x_; }
+  [[nodiscard]] inline double get_x() const { return _x; }
 
   /// @brief double y const
-  [[nodiscard]] inline double get_y() const { return y_; }
+  [[nodiscard]] inline double get_y() const { return _y; }
 
   /// @brief double z const
-  [[nodiscard]] inline double get_z() const { return z_; }
+  [[nodiscard]] inline double get_z() const { return _z; }
 
   /// @brief Length
   [[nodiscard]] inline double get_length() const {
-    return std::sqrt((x_ * x_) + (y_ * y_) + (z_ * z_));
+    return std::sqrt((_x * _x) + (_y * _y) + (_z * _z));
   }
 
   /// @brief Length squared
   [[nodiscard]] inline double get_length_squared() const {
-    return (x_ * x_) + (y_ * y_) + (z_ * z_);
+    return (_x * _x) + (_y * _y) + (_z * _z);
   }
 
   /// @brief Norm
   [[nodiscard]] inline double get_norm() const {
-    return std::sqrt((x_ * x_) + (y_ * y_) + (z_ * z_));
+    return std::sqrt((_x * _x) + (_y * _y) + (_z * _z));
   }
 
   /// @brief Norm squared
   [[nodiscard]] inline double get_norm_squared() const {
-    return (x_ * x_) + (y_ * y_) + (z_ * z_);
+    return (_x * _x) + (_y * _y) + (_z * _z);
   }
 
   /// @brief Magnitude
   [[nodiscard]] inline double get_magnitude() const {
-    return std::sqrt((x_ * x_) + (y_ * y_) + (z_ * z_));
+    return std::sqrt((_x * _x) + (_y * _y) + (_z * _z));
   }
 
   /// @brief Magnitude squared
   [[nodiscard]] inline double get_magnitude_squared() const {
-    return (x_ * x_) + (y_ * y_) + (z_ * z_);
+    return (_x * _x) + (_y * _y) + (_z * _z);
   }
 
  public:  // Indexers
   /// @brief xyzVector[ i ] const: 0-based index
   inline double const &operator[](int const i) const {
     assert((i >= 0) && (i < 3));
-    return (i == 0 ? x_ : (i == 1 ? y_ : z_));
+    return (i == 0 ? _x : (i == 1 ? _y : _z));
   }
 
   /// @brief xyzVector[ i ]: 0-based index
   inline double &operator[](int const i) {
     assert((i >= 0) && (i < 3));
-    return (i == 0 ? x_ : (i == 1 ? y_ : z_));
+    return (i == 0 ? _x : (i == 1 ? _y : _z));
   }
-
-  /// @brief xyzVector( i ) const: 1-based index
-  inline double const &operator()(int const i) const {
-    assert((i > 0) && (i <= 3));
-    return (i == 1 ? x_ : (i == 2 ? y_ : z_));
-  }
-
-  /// @brief xyzVector( i ): 1-based index
-  inline double &operator()(int const i) {
-    assert((i > 0) && (i <= 3));
-    return (i == 1 ? x_ : (i == 2 ? y_ : z_));
-  }
-
+  
  public:  // Properties: double assignment
   /// @brief x assignment
-  inline void set_x(double const &x_a) { x_ = x_a; }
+  inline void set_x(double const &x_a) { _x = x_a; }
 
   /// @brief y assignment
-  inline void set_y(double const &y_a) { y_ = y_a; }
+  inline void set_y(double const &y_a) { _y = y_a; }
 
   /// @brief z assignment
-  inline void set_z(double const &z_a) { z_ = z_a; }
+  inline void set_z(double const &z_a) { _z = z_a; }
 
  public:  // Comparison
   /// @brief xyzVector == xyzVector
   friend inline bool operator==(xyzVector const &a, xyzVector const &b) {
-    return (a.x_ == b.x_) && (a.y_ == b.y_) && (a.z_ == b.z_);
+    return (a._x == b._x) && (a._y == b._y) && (a._z == b._z);
   }
 
   /// @brief xyzVector != xyzVector
   friend inline bool operator!=(xyzVector const &a, xyzVector const &b) {
-    return (a.x_ != b.x_) || (a.y_ != b.y_) || (a.z_ != b.z_);
+    return (a._x != b._x) || (a._y != b._y) || (a._z != b._z);
   }
 
  private:  // Methods
@@ -316,9 +301,9 @@ class xyzVector {
 
  private:  // Fields
   /// @brief Coordinates of the 3 coordinate vector
-  double x_;
-  double y_;
-  double z_;
+  double _x;
+  double _y;
+  double _z;
 
 };  // xyzVector
 
@@ -329,7 +314,7 @@ typedef xyzVector Point;
 typedef std::vector<Point> Points;
 
 inline Vector vector_from_str(std::string const &s) {
-  std::vector<std::string> doubles = base::split_str_by_delimiter(s, " ");
+  Strings doubles = base::string::split(s, " ");
   std::vector<double> point;
   assert(doubles.size() == 3);
 
@@ -341,22 +326,8 @@ inline Vector vector_from_str(std::string const &s) {
   return p;
 }
 
-inline String vector_to_str(Vector const &v) {
-  std::stringstream ss;
-  ss << v.get_x() << " " << v.get_y() << " " << v.get_z();
-  return ss.str();
-}
-
-inline String vectors_to_str(Vectors const &vs) {
-  std::stringstream ss;
-  for (auto const &v : vs) {
-    ss << v.get_x() << " " << v.get_y() << " " << v.get_z() << " ";
-  }
-  return ss.str();
-}
-
 inline Vectors vectors_from_str(std::string const &s) {
-  std::vector<std::string> doubles = base::split_str_by_delimiter(s, " ");
+  Strings doubles = base::string::split(s, " ");
   std::vector<double> point;
   Vectors vecs;
   for (auto const &d : doubles) {

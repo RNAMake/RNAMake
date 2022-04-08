@@ -10,7 +10,7 @@
 #ifndef __RNAMake__string__
 #define __RNAMake__string__
 
-#include <stdio.h>
+#include <cstdio>
 
 // RNAMake Headers
 #include <base/types.hpp>
@@ -21,26 +21,14 @@ Strings split(String, String const &);
 
 String join(Strings const &, String const &);
 
-String filename(String const &);
+String left_trim(String s);
 
-String base_dir(String const &);
+String right_trim(String s);
 
-bool is_number(String const &);
+String trim(String s);
 
-String &ltrim(String &s);
+String quoted(String const &);
 
-String &rtrim(String &s);
-
-String &trim(String &s);
-
-bool is_char_in_string(char, String const &);
-
-String quoted_string(String const &);
-
-String string_map_to_string(StringStringMap const &);
-
-String &replace_all(String &, String const &, String const &);
-
-} // namespace base
+}
 
 #endif /* defined(__RNAMake__string__) */

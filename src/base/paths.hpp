@@ -16,6 +16,12 @@
 
 namespace base {
 
+/* TODO implement these in paths with new
+String filename(String const &);
+
+String base_dir(String const &);
+*/
+
 String get_os_name();
 
 String base_dir();
