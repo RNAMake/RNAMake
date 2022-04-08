@@ -9,12 +9,12 @@
 #ifndef __RNAMake__settings__
 #define __RNAMake__settings__
 
-#include <stdio.h>
+#include <cstdio>
 
 // RNAMake Headers
 #include <base/types.hpp>
 
-namespace base {
+namespace base::path {
 
 /* TODO implement these in paths with new
 String filename(String const &);
@@ -22,18 +22,12 @@ String filename(String const &);
 String base_dir(String const &);
 */
 
-String get_os_name();
-
-String base_dir();
+String rnamake_path();
 
 String resources_path();
 
-String lib_path();
+String unittest_resource_path();
 
-String motif_dirs();
-
-String unittest_resource_dir();
-
-}  // namespace base
+} 
 
 #endif /* defined(__RNAMake__settings__) */

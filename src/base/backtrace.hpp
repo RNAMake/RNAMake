@@ -20,22 +20,19 @@
 #endif
 
 #include <cxxabi.h>
-#include <stdio.h>
+#include <cstdio>
 
 #include <fstream>
 #include <iostream>
 
-///////////////////////////////////////////////////////////////////////////////
-// rnamake include s                                                         //
-///////////////////////////////////////////////////////////////////////////////
-
+// rnamake includes
 #include <base/file_io.hpp>
 #include <base/log.hpp>
 #include <base/types.hpp>
 
 namespace base {
 
-std::string demangle(std::string);
+String demangle(String);
 
 void print_backtrace();
 
