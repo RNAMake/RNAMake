@@ -31,23 +31,6 @@
 // This all needs to be replaced by https://en.cppreference.com/w/cpp/filesystem/path
 namespace base {
 
-inline bool file_exists(String const& name) {
-  auto testfile = std::ifstream(name);
-  bool good = testfile.is_open();
-  testfile.close();
-  return good;
-}
-
-inline int is_dir(String const& path) {
-  struct stat info{};
-  if (stat(path.c_str(), &info) != 0) {
-    return 0;
-  } else if (info.st_mode & S_IFDIR) {
-    return 1;
-  } else {
-    return 0;
-  }
-}
 
 void get_lines_from_file(String, Strings & /* return */) noexcept(false);
 

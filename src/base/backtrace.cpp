@@ -10,8 +10,8 @@
 
 namespace base {
 
-inline std::string demangle(std::string trace) {
-  std::string::size_type begin, end;
+inline String demangle(String trace) {
+  String::size_type begin, end;
 
   // find the beginning and the end of the useful part of the trace
 
@@ -24,15 +24,15 @@ inline std::string demangle(std::string trace) {
   // How it looks for Linux, with parentheses around part to be demangled.
   //  /home/rhiju/src/rosetta/main/source/cmake/build_release/libutility.so(_Z15print_backtracev+0x23)
   //  [0x7fb75e081a3]
-  if (begin == std::string::npos || end == std::string::npos) {
+  if (begin == String::npos || end == String::npos) {
     begin = trace.find("(_") + 1;
     end = trace.find("+", begin);
   }
 
   // if begina and end were found, we'll go ahead and demangle
-  if (begin != std::string::npos && end != std::string::npos) {
-    std::string mangled_trace = trace.substr(begin, end - begin);
-    size_t maxName = 1024;
+  if (begin != String::npos && end != String::npos) {
+    String mangled_trace = trace.substr(begin, end - begin);
+    Size maxName = 1024;
     int demangleStatus;
 
     char* demangledName = (char*)malloc(maxName);
@@ -102,9 +102,10 @@ void print_backtrace() {
 void save_backtrace() {
   auto ii(0);
   auto outfile_name = String{"stack.0"};
-  while (base::file_exists(outfile_name)) {
-    outfile_name = String{"stack."} + std::to_string(++ii);
-  }
+  // TODO fix
+  //while (base::file_exists(outfile_name)) {
+  outfile_name = String{"stack."} + std::to_string(++ii);
+  //}
   auto outfile = std::ofstream(outfile_name);
   static int tried_throw = -1;
 

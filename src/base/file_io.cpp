@@ -11,7 +11,7 @@
 
 namespace base {
 
-void get_lines_from_file(String const fname, Strings & lines) {
+/*void get_lines_from_file(String const fname, Strings & lines) {
   if (!file_exists(fname)) {
     throw("ERROR: The file " + fname + " does not exist");
   }
@@ -23,6 +23,6 @@ void get_lines_from_file(String const fname, Strings & lines) {
     lines.push_back(line);
   }
   input.close();
-}
+} */
 
 }  // namespace base

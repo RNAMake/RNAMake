@@ -2,15 +2,10 @@
 // Created by Joseph Yesselman on 2/16/20.
 //
 
-//
-// Created by Joseph Yesselman on 3/10/19.
-//
+#include "../common.hpp"
 
 #include <base/string.hpp>
 #include <base/types.hpp>
-#include <iostream>
-
-#include "../common.hpp"
 
 TEST_CASE("test string functions") {
   SUBCASE("test string splitting") {
