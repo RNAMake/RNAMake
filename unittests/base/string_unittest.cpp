@@ -53,7 +53,6 @@ TEST_CASE("test string functions") {
       CHECK(spl.size() == 1);
     }
   }
-
   SUBCASE("test string joining") {
     SUBCASE("test trivial case") {
       Strings spl = {"test1", "test2", "test3"};
@@ -65,95 +64,64 @@ TEST_CASE("test string functions") {
       String test = base::string::join(spl, " ");
       CHECK(test == "");
     }
+    SUBCASE("test line joining") {
+      Strings spl = {"test1", "test2", "test3"};
+      String test = base::string::join(spl, "\n");
+      CHECK(test == "test1\ntest2\ntest3");
+    }
   }
-
-  /*SUBCASE("Testing trim methods") {
+  SUBCASE("Testing trim methods") {
     SUBCASE("left trim") {
-      const auto target = String{"trimmed"};
-      auto untrimmed = String{" trimmed"};
-      CHECK(base::ltrim(untrimmed) == target);
+      const String target = {"trimmed"};
+      String untrimmed = {" trimmed"};
+      CHECK(base::string::left_trim(untrimmed) == target);
       untrimmed = "      trimmed";
-      CHECK(base::ltrim(untrimmed) == target);
+      CHECK(base::string::left_trim(untrimmed) == target);
       untrimmed = "\t\ttrimmed";
-      CHECK(base::ltrim(untrimmed) == target);
+      CHECK(base::string::left_trim(untrimmed) == target);
       untrimmed = "\n\ttrimmed";
-      CHECK(base::ltrim(untrimmed) == target);
-      auto empty_str = String{"            "};
-      CHECK(base::ltrim(empty_str).empty());
+      CHECK(base::string::left_trim(untrimmed) == target);
+      String empty_str = {"            "};
+      CHECK(base::string::left_trim(empty_str).empty());
     }
-
     SUBCASE("right trim") {
-      const auto target = String{"trimmed"};
-      auto untrimmed = String{"trimmed "};
-      CHECK(base::rtrim(untrimmed) == target);
+      const String target = {"trimmed"};
+      String untrimmed = {"trimmed "};
+      CHECK(base::string::right_trim(untrimmed) == target);
       untrimmed = "trimmed            ";
-      CHECK(base::rtrim(untrimmed) == target);
+      CHECK(base::string::right_trim(untrimmed) == target);
       untrimmed = "trimmed\t\t";
-      CHECK(base::rtrim(untrimmed) == target);
+      CHECK(base::string::right_trim(untrimmed) == target);
       untrimmed = "trimmed\n\t";
-      CHECK(base::rtrim(untrimmed) == target);
-      auto empty_str = String{"            "};
-      CHECK(base::rtrim(empty_str).empty());
+      CHECK(base::string::right_trim(untrimmed) == target);
+      String empty_str = {"            "};
+      CHECK(base::string::right_trim(empty_str).empty());
     }
-
     SUBCASE("trim") {
-      const auto target("trimmed");
-      auto untrimmed = String{" trimmed "};
-      CHECK(base::trim(untrimmed) == target);
+      const String target = {"trimmed"};
+      String untrimmed = {" trimmed "};
+      CHECK(base::string::trim(untrimmed) == target);
       untrimmed = "         trimmed            ";
-      CHECK(base::trim(untrimmed) == target);
+      CHECK(base::string::trim(untrimmed) == target);
       untrimmed = "\t\ttrimmed\t\t";
-      CHECK(base::trim(untrimmed) == target);
+      CHECK(base::string::trim(untrimmed) == target);
       untrimmed = "\n\ttrimmed\n\t";
-      CHECK(base::trim(untrimmed) == target);
-      auto empty_str = String{"            "};
-      CHECK(base::trim(empty_str).empty());
+      CHECK(base::string::trim(untrimmed) == target);
+      String empty_str = {"            "};
+      CHECK(base::string::trim(empty_str).empty());
+    }
+  }
+  SUBCASE("quote behavior") {
+    SUBCASE("test default behavior") {
+      const String target = "\'test\'";
+      String initial = "test";
+      CHECK(base::string::quoted(initial) == target);
+    }
+    SUBCASE("empty string") {
+      const String target ="\'\'";
+      String initial;
+      CHECK(base::string::quoted(initial) == target);
     }
   }
 
-  SUBCASE("testing string splitting methods") {
-
-    SUBCASE("empty string") {
-      // leading space(s)
-      const auto raw_line = String{" "};
-      const auto target = Strings{};
-      const auto actual = base::tokenize_line(raw_line);
-
-      CHECK(target.size() == actual.size());
-      auto targ_it = target.cbegin();
-      auto actual_it = actual.cbegin();
-
-      for (; targ_it != target.cend(); ++targ_it, ++actual_it) {
-        CHECK(*targ_it == *actual_it);
-      }
-    }
-
-    SUBCASE("escape characters") {
-      const auto raw_line = String{"\0\t\t\t\a"};
-      const auto target = Strings{};
-      const auto actual = base::tokenize_line(raw_line);
-
-      CHECK(target.size() == actual.size());
-      auto targ_it = target.cbegin();
-      auto actual_it = actual.cbegin();
-
-      for (; targ_it != target.cend(); ++targ_it, ++actual_it) {
-        CHECK(*targ_it == *actual_it);
-      }
-    }
-
-    SUBCASE("quote behavior") {
-      const auto raw_line = String{"\'this has spaces\' last_token"};
-      const auto target = Strings{"this has spaces", "last_token"};
-      const auto actual = base::tokenize_line(raw_line);
-
-      CHECK(target.size() == actual.size());
-      auto targ_it = target.cbegin();
-      auto actual_it = actual.cbegin();
-
-      for (; targ_it != target.cend(); ++targ_it, ++actual_it) {
-        CHECK(*targ_it == *actual_it);
-      }
-    }
-  }*/
 }
