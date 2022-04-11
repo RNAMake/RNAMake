@@ -279,6 +279,18 @@ private:
         return false;
     }
 
+    const Strings & get_random_bp() {
+      int pos = 0;
+      if(rng_.randrange(1000)) {
+        pos = rng_.randrange(4);
+      }
+      else{
+        pos = rng_.randrange(6);
+      }
+      return possible_bps_[pos];
+
+    }
+
 public: //option wrappers
 
     inline
