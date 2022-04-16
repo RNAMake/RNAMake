@@ -103,9 +103,9 @@ void save_backtrace() {
   auto ii(0);
   auto outfile_name = String{"stack.0"};
   // TODO fix
-  //while (base::file_exists(outfile_name)) {
-  outfile_name = String{"stack."} + std::to_string(++ii);
-  //}
+  while (std::filesystem::exists(outfile_name)) {
+    outfile_name = String{"stack."} + std::to_string(++ii);
+  }
   auto outfile = std::ofstream(outfile_name);
   static int tried_throw = -1;
 

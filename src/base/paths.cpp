@@ -6,11 +6,31 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+#include <fstream>
+
 // RNAMake Headers
 #include <base/exception.hpp>
 #include <base/types.hpp>
 
 namespace base::path {
+
+String filename(String const &str_path) {
+  Path path = {str_path};
+  if (!path.has_filename()) {
+    String msg = str_path + " does not have a filename!";
+    base::log_and_throw<base::InputException>(msg);
+  }
+  return path.filename();
+}
+
+String parent_dir(String const &str_path) {
+  Path path = {str_path};
+  if (!path.has_parent_path()) {
+    String msg = str_path + " does not have a parent path!";
+    base::log_and_throw<base::InputException>(msg);
+  }
+  return path.parent_path();
+}
 
 String rnamake_path() {
   char *base_path = std::getenv("RNAMAKE");
@@ -33,13 +53,27 @@ String rnamake_path() {
   return path;
 }
 
-/*String resources_path() {
-  String base_path = rnamake_path();
-  return base_path + "/resources/";
-}
+String resources_path() { return rnamake_path() + "resources/"; }
 
 String unittest_resource_path() {
-  return rnamake_path() + "/unittests/unittest_resources/";
-}      */
+  return rnamake_path() + "unittests/unittest_resources/";
+}
+
+void get_lines_from_file(String const fname, Strings & lines) {
+  if(!std::filesystem::exists(fname)) {
+    String msg = "The file " + fname + " does not exist!";
+    base::log_and_throw<base::InputException>(msg);
+  }
+
+  String line;
+  std::ifstream input;
+  input.open(fname);
+  while (input.good()) {
+    getline(input, line);
+    lines.push_back(line);
+  }
+  lines.pop_back();
+  input.close();
+}
 
 } // namespace base::path
