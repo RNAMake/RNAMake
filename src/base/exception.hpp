@@ -22,6 +22,11 @@ public:
   explicit ResourceException(String const &message) : Exception(message) {}
 };
 
+class InputException : public Exception {
+public:
+  explicit InputException(String const &message) : Exception(message) {}
+};
+
 template<typename E>
 inline void log_and_throw(String const & msg) {
   LOG_ERROR << msg;

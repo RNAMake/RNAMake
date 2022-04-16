@@ -26,7 +26,6 @@
 #include <iostream>
 
 // rnamake includes
-#include <base/file_io.hpp>
 #include <base/log.hpp>
 #include <base/types.hpp>
 
