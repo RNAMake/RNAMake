@@ -67,8 +67,21 @@ TEST_CASE("test path functions") {
                         "base/path/test.csv";
       Strings lines;
       base::path::get_lines_from_file(path_str, lines);
-      std::cout << lines.size() << std::endl;
-
+      CHECK(lines.size() == 2);
+      CHECK(lines[0] == "test,test1,test2");
+      CHECK(lines[1] == "1,2,3");
+    }
+    SUBCASE("make sure file exists") {
+      Strings lines;
+      CHECK_THROWS_AS(base::path::get_lines_from_file("FAKE_PATH", lines),
+                      base::InputException);
+    }
+    SUBCASE("test empty file") {
+      String path_str = base::path::unittest_resource_path() +
+                        "base/path/no_ext";
+      Strings lines;
+      base::path::get_lines_from_file(path_str, lines);
+      CHECK(lines.empty());
     }
   }
   
