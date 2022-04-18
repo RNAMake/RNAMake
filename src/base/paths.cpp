@@ -59,7 +59,7 @@ String unittest_resource_path() {
   return rnamake_path() + "unittests/unittest_resources/";
 }
 
-void get_lines_from_file(String const fname, Strings & lines) {
+void get_lines_from_file(String const & fname, Strings & lines) {
   if(!std::filesystem::exists(fname)) {
     String msg = "The file " + fname + " does not exist!";
     base::log_and_throw<base::InputException>(msg);
@@ -73,6 +73,9 @@ void get_lines_from_file(String const fname, Strings & lines) {
     lines.push_back(line);
   }
   lines.pop_back();
+  if(lines.empty()) {
+    LOG_WARNING << "there are no lines in " << fname;
+  }
   input.close();
 }
 

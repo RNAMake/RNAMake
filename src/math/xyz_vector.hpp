@@ -56,13 +56,6 @@ class xyzVector {
     }
     return *this;
   }
-  /// @brief Copy assignment
-  inline xyzVector &operator=(xyzVector const &v) {
-    _x = v._x;
-    _y = v._y;
-    _z = v._z;
-    return *this;
-  }
   /// @brief += xyzVector
   inline xyzVector &operator+=(xyzVector const &v) {
     _x += v._x;
@@ -313,9 +306,9 @@ typedef std::vector<xyzVector> Vectors;
 typedef xyzVector Point;
 typedef std::vector<Point> Points;
 
-inline Vector vector_from_str(std::string const &s) {
+inline Vector vector_from_str(String const & s) {
   Strings doubles = base::string::split(s, " ");
-  std::vector<double> point;
+  Reals point;
   assert(doubles.size() == 3);
 
   for (auto &i : doubles) {
@@ -326,9 +319,9 @@ inline Vector vector_from_str(std::string const &s) {
   return p;
 }
 
-inline Vectors vectors_from_str(std::string const &s) {
+inline Vectors vectors_from_str(String const &s) {
   Strings doubles = base::string::split(s, " ");
-  std::vector<double> point;
+  Reals point;
   Vectors vecs;
   for (auto const &d : doubles) {
     point.push_back(std::stod(d.c_str()));

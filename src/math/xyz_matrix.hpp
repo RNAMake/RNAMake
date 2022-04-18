@@ -15,8 +15,8 @@
 #include <vector>
 
 // RNAMake Headers
-#include <base/types.h>
-#include <math/xyz_vector.h>
+#include <base/types.hpp>
+#include <math/xyz_vector.hpp>
 
 namespace math {
 

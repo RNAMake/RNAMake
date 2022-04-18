@@ -16,7 +16,8 @@
 
 namespace base::path {
 
-// This all needs to be replaced by https://en.cppreference.com/w/cpp/filesystem/path
+// This all needs to be replaced by
+// https://en.cppreference.com/w/cpp/filesystem/path
 
 String filename(String const &);
 
@@ -28,8 +29,9 @@ String resources_path();
 
 String unittest_resource_path();
 
-void get_lines_from_file(String, Strings & /* return */) noexcept(false);
+void get_lines_from_file(String const &,
+                         Strings & /* return */) noexcept(false);
 
-} 
+} // namespace base::path
 
 #endif /* defined(__RNAMake__settings__) */
