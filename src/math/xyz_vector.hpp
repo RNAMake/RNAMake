@@ -215,13 +215,13 @@ class xyzVector {
            std::to_string(_z);
   }
 
-  /// @brief double x const
+  /// @brief get x value
   [[nodiscard]] inline double get_x() const { return _x; }
 
-  /// @brief double y const
+  /// @brief get y value
   [[nodiscard]] inline double get_y() const { return _y; }
 
-  /// @brief double z const
+  /// @brief get z value
   [[nodiscard]] inline double get_z() const { return _z; }
 
   /// @brief Length
