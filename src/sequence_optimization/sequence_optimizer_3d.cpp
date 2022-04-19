@@ -20,7 +20,7 @@ SequenceOptimizer3D::SequenceOptimizer3D()
       scorer_(nullptr),
       rng_(util::RandomNumberGenerator()) {
   possible_bps_ = std::vector<Strings>(
-      {{"A", "U"}, {"U", "A"}, {"G", "C"}, {"C", "G"}, {"U", "G"}, {"G", "U"}});
+      {{"A", "U"}, {"U", "A"}, {"G", "C"}, {"C", "G"}});
 
   disallowed_sequences_ = Strings();
   disallowed_sequences_.push_back(String("AAAA"));
