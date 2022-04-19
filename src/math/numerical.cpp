@@ -7,9 +7,8 @@
 //
 
 // RNAMake Headers
-#include <base/types.h>
-#include <math/numerical.h>
-#include <math/quaternion.h>
+#include <base/types.hpp>
+#include <math/numerical.hpp>
 
 namespace math {
 
@@ -58,10 +57,6 @@ int are_matrices_equal(Matrix const& m, Matrix const& mc) {
   return 1;
 }
 
-Matrix get_random_rotation_matrix() {
-  auto q = get_random_quaternion();
-  return q.get_rotation_matrix();
-}
 template <>
 bool roughly_equal<double>(double const& v1, double const& v2,
                            double tolerance) {

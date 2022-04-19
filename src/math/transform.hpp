@@ -12,8 +12,8 @@
 #include <iostream>
 
 // RNAMake Headers
-#include "math/xyz_matrix.h"
-#include "math/xyz_vector.h"
+#include <math/xyz_matrix.hpp>
+#include <math/xyz_vector.hpp>
 
 namespace math {
 
@@ -22,7 +22,6 @@ class Transform {
   template <typename>
   friend class xyzMatrix;
 
-  template <typename>
   friend class xyzVector;
 
  public:

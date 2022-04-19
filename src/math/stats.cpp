@@ -2,9 +2,9 @@
 // Created by Joseph Yesselman on 2/20/18.
 //
 
-#include "math/stats.h"
+#include <cmath>
 
-#include <math.h>
+#include <math/stats.hpp>
 
 namespace math {
 

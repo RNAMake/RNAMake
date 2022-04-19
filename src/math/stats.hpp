@@ -5,7 +5,7 @@
 #ifndef TEST_STATS_H
 #define TEST_STATS_H
 
-#include <base/types.h>
+#include <base/types.hpp>
 
 namespace math {
 

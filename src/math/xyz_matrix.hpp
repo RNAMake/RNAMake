@@ -9,13 +9,14 @@
 #ifndef __RNAMake__xyzMatrix__h
 #define __RNAMake__xyzMatrix__h
 
-#include <math.h>
+#include <cmath>
 
 #include <sstream>
 #include <vector>
 
 // RNAMake Headers
 #include <base/types.hpp>
+#include <base/string.hpp>
 #include <math/xyz_vector.hpp>
 
 namespace math {
@@ -111,7 +112,7 @@ class xyzMatrix {
         zz_(t) {}
 
   inline xyzMatrix(String const &s) {
-    auto v = base::split_str_by_delimiter(s, " ");
+    auto v = base::string::split(s, " ");
     assert(v.size() > 8);
     xx_ = std::stod(v[0]);
     xy_ = std::stod(v[1]);
@@ -123,18 +124,7 @@ class xyzMatrix {
     zy_ = std::stod(v[7]);
     zz_ = std::stod(v[8]);
   }
-
-  inline xyzMatrix(json::JSON &j)
-      : xx_(j[0].ToFloat()),
-        xy_(j[1].ToFloat()),
-        xz_(j[2].ToFloat()),
-        yx_(j[3].ToFloat()),
-        yy_(j[4].ToFloat()),
-        yz_(j[5].ToFloat()),
-        zx_(j[6].ToFloat()),
-        zy_(j[7].ToFloat()),
-        zz_(j[8].ToFloat()) {}
-
+  
   /// @brief Destructor
   inline ~xyzMatrix() = default;
 
@@ -157,11 +147,7 @@ class xyzMatrix {
          std::to_string(zz_) + "]";
     return s;
   }
-
-  inline json::JSON get_json() const {
-    return json::Array(xx_, xy_, xz_, yx_, yy_, yz_, zx_, zy_, zz_);
-  }
-
+  
  public:
   inline static xyzMatrix identity() {
     return xyzMatrix(Value(1), Value(0), Value(0), Value(0), Value(1), Value(0),
