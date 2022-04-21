@@ -13,13 +13,13 @@
 
 // RNAMake Headers
 #include <math/xyz_matrix.hpp>
-#include <math/xyz_vector.hpp>
+#include <math/vector_3.hpp>
 
 namespace math {
 
 int are_floats_equal(double const a, double const b, double tol = 0.001);
 
-int are_points_equal(Point const &p1, Point const &p2, float tol = 0.001);
+int are_points_equal(Vector3 const &p1, Vector3 const &p2, float tol = 0.001);
 
 int are_matrices_equal(Matrix const &, Matrix const &);
 
@@ -49,7 +49,7 @@ template <>
 bool roughly_equal<Matrix>(Matrix const &, Matrix const &, double);
 
 template <>
-bool roughly_equal<Vector>(Vector const &, Vector const &, double);
+bool roughly_equal<Vector3>(Vector3 const &, Vector3 const &, double);
 
 Matrix get_random_rotation_matrix();
 

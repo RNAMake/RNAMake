@@ -20,7 +20,7 @@ int are_floats_equal(double const a, double const b, double tol) {
   }
 }
 
-int are_xyzVector_equal(Vector const& vec, Vector const& correct_vec,
+int are_xyzVector_equal(Vector3 const& vec, Vector3 const& correct_vec,
                         float tol) {
   if (are_floats_equal(vec.get_x(), correct_vec.get_x(), tol) &&
       are_floats_equal(vec.get_y(), correct_vec.get_y(), tol) &&
@@ -31,7 +31,7 @@ int are_xyzVector_equal(Vector const& vec, Vector const& correct_vec,
   }
 }
 
-int are_points_equal(Point const& p1, Point const& p2, float tol) {
+int are_points_equal(Vector3 const& p1, Vector3 const& p2, float tol) {
   if (are_floats_equal(p1.get_x(), p2.get_x(), tol) &&
       are_floats_equal(p1.get_y(), p2.get_y(), tol) &&
       are_floats_equal(p1.get_z(), p2.get_z(), tol)) {
@@ -84,7 +84,7 @@ bool roughly_equal<Matrix>(Matrix const& m1, Matrix const& m2,
 }
 
 template <>
-bool roughly_equal<Vector>(Vector const& v1, Vector const& v2,
+bool roughly_equal<Vector3>(Vector3 const& v1, Vector3 const& v2,
                            double tolerance) {
   return roughly_equal(v1.get_x(), v2.get_x(), tolerance) &&
          roughly_equal(v1.get_y(), v2.get_y(), tolerance) &&
