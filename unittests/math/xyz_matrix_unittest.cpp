@@ -1,6 +1,11 @@
 
 
+#include "../common.hpp"
+
+
 #include "math/xyz_matrix.hpp"
+
+TEST_CASE("Test Matrix math ") {}
 
 /*
 #include "../common.hpp"

@@ -17,7 +17,7 @@
 // RNAMake Headers
 #include <base/types.hpp>
 #include <base/string.hpp>
-#include <math/xyz_vector.hpp>
+#include <math/vector_3.hpp>
 
 namespace math {
 
@@ -25,7 +25,7 @@ template <typename T>
 class xyzMatrix {
  public:
   typedef T Value;
-  typedef xyzVector Vector;
+  typedef Vector3 Vector;
   typedef std::vector<Vector> Vectors;
 
  public:
@@ -47,8 +47,8 @@ class xyzMatrix {
     b.zy_ = a.yz_;
   }
 
-  friend inline xyzVector dot_vector(xyzMatrix<T> const &m, xyzVector &v) {
-    auto new_v = xyzVector(0,0,0);
+  friend inline Vector3 dot_vector(xyzMatrix<T> const &m, Vector3 &v) {
+    auto new_v = Vector3(0,0,0);
     new_v.set_x(m.xx_ * v.get_x() + m.yx_ * v.get_y() + m.zx_ * v.get_z());
     new_v.set_y(m.xy_ * v.get_x() + m.yy_ * v.get_y() + m.zy_ * v.get_z());
     new_v.set_z(m.xz_ * v.get_x() + m.yz_ * v.get_y() + m.zz_ * v.get_z());
@@ -491,14 +491,14 @@ typedef std::vector<Matrix> Matrices;
 
 // TODO Remove old code and ask joe about transform_1
 template <typename T>
-inline xyzVector operator*(xyzMatrix<T> const &m, xyzVector const &v) {
-  return xyzVector(
+inline Vector3 operator*(xyzMatrix<T> const &m, Vector3 const &v) {
+  return Vector3(
       m.xx() * v.get_x() + m.get_xy() * v.get_y() + m.get_xz() * v.get_z(),
       m.get_yx() * v.get_x() + m.get_yy() * v.get_y() + m.get_yz() * v.get_z(),
       m.get_zx() * v.get_x() + m.get_zy() * v.get_y() + m.get_zz() * v.get_z());
 }
 
-inline void dot_vector(Matrix const &m, Vector const &v, Vector &vr) {
+inline void dot_vector(Matrix const &m, Vector3 const &v, Vector3 &vr) {
   vr.set_x(m.get_xx() * v.get_x() + m.get_yx() * v.get_y() +
            m.get_zx() * v.get_z());
   vr.set_y(m.get_xy() * v.get_x() + m.get_yy() * v.get_y() +
@@ -507,8 +507,8 @@ inline void dot_vector(Matrix const &m, Vector const &v, Vector &vr) {
            m.get_zz() * v.get_z());
 }
 
-inline Vector dot_vector(Matrix const &m, Vector const &v) {
-  auto vr = xyzVector(0,0,0);
+inline Vector3 dot_vector(Matrix const &m, Vector3 const &v) {
+  auto vr = Vector3(0,0,0);
   vr.set_x(m.get_xx() * v.get_x() + m.get_yx() * v.get_y() +
            m.get_zx() * v.get_z());
   vr.set_y(m.get_xy() * v.get_x() + m.get_yy() * v.get_y() +
@@ -518,7 +518,7 @@ inline Vector dot_vector(Matrix const &m, Vector const &v) {
   return vr;
 }
 
-inline void dot_vectors(Matrix const &m, Vectors const &v, Vectors &vr) {
+inline void dot_vectors(Matrix const &m, Vector3s const &v, Vector3s &vr) {
   int i;
   for (i = 0; i < v.size(); i++) {
     dot_vector(m, v[i], vr[i]);
