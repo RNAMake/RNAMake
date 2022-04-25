@@ -11,7 +11,7 @@
 #include <math/numerical.hpp>
 
 namespace math {
-
+       /*
 int are_floats_equal(double const a, double const b, double tol) {
   if (std::abs(a - b) < tol) {
     return 1;
@@ -90,5 +90,5 @@ bool roughly_equal<Vector3>(Vector3 const& v1, Vector3 const& v2,
          roughly_equal(v1.get_y(), v2.get_y(), tolerance) &&
          roughly_equal(v1.get_z(), v2.get_z(), tolerance);
 }
-
+     */
 }  // namespace math

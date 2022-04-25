@@ -51,7 +51,7 @@ enum class LogLevel {
   VERBOSE = plog::verbose
 };
 
-LogLevel log_level_from_str(String const&);
+LogLevel log_level_from_str(const String &);
 
 void init_logging(LogLevel log_level = LogLevel::INFO);
 

@@ -16,7 +16,7 @@ namespace base::string {
 
 // @brief splits string with a delimiter
 // Known issue with escaped characters, will not work properly.
-Strings split(String s, String const &delimiter) {
+Strings split(String s, const String &delimiter) {
   String token;
   Strings tokens;
   size_t pos;
@@ -36,7 +36,7 @@ Strings split(String s, String const &delimiter) {
 }
 
 // @brief joins a vector of strings with a delimiter
-String join(Strings const &strs, String const &delimiter) {
+String join(const Strings &strs, const String &delimiter) {
   String return_s;
   int i = 0;
   for (auto const &s : strs) {
@@ -79,6 +79,6 @@ String trim(String s) {
 }
 
 // @brief adds quotes to around the string. string -> 'string'
-String quoted(String const &s) { return String("'") + s + String("'"); }
+String quoted(const String &s) { return String("'") + s + String("'"); }
 
 }

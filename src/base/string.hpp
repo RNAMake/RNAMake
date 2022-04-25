@@ -17,9 +17,9 @@
 
 namespace base::string {
 
-Strings split(String, String const &);
+Strings split(String, const String &);
 
-String join(Strings const &, String const &);
+String join(const Strings &, const String &);
 
 String left_trim(String s);
 
@@ -27,7 +27,7 @@ String right_trim(String s);
 
 String trim(String s);
 
-String quoted(String const &);
+String quoted(const String &);
 
 }
 

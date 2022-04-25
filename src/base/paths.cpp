@@ -14,7 +14,7 @@
 
 namespace base::path {
 
-String filename(String const &str_path) {
+String filename(const String &str_path) {
   Path path = {str_path};
   if (!path.has_filename()) {
     String msg = str_path + " does not have a filename!";
@@ -23,7 +23,7 @@ String filename(String const &str_path) {
   return path.filename();
 }
 
-String parent_dir(String const &str_path) {
+String parent_dir(const String &str_path) {
   Path path = {str_path};
   if (!path.has_parent_path()) {
     String msg = str_path + " does not have a parent path!";
@@ -59,12 +59,11 @@ String unittest_resource_path() {
   return rnamake_path() + "unittests/unittest_resources/";
 }
 
-void get_lines_from_file(String const & fname, Strings & lines) {
-  if(!std::filesystem::exists(fname)) {
+void get_lines_from_file(const String &fname, Strings &lines) {
+  if (!std::filesystem::exists(fname)) {
     String msg = "The file " + fname + " does not exist!";
     base::log_and_throw<base::InputException>(msg);
   }
-
   String line;
   std::ifstream input;
   input.open(fname);
@@ -73,7 +72,7 @@ void get_lines_from_file(String const & fname, Strings & lines) {
     lines.push_back(line);
   }
   lines.pop_back();
-  if(lines.empty()) {
+  if (lines.empty()) {
     LOG_WARNING << "there are no lines in " << fname;
   }
   input.close();

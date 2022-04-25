@@ -4,6 +4,8 @@
 
 #include "../common.hpp"
 
+#include <sstream>
+
 #include <math/vector_3.hpp>
 
 TEST_CASE("Test xyz vector ") {
@@ -60,6 +62,14 @@ TEST_CASE("Test xyz vector ") {
       CHECK(vec_2.get_y() == doctest::Approx(1));
       CHECK(vec_2.get_z() == doctest::Approx(2));
     }
+    SUBCASE("using = operator constant") {
+      math::Vector3 vec = {0.0f, 1.0f, 2.0f};
+      Real new_val = 3;
+      vec = new_val;
+      CHECK(vec.get_x() == doctest::Approx(3));
+      CHECK(vec.get_y() == doctest::Approx(3));
+      CHECK(vec.get_z() == doctest::Approx(3));
+    }
   }
   SUBCASE("test operators") {
     SUBCASE("test +") {
@@ -87,6 +97,14 @@ TEST_CASE("Test xyz vector ") {
         CHECK(vec_1.get_y() == doctest::Approx(1.0001));
         CHECK(vec_1.get_z() == doctest::Approx(2.0001));
       }
+      SUBCASE("const + vec") {
+        math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
+        Real c = 0.1f;
+        vec_1 = c + vec_1;
+        CHECK(vec_1.get_x() == doctest::Approx(0.1));
+        CHECK(vec_1.get_y() == doctest::Approx(1.1));
+        CHECK(vec_1.get_z() == doctest::Approx(2.1));
+      }
     }
     SUBCASE("test -") {
       SUBCASE("vec - vec") {
@@ -104,13 +122,29 @@ TEST_CASE("Test xyz vector ") {
         CHECK(vec_1.get_y() == doctest::Approx(-2.0));
         CHECK(vec_1.get_z() == doctest::Approx(-1.0));
       }
+      SUBCASE("constant - vec") {
+        math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
+        vec_1 = 3 - vec_1;
+        CHECK(vec_1.get_x() == doctest::Approx(3.0));
+        CHECK(vec_1.get_y() == doctest::Approx(2.0));
+        CHECK(vec_1.get_z() == doctest::Approx(1.0));
+      }
     }
     SUBCASE("test *") {
-      math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
-      math::Vector3 vec_2 = vec_1 * 2;
-      CHECK(vec_2.get_x() == doctest::Approx(0));
-      CHECK(vec_2.get_y() == doctest::Approx(2));
-      CHECK(vec_2.get_z() == doctest::Approx(4));
+      SUBCASE("test vec * const") {
+        math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
+        math::Vector3 vec_2 = vec_1 * 2;
+        CHECK(vec_2.get_x() == doctest::Approx(0));
+        CHECK(vec_2.get_y() == doctest::Approx(2));
+        CHECK(vec_2.get_z() == doctest::Approx(4));
+      }
+      SUBCASE("test const * vec") {
+        math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
+        math::Vector3 vec_2 = 2 * vec_1;
+        CHECK(vec_2.get_x() == doctest::Approx(0));
+        CHECK(vec_2.get_y() == doctest::Approx(2));
+        CHECK(vec_2.get_z() == doctest::Approx(4));
+      }
     }
     SUBCASE("test /") {
       math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
@@ -139,6 +173,23 @@ TEST_CASE("Test xyz vector ") {
         CHECK(vec_1.get_y() == doctest::Approx(2));
         CHECK(vec_1.get_z() == doctest::Approx(3));
       }
+    }
+    SUBCASE("test -=") {
+       SUBCASE("test vec -= vec") {
+         math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
+         math::Vector3 vec_2 = {0.0f, 1.0f, 2.0f};
+         vec_1 -= vec_2;
+         CHECK(vec_1.get_x() == doctest::Approx(0));
+         CHECK(vec_1.get_y() == doctest::Approx(0));
+         CHECK(vec_1.get_z() == doctest::Approx(0));
+       }
+    }
+    SUBCASE("test negating") {
+      math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
+      vec_1 = -vec_1;
+      CHECK(vec_1.get_x() == doctest::Approx(0));
+      CHECK(vec_1.get_y() == doctest::Approx(-1));
+      CHECK(vec_1.get_z() == doctest::Approx(-2));
     }
   }
 }

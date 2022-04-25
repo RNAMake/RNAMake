@@ -16,7 +16,7 @@
 #include <math/vector_3.hpp>
 
 namespace math {
-
+/*
 int are_floats_equal(double const a, double const b, double tol = 0.001);
 
 int are_points_equal(Vector3 const &p1, Vector3 const &p2, float tol = 0.001);
@@ -52,7 +52,7 @@ template <>
 bool roughly_equal<Vector3>(Vector3 const &, Vector3 const &, double);
 
 Matrix get_random_rotation_matrix();
-
+   */
 }  // namespace math
 
 #endif /* defined(__REDESIGNC__Numeric_Test__) */

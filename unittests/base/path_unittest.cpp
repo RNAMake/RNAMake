@@ -4,15 +4,13 @@
 
 #include "../common.hpp"
 
-#include <cstdlib>
 #include <base/exception.hpp>
 #include <base/paths.hpp>
+#include <cstdlib>
 
 TEST_CASE("test path functions") {
   SUBCASE("test env path") {
-    SUBCASE("test trival") {
-      CHECK_NOTHROW(base::path::rnamake_path());
-    }
+    SUBCASE("test trival") { CHECK_NOTHROW(base::path::rnamake_path()); }
     SUBCASE("test not set") {
       String path = base::path::rnamake_path();
       unsetenv("RNAMAKE");
@@ -25,9 +23,20 @@ TEST_CASE("test path functions") {
       CHECK_THROWS_AS(base::path::rnamake_path(), base::ResourceException);
       setenv("RNAMAKE", path.c_str(), 1);
     }
+    SUBCASE("test path has a resources/") {
+      String path = base::path::rnamake_path();
+      setenv("RNAMAKE", (path + "/apps").c_str(), 1);
+      CHECK_THROWS_AS(base::path::rnamake_path(), base::ResourceException);
+      setenv("RNAMAKE", path.c_str(), 1);
+    }
     SUBCASE("test resources path") {
       String path = base::path::resources_path();
       CHECK(path == base::path::rnamake_path() + "resources/");
+    }
+    SUBCASE("test unittest_resource_path") {
+      String path = base::path::unittest_resource_path();
+      CHECK(path ==
+            base::path::rnamake_path() + "unittests/unittest_resources/");
     }
   }
   SUBCASE("test filename") {
@@ -63,8 +72,8 @@ TEST_CASE("test path functions") {
   }
   SUBCASE("test get file contents") {
     SUBCASE("test valid file") {
-      String path_str = base::path::unittest_resource_path() +
-                        "base/path/test.csv";
+      String path_str =
+          base::path::unittest_resource_path() + "base/path/test.csv";
       Strings lines;
       base::path::get_lines_from_file(path_str, lines);
       CHECK(lines.size() == 2);
@@ -77,12 +86,11 @@ TEST_CASE("test path functions") {
                       base::InputException);
     }
     SUBCASE("test empty file") {
-      String path_str = base::path::unittest_resource_path() +
-                        "base/path/no_ext";
+      String path_str =
+          base::path::unittest_resource_path() + "base/path/no_ext";
       Strings lines;
       base::path::get_lines_from_file(path_str, lines);
       CHECK(lines.empty());
     }
   }
-  
 }

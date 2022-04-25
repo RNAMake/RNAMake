@@ -19,9 +19,9 @@ namespace base::path {
 // This all needs to be replaced by
 // https://en.cppreference.com/w/cpp/filesystem/path
 
-String filename(String const &);
+String filename(const String &);
 
-String parent_dir(String const &);
+String parent_dir(const String &);
 
 String rnamake_path();
 
@@ -29,7 +29,7 @@ String resources_path();
 
 String unittest_resource_path();
 
-void get_lines_from_file(String const &,
+void get_lines_from_file(const String &,
                          Strings & /* return */) noexcept(false);
 
 } // namespace base::path
