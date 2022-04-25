@@ -34,17 +34,17 @@ private: // friends //////////////////////////////////////////////////////////
 
 public: // initiation ////////////////////////////////////////////////////////
   inline Vector3() = default;
-  inline Vector3(Vector3 const &v) = default;
-  inline Vector3(double const x, double const &y, double const &z)
+  inline Vector3(const Vector3 &v) = default;
+  inline Vector3(const double x, const double &y, const double &z)
       : _x(x), _y(y), _z(z) {}
-  inline explicit Vector3(Reals const &v) : _x(v[0]), _y(v[1]), _z(v[2]) {}
+  inline explicit Vector3(const Reals &v) : _x(v[0]), _y(v[1]), _z(v[2]) {}
 
 public: // deletion //////////////////////////////////////////////////////////
   inline ~Vector3() = default;
 
 public: // operators /////////////////////////////////////////////////////////
   /// @brief Copy assignment
-  inline Vector3 &operator=(Vector3 const &v) {
+  inline Vector3 &operator=(const Vector3 &v) {
     if (this != &v) {
       _x = v._x;
       _y = v._y;
@@ -53,46 +53,46 @@ public: // operators /////////////////////////////////////////////////////////
     return *this;
   }
   // @brief = double
-  inline Vector3 &operator=(double const &t) {
+  inline Vector3 &operator=(const double &t) {
     _x = _y = _z = t;
     return *this;
   }
   /// @brief -Vector3 (negated copy)
   inline Vector3 operator-() const { return {-_x, -_y, -_z}; }
   /// @brief Vector3 + Vector3
-  friend inline Vector3 operator+(Vector3 const &a, Vector3 const &b) {
+  friend inline Vector3 operator+(const Vector3 &a, const Vector3 &b) {
     return {a._x + b._x, a._y + b._y, a._z + b._z};
   }
   /// @brief Vector3 + double
-  friend inline Vector3 operator+(Vector3 const &v, double const &t) {
+  friend inline Vector3 operator+(const Vector3 &v, const double &t) {
     return {v._x + t, v._y + t, v._z + t};
   }
   /// @brief double + Vector3
-  friend inline Vector3 operator+(double const &t, Vector3 const &v) {
+  friend inline Vector3 operator+(const double &t, const Vector3 &v) {
     return {t + v._x, t + v._y, t + v._z};
   }
   /// @brief Vector3 - Vector3
-  friend inline Vector3 operator-(Vector3 const &a, Vector3 const &b) {
+  friend inline Vector3 operator-(const Vector3 &a, const Vector3 &b) {
     return {a._x - b._x, a._y - b._y, a._z - b._z};
   }
   /// @brief Vector3 - double
-  friend inline Vector3 operator-(Vector3 const &v, double const &t) {
+  friend inline Vector3 operator-(const Vector3 &v, const double &t) {
     return {v._x - t, v._y - t, v._z - t};
   }
   /// @brief double - Vector3
-  friend inline Vector3 operator-(double const &t, Vector3 const &v) {
+  friend inline Vector3 operator-(const double &t, const Vector3 &v) {
     return {t - v._x, t - v._y, t - v._z};
   }
   /// @brief Vector3 * double
-  friend inline Vector3 operator*(Vector3 const &v, double const &t) {
+  friend inline Vector3 operator*(const Vector3 &v, const double &t) {
     return {v._x * t, v._y * t, v._z * t};
   }
   /// @brief double * Vector3
-  friend inline Vector3 operator*(double const &t, Vector3 const &v) {
+  friend inline Vector3 operator*(const double &t, const Vector3 &v) {
     return {t * v._x, t * v._y, t * v._z};
   }
   /// @brief Vector3 / double
-  friend inline Vector3 operator/(Vector3 const &v, double const &t) {
+  friend inline Vector3 operator/(const Vector3 &v, const double &t) {
     if (t == 0) {
       String msg = "trying to divide a vector by zero!";
       base::log_and_throw<base::MathException>(msg);
@@ -100,54 +100,55 @@ public: // operators /////////////////////////////////////////////////////////
     double const inv_t(double(1) / t);
     return {v._x * inv_t, v._y * inv_t, v._z * inv_t};
   }
+  /// @brief Vector3 <<
   friend inline std::ostream &operator<<(std::ostream &stream,
-                                         Vector3 const &v) {
+                                         const Vector3 &v) {
     stream << v.get_str();
     return stream;
   }
   /// @brief += Vector3
-  inline Vector3 &operator+=(Vector3 const &v) {
+  inline Vector3 &operator+=(const Vector3 &v) {
     _x += v._x;
     _y += v._y;
     _z += v._z;
     return *this;
   }
-  /// @brief -= Vector3
-  inline Vector3 &operator-=(Vector3 const &v) {
-    _x -= v._x;
-    _y -= v._y;
-    _z -= v._z;
-    return *this;
-  }
-
   /// @brief += double
-  inline Vector3 &operator+=(double const &t) {
+  inline Vector3 &operator+=(const double &t) {
     _x += t;
     _y += t;
     _z += t;
     return *this;
   }
+  /// @brief -= Vector3
+  inline Vector3 &operator-=(const Vector3 &v) {
+    _x -= v._x;
+    _y -= v._y;
+    _z -= v._z;
+    return *this;
+  }
   /// @brief -= double
-  inline Vector3 &operator-=(double const &t) {
+  inline Vector3 &operator-=(const double &t) {
     _x -= t;
     _y -= t;
     _z -= t;
     return *this;
   }
+
   /// @brief *= double
-  inline Vector3 &operator*=(double const &t) {
+  inline Vector3 &operator*=(const double &t) {
     _x *= t;
     _y *= t;
     _z *= t;
     return *this;
   }
   /// @brief /= double
-  inline Vector3 &operator/=(double const &t) {
+  inline Vector3 &operator/=(const double &t) {
     if (t == 0) {
       String msg = "trying to divide a vector by zero!";
       base::log_and_throw<base::MathException>(msg);
     }
-    double const inv_t(1.0f / t);
+    const double inv_t(1.0f / t);
     _x *= inv_t;
     _y *= inv_t;
     _z *= inv_t;
@@ -156,30 +157,30 @@ public: // operators /////////////////////////////////////////////////////////
 
 public: // comparison ///////////////////////////////////////////////////////
   /// @brief Vector3 == Vector3
-  friend inline bool operator==(Vector3 const &a, Vector3 const &b) {
+  friend inline bool operator==(const Vector3 &a, const Vector3 &b) {
     return (a._x == b._x) && (a._y == b._y) && (a._z == b._z);
   }
   /// @brief Vector3 != Vector3
-  friend inline bool operator!=(Vector3 const &a, Vector3 const &b) {
+  friend inline bool operator!=(const Vector3 &a, const Vector3 &b) {
     return (a._x != b._x) || (a._y != b._y) || (a._z != b._z);
   }
 
 public: // methods  //////////////////////////////////////////////////////////
   /// @brief Cross product
-  [[nodiscard]] inline Vector3 cross(Vector3 const &v) const {
+  [[nodiscard]] inline Vector3 cross(const Vector3 &v) const {
     return {(_y * v._z) - (_z * v._y), (_z * v._x) - (_x * v._z),
             (_x * v._y) - (_y * v._x)};
   }
   /// @brief Distance
-  [[nodiscard]] inline double distance(Vector3 const &v) const {
+  [[nodiscard]] inline double distance(const Vector3 &v) const {
     return std::sqrt(square(_x - v._x) + square(_y - v._y) + square(_z - v._z));
   }
   /// @brief Distance squared
-  [[nodiscard]] inline double distance_squared(Vector3 const &v) const {
+  [[nodiscard]] inline double distance_squared(const Vector3 &v) const {
     return square(_x - v._x) + square(_y - v._y) + square(_z - v._z);
   }
   /// @brief Dot product
-  [[nodiscard]] inline double dot(Vector3 const &v) const {
+  [[nodiscard]] inline double dot(const Vector3 &v) const {
     return (_x * v._x) + (_y * v._y) + (_z * v._z);
   }
 
@@ -265,17 +266,17 @@ public:
 
 public: // Properties: double assignment
   /// @brief x assignment
-  inline void set_x(double const &x_a) { _x = x_a; }
+  inline void set_x(const double &x_a) { _x = x_a; }
 
   /// @brief y assignment
-  inline void set_y(double const &y_a) { _y = y_a; }
+  inline void set_y(const double &y_a) { _y = y_a; }
 
   /// @brief z assignment
-  inline void set_z(double const &z_a) { _z = z_a; }
+  inline void set_z(const double &z_a) { _z = z_a; }
 
 private: // Methods
   /// @brief square( t ) == t * t
-  inline static double square(double const &t) { return t * t; }
+  inline static double square(const double &t) { return t * t; }
 
 private: // Fields
   /// @brief Coordinates of the 3 coordinate vector
@@ -289,7 +290,7 @@ typedef std::vector<Vector3> Vector3s;
 
 /// @brief generates a Vector3 object from a string with 3 numbers seperated by
 /// by spaces.
-inline Vector3 vector_from_str(String const &s) {
+inline Vector3 vector_from_str(const String &s) {
   Strings doubles = base::string::split(s, " ");
   Reals point;
   if (doubles.size() != 3) {
@@ -303,10 +304,9 @@ inline Vector3 vector_from_str(String const &s) {
   return Vector3{point};
 }
 
-inline Vector3s vectors_from_str(String const &s) {
+inline void vectors_from_str(const String &s, Vector3s &vecs /* return */) {
   Strings doubles = base::string::split(s, " ");
   Reals point = {0, 0, 0};
-  Vector3s vecs;
   int pos = 0;
   for (auto const &d : doubles) {
     point[pos] = std::stod(d);
@@ -322,7 +322,6 @@ inline Vector3s vectors_from_str(String const &s) {
                  std::to_string(doubles.size());
     base::log_and_throw<base::InputException>(msg);
   }
-  return vecs;
 }
 
 } // namespace math

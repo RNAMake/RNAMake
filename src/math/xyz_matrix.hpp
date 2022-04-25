@@ -15,26 +15,17 @@
 #include <vector>
 
 // RNAMake Headers
-#include <base/types.hpp>
 #include <base/string.hpp>
+#include <base/types.hpp>
 #include <math/vector_3.hpp>
 
 namespace math {
-
-template <typename T>
-class xyzMatrix {
- public:
-  typedef T Value;
-  typedef Vector3 Vector;
-  typedef std::vector<Vector> Vectors;
-
- public:
-  template <typename>
-  friend class xyzMatrix;
-
+/*
+class Matrix3x3 {
+public:
   friend class Transform;
 
-  friend inline void transpose(xyzMatrix<T> const &a, xyzMatrix<T> &b) {
+  friend inline void transpose(Matrix3x3 const &a, Matrix3x3 &b) {
     b.xx_ = a.xx_;
     b.yy_ = a.yy_;
     b.zz_ = a.zz_;
@@ -47,88 +38,33 @@ class xyzMatrix {
     b.zy_ = a.yz_;
   }
 
-  friend inline Vector3 dot_vector(xyzMatrix<T> const &m, Vector3 &v) {
-    auto new_v = Vector3(0,0,0);
+  friend inline Vector3 dot_vector(Matrix3x3 const &m, Vector3 &v) {
+    auto new_v = Vector3(0, 0, 0);
     new_v.set_x(m.xx_ * v.get_x() + m.yx_ * v.get_y() + m.zx_ * v.get_z());
     new_v.set_y(m.xy_ * v.get_x() + m.yy_ * v.get_y() + m.zy_ * v.get_z());
     new_v.set_z(m.xz_ * v.get_x() + m.yz_ * v.get_y() + m.zz_ * v.get_z());
     return new_v;
   }
 
- public:  // creation
-  /// @brief Default constructor
-  /// @note  V
-  /// alues are uninitialized for efficiency
-  inline xyzMatrix() {}
-
-  /// @brief Copy constructor
-  inline xyzMatrix(xyzMatrix const &m)
-      : xx_(m.xx_),
-        xy_(m.xy_),
-        xz_(m.xz_),
-        yx_(m.yx_),
-        yy_(m.yy_),
-        yz_(m.yz_),
-        zx_(m.zx_),
-        zy_(m.zy_),
-        zz_(m.zz_) {}
-
-  /// @brief Copy constructor
-  template <typename U>
-  inline xyzMatrix(xyzMatrix<U> const &m)
-      : xx_(m.xx_),
-        xy_(m.xy_),
-        xz_(m.xz_),
-        yx_(m.yx_),
-        yy_(m.yy_),
-        yz_(m.yz_),
-        zx_(m.zx_),
-        zy_(m.zy_),
-        zz_(m.zz_) {}
-
-  inline xyzMatrix(const T &xx, const T &xy, const T &xz, const T &yx,
-                   const T &yy, const T &yz, const T &zx, const T &zy,
-                   const T &zz)
-      : xx_(xx),
-        xy_(xy),
-        xz_(xz),
-        yx_(yx),
-        yy_(yy),
-        yz_(yz),
-        zx_(zx),
-        zy_(zy),
+public: // initiation ////////////////////////////////////////////////////////
+  inline Matrix3x3() = default;
+  inline Matrix3x3(Matrix3x3 const &m) = default;
+  inline Matrix3x3(const double xx, const double xy, const double xz,
+                   const double yx, const double yy, const double yz,
+                   const double zx, const double zy, const double zz)
+      : xx_(xx), xy_(xy), xz_(xz), yx_(yx), yy_(yy), yz_(yz), zx_(zx), zy_(zy),
         zz_(zz) {}
-
   /// @brief Uniform value constructor
-  inline explicit xyzMatrix(Value const &t)
-      : xx_(t),
-        xy_(t),
-        xz_(t),
-        yx_(t),
-        yy_(t),
-        yz_(t),
-        zx_(t),
-        zy_(t),
-        zz_(t) {}
-
-  inline xyzMatrix(String const &s) {
-    auto v = base::string::split(s, " ");
-    assert(v.size() > 8);
-    xx_ = std::stod(v[0]);
-    xy_ = std::stod(v[1]);
-    xz_ = std::stod(v[2]);
-    yx_ = std::stod(v[3]);
-    yy_ = std::stod(v[4]);
-    yz_ = std::stod(v[5]);
-    zx_ = std::stod(v[6]);
-    zy_ = std::stod(v[7]);
-    zz_ = std::stod(v[8]);
+  inline explicit Matrix3x3(const double &t)
+      : xx_(t), xy_(t), xz_(t), yx_(t), yy_(t), yz_(t), zx_(t), zy_(t), zz_(t) {
   }
-  
-  /// @brief Destructor
-  inline ~xyzMatrix() = default;
 
- public:
+
+
+  /// @brief Destructor
+  inline ~Matrix3x3() = default;
+
+public:
   inline String const get_str() const {
     return std::to_string(xx_) + " " + std::to_string(xy_) + " " +
            std::to_string(xz_) + " " + std::to_string(yx_) + " " +
@@ -147,16 +83,14 @@ class xyzMatrix {
          std::to_string(zz_) + "]";
     return s;
   }
-  
- public:
-  inline static xyzMatrix identity() {
-    return xyzMatrix(Value(1), Value(0), Value(0), Value(0), Value(1), Value(0),
-                     Value(0), Value(0), Value(1));
+
+public:
+  inline static Matrix3x3 identity() {
+    return {1, 0, 0, 0, 1, 0, 0, 0, 1};
   }
 
   /// @brief Copy assignment
-  template <typename U>
-  inline xyzMatrix &operator=(xyzMatrix<U> const &m) {
+  inline Matrix3x3 &operator=(Matrix3x3 const &m) {
     xx_ = m.xx_;
     xy_ = m.xy_;
     xz_ = m.xz_;
@@ -170,8 +104,7 @@ class xyzMatrix {
   }
 
   /// @brief += xyzMatrix
-  template <typename U>
-  inline xyzMatrix &operator+=(xyzMatrix<U> const &m) {
+  inline Matrix3x3 &operator+=(Matrix3x3 const &m) {
     xx_ += m.xx_;
     xy_ += m.xy_;
     xz_ += m.xz_;
@@ -184,8 +117,7 @@ class xyzMatrix {
     return *this;
   }
 
-  template <typename U>
-  inline xyzMatrix &operator-=(xyzMatrix<U> const &m) {
+  inline Matrix3x3 &operator-=(Matrix3x3 const &m) {
     xx_ -= m.xx_;
     xy_ -= m.xy_;
     xz_ -= m.xz_;
@@ -198,9 +130,9 @@ class xyzMatrix {
     return *this;
   }
 
- public:  // Assignment: scalar
+public: // Assignment: scalar
   /// @brief = Value
-  inline xyzMatrix &operator=(Value const &t) {
+  inline Matrix3x3 &operator=(double const &t) {
     xx_ = xy_ = xz_ = t;
     yx_ = yy_ = yz_ = t;
     zx_ = zy_ = zz_ = t;
@@ -235,7 +167,7 @@ class xyzMatrix {
     return *this;
   }
 
- public:  // Methods: basic mathematical
+public: // Methods: basic mathematical
   /// @brief xyzMatrix + xyzMatrix
   friend inline xyzMatrix operator+(xyzMatrix const &a, xyzMatrix const &b) {
     return xyzMatrix(a.xx_ + b.xx_, a.xy_ + b.xy_, a.xz_ + b.xz_, a.yx_ + b.yx_,
@@ -314,7 +246,7 @@ class xyzMatrix {
                      m.zz_ * inv_t);
   }
 
- public:
+public:
   /// @brief Transpose
   inline xyzMatrix &transpose() {
     Value temp = xy_;
@@ -420,7 +352,7 @@ class xyzMatrix {
     zz_ /= dot;
   }
 
- public:  // Properties: scalars
+public: // Properties: scalars
   /// @brief Value xx const
   inline Value const &get_xx() const { return xx_; }
 
@@ -448,7 +380,7 @@ class xyzMatrix {
   /// @brief Value zz const
   inline Value const &get_zz() const { return zz_; }
 
- public:  // Properties: value assignment
+public: // Properties: value assignment
   /// @brief xx assignment
   inline void set_xx(Value const &xx_a) { xx_ = xx_a; }
 
@@ -480,7 +412,7 @@ class xyzMatrix {
     return xyzMatrix(xx_, yx_, zx_, xy_, yy_, zy_, xz_, yz_, zz_);
   }
 
- private:
+private:
   Value xx_, xy_, xz_;
   Value yx_, yy_, yz_;
   Value zx_, zy_, zz_;
@@ -508,7 +440,7 @@ inline void dot_vector(Matrix const &m, Vector3 const &v, Vector3 &vr) {
 }
 
 inline Vector3 dot_vector(Matrix const &m, Vector3 const &v) {
-  auto vr = Vector3(0,0,0);
+  auto vr = Vector3(0, 0, 0);
   vr.set_x(m.get_xx() * v.get_x() + m.get_yx() * v.get_y() +
            m.get_zx() * v.get_z());
   vr.set_y(m.get_xy() * v.get_x() + m.get_yy() * v.get_y() +
@@ -525,8 +457,7 @@ inline void dot_vectors(Matrix const &m, Vector3s const &v, Vector3s &vr) {
   }
 }
 
-template <typename T>
-inline xyzMatrix<T> transform_1(xyzMatrix<T> const &m) {
+template <typename T> inline xyzMatrix<T> transform_1(xyzMatrix<T> const &m) {
   return xyzMatrix<T>(m.get_xx(), m.get_xy(), m.get_xz(), -m.get_yx(),
                       -m.get_yy(), -m.get_yz(), -m.get_zx(), -m.get_zy(),
                       -m.get_zz());
@@ -592,7 +523,21 @@ inline String matrix_to_str(Matrix const &m) {
   ss << m.get_zx() << " " << m.get_zy() << " " << m.get_zz() << " ";
   return ss.str();
 }
+*/
+ /* inline xyzMatrix(String const &s) {
+  auto v = base::string::split(s, " ");
+  assert(v.size() > 8);
+  xx_ = std::stod(v[0]);
+  xy_ = std::stod(v[1]);
+  xz_ = std::stod(v[2]);
+  yx_ = std::stod(v[3]);
+  yy_ = std::stod(v[4]);
+  yz_ = std::stod(v[5]);
+  zx_ = std::stod(v[6]);
+  zy_ = std::stod(v[7]);
+  zz_ = std::stod(v[8]);
+}   */
 
-}  // namespace math
+} // namespace math
 
 #endif

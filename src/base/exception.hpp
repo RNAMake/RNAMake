@@ -14,26 +14,26 @@ namespace base {
 
 class Exception : public std::runtime_error {
 public:
-  explicit Exception(String const &message) : std::runtime_error(message) {}
+  explicit Exception(const String &message) : std::runtime_error(message) {}
 };
 
 class ResourceException : public Exception {
 public:
-  explicit ResourceException(String const &message) : Exception(message) {}
+  explicit ResourceException(const String &message) : Exception(message) {}
 };
 
 class InputException : public Exception {
 public:
-  explicit InputException(String const &message) : Exception(message) {}
+  explicit InputException(const String &message) : Exception(message) {}
 };
 
 class MathException : public Exception {
 public:
-  explicit MathException(String const &message) : Exception(message) {}
+  explicit MathException(const String &message) : Exception(message) {}
 };
 
 template<typename E>
-inline void log_and_throw(String const & msg) {
+inline void log_and_throw(const String & msg) {
   LOG_ERROR << msg;
   throw E(msg);
 }
