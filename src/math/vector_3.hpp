@@ -134,7 +134,6 @@ public: // operators /////////////////////////////////////////////////////////
     _z -= t;
     return *this;
   }
-
   /// @brief *= double
   inline Vector3 &operator*=(const double &t) {
     _x *= t;
