@@ -183,6 +183,74 @@ TEST_CASE("Test xyz vector ") {
          CHECK(vec_1.get_y() == doctest::Approx(0));
          CHECK(vec_1.get_z() == doctest::Approx(0));
        }
+       SUBCASE("test vec -= const") {
+         math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
+         vec_1 -= 1.0f;
+         CHECK(vec_1.get_x() == doctest::Approx(-1));
+         CHECK(vec_1.get_y() == doctest::Approx(0));
+         CHECK(vec_1.get_z() == doctest::Approx(1));
+       }
+    }
+    SUBCASE("test *= const") {
+      math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
+      vec_1 *= 2;
+      CHECK(vec_1.get_x() == doctest::Approx(0));
+      CHECK(vec_1.get_y() == doctest::Approx(2));
+      CHECK(vec_1.get_z() == doctest::Approx(4));
+    }
+    SUBCASE("test /= const") {
+      SUBCASE("trival test") {
+        math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
+        vec_1 /= 2;
+        CHECK(vec_1.get_x() == doctest::Approx(0));
+        CHECK(vec_1.get_y() == doctest::Approx(0.5f));
+        CHECK(vec_1.get_z() == doctest::Approx(1.0f));
+      }
+      SUBCASE("divide by zero test") {
+        math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
+        CHECK_THROWS_AS(vec_1 /= 0, base::MathException);
+      }
+    }
+    SUBCASE("test == ") {
+      math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
+      math::Vector3 vec_2 = {0.0f, 1.0f, 2.0f};
+      CHECK(vec_1 == vec_2);
+    }
+    SUBCASE("test != ") {
+      SUBCASE("trival test") {
+        math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
+        math::Vector3 vec_2 = {0.1f, 1.0f, 2.0f};
+        CHECK(vec_1 != vec_2);
+      }
+      SUBCASE("really small change") {
+        math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
+        math::Vector3 vec_2 = {0.0f, 1.000001f, 2.0f};
+        CHECK(vec_1 != vec_2);
+      }
+    }
+    SUBCASE("test <<") {
+      math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
+      std::stringstream ss;
+      ss << vec_1;
+      CHECK(ss.str() == "0.000000 1.000000 2.000000");
+    }
+    SUBCASE("test cross") {
+      SUBCASE("trival test") {
+        math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
+        math::Vector3 vec_2 = {0.0f, 1.0f, 2.0f};
+        math::Vector3 cross = vec_1.cross(vec_2);
+        CHECK(cross.get_x() == doctest::Approx(0));
+        CHECK(cross.get_y() == doctest::Approx(0));
+        CHECK(cross.get_z() == doctest::Approx(0));
+      }
+      SUBCASE("more complex test") {
+        math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
+        math::Vector3 vec_2 = {1.0f, 1.0f, 1.0f};
+        math::Vector3 cross = vec_1.cross(vec_2);
+        CHECK(cross.get_x() == doctest::Approx(-1));
+        CHECK(cross.get_y() == doctest::Approx(2));
+        CHECK(cross.get_z() == doctest::Approx(-1));
+      }
     }
     SUBCASE("test negating") {
       math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
