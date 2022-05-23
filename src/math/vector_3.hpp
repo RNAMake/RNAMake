@@ -35,9 +35,14 @@ private: // friends //////////////////////////////////////////////////////////
 public: // initiation ////////////////////////////////////////////////////////
   inline Vector3() = default;
   inline Vector3(const Vector3 &v) = default;
-  inline Vector3(const double x, const double &y, const double &z)
+  inline Vector3(const double &x, const double &y, const double &z)
       : _x(x), _y(y), _z(z) {}
-  inline explicit Vector3(const Reals &v) : _x(v[0]), _y(v[1]), _z(v[2]) {}
+  inline explicit Vector3(const Reals &v) : _x(v[0]), _y(v[1]), _z(v[2]) {
+    if(v.size() > 3) {
+      String msg = "Too many input arguments!";
+      base::log_and_throw<base::MathException>(msg);
+    }
+  }
 
 public: // deletion //////////////////////////////////////////////////////////
   inline ~Vector3() = default;
