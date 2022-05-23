@@ -16,6 +16,13 @@ TEST_CASE("Test xyz vector ") {
       CHECK(vec.get_y() == doctest::Approx(0));
       CHECK(vec.get_z() == doctest::Approx(0));
     }
+
+    /*
+    SUBCASE("test 1D vector"){
+      math::Vector3 vec{1};
+      CHECK(vec.get_x() == doctest::Approx(1));
+    }
+     */
     SUBCASE("test supply ints") {
       math::Vector3 vec = {0, 1, 2};
       CHECK(vec.get_x() == doctest::Approx(0));
@@ -34,10 +41,13 @@ TEST_CASE("Test xyz vector ") {
       CHECK(vec.get_x() == doctest::Approx(0));
       CHECK(vec.get_y() == doctest::Approx(1));
       CHECK(vec.get_z() == doctest::Approx(2));
-      // TODO check to make sure this actually raises an assert?
-      Reals nums2 = {0.0, 1.0, 2.0, 3.0};
-      math::Vector3 vec2(nums2);
     }
+    // TODO check to make sure this actually raises an assert?
+    SUBCASE("too many input arguments") {
+      Reals nums2 = {0.0, 1.0, 2.0, 3.0};
+      CHECK_THROWS_AS(math::Vector3{nums2}, base::MathException);
+    }
+
   }
   SUBCASE("test copy") {
     SUBCASE("test trival copy") {
@@ -175,21 +185,21 @@ TEST_CASE("Test xyz vector ") {
       }
     }
     SUBCASE("test -=") {
-       SUBCASE("test vec -= vec") {
-         math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
-         math::Vector3 vec_2 = {0.0f, 1.0f, 2.0f};
-         vec_1 -= vec_2;
-         CHECK(vec_1.get_x() == doctest::Approx(0));
-         CHECK(vec_1.get_y() == doctest::Approx(0));
-         CHECK(vec_1.get_z() == doctest::Approx(0));
-       }
-       SUBCASE("test vec -= const") {
-         math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
-         vec_1 -= 1.0f;
-         CHECK(vec_1.get_x() == doctest::Approx(-1));
-         CHECK(vec_1.get_y() == doctest::Approx(0));
-         CHECK(vec_1.get_z() == doctest::Approx(1));
-       }
+      SUBCASE("test vec -= vec") {
+        math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
+        math::Vector3 vec_2 = {0.0f, 1.0f, 2.0f};
+        vec_1 -= vec_2;
+        CHECK(vec_1.get_x() == doctest::Approx(0));
+        CHECK(vec_1.get_y() == doctest::Approx(0));
+        CHECK(vec_1.get_z() == doctest::Approx(0));
+      }
+      SUBCASE("test vec -= const") {
+        math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
+        vec_1 -= 1.0f;
+        CHECK(vec_1.get_x() == doctest::Approx(-1));
+        CHECK(vec_1.get_y() == doctest::Approx(0));
+        CHECK(vec_1.get_z() == doctest::Approx(1));
+      }
     }
     SUBCASE("test *= const") {
       math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
