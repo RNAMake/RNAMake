@@ -41,6 +41,9 @@ public: // initiation ////////////////////////////////////////////////////////
     if(v.size() > 3) {
       String msg = "Too many input arguments!";
       base::log_and_throw<base::MathException>(msg);
+    } else if (v.size() < 3) {
+      String msg = "Too few input arguments!";
+      base::log_and_throw<base::MathException>(msg);
     }
   }
 

@@ -17,12 +17,6 @@ TEST_CASE("Test xyz vector ") {
       CHECK(vec.get_z() == doctest::Approx(0));
     }
 
-    /*
-    SUBCASE("test 1D vector"){
-      math::Vector3 vec{1};
-      CHECK(vec.get_x() == doctest::Approx(1));
-    }
-     */
     SUBCASE("test supply ints") {
       math::Vector3 vec = {0, 1, 2};
       CHECK(vec.get_x() == doctest::Approx(0));
@@ -42,10 +36,15 @@ TEST_CASE("Test xyz vector ") {
       CHECK(vec.get_y() == doctest::Approx(1));
       CHECK(vec.get_z() == doctest::Approx(2));
     }
-    // TODO check to make sure this actually raises an assert?
     SUBCASE("too many input arguments") {
       Reals nums2 = {0.0, 1.0, 2.0, 3.0};
       CHECK_THROWS_AS(math::Vector3{nums2}, base::MathException);
+    }
+    SUBCASE("too few input arguments"){
+      Reals nums3 = {0.0, 1.0};
+      Reals nums4 = {1.0};
+      CHECK_THROWS_AS(math::Vector3{nums3}, base::MathException);
+      CHECK_THROWS_AS(math::Vector3{nums4}, base::MathException);
     }
 
   }
