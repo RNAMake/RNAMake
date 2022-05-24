@@ -271,10 +271,10 @@ TEST_CASE("Test xyz vector ") {
     }
     SUBCASE("test negating") {
       math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
-      vec_1 = -vec_1;
-      CHECK(vec_1.get_x() == doctest::Approx(0));
-      CHECK(vec_1.get_y() == doctest::Approx(-1));
-      CHECK(vec_1.get_z() == doctest::Approx(-2));
+      math::Vector3 vec_1_negate = vec_1.negate();
+      CHECK(vec_1_negate.get_x() == doctest::Approx(0));
+      CHECK(vec_1_negate.get_y() == doctest::Approx(-1));
+      CHECK(vec_1_negate.get_z() == doctest::Approx(-2));
     }
     SUBCASE("test negating and copying") {
       math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
@@ -424,6 +424,35 @@ TEST_CASE("Test xyz vector ") {
         CHECK(vec_1.get_x() == doctest::Approx(1));
         CHECK(vec_1.get_y() == doctest::Approx(2));
         CHECK(vec_1.get_z() == doctest::Approx(3));
+      }
+    }
+    SUBCASE("test vector from string") {
+      SUBCASE("test normal circumstance") {
+        String vec_1_string = "1.0 2.0 3.0";
+        math::Vector3 vec_1 = math::vector_from_str(vec_1_string);
+        CHECK(vec_1.get_x() == doctest::Approx(1));
+        CHECK(vec_1.get_y() == doctest::Approx(2));
+        CHECK(vec_1.get_z() == doctest::Approx(3));
+      }
+      SUBCASE("test too few inputs") {
+        String vec_1_string = "1.0 2.0";
+        CHECK_THROWS_AS(math::vector_from_str(vec_1_string), base::InputException);
+      }
+      SUBCASE("test too many inputs") {
+        String vec_1_string = "1.0 2.0 3.0 4.0";
+        CHECK_THROWS_AS(math::vector_from_str(vec_1_string), base::InputException);
+      }
+      SUBCASE("tset zero input") {
+        String vec_1_string = "";
+        CHECK_THROWS_AS(math::vector_from_str(vec_1_string), base::InputException);
+      }
+    }
+    // TODO what in the heck is going on here
+    SUBCASE("test constructing vectors string") {
+      SUBCASE("test normal circumstance") {
+        String vec_1_string = "1 2 3";
+        math::Vector3s vec_1 = {};
+        math::vectors_from_str(vec_1_string, vec_1);
       }
     }
   }
