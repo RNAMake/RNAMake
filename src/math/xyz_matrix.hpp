@@ -1,13 +1,13 @@
 //
-//  xyzMatrix.h
+//  Matrix3x3.h
 //  REDESIGNC
 //
 //  Created by Joseph Yesselman on 9/28/14.
 //  Copyright (c) 2014 Joseph Yesselman. All rights reserved.
 //
 
-#ifndef __RNAMake__xyzMatrix__h
-#define __RNAMake__xyzMatrix__h
+#ifndef __RNAMake__Matrix3x3__h
+#define __RNAMake__Matrix3x3__h
 
 #include <cmath>
 
@@ -18,9 +18,9 @@
 #include <base/string.hpp>
 #include <base/types.hpp>
 #include <math/vector_3.hpp>
-
-namespace math {
 /*
+namespace math {
+
 class Matrix3x3 {
 public:
   friend class Transform;
@@ -103,7 +103,7 @@ public:
     return *this;
   }
 
-  /// @brief += xyzMatrix
+  /// @brief += Matrix3x3
   inline Matrix3x3 &operator+=(Matrix3x3 const &m) {
     xx_ += m.xx_;
     xy_ += m.xy_;
@@ -140,7 +140,7 @@ public: // Assignment: scalar
   }
 
   /// @brief += Value
-  inline xyzMatrix &operator+=(Value const &t) {
+  inline Matrix3x3 &operator+=(Value const &t) {
     xx_ += t;
     xy_ += t;
     xz_ += t;
@@ -154,7 +154,7 @@ public: // Assignment: scalar
   }
 
   /// @brief -= Value
-  inline xyzMatrix &operator-=(Value const &t) {
+  inline Matrix3x3 &operator-=(Value const &t) {
     xx_ -= t;
     xy_ -= t;
     xz_ -= t;
@@ -168,47 +168,47 @@ public: // Assignment: scalar
   }
 
 public: // Methods: basic mathematical
-  /// @brief xyzMatrix + xyzMatrix
-  friend inline xyzMatrix operator+(xyzMatrix const &a, xyzMatrix const &b) {
-    return xyzMatrix(a.xx_ + b.xx_, a.xy_ + b.xy_, a.xz_ + b.xz_, a.yx_ + b.yx_,
+  /// @brief Matrix3x3 + Matrix3x3
+  friend inline Matrix3x3 operator+(Matrix3x3 const &a, Matrix3x3 const &b) {
+    return Matrix3x3(a.xx_ + b.xx_, a.xy_ + b.xy_, a.xz_ + b.xz_, a.yx_ + b.yx_,
                      a.yy_ + b.yy_, a.yz_ + b.yz_, a.zx_ + b.zx_, a.zy_ + b.zy_,
                      a.zz_ + b.zz_);
   }
 
-  /// @brief xyzMatrix + Value
-  friend inline xyzMatrix operator+(xyzMatrix const &m, Value const &t) {
-    return xyzMatrix(m.xx_ + t, m.xy_ + t, m.xz_ + t, m.yx_ + t, m.yy_ + t,
+  /// @brief Matrix3x3 + Value
+  friend inline Matrix3x3 operator+(Matrix3x3 const &m, Value const &t) {
+    return Matrix3x3(m.xx_ + t, m.xy_ + t, m.xz_ + t, m.yx_ + t, m.yy_ + t,
                      m.yz_ + t, m.zx_ + t, m.zy_ + t, m.zz_ + t);
   }
 
-  /// @brief Value + xyzMatrix
-  friend inline xyzMatrix operator+(Value const &t, xyzMatrix const &m) {
-    return xyzMatrix(t + m.xx_, t + m.xy_, t + m.xz_, t + m.yx_, t + m.yy_,
+  /// @brief Value + Matrix3x3
+  friend inline Matrix3x3 operator+(Value const &t, Matrix3x3 const &m) {
+    return Matrix3x3(t + m.xx_, t + m.xy_, t + m.xz_, t + m.yx_, t + m.yy_,
                      t + m.yz_, t + m.zx_, t + m.zy_, t + m.zz_);
   }
 
-  /// @brief xyzMatrix - xyzMatrix
-  friend inline xyzMatrix operator-(xyzMatrix const &a, xyzMatrix const &b) {
-    return xyzMatrix(a.xx_ - b.xx_, a.xy_ - b.xy_, a.xz_ - b.xz_, a.yx_ - b.yx_,
+  /// @brief Matrix3x3 - Matrix3x3
+  friend inline Matrix3x3 operator-(Matrix3x3 const &a, Matrix3x3 const &b) {
+    return Matrix3x3(a.xx_ - b.xx_, a.xy_ - b.xy_, a.xz_ - b.xz_, a.yx_ - b.yx_,
                      a.yy_ - b.yy_, a.yz_ - b.yz_, a.zx_ - b.zx_, a.zy_ - b.zy_,
                      a.zz_ - b.zz_);
   }
 
-  /// @brief xyzMatrix - Value
-  friend inline xyzMatrix operator-(xyzMatrix const &m, Value const &t) {
-    return xyzMatrix(m.xx_ - t, m.xy_ - t, m.xz_ - t, m.yx_ - t, m.yy_ - t,
+  /// @brief Matrix3x3 - Value
+  friend inline Matrix3x3 operator-(Matrix3x3 const &m, Value const &t) {
+    return Matrix3x3(m.xx_ - t, m.xy_ - t, m.xz_ - t, m.yx_ - t, m.yy_ - t,
                      m.yz_ - t, m.zx_ - t, m.zy_ - t, m.zz_ - t);
   }
 
-  /// @brief Value - xyzMatrix
-  friend inline xyzMatrix operator-(Value const &t, xyzMatrix const &m) {
-    return xyzMatrix(t - m.xx_, t - m.xy_, t - m.xz_, t - m.yx_, t - m.yy_,
+  /// @brief Value - Matrix3x3
+  friend inline Matrix3x3 operator-(Value const &t, Matrix3x3 const &m) {
+    return Matrix3x3(t - m.xx_, t - m.xy_, t - m.xz_, t - m.yx_, t - m.yy_,
                      t - m.yz_, t - m.zx_, t - m.zy_, t - m.zz_);
   }
 
-  /// @brief xyzMatrix * xyzMatrix
-  friend inline xyzMatrix operator*(xyzMatrix const &a, xyzMatrix const &b) {
-    return xyzMatrix(
+  /// @brief Matrix3x3 * Matrix3x3
+  friend inline Matrix3x3 operator*(Matrix3x3 const &a, Matrix3x3 const &b) {
+    return Matrix3x3(
         // First row
         (a.xx_ * b.xx_) + (a.xy_ * b.yx_) + (a.xz_ * b.zx_),
         (a.xx_ * b.xy_) + (a.xy_ * b.yy_) + (a.xz_ * b.zy_),
@@ -225,30 +225,30 @@ public: // Methods: basic mathematical
         (a.zx_ * b.xz_) + (a.zy_ * b.yz_) + (a.zz_ * b.zz_));
   }
 
-  /// @brief xyzMatrix * Value
-  friend inline xyzMatrix operator*(xyzMatrix const &m, Value const &t) {
-    return xyzMatrix(m.xx_ * t, m.xy_ * t, m.xz_ * t, m.yx_ * t, m.yy_ * t,
+  /// @brief Matrix3x3 * Value
+  friend inline Matrix3x3 operator*(Matrix3x3 const &m, Value const &t) {
+    return Matrix3x3(m.xx_ * t, m.xy_ * t, m.xz_ * t, m.yx_ * t, m.yy_ * t,
                      m.yz_ * t, m.zx_ * t, m.zy_ * t, m.zz_ * t);
   }
 
-  /// @brief Value * xyzMatrix
-  friend inline xyzMatrix operator*(Value const &t, xyzMatrix const &m) {
-    return xyzMatrix(t * m.xx_, t * m.xy_, t * m.xz_, t * m.yx_, t * m.yy_,
+  /// @brief Value * Matrix3x3
+  friend inline Matrix3x3 operator*(Value const &t, Matrix3x3 const &m) {
+    return Matrix3x3(t * m.xx_, t * m.xy_, t * m.xz_, t * m.yx_, t * m.yy_,
                      t * m.yz_, t * m.zx_, t * m.zy_, t * m.zz_);
   }
 
-  /// @brief xyzMatrix / Value
-  friend inline xyzMatrix operator/(xyzMatrix const &m, Value const &t) {
+  /// @brief Matrix3x3 / Value
+  friend inline Matrix3x3 operator/(Matrix3x3 const &m, Value const &t) {
     assert(t != Value(0));
     Value const inv_t(Value(1) / t);
-    return xyzMatrix(m.xx_ * inv_t, m.xy_ * inv_t, m.xz_ * inv_t, m.yx_ * inv_t,
+    return Matrix3x3(m.xx_ * inv_t, m.xy_ * inv_t, m.xz_ * inv_t, m.yx_ * inv_t,
                      m.yy_ * inv_t, m.yz_ * inv_t, m.zx_ * inv_t, m.zy_ * inv_t,
                      m.zz_ * inv_t);
   }
 
 public:
   /// @brief Transpose
-  inline xyzMatrix &transpose() {
+  inline Matrix3x3 &transpose() {
     Value temp = xy_;
     xy_ = yx_;
     yx_ = temp;
@@ -264,7 +264,7 @@ public:
     return *this;
   }
 
-  inline double difference(xyzMatrix<T> const &b) const {
+  inline double difference(Matrix3x3<T> const &b) const {
     double dist = 0.0f;
     dist += std::abs(xx_ - b.xx_);
     dist += std::abs(xy_ - b.xy_);
@@ -279,12 +279,12 @@ public:
     return dist;
   }
 
-  inline xyzMatrix get_flip_orientation() const {
-    return xyzMatrix(xx_, xy_, xz_, -yx_, -yy_, -yz_, -zx_, -zy_, -zz_);
+  inline Matrix3x3 get_flip_orientation() const {
+    return Matrix3x3(xx_, xy_, xz_, -yx_, -yy_, -yz_, -zx_, -zy_, -zz_);
   }
 
-  inline xyzMatrix get_unitarize() const {
-    auto m = xyzMatrix(xx_, xy_, xz_, yx_, yy_, yz_, zx_, zy_, zz_);
+  inline Matrix3x3 get_unitarize() const {
+    auto m = Matrix3x3(xx_, xy_, xz_, yx_, yy_, yz_, zx_, zy_, zz_);
 
     // R[0] /= math.sqrt(R[0].dot(R[0]))
     double dot = sqrt(xx_ * xx_ + xy_ * xy_ + xz_ * xz_);
@@ -408,8 +408,8 @@ public: // Properties: value assignment
   /// @brief zz assignment
   inline void set_zz(Value const &zz_a) { zz_ = zz_a; }
 
-  inline xyzMatrix<T> get_transposed() const {
-    return xyzMatrix(xx_, yx_, zx_, xy_, yy_, zy_, xz_, yz_, zz_);
+  inline Matrix3x3<T> get_transposed() const {
+    return Matrix3x3(xx_, yx_, zx_, xy_, yy_, zy_, xz_, yz_, zz_);
   }
 
 private:
@@ -418,12 +418,12 @@ private:
   Value zx_, zy_, zz_;
 };
 
-typedef xyzMatrix<double> Matrix;
+typedef Matrix3x3<double> Matrix;
 typedef std::vector<Matrix> Matrices;
 
 // TODO Remove old code and ask joe about transform_1
 template <typename T>
-inline Vector3 operator*(xyzMatrix<T> const &m, Vector3 const &v) {
+inline Vector3 operator*(Matrix3x3<T> const &m, Vector3 const &v) {
   return Vector3(
       m.xx() * v.get_x() + m.get_xy() * v.get_y() + m.get_xz() * v.get_z(),
       m.get_yx() * v.get_x() + m.get_yy() * v.get_y() + m.get_yz() * v.get_z(),
@@ -457,8 +457,8 @@ inline void dot_vectors(Matrix const &m, Vector3s const &v, Vector3s &vr) {
   }
 }
 
-template <typename T> inline xyzMatrix<T> transform_1(xyzMatrix<T> const &m) {
-  return xyzMatrix<T>(m.get_xx(), m.get_xy(), m.get_xz(), -m.get_yx(),
+template <typename T> inline Matrix3x3<T> transform_1(Matrix3x3<T> const &m) {
+  return Matrix3x3<T>(m.get_xx(), m.get_xy(), m.get_xz(), -m.get_yx(),
                       -m.get_yy(), -m.get_yz(), -m.get_zx(), -m.get_zy(),
                       -m.get_zz());
 }
@@ -506,7 +506,7 @@ inline Matrix dot(Matrix const &a, Matrix const &b) {
 }
 
 template <typename T>
-std::ostream &operator<<(std::ostream &stream, xyzMatrix<T> const &v) {
+std::ostream &operator<<(std::ostream &stream, Matrix3x3<T> const &v) {
   stream << "(" << v.get_xx() << ", " << v.get_xy() << ", " << v.get_xz() << ")"
          << std::endl;
   stream << "(" << v.get_yx() << ", " << v.get_yy() << ", " << v.get_yz() << ")"
@@ -523,8 +523,8 @@ inline String matrix_to_str(Matrix const &m) {
   ss << m.get_zx() << " " << m.get_zy() << " " << m.get_zz() << " ";
   return ss.str();
 }
-*/
- /* inline xyzMatrix(String const &s) {
+
+  inline Matrix3x3(String const &s) {
   auto v = base::string::split(s, " ");
   assert(v.size() > 8);
   xx_ = std::stod(v[0]);
@@ -536,8 +536,8 @@ inline String matrix_to_str(Matrix const &m) {
   zx_ = std::stod(v[6]);
   zy_ = std::stod(v[7]);
   zz_ = std::stod(v[8]);
-}   */
+}
 
 } // namespace math
-
+*/
 #endif
