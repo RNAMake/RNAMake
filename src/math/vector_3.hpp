@@ -218,6 +218,10 @@ public: // methods  //////////////////////////////////////////////////////////
   inline Vector3 &normalize() {
     double const length_ = get_length();
     assert(length_ != double(0));
+    if (length_ == 0) {
+      String msg = "Vector is zero, cannot be normalized!";
+      base::log_and_throw<base::MathException>(msg);
+    }
     double const inv_length(double(1) / length_);
     _x *= inv_length;
     _y *= inv_length;
