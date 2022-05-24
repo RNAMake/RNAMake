@@ -448,6 +448,7 @@ TEST_CASE("Test xyz vector ") {
       }
     }
     // TODO what in the heck is going on here
+    // TODO make sense of the Vector3s type and write a unittest for it similar to the one above
     SUBCASE("test constructing vectors string") {
       SUBCASE("test normal circumstance") {
         String vec_1_string = "1 2 3";
