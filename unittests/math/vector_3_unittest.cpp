@@ -396,6 +396,35 @@ TEST_CASE("Test xyz vector ") {
         Real vec_1_magnitude_squared = vec_1.get_magnitude_squared();
         CHECK(vec_1_magnitude_squared == doctest::Approx(5));
       }
+      SUBCASE("test getting vector components") {
+        math::Vector3 vec_1 = {1.0f, 2.0f, 3.0f};
+        Real vec_1_x = vec_1.get_x();
+        Real vec_1_y = vec_1.get_y();
+        Real vec_1_z = vec_1.get_z();
+        CHECK(vec_1_x == doctest::Approx(1));
+        CHECK(vec_1_y == doctest::Approx(2));
+        CHECK(vec_1_z == doctest::Approx(3));
+      }
+    }
+    SUBCASE("test setting fxns") {
+      SUBCASE("set vector components to zero") {
+        math::Vector3 vec_1 = {134.4f, 451.2f, 23.2f};
+        vec_1.set_x(0);
+        vec_1.set_y(0);
+        vec_1.set_z(0);
+        CHECK(vec_1.get_x() == doctest::Approx(0));
+        CHECK(vec_1.get_y() == doctest::Approx(0));
+        CHECK(vec_1.get_z() == doctest::Approx(0));
+      }
+      SUBCASE("assign values to empty vector") {
+        math::Vector3 vec_1 = {};
+        vec_1.set_x(1);
+        vec_1.set_y(2);
+        vec_1.set_z(3);
+        CHECK(vec_1.get_x() == doctest::Approx(1));
+        CHECK(vec_1.get_y() == doctest::Approx(2));
+        CHECK(vec_1.get_z() == doctest::Approx(3));
+      }
     }
   }
 }
