@@ -244,7 +244,7 @@ TEST_CASE("Test xyz vector ") {
       CHECK(ss.str() == "0.000000 1.000000 2.000000");
     }
     SUBCASE("test cross") {
-      SUBCASE("trival test") {
+      SUBCASE("trivial test") {
         math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
         math::Vector3 vec_2 = {0.0f, 1.0f, 2.0f};
         math::Vector3 cross = vec_1.cross(vec_2);
@@ -260,6 +260,14 @@ TEST_CASE("Test xyz vector ") {
         CHECK(cross.get_y() == doctest::Approx(2));
         CHECK(cross.get_z() == doctest::Approx(-1));
       }
+      SUBCASE("slightly more complex test") {
+        math::Vector3 vec_1 = {3.0f, -5.0f, 1.0f};
+        math::Vector3 vec_2 = {6.0f, 4.0f, -1.0f};
+        math::Vector3 cross = vec_1.cross(vec_2);
+        CHECK(cross.get_x() == doctest::Approx(1));
+        CHECK(cross.get_y() == doctest::Approx(9));
+        CHECK(cross.get_z() == doctest::Approx(42));
+      }
     }
     SUBCASE("test negating") {
       math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
@@ -267,6 +275,39 @@ TEST_CASE("Test xyz vector ") {
       CHECK(vec_1.get_x() == doctest::Approx(0));
       CHECK(vec_1.get_y() == doctest::Approx(-1));
       CHECK(vec_1.get_z() == doctest::Approx(-2));
+    }
+    SUBCASE("test negating and copying") {
+      math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
+      math::Vector3 vec_2 = vec_1.negated();
+      CHECK(vec_2.get_x() == doctest::Approx(0));
+      CHECK(vec_2.get_y() == doctest::Approx(-1));
+      CHECK(vec_2.get_z() == doctest::Approx(-2));
+    }
+    SUBCASE("test distance function") {
+      math::Vector3 vec_1 = {0.0f, 0.0f, 0.0f};
+      math::Vector3 vec_2 = {0.0f, 1.0f, 2.0f};
+      Real vec_2_distance = vec_1.distance(vec_2);
+      CHECK(vec_2_distance == doctest::Approx(sqrt(5)));
+    }
+    SUBCASE("test distance sqaured function") {
+      math::Vector3 vec_1 = {0.0f, 0.0f, 0.0f};
+      math::Vector3 vec_2 = {0.0f, 1.0f, 2.0f};
+      Real vec_2_distance_squared = vec_1.distance_squared(vec_2);
+      CHECK(vec_2_distance_squared == doctest::Approx(5));
+    }
+    SUBCASE("test dot products"){
+      SUBCASE("test zero vector dot products") {
+        math::Vector3 vec_1 = {};
+        math::Vector3 vec_2 = {};
+        Real dot_product = vec_1.dot(vec_2);
+        CHECK(dot_product == doctest::Approx(0));
+      }
+      SUBCASE("test simple dot product") {
+        math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
+        math::Vector3 vec_2 = {0.0f, 1.0f, 2.0f};
+        Real dot_product = vec_1.dot(vec_2);
+        CHECK(dot_product == doctest::Approx(5));
+      }
     }
   }
 }
