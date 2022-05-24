@@ -337,5 +337,33 @@ TEST_CASE("Test xyz vector ") {
         CHECK(vec_1_normalized.get_z() == doctest::Approx(4/sqrt(50)));
       }
     }
+    SUBCASE("test zeroing functions") {
+      SUBCASE("test zero vectors") {
+        math::Vector3 vec_1 = {};
+        math::Vector3 vec_2 = {0.0f, 0.0f, 0.0f};
+        math::Vector3 vec_1_zeroed = vec_1.zero();
+        math::Vector3 vec_2_zeroed = vec_2.zero();
+        CHECK(vec_1_zeroed.get_x() == doctest::Approx(0));
+        CHECK(vec_1_zeroed.get_y() == doctest::Approx(0));
+        CHECK(vec_1_zeroed.get_z() == doctest::Approx(0));
+        CHECK(vec_2_zeroed.get_x() == doctest::Approx(0));
+        CHECK(vec_2_zeroed.get_y() == doctest::Approx(0));
+        CHECK(vec_2_zeroed.get_z() == doctest::Approx(0));
+      }
+      SUBCASE("test tirvial vector") {
+        math::Vector3 vec_1 = {1.0f, 2.0f, 3.0f};
+        math::Vector3 vec_1_zeroed = vec_1.zero();
+        CHECK(vec_1_zeroed.get_x() == doctest::Approx(0));
+        CHECK(vec_1_zeroed.get_y() == doctest::Approx(0));
+        CHECK(vec_1_zeroed.get_z() == doctest::Approx(0));
+      }
+      SUBCASE("test complex vector") {
+        math::Vector3 vec_1 = {3.0f, -5.0f, 2.0f};
+        math::Vector3 vec_1_zeroed = vec_1.zero();
+        CHECK(vec_1_zeroed.get_x() == doctest::Approx(0));
+        CHECK(vec_1_zeroed.get_y() == doctest::Approx(0));
+        CHECK(vec_1_zeroed.get_z() == doctest::Approx(0));
+      }
+    }
   }
 }
