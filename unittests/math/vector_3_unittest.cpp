@@ -308,6 +308,34 @@ TEST_CASE("Test xyz vector ") {
         Real dot_product = vec_1.dot(vec_2);
         CHECK(dot_product == doctest::Approx(5));
       }
+      SUBCASE("test complex dot product") {
+        math::Vector3 vec_1 = {-1.0f, 2.0f, 4.0f};
+        math::Vector3 vec_2 = {6.0f, -3.0f, 9.0f};
+        Real dot_product = vec_1.dot(vec_2);
+        CHECK(dot_product == doctest::Approx(24));
+      }
+    }
+    SUBCASE("test normalization"){
+      SUBCASE("test zero vector") {
+        math::Vector3 vec_1 = {};
+        math::Vector3 vec_2 = {0.0f, 0.0f, 0.0f};
+        CHECK_THROWS_AS(vec_1.normalize(), base::MathException);
+        CHECK_THROWS_AS(vec_2.normalize(), base::MathException);
+      }
+      SUBCASE("test simple vector") {
+        math::Vector3 vec_1 = {1.0f, 2.0f, 3.0f};
+        math::Vector3 vec_1_normalized = vec_1.normalize();
+        CHECK(vec_1_normalized.get_x() == doctest::Approx(1/sqrt(14)));
+        CHECK(vec_1_normalized.get_y() == doctest::Approx(2/sqrt(14)));
+        CHECK(vec_1_normalized.get_z() == doctest::Approx(3/sqrt(14)));
+      }
+      SUBCASE("test complex vector") {
+        math::Vector3 vec_1 = {3.0f, -5.0f, 4.0f};
+        math::Vector3 vec_1_normalized = vec_1.normalize();
+        CHECK(vec_1_normalized.get_x() == doctest::Approx(3/sqrt(50)));
+        CHECK(vec_1_normalized.get_y() == doctest::Approx(-5/sqrt(50)));
+        CHECK(vec_1_normalized.get_z() == doctest::Approx(4/sqrt(50)));
+      }
     }
   }
 }
