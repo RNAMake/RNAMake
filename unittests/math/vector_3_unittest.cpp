@@ -365,5 +365,37 @@ TEST_CASE("Test xyz vector ") {
         CHECK(vec_1_zeroed.get_z() == doctest::Approx(0));
       }
     }
+    SUBCASE("test getting functions") {
+      SUBCASE("test getting length") {
+        math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
+        Real vec_1_length = vec_1.get_length();
+        CHECK(vec_1_length == doctest::Approx(sqrt(5)));
+      }
+      SUBCASE("test getting length squared") {
+        math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
+        Real vec_1_length_squared = vec_1.get_length_squared();
+        CHECK(vec_1_length_squared == doctest::Approx(5));
+      }
+      SUBCASE("test get norm") {
+        math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
+        Real vec_1_norm = vec_1.get_norm();
+        CHECK(vec_1_norm == doctest::Approx(sqrt(5)));
+      }
+      SUBCASE("test getting norm squared") {
+        math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
+        Real vec_1_norm_squared = vec_1.get_norm_squared();
+        CHECK(vec_1_norm_squared == doctest::Approx(5));
+      }
+      SUBCASE("test get magnitude") {
+        math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
+        Real vec_1_magnitude = vec_1.get_magnitude();
+        CHECK(vec_1_magnitude == doctest::Approx(sqrt(5)));
+      }
+      SUBCASE("test getting magnitude squared") {
+        math::Vector3 vec_1 = {0.0f, 1.0f, 2.0f};
+        Real vec_1_magnitude_squared = vec_1.get_magnitude_squared();
+        CHECK(vec_1_magnitude_squared == doctest::Approx(5));
+      }
+    }
   }
 }
