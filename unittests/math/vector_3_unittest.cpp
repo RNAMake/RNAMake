@@ -455,6 +455,21 @@ TEST_CASE("Test xyz vector ") {
         math::Vector3s vec_1 = {};
         math::vectors_from_str(vec_1_string, vec_1);
       }
+      SUBCASE("test not enough inputs") {
+        String vec_1_string = "1 2";
+        math::Vector3s vec_1 = {};
+        CHECK_THROWS_AS(math::vectors_from_str(vec_1_string, vec_1), base::InputException);
+      }
+      SUBCASE("test too many inputs") {
+        String vec_1_string = "1 2 3 4";
+        math::Vector3s vec_1 = {};
+        CHECK_THROWS_AS(math::vectors_from_str(vec_1_string, vec_1), base::InputException);
+      }
+      SUBCASE("test no inputs") {
+        String vec_1_string = "";
+        math::Vector3s vec_1 = {};
+        CHECK_THROWS_AS(math::vectors_from_str(vec_1_string, vec_1), base::InputException);
+      }
     }
   }
 }
