@@ -319,11 +319,17 @@ inline void vectors_from_str(const String &s, Vector3s &vecs /* return */) {
   Strings doubles = base::string::split(s, " ");
   Reals point = {0, 0, 0};
   int pos = 0;
-  for (auto const &d : doubles) {
+
+  if (s.empty()) {
+    String msg = "No vector input detected!";
+    base::log_and_throw<base::InputException>(msg);
+  }
+
+  for (auto const &d: doubles) {
     point[pos] = std::stod(d);
     pos += 1;
     if (pos == 3) {
-      vecs.push_back(Vector3{point});
+      vecs.push_back(math::Vector3{point});
       pos = 0;
     }
   }
@@ -333,6 +339,7 @@ inline void vectors_from_str(const String &s, Vector3s &vecs /* return */) {
                  std::to_string(doubles.size());
     base::log_and_throw<base::InputException>(msg);
   }
+
 }
 
 } // namespace math

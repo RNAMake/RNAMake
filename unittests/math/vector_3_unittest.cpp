@@ -447,13 +447,15 @@ TEST_CASE("Test xyz vector ") {
         CHECK_THROWS_AS(math::vector_from_str(vec_1_string), base::InputException);
       }
     }
-    // TODO what in the heck is going on here
-    // TODO make sense of the Vector3s type and write a unittest for it similar to the one above
     SUBCASE("test constructing vectors string") {
       SUBCASE("test normal circumstance") {
         String vec_1_string = "1 2 3";
-        math::Vector3s vec_1 = {};
-        math::vectors_from_str(vec_1_string, vec_1);
+        math::Vector3s vecs;
+        math::vectors_from_str(vec_1_string, vecs);
+        CHECK(vecs.size() == 1);
+        CHECK(vecs[0].get_x() == doctest::Approx(1));
+        CHECK(vecs[0].get_y() == doctest::Approx(2));
+        CHECK(vecs[0].get_z() == doctest::Approx(3));
       }
       SUBCASE("test not enough inputs") {
         String vec_1_string = "1 2";
@@ -466,7 +468,7 @@ TEST_CASE("Test xyz vector ") {
         CHECK_THROWS_AS(math::vectors_from_str(vec_1_string, vec_1), base::InputException);
       }
       SUBCASE("test no inputs") {
-        String vec_1_string = "";
+        String vec_1_string;
         math::Vector3s vec_1 = {};
         CHECK_THROWS_AS(math::vectors_from_str(vec_1_string, vec_1), base::InputException);
       }
