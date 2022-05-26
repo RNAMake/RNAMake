@@ -1,23 +1,18 @@
 
 
 #include "../common.hpp"
-
-
+#include <doctest.h>
 #include "math/xyz_matrix.hpp"
-
-TEST_CASE("Test Matrix math ") {}
+//#include "../base/file_io.h"
+//#include "../base/settings.h"
+//#include "../math/numerical.h"
 
 /*
-#include "../common.hpp"
-#include "base/file_io.h"
-#include "base/settings.h"
-#include "math/numerical.h"
-
 TEST_CASE("Test Matrix math ") {
   SUBCASE("Test Stringify Matrices") {
-    auto m = math::Matrix(5.0);
+    auto m = math::Matrix3x3(5.0);
     auto s = m.get_str();
-    auto m2 = math::Matrix(s);
+    auto m2 = math::Matrix3x3(s);
 
     CHECK(math::are_matrices_equal(m, m2));
   }
@@ -25,9 +20,9 @@ TEST_CASE("Test Matrix math ") {
   SUBCASE("Single known test of unitarize compared to python") {
     auto path = base::unittest_resource_dir() + "/math/test_unitarize.dat";
     auto lines = base::get_lines_from_file(path);
-    auto org_m = math::Matrix(lines[0]);
+    auto org_m = math::Matrix3x3(lines[0]);
 
-    auto m = math::Matrix(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 1.0, 1.0, 1.0);
+    auto m = math::Matrix3x3(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 1.0, 1.0, 1.0);
 
     auto unit = m.get_unitarize();
 
@@ -45,8 +40,8 @@ TEST_CASE("Test Matrix math ") {
         break;
       }
       auto spl = base::split_str_by_delimiter(l, "|");
-      auto org_m = math::Matrix(spl[0]);
-      auto final_m = math::Matrix(spl[1]);
+      auto org_m = math::Matrix3x3(spl[0]);
+      auto final_m = math::Matrix3x3(spl[1]);
 
       auto unit = org_m.get_unitarize();
 
@@ -65,4 +60,6 @@ TEST_CASE("Test Matrix math ") {
 
     CHECK(fail == 0);
   }
-} */
+}
+
+*/

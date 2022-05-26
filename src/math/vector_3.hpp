@@ -29,8 +29,7 @@ namespace math {
 ////////////////////////////////////////////////////////////////////////////////
 
 class Vector3 {
-private: // friends //////////////////////////////////////////////////////////
-  template <typename> friend class xyzMatrix;
+  // friends //////////////////////////////////////////////////////////
 
 public: // initiation ////////////////////////////////////////////////////////
   inline Vector3() = default;
@@ -315,32 +314,7 @@ inline Vector3 vector_from_str(const String &s) {
   return Vector3{point};
 }
 
-inline void vectors_from_str(const String &s, Vector3s &vecs /* return */) {
-  Strings doubles = base::string::split(s, " ");
-  Reals point = {0, 0, 0};
-  int pos = 0;
-
-  if (s.empty()) {
-    String msg = "No vector input detected!";
-    base::log_and_throw<base::InputException>(msg);
-  }
-
-  for (auto const &d: doubles) {
-    point[pos] = std::stod(d);
-    pos += 1;
-    if (pos == 3) {
-      vecs.push_back(math::Vector3{point});
-      pos = 0;
-    }
-  }
-  // there are leftovers!
-  if (pos != 0) {
-    String msg = "vector must contain 3 numbers. From string got " +
-                 std::to_string(doubles.size());
-    base::log_and_throw<base::InputException>(msg);
-  }
-
-}
+void vectors_from_str(const String &, Vector3s & /* return */);
 
 } // namespace math
 
