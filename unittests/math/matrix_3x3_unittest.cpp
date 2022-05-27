@@ -1,8 +1,8 @@
 
 
 #include "../common.hpp"
+#include "math/matrix_3x3.hpp"
 #include <doctest.h>
-#include "math/xyz_matrix.hpp"
 //#include "../base/file_io.h"
 //#include "../base/settings.h"
 //#include "../math/numerical.h"

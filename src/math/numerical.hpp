@@ -12,7 +12,7 @@
 #include <iostream>
 
 // RNAMake Headers
-#include <math/xyz_matrix.hpp>
+#include <math/matrix_3x3.hpp>
 #include <math/vector_3.hpp>
 
 namespace math {
