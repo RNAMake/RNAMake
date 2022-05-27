@@ -49,21 +49,16 @@ public: // initiation ////////////////////////////////////////////////////////
 
 public:
   inline String const get_str() const {
-    return std::to_string(_xx) + " " + std::to_string(_xy) + " " +
-           std::to_string(_xz) + " " + std::to_string(_yx) + " " +
-           std::to_string(_yy) + " " + std::to_string(_yz) + " " +
-           std::to_string(_zx) + " " + std::to_string(_zy) + " " +
-           std::to_string(_zz);
+    return std::to_string(_xx) + " " + std::to_string(_xy) + " " + std::to_string(_xz) + " "
+    + std::to_string(_yx) + " " + std::to_string(_yy) + " " + std::to_string(_yz) + " "
+    + std::to_string(_zx) + " " + std::to_string(_zy) + " " + std::to_string(_zz);
   }
 
   [[nodiscard]] inline String const get_str_readable() const {
     auto s = String();
-    s += "[" + std::to_string(_xx) + ", " + std::to_string(_xy) + ", " +
-         std::to_string(_xz) + ",\n";
-    s += " " + std::to_string(_yx) + ", " + std::to_string(_yy) + ", " +
-         std::to_string(_yz) + ",\n";
-    s += " " + std::to_string(_zx) + ", " + std::to_string(_zy) + ", " +
-         std::to_string(_zz) + "]";
+    s += "[" + std::to_string(_xx) + ", " + std::to_string(_xy) + ", " + std::to_string(_xz) + ",\n";
+    s += " " + std::to_string(_yx) + ", " + std::to_string(_yy) + ", " + std::to_string(_yz) + ",\n";
+    s += " " + std::to_string(_zx) + ", " + std::to_string(_zy) + ", " + std::to_string(_zz) + "]";
     return s;
   }
 
@@ -400,13 +395,16 @@ public: // Properties: value assignment
   inline void set_zz(Real const &_zza) { _zz = _zza; }
 
   inline Matrix3x3<T> get_transposed() const {
-    return Matrix3x3(_xx, _yx, _zx, _xy, _yy, _zy, _xz, _yz, _zz);
+    return Matrix3x3(
+            _xx, _yx, _zx,
+            _xy, _yy, _zy,
+            _xz, _yz, _zz);
   }
 
 private:
-  Value _xx, _xy, _xz;
-  Value _yx, _yy, _yz;
-  Value _zx, _zy, _zz;
+  Real _xx, _xy, _xz;
+  Real _yx, _yy, _yz;
+  Real _zx, _zy, _zz;
 };
 
 typedef Matrix3x3<double> Matrix;
@@ -416,28 +414,22 @@ typedef std::vector<Matrix3x3> Matrices;
 template <typename T>
 inline Vector3 operator*(Matrix3x3<T> const &m, Vector3 const &v) {
   return Vector3(
-      m.xx() * v.get_x() + m.get_xy() * v.get_y() + m.get_xz() * v.get_z(),
+      m.get_xx() * v.get_x() + m.get_xy() * v.get_y() + m.get_xz() * v.get_z(),
       m.get_yx() * v.get_x() + m.get_yy() * v.get_y() + m.get_yz() * v.get_z(),
       m.get_zx() * v.get_x() + m.get_zy() * v.get_y() + m.get_zz() * v.get_z());
 }
 
 inline void dot_vector(Matrix3x3 const &m, Vector3 const &v, Vector3 &vr) {
-  vr.set_x(m.get_xx() * v.get_x() + m.get_yx() * v.get_y() +
-           m.get_zx() * v.get_z());
-  vr.set_y(m.get_xy() * v.get_x() + m.get_yy() * v.get_y() +
-           m.get_zy() * v.get_z());
-  vr.set_z(m.get_xz() * v.get_x() + m.get_yz() * v.get_y() +
-           m.get_zz() * v.get_z());
+  vr.set_x(m.get_xx() * v.get_x() + m.get_yx() * v.get_y() + m.get_zx() * v.get_z());
+  vr.set_y(m.get_xy() * v.get_x() + m.get_yy() * v.get_y() + m.get_zy() * v.get_z());
+  vr.set_z(m.get_xz() * v.get_x() + m.get_yz() * v.get_y() + m.get_zz() * v.get_z());
 }
 
 inline Vector3 dot_vector(Matrix3x3 const &m, Vector3 const &v) {
   auto vr = Vector3(0, 0, 0);
-  vr.set_x(m.get_xx() * v.get_x() + m.get_yx() * v.get_y() +
-           m.get_zx() * v.get_z());
-  vr.set_y(m.get_xy() * v.get_x() + m.get_yy() * v.get_y() +
-           m.get_zy() * v.get_z());
-  vr.set_z(m.get_xz() * v.get_x() + m.get_yz() * v.get_y() +
-           m.get_zz() * v.get_z());
+  vr.set_x(m.get_xx() * v.get_x() + m.get_yx() * v.get_y() + m.get_zx() * v.get_z());
+  vr.set_y(m.get_xy() * v.get_x() + m.get_yy() * v.get_y() + m.get_zy() * v.get_z());
+  vr.set_z(m.get_xz() * v.get_x() + m.get_yz() * v.get_y() + m.get_zz() * v.get_z());
   return vr;
 }
 
@@ -449,61 +441,46 @@ inline void dot_vectors(Matrix3x3 const &m, Vector3s const &v, Vector3s &vr) {
 }
 
 template <typename T> inline Matrix3x3<T> transform_1(Matrix3x3<T> const &m) {
-  return Matrix3x3<T>(m.get_xx(), m.get_xy(), m.get_xz(), -m.get_yx(),
-                      -m.get_yy(), -m.get_yz(), -m.get_zx(), -m.get_zy(),
-                      -m.get_zz());
+  return Matrix3x3<T>(
+  m.get_xx(), m.get_xy(), m.get_xz(),
+  -m.get_yx(), -m.get_yy(), -m.get_yz(),
+  -m.get_zx(), -m.get_zy(), -m.get_zz());
 }
 
 inline void dot(Matrix3x3 const &a, Matrix3x3 const &b, Matrix3x3 &c) {
-  c.set_xx(a.get_xx() * b.get_xx() + a.get_xy() * b.get_yx() +
-           a.get_xz() * b.get_zx());
-  c.set_xy(a.get_xx() * b.get_xy() + a.get_xy() * b.get_yy() +
-           a.get_xz() * b.get_zy());
-  c.set_xz(a.get_xx() * b.get_xz() + a.get_xy() * b.get_yz() +
-           a.get_xz() * b.get_zz());
-  c.set_yx(a.get_yx() * b.get_xx() + a.get_yy() * b.get_yx() +
-           a.get_yz() * b.get_zx());
-  c.set_yy(a.get_yx() * b.get_xy() + a.get_yy() * b.get_yy() +
-           a.get_yz() * b.get_zy());
-  c.set_yz(a.get_yx() * b.get_xz() + a.get_yy() * b.get_yz() +
-           a.get_yz() * b.get_zz());
-  c.set_zx(a.get_zx() * b.get_xx() + a.get_zy() * b.get_yx() +
-           a.get_zz() * b.get_zx());
-  c.set_zy(a.get_zx() * b.get_xy() + a.get_zy() * b.get_yy() +
-           a.get_zz() * b.get_zy());
-  c.set_zz(a.get_zx() * b.get_xz() + a.get_zy() * b.get_yz() +
-           a.get_zz() * b.get_zz());
+  c.set_xx(a.get_xx() * b.get_xx() + a.get_xy() * b.get_yx() + a.get_xz() * b.get_zx());
+  c.set_xy(a.get_xx() * b.get_xy() + a.get_xy() * b.get_yy() + a.get_xz() * b.get_zy());
+  c.set_xz(a.get_xx() * b.get_xz() + a.get_xy() * b.get_yz() + a.get_xz() * b.get_zz());
+
+  c.set_yx(a.get_yx() * b.get_xx() + a.get_yy() * b.get_yx() + a.get_yz() * b.get_zx());
+  c.set_yy(a.get_yx() * b.get_xy() + a.get_yy() * b.get_yy() + a.get_yz() * b.get_zy());
+  c.set_yz(a.get_yx() * b.get_xz() + a.get_yy() * b.get_yz() + a.get_yz() * b.get_zz());
+
+  c.set_zx(a.get_zx() * b.get_xx() + a.get_zy() * b.get_yx() + a.get_zz() * b.get_zx());
+  c.set_zy(a.get_zx() * b.get_xy() + a.get_zy() * b.get_yy() + a.get_zz() * b.get_zy());
+  c.set_zz(a.get_zx() * b.get_xz() + a.get_zy() * b.get_yz() + a.get_zz() * b.get_zz());
 }
 
 inline Matrix3x3 dot(Matrix3x3 const &a, Matrix3x3 const &b) {
-  return Matrix3x3(a.get_xx() * b.get_xx() + a.get_xy() * b.get_yx() +
-                    a.get_xz() * b.get_zx(),
-                a.get_xx() * b.get_xy() + a.get_xy() * b.get_yy() +
-                    a.get_xz() * b.get_zy(),
-                a.get_xx() * b.get_xz() + a.get_xy() * b.get_yz() +
-                    a.get_xz() * b.get_zz(),
-                a.get_yx() * b.get_xx() + a.get_yy() * b.get_yx() +
-                    a.get_yz() * b.get_zx(),
-                a.get_yx() * b.get_xy() + a.get_yy() * b.get_yy() +
-                    a.get_yz() * b.get_zy(),
-                a.get_yx() * b.get_xz() + a.get_yy() * b.get_yz() +
-                    a.get_yz() * b.get_zz(),
-                a.get_zx() * b.get_xx() + a.get_zy() * b.get_yx() +
-                    a.get_zz() * b.get_zx(),
-                a.get_zx() * b.get_xy() + a.get_zy() * b.get_yy() +
-                    a.get_zz() * b.get_zy(),
-                a.get_zx() * b.get_xz() + a.get_zy() * b.get_yz() +
-                    a.get_zz() * b.get_zz());
+  return Matrix3x3(
+          a.get_xx() * b.get_xx() + a.get_xy() * b.get_yx() + a.get_xz() * b.get_zx(),
+          a.get_xx() * b.get_xy() + a.get_xy() * b.get_yy() + a.get_xz() * b.get_zy(),
+          a.get_xx() * b.get_xz() + a.get_xy() * b.get_yz() + a.get_xz() * b.get_zz(),
+
+          a.get_yx() * b.get_xx() + a.get_yy() * b.get_yx() + a.get_yz() * b.get_zx(),
+          a.get_yx() * b.get_xy() + a.get_yy() * b.get_yy() + a.get_yz() * b.get_zy(),
+          a.get_yx() * b.get_xz() + a.get_yy() * b.get_yz() + a.get_yz() * b.get_zz(),
+
+          a.get_zx() * b.get_xx() + a.get_zy() * b.get_yx() + a.get_zz() * b.get_zx(),
+          a.get_zx() * b.get_xy() + a.get_zy() * b.get_yy() + a.get_zz() * b.get_zy(),
+          a.get_zx() * b.get_xz() + a.get_zy() * b.get_yz() + a.get_zz() * b.get_zz());
 }
 
 template <typename T>
 std::ostream &operator<<(std::ostream &stream, Matrix3x3<T> const &v) {
-  stream << "(" << v.get_xx() << ", " << v.get_xy() << ", " << v.get_xz() << ")"
-         << std::endl;
-  stream << "(" << v.get_yx() << ", " << v.get_yy() << ", " << v.get_yz() << ")"
-         << std::endl;
-  stream << "(" << v.get_zx() << ", " << v.get_zy() << ", " << v.get_zz() << ")"
-         << std::endl;
+  stream << "(" << v.get_xx() << ", " << v.get_xy() << ", " << v.get_xz() << ")" << std::endl;
+  stream << "(" << v.get_yx() << ", " << v.get_yy() << ", " << v.get_yz() << ")" << std::endl;
+  stream << "(" << v.get_zx() << ", " << v.get_zy() << ", " << v.get_zz() << ")" << std::endl;
   return stream;
 }
 
