@@ -22,27 +22,18 @@ namespace math {
 /*
 class Transform {
  public:
-
- public:
   friend inline void dot(math::Matrix3x3 const& a, math::Matrix3x3 const& b, Transform& c) {
-    c._xx = a.get_xx() * b.get_xx() + a.get_xy() * b.get_yx() +
-            a.get_xz() * b.get_zx();
-    c._xy = a.get_xx() * b.get_xy() + a.get_xy() * b.get_yy() +
-            a.get_xz() * b.get_zy();
-    c._xz = a.get_xx() * b.get_xz() + a.get_xy() * b.get_yz() +
-            a.get_xz() * b.get_zz();
-    c._yx = a.get_yx() * b.get_xx() + a.get_yy() * b.get_yx() +
-            a.get_yz() * b.get_zx();
-    c._yy = a.get_yx() * b.get_xy() + a.get_yy() * b.get_yy() +
-            a.get_yz() * b.get_zy();
-    c._yz = a.get_yx() * b.get_xz() + a.get_yy() * b.get_yz() +
-            a.get_yz() * b.get_zz();
-    c._zx = a.get_zx() * b.get_xx() + a.get_zy() * b.get_yx() +
-            a.get_zz() * b.get_zx();
-    c._zy = a.get_zx() * b.get_xy() + a.get_zy() * b.get_yy() +
-            a.get_zz() * b.get_zy();
-    c._zz = a.get_zx() * b.get_xz() + a.get_zy() * b.get_yz() +
-            a.get_zz() * b.get_zz();
+    c._xx = a.get_xx() * b.get_xx() + a.get_xy() * b.get_yx() + a.get_xz() * b.get_zx();
+    c._xy = a.get_xx() * b.get_xy() + a.get_xy() * b.get_yy() + a.get_xz() * b.get_zy();
+    c._xz = a.get_xx() * b.get_xz() + a.get_xy() * b.get_yz() + a.get_xz() * b.get_zz();
+
+    c._yx = a.get_yx() * b.get_xx() + a.get_yy() * b.get_yx() + a.get_yz() * b.get_zx();
+    c._yy = a.get_yx() * b.get_xy() + a.get_yy() * b.get_yy() + a.get_yz() * b.get_zy();
+    c._yz = a.get_yx() * b.get_xz() + a.get_yy() * b.get_yz() + a.get_yz() * b.get_zz();
+
+    c._zx = a.get_zx() * b.get_xx() + a.get_zy() * b.get_yx() + a.get_zz() * b.get_zx();
+    c._zy = a.get_zx() * b.get_xy() + a.get_zy() * b.get_yy() + a.get_zz() * b.get_zy();
+    c._zz = a.get_zx() * b.get_xz() + a.get_zy() * b.get_yz() + a.get_zz() * b.get_zz();
   }
 
  public:  // creation
@@ -61,7 +52,7 @@ class Transform {
         _zz(1.0),
         _pz(0.0) {}
 
-  inline Transform(Matrix3x3 const& r, Point const& t) {
+  inline Transform(math::Matrix3x3 const& r, Point const& t) {
     rotation(r);
     translation(t);
   }
