@@ -30,9 +30,10 @@ public:
 public: // initiation ////////////////////////////////////////////////////////
   inline Matrix3x3() = default;
   inline Matrix3x3(Matrix3x3 const &m) = default;
-  inline Matrix3x3(const double &xx, const double &xy, const double &xz,
-                   const double &yx, const double &yy, const double &yz,
-                   const double &zx, const double &zy, const double &zz)
+  inline Matrix3x3(
+          const double &xx, const double &xy, const double &xz,
+          const double &yx, const double &yy, const double &yz,
+          const double &zx, const double &zy, const double &zz)
       : _xx(xx), _xy(xy), _xz(xz),
         _yx(yx), _yy(yy), _yz(yz),
         _zx(zx), _zy(zy), _zz(zz) {}
@@ -42,8 +43,6 @@ public: // initiation ////////////////////////////////////////////////////////
         _yx(t), _yy(t), _yz(t),
         _zx(t), _zy(t), _zz(t) {
   }
-
-
 
   /// @brief Destructor
   inline ~Matrix3x3() = default;
@@ -77,42 +76,24 @@ public:
 
   /// @brief Copy assignment
   inline Matrix3x3 &operator=(Matrix3x3 const &m) {
-    _xx = m._xx;
-    _xy = m._xy;
-    _xz = m._xz;
-    _yx = m._yx;
-    _yy = m._yy;
-    _yz = m._yz;
-    _zx = m._zx;
-    _zy = m._zy;
-    _zz = m._zz;
+    _xx = m._xx; _xy = m._xy; _xz = m._xz;
+    _yx = m._yx; _yy = m._yy; _yz = m._yz;
+    _zx = m._zx; _zy = m._zy; _zz = m._zz;
     return *this;
   }
 
   /// @brief += Matrix3x3
   inline Matrix3x3 &operator+=(Matrix3x3 const &m) {
-    _xx += m._xx;
-    _xy += m._xy;
-    _xz += m._xz;
-    _yx += m._yx;
-    _yy += m._yy;
-    _yz += m._yz;
-    _zx += m._zx;
-    _zy += m._zy;
-    _zz += m._zz;
+    _xx += m._xx; _xy += m._xy; _xz += m._xz;
+    _yx += m._yx; _yy += m._yy; _yz += m._yz;
+    _zx += m._zx; _zy += m._zy; _zz += m._zz;
     return *this;
   }
 
   inline Matrix3x3 &operator-=(Matrix3x3 const &m) {
-    _xx -= m._xx;
-    _xy -= m._xy;
-    _xz -= m._xz;
-    _yx -= m._yx;
-    _yy -= m._yy;
-    _yz -= m._yz;
-    _zx -= m._zx;
-    _zy -= m._zy;
-    _zz -= m._zz;
+    _xx -= m._xx; _xy -= m._xy; _xz -= m._xz;
+    _yx -= m._yx; _yy -= m._yy; _yz -= m._yz;
+    _zx -= m._zx; _zy -= m._zy; _zz -= m._zz;
     return *this;
   }
 
@@ -127,69 +108,67 @@ public: // Assignment: scalar
 
   /// @brief += Value
   inline Matrix3x3 &operator+=(Real const &t) {
-    _xx += t;
-    _xy += t;
-    _xz += t;
-    _yx += t;
-    _yy += t;
-    _yz += t;
-    _zx += t;
-    _zy += t;
-    _zz += t;
+    _xx += t; _xy += t; _xz += t;
+    _yx += t; _yy += t; _yz += t;
+    _zx += t; _zy += t; _zz += t;
     return *this;
   }
 
   /// @brief -= Value
   inline Matrix3x3 &operator-=(Real const &t) {
-    _xx -= t;
-    _xy -= t;
-    _xz -= t;
-    _yx -= t;
-    _yy -= t;
-    _yz -= t;
-    _zx -= t;
-    _zy -= t;
-    _zz -= t;
+    _xx -= t; _xy -= t; _xz -= t;
+    _yx -= t; _yy -= t; _yz -= t;
+    _zx -= t; _zy -= t; _zz -= t;
     return *this;
   }
 
 public: // Methods: basic mathematical
   /// @brief Matrix3x3 + Matrix3x3
   friend inline Matrix3x3 operator+(Matrix3x3 const &a, Matrix3x3 const &b) {
-    return Matrix3x3(a._xx + b._xx, a._xy + b._xy, a._xz + b._xz, a._yx + b._yx,
-                     a._yy + b._yy, a._yz + b._yz, a._zx + b._zx, a._zy + b._zy,
-                     a._zz + b._zz);
+    return Matrix3x3(
+            a._xx + b._xx, a._xy + b._xy, a._xz + b._xz,
+            a._yx + b._yx, a._yy + b._yy, a._yz + b._yz,
+            a._zx + b._zx, a._zy + b._zy, a._zz + b._zz);
   }
 
   /// @brief Matrix3x3 + Real
   friend inline Matrix3x3 operator+(Matrix3x3 const &m, Real const &t) {
-    return Matrix3x3(m._xx + t, m._xy + t, m._xz + t, m._yx + t, m._yy + t,
-                     m._yz + t, m._zx + t, m._zy + t, m._zz + t);
+    return Matrix3x3(
+            m._xx + t, m._xy + t, m._xz + t,
+            m._yx + t, m._yy + t, m._yz + t,
+            m._zx + t, m._zy + t, m._zz + t);
   }
 
   /// @brief Real + Matrix3x3
   friend inline Matrix3x3 operator+(Real const &t, Matrix3x3 const &m) {
-    return Matrix3x3(t + m._xx, t + m._xy, t + m._xz, t + m._yx, t + m._yy,
-                     t + m._yz, t + m._zx, t + m._zy, t + m._zz);
+    return Matrix3x3(
+            t + m._xx, t + m._xy, t + m._xz,
+            t + m._yx, t + m._yy, t + m._yz,
+            t + m._zx, t + m._zy, t + m._zz);
   }
 
   /// @brief Matrix3x3 - Matrix3x3
   friend inline Matrix3x3 operator-(Matrix3x3 const &a, Matrix3x3 const &b) {
-    return Matrix3x3(a._xx - b._xx, a._xy - b._xy, a._xz - b._xz, a._yx - b._yx,
-                     a._yy - b._yy, a._yz - b._yz, a._zx - b._zx, a._zy - b._zy,
-                     a._zz - b._zz);
+    return Matrix3x3(
+            a._xx - b._xx, a._xy - b._xy, a._xz - b._xz,
+            a._yx - b._yx, a._yy - b._yy, a._yz - b._yz,
+            a._zx - b._zx, a._zy - b._zy, a._zz - b._zz);
   }
 
   /// @brief Matrix3x3 - Value
   friend inline Matrix3x3 operator-(Matrix3x3 const &m, Real const &t) {
-    return Matrix3x3(m._xx - t, m._xy - t, m._xz - t, m._yx - t, m._yy - t,
-                     m._yz - t, m._zx - t, m._zy - t, m._zz - t);
+    return Matrix3x3(
+            m._xx - t, m._xy - t, m._xz - t,
+            m._yx - t, m._yy - t, m._yz - t,
+            m._zx - t, m._zy - t, m._zz - t);
   }
 
   /// @brief Value - Matrix3x3
   friend inline Matrix3x3 operator-(Real const &t, Matrix3x3 const &m) {
-    return Matrix3x3(t - m._xx, t - m._xy, t - m._xz, t - m._yx, t - m._yy,
-                     t - m._yz, t - m._zx, t - m._zy, t - m._zz);
+    return Matrix3x3(
+            t - m._xx, t - m._xy, t - m._xz,
+            t - m._yx, t - m._yy, t - m._yz,
+            t - m._zx, t - m._zy, t - m._zz);
   }
 
   /// @brief Matrix3x3 * Matrix3x3
@@ -213,23 +192,28 @@ public: // Methods: basic mathematical
 
   /// @brief Matrix3x3 * Real
   friend inline Matrix3x3 operator*(Matrix3x3 const &m, Real const &t) {
-    return Matrix3x3(m._xx * t, m._xy * t, m._xz * t, m._yx * t, m._yy * t,
-                     m._yz * t, m._zx * t, m._zy * t, m._zz * t);
+    return Matrix3x3(
+            m._xx * t, m._xy * t, m._xz * t,
+            m._yx * t, m._yy * t, m._yz * t,
+            m._zx * t, m._zy * t, m._zz * t);
   }
 
   /// @brief Value * Matrix3x3
   friend inline Matrix3x3 operator*(Real const &t, Matrix3x3 const &m) {
-    return Matrix3x3(t * m._xx, t * m._xy, t * m._xz, t * m._yx, t * m._yy,
-                     t * m._yz, t * m._zx, t * m._zy, t * m._zz);
+    return Matrix3x3(
+            t * m._xx, t * m._xy, t * m._xz,
+            t * m._yx, t * m._yy, t * m._yz,
+            t * m._zx, t * m._zy, t * m._zz);
   }
 
   /// @brief Matrix3x3 / Value
   friend inline Matrix3x3 operator/(Matrix3x3 const &m, Real const &t) {
     assert(t != Value(0));
     Real const inv_t(Real(1) / t);
-    return Matrix3x3(m._xx * inv_t, m._xy * inv_t, m._xz * inv_t, m._yx * inv_t,
-                     m._yy * inv_t, m._yz * inv_t, m._zx * inv_t, m._zy * inv_t,
-                     m._zz * inv_t);
+    return Matrix3x3(
+            m._xx * inv_t, m._xy * inv_t, m._xz * inv_t,
+            m._yx * inv_t, m._yy * inv_t, m._yz * inv_t,
+            m._zx * inv_t, m._zy * inv_t, m._zz * inv_t);
   }
 
 public:
@@ -250,27 +234,48 @@ public:
     return *this;
   }
 
+  inline void transpose(Matrix3x3 const &a, Matrix3x3 &b) {
+    b._xx = a._xx;
+    b._yy = a._yy;
+    b._zz = a._zz;
+
+    b._yx = a._xy;
+    b._xy = a._yx;
+    b._zx = a._xz;
+    b._xz = a._zx;
+    b._yz = a._zy;
+    b._zy = a._yz;
+  }
+
+  inline Vector3 dot_vector(Matrix3x3 const &m, Vector3 &v) {
+    auto new_v = Vector3(0, 0, 0);
+    new_v.set_x(m._xx * v.get_x() + m._yx * v.get_y() + m._zx * v.get_z());
+    new_v.set_y(m._xy * v.get_x() + m._yy * v.get_y() + m._zy * v.get_z());
+    new_v.set_z(m._xz * v.get_x() + m._yz * v.get_y() + m._zz * v.get_z());
+    return new_v;
+  }
+
   inline double difference(Matrix3x3 const &b) const {
     double dist = 0.0f;
-    dist += std::abs(_xx - b._xx);
-    dist += std::abs(_xy - b._xy);
-    dist += std::abs(_xz - b._xz);
-    dist += std::abs(_yx - b._yx);
-    dist += std::abs(_yy - b._yy);
-    dist += std::abs(_yz - b._yz);
-    dist += std::abs(_zx - b._zx);
-    dist += std::abs(_zy - b._zy);
-    dist += std::abs(_zz - b._zz);
+    dist += std::abs(_xx - b._xx); dist += std::abs(_xy - b._xy); dist += std::abs(_xz - b._xz);
+    dist += std::abs(_yx - b._yx); dist += std::abs(_yy - b._yy); dist += std::abs(_yz - b._yz);
+    dist += std::abs(_zx - b._zx); dist += std::abs(_zy - b._zy); dist += std::abs(_zz - b._zz);
 
     return dist;
   }
 
   inline Matrix3x3 get_flip_orientation() const {
-    return Matrix3x3(_xx, _xy, _xz, -_yx, -_yy, -_yz, -_zx, -_zy, -_zz);
+    return Matrix3x3(
+            _xx, _xy, _xz,
+            -_yx, -_yy, -_yz,
+            -_zx, -_zy, -_zz);
   }
 
   inline Matrix3x3 get_unitarize() const {
-    auto m = Matrix3x3(_xx, _xy, _xz, _yx, _yy, _yz, _zx, _zy, _zz);
+    auto m = Matrix3x3(
+            _xx, _xy, _xz,
+            _yx, _yy, _yz,
+            _zx, _zy, _zz);
 
     // R[0] /= math.sqrt(R[0].dot(R[0]))
     double dot = sqrt(_xx * _xx + _xy * _xy + _xz * _xz);
@@ -513,40 +518,15 @@ inline String matrix_to_str(Matrix const &m) {
   inline Matrix3x3(String const &s) {
   auto v = base::string::split(s, " ");
   assert(v.size() > 8);
-  _xx = std::stod(v[0]);
-  _xy = std::stod(v[1]);
-  _xz = std::stod(v[2]);
-  _yx = std::stod(v[3]);
-  _yy = std::stod(v[4]);
-  _yz = std::stod(v[5]);
-  _zx = std::stod(v[6]);
-  _zy = std::stod(v[7]);
-  _zz = std::stod(v[8]);
+  _xx = std::stod(v[0]); _xy = std::stod(v[1]); _xz = std::stod(v[2]);
+  _yx = std::stod(v[3]); _yy = std::stod(v[4]); _yz = std::stod(v[5]);
+  _zx = std::stod(v[6]); _zy = std::stod(v[7]); _zz = std::stod(v[8]);
 
 }
 
-inline void transpose(Matrix3x3 const &a, Matrix3x3 &b) {
-  b._xx = a._xx;
-  b._yy = a._yy;
-  b._zz = a._zz;
 
-  b._yx = a._xy;
-  b._xy = a._yx;
-  b._zx = a._xz;
-  b._xz = a._zx;
-  b._yz = a._zy;
-  b._zy = a._yz;
-}
-
-friend inline Vector3 dot_vector(Matrix3x3 const &m, Vector3 &v) {
-  auto new_v = Vector3(0, 0, 0);
-  new_v.set_x(m._xx * v.get_x() + m._yx * v.get_y() + m._zx * v.get_z());
-  new_v.set_y(m._xy * v.get_x() + m._yy * v.get_y() + m._zy * v.get_z());
-  new_v.set_z(m._xz * v.get_x() + m._yz * v.get_y() + m._zz * v.get_z());
-  return new_v;
-}
 */
-// add end comment here
+// add end comment on the line above
 } // namespace math
 
 #endif

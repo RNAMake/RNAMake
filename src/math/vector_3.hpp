@@ -249,6 +249,7 @@ public:
     return std::sqrt((_x * _x) + (_y * _y) + (_z * _z));
   }
 
+
   /// @brief Length squared
   [[nodiscard]] inline double get_length_squared() const {
     return (_x * _x) + (_y * _y) + (_z * _z);
