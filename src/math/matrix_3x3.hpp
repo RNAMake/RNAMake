@@ -17,17 +17,17 @@
 // RNAMake Headers
 #include <base/string.hpp>
 #include <base/types.hpp>
-#include <math/vector_3.hpp>
 #include <math/transform.hpp>
+#include <math/vector_3.hpp>
 
 namespace math {
 // add comment here
-/*
+
 class Matrix3x3 {
   friend class Transform;
-public:
 
-public: // initiation ////////////////////////////////////////////////////////
+public:
+public:// initiation ////////////////////////////////////////////////////////
   inline Matrix3x3() = default;
   inline Matrix3x3(Matrix3x3 const &m) = default;
   inline Matrix3x3(
@@ -49,9 +49,7 @@ public: // initiation ////////////////////////////////////////////////////////
 
 public:
   inline String const get_str() const {
-    return std::to_string(_xx) + " " + std::to_string(_xy) + " " + std::to_string(_xz) + " "
-    + std::to_string(_yx) + " " + std::to_string(_yy) + " " + std::to_string(_yz) + " "
-    + std::to_string(_zx) + " " + std::to_string(_zy) + " " + std::to_string(_zz);
+    return std::to_string(_xx) + " " + std::to_string(_xy) + " " + std::to_string(_xz) + " " + std::to_string(_yx) + " " + std::to_string(_yy) + " " + std::to_string(_yz) + " " + std::to_string(_zx) + " " + std::to_string(_zy) + " " + std::to_string(_zz);
   }
 
   [[nodiscard]] inline String const get_str_readable() const {
@@ -71,28 +69,46 @@ public:
 
   /// @brief Copy assignment
   inline Matrix3x3 &operator=(Matrix3x3 const &m) {
-    _xx = m._xx; _xy = m._xy; _xz = m._xz;
-    _yx = m._yx; _yy = m._yy; _yz = m._yz;
-    _zx = m._zx; _zy = m._zy; _zz = m._zz;
+    _xx = m._xx;
+    _xy = m._xy;
+    _xz = m._xz;
+    _yx = m._yx;
+    _yy = m._yy;
+    _yz = m._yz;
+    _zx = m._zx;
+    _zy = m._zy;
+    _zz = m._zz;
     return *this;
   }
 
   /// @brief += Matrix3x3
   inline Matrix3x3 &operator+=(Matrix3x3 const &m) {
-    _xx += m._xx; _xy += m._xy; _xz += m._xz;
-    _yx += m._yx; _yy += m._yy; _yz += m._yz;
-    _zx += m._zx; _zy += m._zy; _zz += m._zz;
+    _xx += m._xx;
+    _xy += m._xy;
+    _xz += m._xz;
+    _yx += m._yx;
+    _yy += m._yy;
+    _yz += m._yz;
+    _zx += m._zx;
+    _zy += m._zy;
+    _zz += m._zz;
     return *this;
   }
 
   inline Matrix3x3 &operator-=(Matrix3x3 const &m) {
-    _xx -= m._xx; _xy -= m._xy; _xz -= m._xz;
-    _yx -= m._yx; _yy -= m._yy; _yz -= m._yz;
-    _zx -= m._zx; _zy -= m._zy; _zz -= m._zz;
+    _xx -= m._xx;
+    _xy -= m._xy;
+    _xz -= m._xz;
+    _yx -= m._yx;
+    _yy -= m._yy;
+    _yz -= m._yz;
+    _zx -= m._zx;
+    _zy -= m._zy;
+    _zz -= m._zz;
     return *this;
   }
 
-public: // Assignment: scalar
+public:// Assignment: scalar
   /// @brief = Value
   inline Matrix3x3 &operator=(double const &t) {
     _xx = _xy = _xz = t;
@@ -103,21 +119,33 @@ public: // Assignment: scalar
 
   /// @brief += Value
   inline Matrix3x3 &operator+=(Real const &t) {
-    _xx += t; _xy += t; _xz += t;
-    _yx += t; _yy += t; _yz += t;
-    _zx += t; _zy += t; _zz += t;
+    _xx += t;
+    _xy += t;
+    _xz += t;
+    _yx += t;
+    _yy += t;
+    _yz += t;
+    _zx += t;
+    _zy += t;
+    _zz += t;
     return *this;
   }
 
   /// @brief -= Value
   inline Matrix3x3 &operator-=(Real const &t) {
-    _xx -= t; _xy -= t; _xz -= t;
-    _yx -= t; _yy -= t; _yz -= t;
-    _zx -= t; _zy -= t; _zz -= t;
+    _xx -= t;
+    _xy -= t;
+    _xz -= t;
+    _yx -= t;
+    _yy -= t;
+    _yz -= t;
+    _zx -= t;
+    _zy -= t;
+    _zz -= t;
     return *this;
   }
 
-public: // Methods: basic mathematical
+public:// Methods: basic mathematical
   /// @brief Matrix3x3 + Matrix3x3
   friend inline Matrix3x3 operator+(Matrix3x3 const &a, Matrix3x3 const &b) {
     return Matrix3x3(
@@ -169,20 +197,20 @@ public: // Methods: basic mathematical
   /// @brief Matrix3x3 * Matrix3x3
   friend inline Matrix3x3 operator*(Matrix3x3 const &a, Matrix3x3 const &b) {
     return Matrix3x3(
-        // First row
-        (a._xx * b._xx) + (a._xy * b._yx) + (a._xz * b._zx),
-        (a._xx * b._xy) + (a._xy * b._yy) + (a._xz * b._zy),
-        (a._xx * b._xz) + (a._xy * b._yz) + (a._xz * b._zz),
+            // First row
+            (a._xx * b._xx) + (a._xy * b._yx) + (a._xz * b._zx),
+            (a._xx * b._xy) + (a._xy * b._yy) + (a._xz * b._zy),
+            (a._xx * b._xz) + (a._xy * b._yz) + (a._xz * b._zz),
 
-        // Second row
-        (a._yx * b._xx) + (a._yy * b._yx) + (a._yz * b._zx),
-        (a._yx * b._xy) + (a._yy * b._yy) + (a._yz * b._zy),
-        (a._yx * b._xz) + (a._yy * b._yz) + (a._yz * b._zz),
+            // Second row
+            (a._yx * b._xx) + (a._yy * b._yx) + (a._yz * b._zx),
+            (a._yx * b._xy) + (a._yy * b._yy) + (a._yz * b._zy),
+            (a._yx * b._xz) + (a._yy * b._yz) + (a._yz * b._zz),
 
-        // Third row
-        (a._zx * b._xx) + (a._zy * b._yx) + (a._zz * b._zx),
-        (a._zx * b._xy) + (a._zy * b._yy) + (a._zz * b._zy),
-        (a._zx * b._xz) + (a._zy * b._yz) + (a._zz * b._zz));
+            // Third row
+            (a._zx * b._xx) + (a._zy * b._yx) + (a._zz * b._zx),
+            (a._zx * b._xy) + (a._zy * b._yy) + (a._zz * b._zy),
+            (a._zx * b._xz) + (a._zy * b._yz) + (a._zz * b._zz));
   }
 
   /// @brief Matrix3x3 * Real
@@ -252,9 +280,15 @@ public:
 
   inline double difference(Matrix3x3 const &b) const {
     double dist = 0.0f;
-    dist += std::abs(_xx - b._xx); dist += std::abs(_xy - b._xy); dist += std::abs(_xz - b._xz);
-    dist += std::abs(_yx - b._yx); dist += std::abs(_yy - b._yy); dist += std::abs(_yz - b._yz);
-    dist += std::abs(_zx - b._zx); dist += std::abs(_zy - b._zy); dist += std::abs(_zz - b._zz);
+    dist += std::abs(_xx - b._xx);
+    dist += std::abs(_xy - b._xy);
+    dist += std::abs(_xz - b._xz);
+    dist += std::abs(_yx - b._yx);
+    dist += std::abs(_yy - b._yy);
+    dist += std::abs(_yz - b._yz);
+    dist += std::abs(_zx - b._zx);
+    dist += std::abs(_zy - b._zy);
+    dist += std::abs(_zz - b._zz);
 
     return dist;
   }
@@ -338,7 +372,7 @@ public:
     _zz /= dot;
   }
 
-public: // Properties: scalars
+public:// Properties: scalars
   /// @brief Value xx const
   [[nodiscard]] inline Real const &get_xx() const { return _xx; }
 
@@ -366,7 +400,7 @@ public: // Properties: scalars
   /// @brief Value zz const
   [[nodiscard]] inline Real const &get_zz() const { return _zz; }
 
-public: // Properties: value assignment
+public:// Properties: value assignment
   /// @brief xx assignment
   inline void set_xx(Real const &_xxa) { _xx = _xxa; }
 
@@ -394,7 +428,7 @@ public: // Properties: value assignment
   /// @brief zz assignment
   inline void set_zz(Real const &_zza) { _zz = _zza; }
 
-  inline Matrix3x3<T> get_transposed() const {
+  inline Matrix3x3 get_transposed() const {
     return Matrix3x3(
             _xx, _yx, _zx,
             _xy, _yy, _zy,
@@ -407,16 +441,15 @@ private:
   Real _zx, _zy, _zz;
 };
 
-typedef Matrix3x3<double> Matrix;
-typedef std::vector<Matrix3x3> Matrices;
+typedef std::vector<Matrix3x3> Matrix3x3s;
 
 // TODO Remove old code and ask joe about transform_1
-template <typename T>
-inline Vector3 operator*(Matrix3x3<T> const &m, Vector3 const &v) {
+template<typename T>
+inline Vector3 operator*(Matrix3x3 const &m, Vector3 const &v) {
   return Vector3(
-      m.get_xx() * v.get_x() + m.get_xy() * v.get_y() + m.get_xz() * v.get_z(),
-      m.get_yx() * v.get_x() + m.get_yy() * v.get_y() + m.get_yz() * v.get_z(),
-      m.get_zx() * v.get_x() + m.get_zy() * v.get_y() + m.get_zz() * v.get_z());
+          m.get_xx() * v.get_x() + m.get_xy() * v.get_y() + m.get_xz() * v.get_z(),
+          m.get_yx() * v.get_x() + m.get_yy() * v.get_y() + m.get_yz() * v.get_z(),
+          m.get_zx() * v.get_x() + m.get_zy() * v.get_y() + m.get_zz() * v.get_z());
 }
 
 inline void dot_vector(Matrix3x3 const &m, Vector3 const &v, Vector3 &vr) {
@@ -440,11 +473,11 @@ inline void dot_vectors(Matrix3x3 const &m, Vector3s const &v, Vector3s &vr) {
   }
 }
 
-template <typename T> inline Matrix3x3<T> transform_1(Matrix3x3<T> const &m) {
-  return Matrix3x3<T>(
-  m.get_xx(), m.get_xy(), m.get_xz(),
-  -m.get_yx(), -m.get_yy(), -m.get_yz(),
-  -m.get_zx(), -m.get_zy(), -m.get_zz());
+inline Matrix3x3 transform_1(Matrix3x3 const &m) {
+  return Matrix3x3(
+          m.get_xx(), m.get_xy(), m.get_xz(),
+          -m.get_yx(), -m.get_yy(), -m.get_yz(),
+          -m.get_zx(), -m.get_zy(), -m.get_zz());
 }
 
 inline void dot(Matrix3x3 const &a, Matrix3x3 const &b, Matrix3x3 &c) {
@@ -476,15 +509,15 @@ inline Matrix3x3 dot(Matrix3x3 const &a, Matrix3x3 const &b) {
           a.get_zx() * b.get_xz() + a.get_zy() * b.get_yz() + a.get_zz() * b.get_zz());
 }
 
-template <typename T>
-std::ostream &operator<<(std::ostream &stream, Matrix3x3<T> const &v) {
+template<typename T>
+std::ostream &operator<<(std::ostream &stream, Matrix3x3 const &v) {
   stream << "(" << v.get_xx() << ", " << v.get_xy() << ", " << v.get_xz() << ")" << std::endl;
   stream << "(" << v.get_yx() << ", " << v.get_yy() << ", " << v.get_yz() << ")" << std::endl;
   stream << "(" << v.get_zx() << ", " << v.get_zy() << ", " << v.get_zz() << ")" << std::endl;
   return stream;
 }
 
-inline String matrix_to_str(Matrix const &m) {
+inline String matrix_to_str(Matrix3x3 const &m) {
   std::stringstream ss;
   ss << m.get_xx() << " " << m.get_xy() << " " << m.get_xz() << " ";
   ss << m.get_yx() << " " << m.get_yy() << " " << m.get_yz() << " ";
@@ -492,18 +525,22 @@ inline String matrix_to_str(Matrix const &m) {
   return ss.str();
 }
 
-  inline Matrix3x3(String const &s) {
+/*inline Matrix3x3(String const &s) {
   auto v = base::string::split(s, " ");
   assert(v.size() > 8);
-  _xx = std::stod(v[0]); _xy = std::stod(v[1]); _xz = std::stod(v[2]);
-  _yx = std::stod(v[3]); _yy = std::stod(v[4]); _yz = std::stod(v[5]);
-  _zx = std::stod(v[6]); _zy = std::stod(v[7]); _zz = std::stod(v[8]);
+  _xx = std::stod(v[0]);
+  _xy = std::stod(v[1]);
+  _xz = std::stod(v[2]);
+  _yx = std::stod(v[3]);
+  _yy = std::stod(v[4]);
+  _yz = std::stod(v[5]);
+  _zx = std::stod(v[6]);
+  _zy = std::stod(v[7]);
+  _zz = std::stod(v[8]);
+} */
 
-}
 
-
-*/
 // add end comment on the line above
-} // namespace math
+}// namespace math
 
 #endif
