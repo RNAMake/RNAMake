@@ -15,12 +15,13 @@
 
 #include "matrix_3x3.hpp"
 #include "vector_3.hpp"
-#include <math/matrix_3x3.hpp>
-#include <math/vector_3.hpp>
+#include <../math/matrix_3x3.hpp>
+#include <../math/vector_3.hpp>
 
 namespace math {
 /*
 class Transform {
+
  public:
   friend inline void dot(math::Matrix3x3 const& a, math::Matrix3x3 const& b, Transform& c) {
     c._xx = a.get_xx() * b.get_xx() + a.get_xy() * b.get_yx() + a.get_xz() * b.get_zx();
@@ -52,7 +53,7 @@ class Transform {
         _zz(1.0),
         _pz(0.0) {}
 
-  inline Transform(math::Matrix3x3 const& r, Point const& t) {
+  inline Transform(math::Matrix3x3 const& r, Vector3 const& t) {
     rotation(r);
     translation(t);
   }
@@ -60,53 +61,53 @@ class Transform {
  public:
   // Accessors
 
-  float get_xx() const { return _xx; }
+  [[nodiscard]] float get_xx() const { return _xx; }
 
-  float xy() const { return _xy; }
+  [[nodiscard]] float get_xy() const { return _xy; }
 
-  float xz() const { return _xz; }
+  [[nodiscard]] float get_xz() const { return _xz; }
 
-  float yx() const { return _yx; }
+  [[nodiscard]] float get_yx() const { return _yx; }
 
-  float yy() const { return _yy; }
+  [[nodiscard]] float get_yy() const { return _yy; }
 
-  float yz() const { return _yz; }
+  [[nodiscard]] float get_yz() const { return _yz; }
 
-  float zx() const { return _zx; }
+  [[nodiscard]] float get_zx() const { return _zx; }
 
-  float zy() const { return _zy; }
+  [[nodiscard]] float get_zy() const { return _zy; }
 
-  float zz() const { return _zz; }
+  [[nodiscard]] float get_zz() const { return _zz; }
 
-  float px() const { return _px; }
+  [[nodiscard]] float get_px() const { return _px; }
 
-  float py() const { return _py; }
+  [[nodiscard]] float get_py() const { return _py; }
 
-  float pz() const { return _pz; }
+  [[nodiscard]] float get_pz() const { return _pz; }
 
   float get_xx() { return _xx; }
 
-  float xy() { return _xy; }
+  float get_xy() { return _xy; }
 
-  float xz() { return _xz; }
+  float get_xz() { return _xz; }
 
-  float yx() { return _yx; }
+  float get_yx() { return _yx; }
 
-  float yy() { return _yy; }
+  float get_yy() { return _yy; }
 
-  float yz() { return _yz; }
+  float get_yz() { return _yz; }
 
-  float zx() { return _zx; }
+  float get_zx() { return _zx; }
 
-  float zy() { return _zy; }
+  float get_zy() { return _zy; }
 
-  float zz() { return _zz; }
+  float get_zz() { return _zz; }
 
-  float px() { return _px; }
+  float get_px() { return _px; }
 
-  float py() { return _py; }
+  float get_py() { return _py; }
 
-  float pz() { return _pz; }
+  float get_pz() { return _pz; }
 
   Vector3 xaxis() const { return Vector3(_xx, _xy, _xz); }
 

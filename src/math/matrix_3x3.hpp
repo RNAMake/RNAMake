@@ -22,11 +22,12 @@
 
 namespace math {
 // add comment here
-
+/*
 class Matrix3x3 {
-  friend class Transform;
 
 public:
+  friend class Transform;
+
 public:// initiation ////////////////////////////////////////////////////////
   inline Matrix3x3() = default;
   inline Matrix3x3(Matrix3x3 const &m) = default;
@@ -49,7 +50,9 @@ public:// initiation ////////////////////////////////////////////////////////
 
 public:
   inline String const get_str() const {
-    return std::to_string(_xx) + " " + std::to_string(_xy) + " " + std::to_string(_xz) + " " + std::to_string(_yx) + " " + std::to_string(_yy) + " " + std::to_string(_yz) + " " + std::to_string(_zx) + " " + std::to_string(_zy) + " " + std::to_string(_zz);
+    return std::to_string(_xx) + " " + std::to_string(_xy) + " " + std::to_string(_xz) + " "
+           + std::to_string(_yx) + " " + std::to_string(_yy) + " " + std::to_string(_yz) + " "
+           + std::to_string(_zx) + " " + std::to_string(_zy) + " " + std::to_string(_zz);
   }
 
   [[nodiscard]] inline String const get_str_readable() const {
@@ -525,7 +528,7 @@ inline String matrix_to_str(Matrix3x3 const &m) {
   return ss.str();
 }
 
-/*inline Matrix3x3(String const &s) {
+inline Matrix3x3(String const &s) {
   auto v = base::string::split(s, " ");
   assert(v.size() > 8);
   _xx = std::stod(v[0]);
@@ -537,10 +540,10 @@ inline String matrix_to_str(Matrix3x3 const &m) {
   _zx = std::stod(v[6]);
   _zy = std::stod(v[7]);
   _zz = std::stod(v[8]);
-} */
+}
 
-
+*/
 // add end comment on the line above
-}// namespace math
+} // namespace math
 
 #endif
