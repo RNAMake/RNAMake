@@ -67,6 +67,9 @@ void BuildMotifGraph::run() {
 
   if (_parameters.connect.empty()) {
     LOG_INFO << "completed, writing pdb to \"test.pdb\"";
+    std::cout << _mg.sequence() << std::endl;
+    std::cout << _mg.dot_bracket() << std::endl;
+    _mg.write_pdbs();
     _mg.to_pdb("test.pdb", 1, 1);
     exit(0);
   }
@@ -79,6 +82,8 @@ void BuildMotifGraph::run() {
 
   if (_parameters.sequence.empty() && _parameters.resample_sequence == -1) {
     LOG_INFO << "completed, writing pdb to \"test.pdb\"";
+    std::cout << _mg.sequence() << std::endl;
+    std::cout << _mg.dot_bracket() << std::endl;
     _mg.to_pdb("test.pdb", 1, 1);
     exit(0);
   }

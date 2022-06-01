@@ -213,25 +213,25 @@ public:
         if(!accept) {
           continue;
         }
-        if(parameters_.sterics) {
-          if(_steric_clash(msg_)) {
-            mover->undo(msg_);
-            continue;
-          }
-        }
         accepted_steps += 1;
         cur_score = mover->score();
         if(cur_score < parameters_.accept_score) {
+          if(parameters_.sterics) {
+            if(_steric_clash(msg_)) {
+              mover->undo(msg_);
+              continue;
+            }
+          }
           int size = msg_->size();
           int clash = 0;
           float diff = 0;
-          for(int i = 3; i < size; i++) {
+          for(int i = 0; i < size; i++) {
             auto & beads1 = msg_->get_node(i)->data()->cur_state->beads();
-            for(int j = i - 2; j > 1; j--) {
+            for(int j = i+2; j < size; j++) {
               for(auto const & b1 : beads1) {
                 for(auto const & b2 : msg_->get_node(j)->data()->cur_state->beads()) {
                   diff = b1.distance(b2);
-                  if(diff < 2.2f) {
+                  if(diff < 4.5f) {
                     clash = true;
                     break;
                   }
@@ -240,7 +240,7 @@ public:
             }
           }
           if(clash) {
-          //  continue;
+            continue;
           }
 
           _get_solution_motif_names(msg_);

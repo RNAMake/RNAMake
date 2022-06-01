@@ -1121,7 +1121,7 @@ void PairFinder::_write_bestpairs(long num_bp, long** base_pairs, long* bp_idx,
   }
   std::reverse(remove.begin(), remove.end());
   for(auto const & pos : remove) {
-    bps.erase(bps.begin() + pos);
+  //  bps.erase(bps.begin() + pos);
   }
   
 }
@@ -1740,7 +1740,7 @@ void PairFinder::find_pair(X3dna::X3Basepairs& basepairs) {
 
   clear_my_globals();
 
-  clean_files();
+  //clean_files();
   basepairs = bps;
 }
 }  // namespace util

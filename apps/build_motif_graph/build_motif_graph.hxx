@@ -55,8 +55,8 @@ class BuildMotifGraph : base::Application {
     bool output_pdb = false;
     bool sterics = false;
     float cutoff = 4.5f;
-    int runs = 1;
     int steps = 1000000;
+    int runs = 1;
     int resample_sequence = -1;
   };
 
