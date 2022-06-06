@@ -13,7 +13,7 @@
 #include <stdio.h>
 
 //RNAMake Headers
-#include "base/types.h"
+#include "base/types.hpp"
 #include "structure/basepair.h"
 #include "motif/motif.h"
 

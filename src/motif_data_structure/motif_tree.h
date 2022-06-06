@@ -270,7 +270,7 @@ private: //adding functions helpers
     data_structure::tree::TreeNodeOP<motif::MotifOP>
     _get_parent(int);
 
-    Ints
+    Indexes
     _get_available_parent_end_pos(
             data_structure::tree::TreeNodeOP<motif::MotifOP> const &,
             int);

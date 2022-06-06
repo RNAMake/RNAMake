@@ -47,9 +47,9 @@ namespace util {
 
       std::vector<X3dna::X3Basepair> bps;
 
-      std::map<std::pair<int, std::string>, math::Vector> atoms;
+      std::map<std::pair<int, std::string>, math::Vector3> atoms;
 
-      math::Vectors vectors;
+      math::Vector3s vectors;
 
       struct Args {
           char pdbfile[BUF512];

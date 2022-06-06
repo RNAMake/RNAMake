@@ -403,7 +403,7 @@ MotifFactory::_align_ends(
     structure::BasepairOP closest;
     float best = 1000;
     auto c2 = structure::center(ref_motif_->ends()[0]->atoms());
-    math::Point c1;
+    math::Vector3 c1;
 
     for (auto const & end : m->ends()) {
         c1 = structure::center(end->atoms());

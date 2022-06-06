@@ -1,15 +1,8 @@
 //
 // Created by Joe Yesselman on 5/25/22.
 //
-
-#include <iostream>
 // std headers
-#include <cassert>
-#include <cmath>
-#include <fstream>
-#include <sstream>
 #include <string>
-#include <vector>
 
 // RNAMake Headers
 #include "vector_3.hpp"

@@ -7,8 +7,9 @@
 #include <limits>
 
 #include <math/quaternion.h>
-#include <math/xyz_vector.h>
-#include <base/types.h>
+#include <math/vector_3.hpp>
+#include <base/types.hpp>
+#include <math/matrix_3x3.hpp>
 #include <base/sys_interface.h>
 
 namespace util {
@@ -32,7 +33,7 @@ get_point(const nlohmann::json& , const String&);
 math::Quaternion
 get_quaternion(const nlohmann::json&, const String&);
 
-math::Matrix
+math::Matrix3x3
 get_matrix(const nlohmann::json&);
 
 Reals

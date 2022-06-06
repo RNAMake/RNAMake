@@ -12,7 +12,6 @@
 #include <iostream>
 
 // RNAMake Headers
-
 #include "matrix_3x3.hpp"
 #include "vector_3.hpp"
 #include <../math/matrix_3x3.hpp>
@@ -22,8 +21,11 @@ namespace math {
 /*
 class Transform {
 
- public:
-  friend inline void dot(math::Matrix3x3 const& a, math::Matrix3x3 const& b, Transform& c) {
+public:
+  friend class Matrix3x3;
+
+public:
+   friend inline void dot(Matrix3x3 const &a, Matrix3x3 const &b, Transform &c) {
     c._xx = a.get_xx() * b.get_xx() + a.get_xy() * b.get_yx() + a.get_xz() * b.get_zx();
     c._xy = a.get_xx() * b.get_xy() + a.get_xy() * b.get_yy() + a.get_xz() * b.get_zy();
     c._xz = a.get_xx() * b.get_xz() + a.get_xy() * b.get_yz() + a.get_xz() * b.get_zz();
@@ -40,20 +42,11 @@ class Transform {
  public:  // creation
   /// @brief Default constructor
   inline Transform()
-      : _xx(1.0),
-        _yx(0.0),
-        _zx(0.0),
-        _px(0.0),
-        _xy(0.0),
-        _yy(1.0),
-        _zy(0.0),
-        _py(0.0),
-        _xz(0.0),
-        _yz(0.0),
-        _zz(1.0),
-        _pz(0.0) {}
+      : _xx(1.0), _yx(0.0), _zx(0.0), _px(0.0),
+        _xy(0.0), _yy(1.0), _zy(0.0), _py(0.0),
+        _xz(0.0), _yz(0.0), _zz(1.0), _pz(0.0) {}
 
-  inline Transform(math::Matrix3x3 const& r, Vector3 const& t) {
+  inline Transform(Matrix3x3 const& r, Vector3 const& t) {
     rotation(r);
     translation(t);
   }
@@ -109,17 +102,20 @@ class Transform {
 
   float get_pz() { return _pz; }
 
-  Vector3 xaxis() const { return Vector3(_xx, _xy, _xz); }
+  [[nodiscard]] Vector3 xaxis() const { return Vector3(_xx, _xy, _xz); }
 
-  Vector3 yaxis() const { return Vector3(_yx, _yy, _yz); }
+  [[nodiscard]] Vector3 yaxis() const { return Vector3(_yx, _yy, _yz); }
 
-  Vector3 zaxis() const { return Vector3(_zx, _zy, _zz); }
+  [[nodiscard]] Vector3 zaxis() const { return Vector3(_zx, _zy, _zz); }
 
-  Vector3 translation() const { return Vector3(_px, _py, _pz); }
+  [[nodiscard]] Vector3 translation() const { return Vector3(_px, _py, _pz); }
 
  public:
-  inline Matrix3x3 rotation() const {
-    return Matrix3x3(_xx, _xy, _xz, _yx, _yy, _yz, _zx, _zy, _zz);
+  [[nodiscard]] inline Matrix3x3 rotation() const {
+    return Matrix3x3(
+            _xx, _xy, _xz,
+            _yx, _yy, _yz,
+            _zx, _zy, _zz);
   }
 
   inline void rotation(Matrix3x3 const& m) {
@@ -141,9 +137,9 @@ class Transform {
   }
 
  private:
-  float _xx, _yx, _zx, _px;
-  float _xy, _yy, _zy, _py;
-  float _xz, _yz, _zz, _pz;
+  float _xx{}, _yx{}, _zx{}, _px{};
+  float _xy{}, _yy{}, _zy{}, _py{};
+  float _xz{}, _yz{}, _zz{}, _pz{};
 };
 */
 }  // namespace math

@@ -5,7 +5,7 @@
 #ifndef PRIMITIVES_RESIDUE_H
 #define PRIMITIVES_RESIDUE_H
 
-#include <base/types.h>
+#include <base/types.hpp>
 #include <util/uuid.h>
 
 /*

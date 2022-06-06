@@ -11,7 +11,7 @@
 #include <math/numerical.hpp>
 
 namespace math {
-       /*
+
 int are_floats_equal(double const a, double const b, double tol) {
   if (std::abs(a - b) < tol) {
     return 1;
@@ -41,7 +41,7 @@ int are_points_equal(Vector3 const& p1, Vector3 const& p2, float tol) {
   }
 }
 
-int are_matrices_equal(Matrix const& m, Matrix const& mc) {
+int are_matrices_equal(Matrix3x3 const& m, Matrix3x3 const& mc) {
   if (!are_floats_equal(m.get_xx(), mc.get_xx()) ||
       !are_floats_equal(m.get_xy(), mc.get_xy()) ||
       !are_floats_equal(m.get_xz(), mc.get_xz()) ||
@@ -70,7 +70,7 @@ bool roughly_equal<float>(float const& v1, float const& v2, double tolerance) {
 }
 
 template <>
-bool roughly_equal<Matrix>(Matrix const& m1, Matrix const& m2,
+bool roughly_equal<Matrix3x3>(Matrix3x3 const& m1, Matrix3x3 const& m2,
                            double tolerance) {
   return roughly_equal(m1.get_xx(), m2.get_xx(), tolerance) &&
          roughly_equal(m1.get_xy(), m2.get_xy(), tolerance) &&
@@ -90,5 +90,5 @@ bool roughly_equal<Vector3>(Vector3 const& v1, Vector3 const& v2,
          roughly_equal(v1.get_y(), v2.get_y(), tolerance) &&
          roughly_equal(v1.get_z(), v2.get_z(), tolerance);
 }
-     */
+
 }  // namespace math

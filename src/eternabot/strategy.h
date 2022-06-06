@@ -40,7 +40,7 @@ public:
     
 protected:
     float mean_, stdev_;
-    Floats params_;
+    Reals params_;
     
 };
 

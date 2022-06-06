@@ -16,8 +16,8 @@
 #include <stdexcept>
 #include <cassert>
 
-#include <base/types.h>
-#include <base/string.h>
+#include <base/types.hpp>
+#include <base/string.hpp>
 #include <util/uuid.h>
 
 #include <primitives/residue.h>

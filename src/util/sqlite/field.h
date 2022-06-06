@@ -8,7 +8,7 @@
 #include <sqlite3.h>
 
 #include <base/assertions.h>
-#include <base/types.h>
+#include <base/types.hpp>
 #include <base/string.h>
 #include <base/vector_container.h>
 

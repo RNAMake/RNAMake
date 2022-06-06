@@ -5,8 +5,8 @@
 #ifndef RNAMAKE_NEW_BEAD_H
 #define RNAMAKE_NEW_BEAD_H
 
-#include <math/xyz_vector.h>
-#include <math/xyz_matrix.h>
+#include <math/vector_3.hpp>
+#include <math/matrix_3x3.hpp>
 
 namespace util {
 

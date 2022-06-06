@@ -19,6 +19,7 @@
 
 #include "data_structure/graph/graph_node.h"
 #include "data_structure/graph/graph_node.fwd.h"
+#include <base/types.hpp>
 
 namespace data_structure {
 namespace graph {
@@ -460,7 +461,7 @@ public:
             int & pos) {
 
         if (pos == -1) {
-            Ints avail_pos = n->available_children_pos();
+            Indexes avail_pos = n->available_children_pos();
             if (avail_pos.size() == 0) {
                 throw GraphException("cannot add connection to node, has not available ends");
             }
@@ -475,7 +476,7 @@ public:
     }
 
     inline
-    Ints
+    Indexes
     get_available_pos(
             GraphNodeOP<DataType> const & n,
             int & pos) {
@@ -488,7 +489,7 @@ public:
                 ss << "graph pos is not available " << pos << std::endl;
                 throw GraphException(ss.str());
             }
-            Ints r(1);
+            Indexes r(1);
             r[0] = pos;
             return r;
         }

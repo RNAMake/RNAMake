@@ -165,10 +165,10 @@ namespace motif_data_structure {
           String fname) {
 
 
-      std::vector<Ints> ranges(mtst_->size());
+      std::vector<Indexes> ranges(mtst_->size());
       for (int i = 0; i < mtst_->size(); i++) {
           int max = (int) mtst_->get_node(i)->data()->members().size();
-          Ints range(max);
+          Indexes range(max);
           for (int j = 0; j < max; j++) {
               range[j] = j;
           }
@@ -177,16 +177,16 @@ namespace motif_data_structure {
 
       auto mst = mtst_->to_mst();
       util::CartesianProduct<int> iterator(ranges);
-      Ints c, last_combo;
-      math::Matrix r;
-      math::Point d;
-      math::Vector euler;
+      Indexes c, last_combo;
+      math::Matrix3x3 r;
+      math::Vector3 d;
+      math::Vector3 euler;
       int j = 0;
       float mag;
       float r_diff, r_diff_flip, r_best;
 
-      math::Matrix I = math::Matrix::identity();
-      math::Matrix I_flip = I.get_flip_orientation();
+      math::Matrix3x3 I = math::Matrix3x3::identity();
+      math::Matrix3x3 I_flip = I.get_flip_orientation();
 
       std::ofstream out(fname + ".out");
       while (!iterator.end()) {

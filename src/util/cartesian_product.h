@@ -13,7 +13,7 @@
 #include <iostream>
 
 //RNAMake Headers
-#include "base/types.h"
+#include <base/types.hpp>
 
 namespace util {
 
@@ -91,8 +91,8 @@ public:
     }
 
 private:
-    Ints indices_;
-    Ints maxes_;
+    Indexes indices_;
+    Indexes maxes_;
     std::vector<Values> values_;
     Values current_;
     int end_;

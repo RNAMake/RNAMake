@@ -275,7 +275,7 @@ private:
     _parse_library_into_ensemble(
             resources::MotifStateSqliteLibraryOP library) {
         auto motif_states = motif::MotifStateOPs();
-        auto energies = Floats();
+        auto energies = Reals();
 
         auto is_helix_lib = false;
         if(library->get_name() == "flex_helices" || library->get_name() == "ideal_helices" ||
@@ -387,7 +387,7 @@ public:
         auto ms = std::make_shared<motif::MotifState>(
                 "start", Strings{"start", "start"}, Strings{"", ""},
                 structure::BasepairStateOPs {bp_state, bp_state},
-                math::Points(), 0, 0, 0);
+                math::Vector3s(), 0, 0, 0);
 
         auto msg = std::make_shared<motif_data_structure::MotifStateGraph>();
         msg->set_option_value("sterics", false);

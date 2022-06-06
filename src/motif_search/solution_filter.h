@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include <base/types.h>
-#include <base/string.h>
+#include <base/types.hpp>
+#include <base/string.hpp>
 
 namespace motif_search {
 

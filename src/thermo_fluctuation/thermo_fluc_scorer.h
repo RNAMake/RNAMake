@@ -17,6 +17,8 @@
 #include "structure/basepair.h"
 #include "structure/basepair_state.fwd.h"
 #include "structure/basepair_state.h"
+#include "math/matrix_3x3.hpp"
+#include "math/vector_3.hpp"
 
 namespace thermo_fluctuation {
 
@@ -249,8 +251,8 @@ private:
 
 private:
     structure::BasepairOP ref_bp_;
-    math::Matrix rot_, rot_t_, ref_r_t_, r_, r1_, r2_, r1_trans_, r2_trans_;
-    math::Point d1_, d2_, d_;
+    Matrix3x3 rot_, rot_t_, ref_r_t_, r_, r1_, r2_, r1_trans_, r2_trans_;
+    math::Vector3 d1_, d2_, d_;
     std::array<math::Real2, 6> constraints_;
     math::Real6 values_;
     float dist_;

@@ -11,18 +11,18 @@
 
 #include <stdio.h>
 
-#include "math/xyz_vector.h"
+#include "math/vector_3.hpp"
 
 namespace util {
 
 String
 points_to_pdb_str(
-        math::Points const &);
+        math::Vector3s const &);
 
 void
 points_to_pdb(
         String const &,
-        math::Points const &);
+        math::Vector3s const &);
 
 }
 

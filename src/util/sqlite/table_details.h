@@ -5,7 +5,7 @@
 #ifndef RNAMAKE_NEW_TABLE_DETAILS_H
 #define RNAMAKE_NEW_TABLE_DETAILS_H
 
-#include <base/types.h>
+#include <base/types.hpp>
 
 #include <util/sqlite/field.h>
 

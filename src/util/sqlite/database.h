@@ -6,7 +6,7 @@
 #define RNAMAKE_NEW_SQLITE_DATABASE_H
 
 #include <sqlite3.h>
-#include <base/types.h>
+#include <base/types.hpp>
 #include <base/file_io.h>
 
 namespace util {

@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include <base/string.h>
+#include <base/string.hpp>
 #include <base/assertions.h>
 #include <primitives/residue.h>
 

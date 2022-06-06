@@ -5,7 +5,7 @@
 #ifndef RNAMAKE_NEW_SEQUENCE_TOOLS_H
 #define RNAMAKE_NEW_SEQUENCE_TOOLS_H
 
-#include <base/types.h>
+#include <base/types.hpp>
 #include <secondary_structure/pose.h>
 
 namespace secondary_structure {

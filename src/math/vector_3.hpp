@@ -19,6 +19,7 @@
 #include <vector>
 
 // RNAMake Headers
+#include "matrix_3x3.hpp"
 #include <base/exception.hpp>
 #include <base/string.hpp>
 

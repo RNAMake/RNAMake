@@ -11,9 +11,9 @@
 
 #include <stdio.h>
 
-#include "base/types.h"
-#include "math/xyz_vector.h"
-#include "math/xyz_matrix.h"
+#include "base/types.hpp"
+#include "math/vector_3.hpp"
+#include "math/matrix_3x3.hpp"
 #include "util/uuid.h"
 #include "structure/basepair_state.fwd.h"
 #include "structure/basepair_state.h"
@@ -43,7 +43,7 @@ public:
             Strings const & end_names,
             Strings const & end_ids,
             structure::BasepairStateOPs const & end_states,
-            math::Points const & beads,
+            math::Vector3s const & beads,
             float const & score,
             int const & size,
             int const & block_end_add) :
@@ -126,7 +126,7 @@ public: // non const methods
     inline
     void
     move(
-            math::Point const & p) {
+            math::Vector3 const & p) {
         for (auto & end_state : end_states_) {
             end_state->move(p);
         }
@@ -139,9 +139,9 @@ public: // non const methods
     inline
     void
     transform(
-            math::Matrix const & r,
-            math::Vector const & t,
-            math::Point & dummy) {
+            math::Matrix3x3 const & r,
+            math::Vector3 const & t,
+            math::Vector3 & dummy) {
 
         for (auto & end_state : end_states_) {
             end_state->transform(r, t, dummy);
@@ -157,9 +157,9 @@ public: // non const methods
     inline
     void
     transform(
-            math::Matrix const & r,
-            math::Vector const & t) {
-        auto dummy = math::Point();
+            math::Matrix3x3 const & r,
+            math::Vector3 const & t) {
+        auto dummy = math::Vector3();
         transform(r, t, dummy);
     }
 
@@ -279,7 +279,7 @@ align_motif_state(
         org_state->update_end_state(i, bp_state_final);
     }
 
-    math::Points t_beads(org_state->beads().size());
+    math::Vector3s t_beads(org_state->beads().size());
     dot_vectors(bp_state.r_T(), org_state->beads(), t_beads);
     for (int i = 0; i < t_beads.size(); i++) { t_beads[i] += bp_state.d(); }
     org_state->beads(t_beads);
@@ -301,7 +301,7 @@ get_aligned_motif_state(
         cur_state->update_end_state(i, bp_state_final);
     }
 
-    math::Points t_beads(org_state->beads().size());
+    math::Vector3s t_beads(org_state->beads().size());
     dot_vectors(bp_state.r_T(), org_state->beads(), t_beads);
     for (int i = 0; i < t_beads.size(); i++) { t_beads[i] += bp_state.d(); }
     cur_state->beads(t_beads);

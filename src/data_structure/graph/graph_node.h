@@ -16,7 +16,7 @@
 #include <queue>
 #include <cxxabi.h>
 
-#include "base/types.h"
+#include "base/types.hpp"
 #include "data_structure/graph/graph_node.fwd.h"
 
 namespace data_structure {
@@ -91,9 +91,9 @@ public: //Vitrual functions need to be implemented in derived clases
 public:
 
     inline
-    Ints
+    Indexes
     available_children_pos() const {
-        Ints pos;
+        Indexes pos;
         int i = 0;
         for (auto const & c : connections_) {
             if (c == nullptr) { pos.push_back(i); }
