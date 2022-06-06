@@ -12,11 +12,13 @@
 #include <stdio.h>
 #include <iostream>
 #include <sqlite3.h>
+#include <stdexcept>
+//RNAMake Libraries
+#include "base/types.hpp"
+
 
 namespace util {
 
-//RNAMake Libraries
-#include "base/types.h"
 
 class Sqlite3ConnectionException : public std::runtime_error {
 public:

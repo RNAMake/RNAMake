@@ -6,7 +6,7 @@
 #define RNAMAKE_NEW_BASEPAIR_H
 
 #include <base/assertions.h>
-#include <base/string.h>
+#include <base/string.hpp>
 #include <primitives/basepair.h>
 
 namespace secondary_structure {

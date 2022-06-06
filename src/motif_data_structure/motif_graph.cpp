@@ -195,12 +195,12 @@ MotifGraph::_get_parent(
     return parent;
 }
 
-Ints
+Indexes
 MotifGraph::_get_available_parent_end_pos(
         data_structure::graph::GraphNodeOP<motif::MotifOP> const & parent,
         int parent_end_index) {
 
-    auto avail_pos = Ints();
+    auto avail_pos = Indexes();
 
     if (parent_end_index != -1) {
         int avail = parent->available_pos(parent_end_index);
@@ -469,7 +469,7 @@ MotifGraph::add_motif_graph(
         int parent_end_index) {
     auto parent = _get_parent("motif_graph", parent_index);
 
-    auto avail_pos = Ints();
+    auto avail_pos = Indexes();
     try { avail_pos = graph_.get_available_pos(parent, parent_end_index); }
     catch (data_structure::graph::GraphException const & e) {
         throw MotifGraphException("could not add motif_graph with parent: "
@@ -979,55 +979,6 @@ MotifGraph::update_var_options() {
 }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

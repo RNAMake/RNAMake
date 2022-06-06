@@ -11,7 +11,11 @@
 #include <math.h>
 #include <time.h>
 #include <limits.h>
-#include <math/numerical.h>
+//#include <math/numerical.h>
+
+// RNAMAke headers
+#include <math/vector_3.hpp>
+#include <math/matrix_3x3.hpp>
 
 #define NR_END 1  /* for NRC related functions */
 #define FREE_ARG char*
@@ -62,7 +66,7 @@ typedef struct {
 } miscPars;
 
 typedef struct {
-    std::vector<math::Point> vect;
+    std::vector<math::Vector3> vect;
     std::vector<String> info_vect;
 } bp_vectors;
 
@@ -238,3 +242,4 @@ extern struct_Gvars Gvars;
 #include <util/x3dna_fncs.h>
 
 #endif  /* _X3DNA_H */
+

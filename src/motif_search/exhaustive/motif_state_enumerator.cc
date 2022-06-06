@@ -13,8 +13,8 @@ namespace exhaustive {
 
 MotifStateEnumerator::MotifStateEnumerator(
         motif_search::SolutionToplogy sol_toplogy) {
-    indices_ = Ints(sol_toplogy.size());
-    maxes_ = Ints(sol_toplogy.size());
+    indices_ = Indexes(sol_toplogy.size());
+    maxes_ = Indexes(sol_toplogy.size());
     motif_states_= std::vector<motif::MotifStateOPs>(sol_toplogy.size());
     current_ = motif::MotifStateOPs(sol_toplogy.size());
     end_ = 0;

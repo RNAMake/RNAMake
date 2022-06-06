@@ -10,7 +10,7 @@
 #define RNAMake_pair_mat_h
 
 //RNAMake Headers
-#include "base/types.h"
+#include "base/types.hpp"
 
 namespace vienna {
 

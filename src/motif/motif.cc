@@ -213,8 +213,8 @@ align_motif(
         structure::BasepairOP const & motif_end,
         MotifOP & motif) {
 
-    auto ref_T = math::Matrix();
-    auto r = math::Matrix();
+    auto ref_T = math::Matrix3x3();
+    auto r = math::Matrix3x3();
     transpose(ref_bp_state->r(), ref_T);
     dot(ref_T, motif_end->r(), r);
     r.unitarize();
@@ -231,7 +231,7 @@ align_motif(
     motif->get_beads(motif_end);
     if (dist1 > 5 && dist2 > 5) { return; }
 
-    math::Point sugar_diff_1, sugar_diff_2;
+    math::Vector3 sugar_diff_1, sugar_diff_2;
     if (dist1 < dist2) {
         sugar_diff_1 = ref_bp_state->sugars()[0] - motif_end->res1()->get_atom("C1'")->get_coords();
         sugar_diff_2 = ref_bp_state->sugars()[1] - motif_end->res2()->get_atom("C1'")->get_coords();

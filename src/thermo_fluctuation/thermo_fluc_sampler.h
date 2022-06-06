@@ -10,6 +10,7 @@
 #define __RNAMake__thermo_fluc_sampler__
 
 #include <stdio.h>
+#include <stdexcept>
 
 //RNAMake Headers
 #include "util/monte_carlo.h"
@@ -99,7 +100,7 @@ private:
     util::RandomNumberGenerator rng_;
     motif_data_structure::MotifStateEnsembleTreeOP mset_;
     motif_data_structure::MotifStateTreeOP mst_;
-    Ints states_;
+    Indexes states_;
     int node_num_, pos_, mem_pos_, accept_;
     float energy_;
     motif_data_structure::MotifStateEnsembleTreeNodeOP mset_node_;

@@ -10,6 +10,8 @@
 
 #include "util/steric_lookup.hpp"
 #include <iomanip>      // std::setprecision
+#include <math/vector_3.hpp>
+#include <math/matrix_3x3.hpp>
 
 namespace util {
 

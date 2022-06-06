@@ -27,7 +27,7 @@ public:
     Scorer() :
         generator_( FeatureGenerator() ),
         strategies_( StrategyOPs() ),
-        weights_ ( Floats() ) {
+        weights_ ( Reals() ) {
         
         strategies_.push_back(std::make_shared<ABasicTest>());
         strategies_.push_back(std::make_shared<CleanPlotStackCapsandSafeGC>());
@@ -41,7 +41,7 @@ public:
         weights_.push_back(0.3661276);
         weights_.push_back(0.2230357);
         
-        scores_ = Floats( strategies_.size() );
+        scores_ = Reals( strategies_.size() );
         mean_ = 84.8005952381;
         stdev_ = 16.4725276237;
         
@@ -59,14 +59,14 @@ public:
     
 public:
     
-    Floats const &
+    Reals const &
     scores() { return scores_; }
     
 private:
     FeatureGenerator generator_;
     FeaturesOP features_;
     StrategyOPs strategies_;
-    Floats weights_, scores_;
+    Reals weights_, scores_;
     float mean_, stdev_, total_score_ = 0.0;
 
 };

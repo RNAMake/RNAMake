@@ -10,7 +10,7 @@
 #include <memory>
 
 #include <base/assertions.h>
-#include <base/string.h>
+#include <base/string.hpp>
 #include <base/simple_string.h>
 #include <base/vector_container.h>
 #include <util/uuid.h>

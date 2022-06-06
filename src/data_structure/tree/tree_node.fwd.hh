@@ -9,6 +9,8 @@
 #ifndef RNAMake_tree_node_fwd_hh
 #define RNAMake_tree_node_fwd_hh
 
+#include <vector>
+
 namespace data_structure {
 namespace tree {
 

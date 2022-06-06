@@ -30,7 +30,7 @@ MotifStateEnsemble::MotifStateEnsemble(
 
 MotifStateEnsemble::MotifStateEnsemble(
         MotifStateOPs const & motif_states,
-        Floats const & energies) {
+        Reals const & energies) {
 
     if (motif_states.size() != energies.size()) {
         throw MotifStateEnsembleException("must supply the same number of motif_states and energies");

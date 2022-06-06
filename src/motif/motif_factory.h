@@ -15,7 +15,7 @@
 #include <util/x3dna.h>
 
 //RNAMake Headers
-#include "base/types.h"
+#include "base/types.hpp"
 #include "base/settings.h"
 #include "base/file_io.h"
 #include "base/env_manager.h"

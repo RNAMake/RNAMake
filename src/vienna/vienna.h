@@ -14,7 +14,7 @@
 #include <string.h>
 
 //RNAMake Headers
-#include "base/types.h"
+#include "base/types.hpp"
 #include "vienna/energy_par.h"
 #include "vienna/pair_mat.h"
 
@@ -162,24 +162,24 @@ public:
     inline
     Vienna() {
         size_ = 1000;
-        c       = Ints((size_*(size_+1)/2+2));
-        fML     = Ints((size_*(size_+1)/2+2));
-        Fmi     = Ints((size_*(size_+1)/2+2));
-        fM1     = Ints(size_);
-        f5      = Ints(size_);
-        f53     = Ints(size_);
-        cc      = Ints(size_);
-        cc1     = Ints(size_);
-        DMLi    = Ints(size_);
-        DMLi1   = Ints(size_);
-        DMLi2   = Ints(size_);
+        c       = Indexes((size_*(size_+1)/2+2));
+        fML     = Indexes((size_*(size_+1)/2+2));
+        Fmi     = Indexes((size_*(size_+1)/2+2));
+        fM1     = Indexes(size_);
+        f5      = Indexes(size_);
+        f53     = Indexes(size_);
+        cc      = Indexes(size_);
+        cc1     = Indexes(size_);
+        DMLi    = Indexes(size_);
+        DMLi1   = Indexes(size_);
+        DMLi2   = Indexes(size_);
         temp = 37.0;
         ptype   = Chars((size_*(size_+1)/2+2));
         base_pair2 = bondTs(4*(1+size_/2));
-        indx = Ints(size_);
+        indx = Indexes(size_);
         S = Shorts(size_);
         S1 = Shorts(size_);
-        BP = Ints(size_);
+        BP = Indexes(size_);
         params = paramT();
         setup_part_func();
         uniq_ML = 0;
@@ -187,7 +187,7 @@ public:
         structure = String();
         structure.resize(1000);
         backtrack_type = 'F';
-        diindx = Ints(size_);
+        diindx = Indexes(size_);
         
         params.model_details.dangles = 2;
         params.model_details.special_hp = 1;
@@ -260,9 +260,9 @@ private:
         Gj        = Floats(size_+2);
         Gj1       = Floats(size_+2);
         
-        my_iindx  = Ints(size_);
-        iindx     = Ints(size_);
-        jindx     = Ints(size_);
+        my_iindx  = Indexes(size_);
+        iindx     = Indexes(size_);
+        jindx     = Indexes(size_);
         
         get_iindx(my_iindx, size_);
         get_iindx(iindx, size_);

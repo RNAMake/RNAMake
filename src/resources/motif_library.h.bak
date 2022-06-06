@@ -13,7 +13,7 @@
 #include <map>
 
 //RNAMAke Headers
-#include "base/types.h"
+#include "base/types.hpp"
 #include "structure/residue_type_set.h"
 #include "motif/motif.h"
 #include "motif/motif_type.h"

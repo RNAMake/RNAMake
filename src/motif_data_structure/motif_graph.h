@@ -87,7 +87,7 @@ private://add function helpers
             data_structure::graph::GraphNodeOP<motif::MotifOP> const &,
             int);
 
-    Ints
+    Indexes
     _get_available_parent_end_pos(
             data_structure::graph::GraphNodeOP<motif::MotifOP> const &,
             int);

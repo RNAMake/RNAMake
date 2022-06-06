@@ -13,7 +13,7 @@
 #include <iostream>
 
 //RNAMake Headers
-#include <base/types.h>
+#include <base/types.hpp>
 
 namespace util {
 

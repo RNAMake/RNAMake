@@ -100,7 +100,7 @@ public:
 
     MotifStateEnsemble(
         MotifStateOPs const &,
-        Floats const &);
+        Reals const &);
     
     MotifStateEnsemble(
         String const &);

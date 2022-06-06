@@ -14,7 +14,7 @@
 #include <sqlite3.h>
 
 //RNAMake Libraries
-#include "base/types.h"
+#include "base/types.hpp"
 #include "util/sqlite3_connection.h"
 
 namespace resources {

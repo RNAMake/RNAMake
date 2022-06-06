@@ -69,7 +69,7 @@ private: // add function helpers
     MotifStateTreeNodeOP
     _get_parent(int);
 
-    Ints
+    Indexes
     _get_available_parent_end_pos(
             MotifStateTreeNodeOP const &,
             int);
@@ -159,7 +159,7 @@ public: // outputting functions
 public: // getters
 
     inline
-    math::Points
+    math::Vector3
     centers() {
         auto centers = math::Points();
         for (auto const & n : tree_) {

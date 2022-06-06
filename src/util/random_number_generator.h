@@ -8,7 +8,7 @@
 
 #include <random>
 
-#include <math/xyz_vector.h>
+#include <math/vector_3.hpp>
 
 namespace util {
 

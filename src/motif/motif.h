@@ -13,10 +13,10 @@
 #include <algorithm>
 
 //RNAMake Headers
-#include "base/types.h"
-#include "math/xyz_matrix.h"
-#include "math/transform.h"
-#include "math/xyz_vector.h"
+#include "base/types.hpp"
+#include "math/matrix_3x3.hpp"
+#include "math/transform.hpp"
+#include "math/vector_3.hpp"
 #include "util/uuid.h"
 #include "secondary_structure/motif.h"
 #include "structure/residue_type_set.h"
@@ -26,7 +26,7 @@
 #include "structure/rna_structure.h"
 #include "util/motif_type.h"
 #include "motif/motif_state.h"
-#include <base/exception.h>
+#include <base/exception.hpp>
 
 namespace motif {
 
@@ -77,8 +77,8 @@ public:
     transform(
             math::Transform const & t) {
 
-        math::Matrix r_T = t.rotation();
-        math::Matrix transformed;
+        math::Matrix3x3 r_T = t.rotation();
+        math::Matrix3x3 transformed;
         r_T.transpose();
         for (auto & bp : basepairs_) {
             dot(bp->get_ref_frame(), r_T, transformed);
@@ -90,7 +90,7 @@ public:
     inline
     void
     move(
-            math::Point const & p) { structure_->move(p); }
+            math::Vector3 const & p) { structure_->move(p); }
 
     String const
     to_str();
