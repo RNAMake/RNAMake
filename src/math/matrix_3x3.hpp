@@ -12,6 +12,7 @@
 #include <cmath>
 #include <sstream>
 #include <vector>
+#include <iostream>
 
 // RNAMake Headers
 #include <base/string.hpp>
@@ -29,7 +30,6 @@ class Matrix3x3 {
   // initiation ////////////////////////////////////////////////////////
 public:
   inline Matrix3x3() = default;
-  inline Matrix3x3(Matrix3x3 const &m) = default;
   inline Matrix3x3(
           const double &xx, const double &xy, const double &xz,
           const double &yx, const double &yy, const double &yz,
@@ -173,7 +173,7 @@ public: // Methods: basic mathematical
   }
 
   /// @brief Matrix3x3 * Matrix3x3
-  friend inline Matrix3x3 operator*(Matrix3x3 const &a, Matrix3x3 const &b) {
+  friend inline Matrix3x3 operator*(Matrix3x3 const &a, const Matrix3x3 &b) {
     return Matrix3x3(
             // First row
             (a._xx * b._xx) + (a._xy * b._yx) + (a._xz * b._zx),
@@ -238,27 +238,66 @@ public:
     return *this;
   }
 
-  inline void transpose(Matrix3x3 const &a, Matrix3x3 &b) {
-    b._xx = a._xx;
-    b._yy = a._yy;
-    b._zz = a._zz;
+  inline void transpose(Matrix3x3 &a) {
+    _xx = a._xx;
+    _yy = a._yy;
+    _zz = a._zz;
 
-    b._yx = a._xy;
-    b._xy = a._yx;
-    b._zx = a._xz;
-    b._xz = a._zx;
-    b._yz = a._zy;
-    b._zy = a._yz;
+    _yx = a._xy;
+    _xy = a._yx;
+    _zx = a._xz;
+    _xz = a._zx;
+    _yz = a._zy;
+    _zy = a._yz;
   }
-/*
-  inline Vector3 dot_vector(Vector3 &v) {
-    auto new_v = Vector3(0, 0, 0);
-    new_v.set_x(_xx * v.get_x() + _yx * v.get_y() + _zx * v.get_z());
-    new_v.set_y(_xy * v.get_x() + _yy * v.get_y() + _zy * v.get_z());
-    new_v.set_z(_xz * v.get_x() + _yz * v.get_y() + _zz * v.get_z());
+
+  // multiplies a matrix and vector and spits out the value
+  inline Vector3 dot(const Vector3 &v) {
+    Vector3 new_v = {0, 0, 0};
+    new_v.set_x(_xx * v.get_x() + _xy * v.get_y() + _xz * v.get_z());
+    new_v.set_y(_yx * v.get_x() + _yy * v.get_y() + _yz * v.get_z());
+    new_v.set_z(_zx * v.get_x() + _zy * v.get_y() + _zz * v.get_z());
     return new_v;
   }
-*/
+
+  // multiplies a matrix with a vector and saves the value
+  inline void dot(Vector3 const &v, Vector3 &vr /* return */ ) {
+    vr.set_x(get_xx() * v.get_x() + get_xy() * v.get_y() + get_xz() * v.get_z());
+    vr.set_y(get_yx() * v.get_x() + get_yy() * v.get_y() + get_yz() * v.get_z());
+    vr.set_z(get_zx() * v.get_x() + get_zy() * v.get_y() + get_zz() * v.get_z());
+  }
+
+  // multiplies two matrices and saves the value
+  inline void dot(const Matrix3x3 &b, Matrix3x3 &c /* return */) {
+    c.set_xx(_xx * b.get_xx() + _xy * b.get_yx() + _xz * b.get_zx());
+    c.set_xy(_xx * b.get_xy() + _xy * b.get_yy() + _xz * b.get_zy());
+    c.set_xz(_xx * b.get_xz() + _xy * b.get_yz() + _xz * b.get_zz());
+
+    c.set_yx(_yx * b.get_xx() + _yy * b.get_yx() + _yz * b.get_zx());
+    c.set_yy(_yx * b.get_xy() + _yy * b.get_yy() + _yz * b.get_zy());
+    c.set_yz(_yx * b.get_xz() + _yy * b.get_yz() + _yz * b.get_zz());
+
+    c.set_zx(_zx * b.get_xx() + _zy * b.get_yx() + _zz * b.get_zx());
+    c.set_zy(_zx * b.get_xy() + _zy * b.get_yy() + _zz * b.get_zy());
+    c.set_zz(_zx * b.get_xz() + _zy * b.get_yz() + _zz * b.get_zz());
+  }
+
+  // multiplies two matrices and spits out the value
+  inline Matrix3x3 dot(Matrix3x3 const &a, Matrix3x3 const &b) {
+    return Matrix3x3(
+            a.get_xx() * b.get_xx() + a.get_xy() * b.get_yx() + a.get_xz() * b.get_zx(),
+            a.get_xx() * b.get_xy() + a.get_xy() * b.get_yy() + a.get_xz() * b.get_zy(),
+            a.get_xx() * b.get_xz() + a.get_xy() * b.get_yz() + a.get_xz() * b.get_zz(),
+
+            a.get_yx() * b.get_xx() + a.get_yy() * b.get_yx() + a.get_yz() * b.get_zx(),
+            a.get_yx() * b.get_xy() + a.get_yy() * b.get_yy() + a.get_yz() * b.get_zy(),
+            a.get_yx() * b.get_xz() + a.get_yy() * b.get_yz() + a.get_yz() * b.get_zz(),
+
+            a.get_zx() * b.get_xx() + a.get_zy() * b.get_yx() + a.get_zz() * b.get_zx(),
+            a.get_zx() * b.get_xy() + a.get_zy() * b.get_yy() + a.get_zz() * b.get_zy(),
+            a.get_zx() * b.get_xz() + a.get_zy() * b.get_yz() + a.get_zz() * b.get_zz());
+  }
+
   inline double difference(Matrix3x3 const &b) const {
     double dist = 0.0f;
     dist += std::abs(_xx - b._xx);
@@ -281,11 +320,14 @@ public:
             -_zx, -_zy, -_zz);
   }
 
+
+  // TODO find out what unitarize is and write unittests
   inline Matrix3x3 get_unitarize() const {
     auto m = Matrix3x3(
             _xx, _xy, _xz,
             _yx, _yy, _yz,
-            _zx, _zy, _zz);
+            _zx, _zy, _zz
+            );
 
     // R[0] /= math.sqrt(R[0].dot(R[0]))
     double dot = sqrt(_xx * _xx + _xy * _xy + _xz * _xz);
@@ -320,7 +362,7 @@ public:
 
     return m;
   }
-
+// TODO find out what it does and write unittests
   inline void unitarize() {
     double dot = sqrt(_xx * _xx + _xy * _xy + _xz * _xz);
     _xx /= dot;
@@ -418,82 +460,34 @@ public:// Properties: value assignment
 
   typedef std::vector<Matrix3x3> Matrix3x3s;
 
-  // TODO Remove old code and ask joe about transform_1
+  // TODO Remove old code and check for duplicates
 
-  template<typename T>
-/*
-  inline Vector3 operator*(Matrix3x3 const &m, Vector3 const &v) {
-    return Vector3(
-            m.get_xx() * v.get_x() + m.get_xy() * v.get_y() + m.get_xz() * v.get_z(),
-            m.get_yx() * v.get_x() + m.get_yy() * v.get_y() + m.get_yz() * v.get_z(),
-            m.get_zx() * v.get_x() + m.get_zy() * v.get_y() + m.get_zz() * v.get_z());
-  }
-
-  inline void dot_vector(Matrix3x3 const &m, Vector3 const &v, Vector3 &vr) {
-    vr.set_x(m.get_xx() * v.get_x() + m.get_yx() * v.get_y() + m.get_zx() * v.get_z());
-    vr.set_y(m.get_xy() * v.get_x() + m.get_yy() * v.get_y() + m.get_zy() * v.get_z());
-    vr.set_z(m.get_xz() * v.get_x() + m.get_yz() * v.get_y() + m.get_zz() * v.get_z());
-  }
-
-  inline Vector3 dot_vector(Matrix3x3 const &m, Vector3 const &v) {
-    auto vr = Vector3(0, 0, 0);
-    vr.set_x(m.get_xx() * v.get_x() + m.get_yx() * v.get_y() + m.get_zx() * v.get_z());
-    vr.set_y(m.get_xy() * v.get_x() + m.get_yy() * v.get_y() + m.get_zy() * v.get_z());
-    vr.set_z(m.get_xz() * v.get_x() + m.get_yz() * v.get_y() + m.get_zz() * v.get_z());
-    return vr;
-  }
-
-  inline void dot_vectors(Matrix3x3 const &m, Vector3s const &v, Vector3s &vr) {
+  //
+  /*
+  inline void dot_vectors(Vector3s const &v, Vector3s &vr) {
     int i;
     for (i = 0; i < v.size(); i++) {
-      dot_vector(m, v[i], vr[i]);
+      dot_vector(v[i], vr[i]);
     }
   }
+   */
 
-  inline Matrix3x3 transform_1(Matrix3x3 const &m) {
+  inline Matrix3x3 transform_1() {
     return Matrix3x3(
-            m.get_xx(), m.get_xy(), m.get_xz(),
-            -m.get_yx(), -m.get_yy(), -m.get_yz(),
-            -m.get_zx(), -m.get_zy(), -m.get_zz());
+            get_xx(), get_xy(), get_xz(),
+            -get_yx(), -get_yy(), -get_yz(),
+            -get_zx(), -get_zy(), -get_zz());
   }
 
-  inline void dot(Matrix3x3 const &a, Matrix3x3 const &b, Matrix3x3 &c) {
-    c.set_xx(a.get_xx() * b.get_xx() + a.get_xy() * b.get_yx() + a.get_xz() * b.get_zx());
-    c.set_xy(a.get_xx() * b.get_xy() + a.get_xy() * b.get_yy() + a.get_xz() * b.get_zy());
-    c.set_xz(a.get_xx() * b.get_xz() + a.get_xy() * b.get_yz() + a.get_xz() * b.get_zz());
-
-    c.set_yx(a.get_yx() * b.get_xx() + a.get_yy() * b.get_yx() + a.get_yz() * b.get_zx());
-    c.set_yy(a.get_yx() * b.get_xy() + a.get_yy() * b.get_yy() + a.get_yz() * b.get_zy());
-    c.set_yz(a.get_yx() * b.get_xz() + a.get_yy() * b.get_yz() + a.get_yz() * b.get_zz());
-
-    c.set_zx(a.get_zx() * b.get_xx() + a.get_zy() * b.get_yx() + a.get_zz() * b.get_zx());
-    c.set_zy(a.get_zx() * b.get_xy() + a.get_zy() * b.get_yy() + a.get_zz() * b.get_zy());
-    c.set_zz(a.get_zx() * b.get_xz() + a.get_zy() * b.get_yz() + a.get_zz() * b.get_zz());
-  }
-
-  inline Matrix3x3 dot(Matrix3x3 const &a, Matrix3x3 const &b) {
-    return Matrix3x3(
-            a.get_xx() * b.get_xx() + a.get_xy() * b.get_yx() + a.get_xz() * b.get_zx(),
-            a.get_xx() * b.get_xy() + a.get_xy() * b.get_yy() + a.get_xz() * b.get_zy(),
-            a.get_xx() * b.get_xz() + a.get_xy() * b.get_yz() + a.get_xz() * b.get_zz(),
-
-            a.get_yx() * b.get_xx() + a.get_yy() * b.get_yx() + a.get_yz() * b.get_zx(),
-            a.get_yx() * b.get_xy() + a.get_yy() * b.get_yy() + a.get_yz() * b.get_zy(),
-            a.get_yx() * b.get_xz() + a.get_yy() * b.get_yz() + a.get_yz() * b.get_zz(),
-
-            a.get_zx() * b.get_xx() + a.get_zy() * b.get_yx() + a.get_zz() * b.get_zx(),
-            a.get_zx() * b.get_xy() + a.get_zy() * b.get_yy() + a.get_zz() * b.get_zy(),
-            a.get_zx() * b.get_xz() + a.get_zy() * b.get_yz() + a.get_zz() * b.get_zz());
-  }
 
   template<typename T>
-  std::ostream &operator<<(std::ostream &stream, Matrix3x3 const &v) {
-    stream << "(" << v.get_xx() << ", " << v.get_xy() << ", " << v.get_xz() << ")" << std::endl;
-    stream << "(" << v.get_yx() << ", " << v.get_yy() << ", " << v.get_yz() << ")" << std::endl;
-    stream << "(" << v.get_zx() << ", " << v.get_zy() << ", " << v.get_zz() << ")" << std::endl;
+  std::ostream &operator<<(std::ostream &stream) {
+    stream << "(" << get_xx() << ", " << get_xy() << ", " << get_xz() << ")" << std::endl;
+    stream << "(" << get_yx() << ", " << get_yy() << ", " << get_yz() << ")" << std::endl;
+    stream << "(" << get_zx() << ", " << get_zy() << ", " << get_zz() << ")" << std::endl;
     return stream;
   }
-*/
+
   inline String matrix_to_str(Matrix3x3 const &m) {
     std::stringstream ss;
     ss << m.get_xx() << " " << m.get_xy() << " " << m.get_xz() << " ";
@@ -502,33 +496,14 @@ public:// Properties: value assignment
     return ss.str();
   }
 
-  inline Matrix3x3 matrix_from_str(const String &s) {
-    auto v = base::string::split(s, " ");
-
-    if (v.size() > 8) {
-      String msg = "Too many input arguments!";
-      base::log_and_throw<base::InputException>(msg);
-      } else if (v.size() < 8) {
-      String msg = "Too few input arguments!";
-      base::log_and_throw<base::InputException>(msg);
-      } else if (v.size() == 0) {
-      String msg = "No input detected!";
-      base::log_and_throw<base::InputException>(msg);
-    }
-
-    _xx = std::stod(v[0]); _xy = std::stod(v[1]); _xz = std::stod(v[2]);
-    _yx = std::stod(v[3]); _yy = std::stod(v[4]); _yz = std::stod(v[5]);
-    _zx = std::stod(v[6]); _zy = std::stod(v[7]); _zz = std::stod(v[8]);
-}
 
 private:
   Real _xx, _xy, _xz;
   Real _yx, _yy, _yz;
   Real _zx, _zy, _zz;
-
-
 };
 
+Matrix3x3 matrix_from_str(const String &s);
 
 // add end comment on the line above
 } // namespace math

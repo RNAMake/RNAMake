@@ -7,12 +7,13 @@
 #include <util/find_pair.h>
 #include <util/x3dna.h>
 #include <math/numerical.h>
-#include <math/xyz_vector.h>
+#include <math/vector_3.hpp>
 #include <memory>
 #include <string>
 #include <stdexcept>
 #include <structure/atom.h>
 #include <base/log.h>
+#include <base/types.hpp>
 
 
 using namespace std;
@@ -63,8 +64,8 @@ namespace util {
       // frprintf(rframe, "%10.4f %10.4f %10.4f  # origin\n",
       //         morg[1], morg[2], morg[3]);
 
-      auto d = math::Point(morg[1], morg[2], morg[3]);
-      auto rs = math::Points();
+      auto d = math::Vector3(morg[1], morg[2], morg[3]);
+      auto rs = math::Vector3s();
       for (i = 1; i <= 3; i++) {
           j = (i - 1) * 3;
           // frprintf(rframe, "%10.4f %10.4f %10.4f  # %c-axis\n", morien[j + 1],
@@ -73,12 +74,12 @@ namespace util {
           string x = string_format("%10.4f", morien[j + 1]);
           string y = string_format("%10.4f", morien[j + 2]);
           string z = string_format("%10.4f", morien[j + 3]);
-          auto p = math::Point(stod(x), stod(y), stod(z));
+          auto p = math::Vector3(stod(x), stod(y), stod(z));
           rs.push_back(p);
       }
       auto reg = std::regex(
               "#\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)\\s+\\-\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)");
-      auto r = math::Matrix(rs[0].get_x(), rs[0].get_y(), rs[0].get_z(),
+      auto r = math::Matrix3x3(rs[0].get_x(), rs[0].get_y(), rs[0].get_z(),
                             rs[1].get_x(), rs[1].get_y(), rs[1].get_z(),
                             rs[2].get_x(), rs[2].get_y(), rs[2].get_z());
       auto res1 = X3dna::X3Residue{bp_info->res1_num, bp_info->res1_chain_id, ' '};
@@ -88,10 +89,10 @@ namespace util {
 
       if (bp_info->res1_name == 'A' && bp_info->res2_name == 'U') {
 
-          math::xyzVector vector1 = atoms[pair(res1.num, "N3")];
-          math::xyzVector vector2 = atoms[pair(res2.num, "N1")];
-          math::xyzVector vector3 = atoms[pair(res1.num, "O4")];
-          math::xyzVector vector4 = atoms[pair(res2.num, "N6")];
+          math::Vector3 vector1 = atoms[pair(res1.num, "N3")];
+          math::Vector3 vector2 = atoms[pair(res2.num, "N1")];
+          math::Vector3 vector3 = atoms[pair(res1.num, "O4")];
+          math::Vector3 vector4 = atoms[pair(res2.num, "N6")];
 
           if (vector1.distance(vector2) <= max_distance && vector3.distance(vector4) <= max_distance) {
               auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cWUW};
@@ -102,10 +103,10 @@ namespace util {
 
       } else if (bp_info->res1_name == 'U' && bp_info->res2_name == 'A') {
 
-          math::xyzVector vector1 = atoms[pair(res1.num, "N1")];
-          math::xyzVector vector2 = atoms[pair(res2.num, "N3")];
-          math::xyzVector vector3 = atoms[pair(res1.num, "N6")];
-          math::xyzVector vector4 = atoms[pair(res2.num, "O4")];
+          math::Vector3 vector1 = atoms[pair(res1.num, "N1")];
+          math::Vector3 vector2 = atoms[pair(res2.num, "N3")];
+          math::Vector3 vector3 = atoms[pair(res1.num, "N6")];
+          math::Vector3 vector4 = atoms[pair(res2.num, "O4")];
 
 
           if (vector1.distance(vector2) <= max_distance && vector3.distance(vector4) <= max_distance) {
@@ -117,12 +118,12 @@ namespace util {
 
       } else if (bp_info->res1_name == 'G' && bp_info->res2_name == 'C') {
 
-          math::xyzVector vector1 = atoms[pair(res1.num, "O6")];
-          math::xyzVector vector2 = atoms[pair(res2.num, "N4")];
-          math::xyzVector vector3 = atoms[pair(res1.num, "N1")];
-          math::xyzVector vector4 = atoms[pair(res2.num, "N3")];
-          math::xyzVector vector5 = atoms[pair(res1.num, "N2")];
-          math::xyzVector vector6 = atoms[pair(res2.num, "O2")];
+          math::Vector3 vector1 = atoms[pair(res1.num, "O6")];
+          math::Vector3 vector2 = atoms[pair(res2.num, "N4")];
+          math::Vector3 vector3 = atoms[pair(res1.num, "N1")];
+          math::Vector3 vector4 = atoms[pair(res2.num, "N3")];
+          math::Vector3 vector5 = atoms[pair(res1.num, "N2")];
+          math::Vector3 vector6 = atoms[pair(res2.num, "O2")];
 
 
           if (vector1.distance(vector2) <= max_distance && vector3.distance(vector4) <= max_distance && vector5.distance(vector6) <= max_distance) {
@@ -134,12 +135,12 @@ namespace util {
 
       } else if (bp_info->res1_name == 'C' && bp_info->res2_name == 'G') {
 
-          math::xyzVector vector1 = atoms[pair(res1.num, "N4")];
-          math::xyzVector vector2 = atoms[pair(res2.num, "O6")];
-          math::xyzVector vector3 = atoms[pair(res1.num, "N3")];
-          math::xyzVector vector4 = atoms[pair(res2.num, "N1")];
-          math::xyzVector vector5 = atoms[pair(res1.num, "O2")];
-          math::xyzVector vector6 = atoms[pair(res2.num, "N2")];
+          math::Vector3 vector1 = atoms[pair(res1.num, "N4")];
+          math::Vector3 vector2 = atoms[pair(res2.num, "O6")];
+          math::Vector3 vector3 = atoms[pair(res1.num, "N3")];
+          math::Vector3 vector4 = atoms[pair(res2.num, "N1")];
+          math::Vector3 vector5 = atoms[pair(res1.num, "O2")];
+          math::Vector3 vector6 = atoms[pair(res2.num, "N2")];
 
           if (vector1.distance(vector2) <= max_distance && vector3.distance(vector4) <= max_distance && vector5.distance(vector6) <= max_distance) {
               auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cWUW};
@@ -149,10 +150,10 @@ namespace util {
           }
       } else if (bp_info->res1_name == 'G' && bp_info->res2_name == 'U') {
 
-          math::xyzVector vector1 = atoms[pair(res1.num, "O6")];
-          math::xyzVector vector2 = atoms[pair(res2.num, "N3")];
-          math::xyzVector vector3 = atoms[pair(res1.num, "N1")];
-          math::xyzVector vector4 = atoms[pair(res2.num, "O2")];
+          math::Vector3 vector1 = atoms[pair(res1.num, "O6")];
+          math::Vector3 vector2 = atoms[pair(res2.num, "N3")];
+          math::Vector3 vector3 = atoms[pair(res1.num, "N1")];
+          math::Vector3 vector4 = atoms[pair(res2.num, "O2")];
 
 
           if (vector1.distance(vector2) <= max_distance && vector3.distance(vector4) <= max_distance) {
@@ -164,10 +165,10 @@ namespace util {
 
       } else if (bp_info->res1_name == 'U' && bp_info->res2_name == 'G') {
 
-          math::xyzVector vector1 = atoms[pair(res1.num, "N3")];
-          math::xyzVector vector2 = atoms[pair(res2.num, "O6")];
-          math::xyzVector vector3 = atoms[pair(res1.num, "O2")];
-          math::xyzVector vector4 = atoms[pair(res2.num, "N1")];
+          math::Vector3 vector1 = atoms[pair(res1.num, "N3")];
+          math::Vector3 vector2 = atoms[pair(res2.num, "O6")];
+          math::Vector3 vector3 = atoms[pair(res1.num, "O2")];
+          math::Vector3 vector4 = atoms[pair(res2.num, "N1")];
 
 
           if (vector1.distance(vector2) <= max_distance && vector3.distance(vector4) <= max_distance) {
@@ -1700,7 +1701,7 @@ namespace util {
               searchStart = res.suffix().first;
               i++;
           }
-          math::Vector v = math::xyzVector<double>(x, y, z);
+          math::Vector3 v = math::Vector3<double>(x, y, z);
           atoms[std::pair(res_num, atom)] = v;
       }
 

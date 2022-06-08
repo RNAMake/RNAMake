@@ -9,7 +9,7 @@
 
 #include <base/assertions.h>
 #include <base/types.hpp>
-#include <base/string.h>
+#include <base/string.hpp>
 #include <base/vector_container.h>
 
 namespace util {

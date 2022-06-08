@@ -1,7 +1,7 @@
-#include <common.hpp>
+#include "../common.hpp"
 #include <sstream>
 #include <math/matrix_3x3.hpp>
-#include <doctest.h>
+//#include <doctest.h>
 
 TEST_CASE("Test Matrix math ") {
   /*
@@ -107,6 +107,30 @@ SUBCASE("Test unitarize in batch with 1000 matrices") {
       CHECK(matrix_1.get_zx() == doctest::Approx(-17));
       CHECK(matrix_1.get_zy() == doctest::Approx(38));
       CHECK(matrix_1.get_zz() == doctest::Approx(19));
+    }
+    SUBCASE("test uniform value constructor") {
+      math::Matrix3x3 matrix_1(1);
+      CHECK(matrix_1.get_xx() == doctest::Approx(1));
+      CHECK(matrix_1.get_xy() == doctest::Approx(1));
+      CHECK(matrix_1.get_xz() == doctest::Approx(1));
+      CHECK(matrix_1.get_yx() == doctest::Approx(1));
+      CHECK(matrix_1.get_yy() == doctest::Approx(1));
+      CHECK(matrix_1.get_yz() == doctest::Approx(1));
+      CHECK(matrix_1.get_zx() == doctest::Approx(1));
+      CHECK(matrix_1.get_zy() == doctest::Approx(1));
+      CHECK(matrix_1.get_zz() == doctest::Approx(1));
+    }
+    SUBCASE("test complex uniform value constructior") {
+      math::Matrix3x3 matrix_1(-0.22);
+      CHECK(matrix_1.get_xx() == doctest::Approx(-0.22));
+      CHECK(matrix_1.get_xy() == doctest::Approx(-0.22));
+      CHECK(matrix_1.get_xz() == doctest::Approx(-0.22));
+      CHECK(matrix_1.get_yx() == doctest::Approx(-0.22));
+      CHECK(matrix_1.get_yy() == doctest::Approx(-0.22));
+      CHECK(matrix_1.get_yz() == doctest::Approx(-0.22));
+      CHECK(matrix_1.get_zx() == doctest::Approx(-0.22));
+      CHECK(matrix_1.get_zy() == doctest::Approx(-0.22));
+      CHECK(matrix_1.get_zz() == doctest::Approx(-0.22));
     }
   }
   SUBCASE("test value/matrix addition") {
@@ -370,8 +394,6 @@ SUBCASE("Test unitarize in batch with 1000 matrices") {
   SUBCASE("test division") {
     SUBCASE("test divide by zero") {
       math::Matrix3x3 matrix_1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-      //Real t = 0;
-      //math::Matrix3x3 matrix_2 = matrix_1 / t;
       CHECK_THROWS_AS(matrix_1 / 0, base::MathException);
     }
     SUBCASE("test simple division") {
@@ -599,6 +621,66 @@ SUBCASE("Test unitarize in batch with 1000 matrices") {
         CHECK(matrix_4.get_zy() == doctest::Approx(7));
         CHECK(matrix_4.get_zz() == doctest::Approx(8));
       }
+      SUBCASE("test zero multiplication void fxn") {
+        math::Matrix3x3 matrix_1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        math::Matrix3x3 matrix_2 = {};
+        math::Matrix3x3 matrix_3 = {};
+        matrix_1.dot(matrix_2, matrix_3);
+        CHECK(matrix_3.get_xx() == doctest::Approx(0));
+        CHECK(matrix_3.get_xy() == doctest::Approx(0));
+        CHECK(matrix_3.get_xz() == doctest::Approx(0));
+        CHECK(matrix_3.get_yx() == doctest::Approx(0));
+        CHECK(matrix_3.get_yy() == doctest::Approx(0));
+        CHECK(matrix_3.get_yz() == doctest::Approx(0));
+        CHECK(matrix_3.get_zx() == doctest::Approx(0));
+        CHECK(matrix_3.get_zy() == doctest::Approx(0));
+        CHECK(matrix_3.get_zz() == doctest::Approx(0));
+      }
+      SUBCASE("test simple multiplication void fxn") {
+        math::Matrix3x3 matrix_1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        math::Matrix3x3 matrix_2 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        math::Matrix3x3 matrix_3 = {};
+        matrix_1.dot(matrix_2, matrix_3);
+        CHECK(matrix_3.get_xx() == doctest::Approx(30));
+        CHECK(matrix_3.get_xy() == doctest::Approx(36));
+        CHECK(matrix_3.get_xz() == doctest::Approx(42));
+        CHECK(matrix_3.get_yx() == doctest::Approx(66));
+        CHECK(matrix_3.get_yy() == doctest::Approx(81));
+        CHECK(matrix_3.get_yz() == doctest::Approx(96));
+        CHECK(matrix_3.get_zx() == doctest::Approx(102));
+        CHECK(matrix_3.get_zy() == doctest::Approx(126));
+        CHECK(matrix_3.get_zz() == doctest::Approx(150));
+      }
+      SUBCASE("test complex multiplication void fxn") {
+        math::Matrix3x3 matrix_1 = {12, 3.5, -8, 0, -3, 0.7, 22, 11, 90};
+        math::Matrix3x3 matrix_2 = {-2, 23.5, 18, -1, 9, 4.1213, 2.71828, -1.41, 0};
+        math::Matrix3x3 matrix_3 = {};
+        matrix_1.dot(matrix_2, matrix_3);
+        CHECK(matrix_3.get_xx() == doctest::Approx(-49.2462));
+        CHECK(matrix_3.get_xy() == doctest::Approx(324.78));
+        CHECK(matrix_3.get_xz() == doctest::Approx(230.425));
+        CHECK(matrix_3.get_yx() == doctest::Approx(4.9028));
+        CHECK(matrix_3.get_yy() == doctest::Approx(-27.987));
+        CHECK(matrix_3.get_yz() == doctest::Approx(-12.3639));
+        CHECK(matrix_3.get_zx() == doctest::Approx(189.645));
+        CHECK(matrix_3.get_zy() == doctest::Approx(489.1));
+        CHECK(matrix_3.get_zz() == doctest::Approx(441.334));
+      }
+      SUBCASE("test identity multiplication void fxn") {
+        math::Matrix3x3 matrix_1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        math::Matrix3x3 matrix_2 = {1, 0, 0, 0, 1, 0, 0, 0, 1};
+        math::Matrix3x3 matrix_3 = {};
+        matrix_1.dot(matrix_2, matrix_3);
+        CHECK(matrix_3.get_xx() == doctest::Approx(1));
+        CHECK(matrix_3.get_xy() == doctest::Approx(2));
+        CHECK(matrix_3.get_xz() == doctest::Approx(3));
+        CHECK(matrix_3.get_yx() == doctest::Approx(4));
+        CHECK(matrix_3.get_yy() == doctest::Approx(5));
+        CHECK(matrix_3.get_yz() == doctest::Approx(6));
+        CHECK(matrix_3.get_zx() == doctest::Approx(7));
+        CHECK(matrix_3.get_zy() == doctest::Approx(8));
+        CHECK(matrix_3.get_zz() == doctest::Approx(9));
+      }
     }
     SUBCASE("test for presence of identity matrix") {
       math::Matrix3x3 matrix_1 = {};
@@ -626,30 +708,73 @@ SUBCASE("Test unitarize in batch with 1000 matrices") {
       CHECK(matrix_2.get_zy() == doctest::Approx(6));
       CHECK(matrix_2.get_zz() == doctest::Approx(9));
     }
-
-    // TODO the transpose function that has two arguments
     SUBCASE("test transpoisition into matrix") {
       math::Matrix3x3 matrix_1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
       math::Matrix3x3 matrix_2 = {};
+      matrix_2.transpose(matrix_1);
+      CHECK(matrix_2.get_xx() == doctest::Approx(1));
+      CHECK(matrix_2.get_xy() == doctest::Approx(4));
+      CHECK(matrix_2.get_xz() == doctest::Approx(7));
+      CHECK(matrix_2.get_yx() == doctest::Approx(2));
+      CHECK(matrix_2.get_yy() == doctest::Approx(5));
+      CHECK(matrix_2.get_yz() == doctest::Approx(8));
+      CHECK(matrix_2.get_zx() == doctest::Approx(3));
+      CHECK(matrix_2.get_zy() == doctest::Approx(6));
+      CHECK(matrix_2.get_zz() == doctest::Approx(9));
     }
     SUBCASE("test matrix/vector multiplication") {
       SUBCASE("test zero multiplication") {
         math::Vector3 vec_1 = {0, 0, 0};
         math::Matrix3x3 matrix_1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-        math::Matrix3x3 dotted_matrix_vector = {}; // multiply_matrices(matrix_1, vec_1);
-        // TODO what is the proper syntax for multiplying?
+        math::Vector3 dotted_matrix_vector = matrix_1.dot(vec_1);// multiply_matrices(matrix_1, vec_1);
+        CHECK(dotted_matrix_vector.get_x() == doctest::Approx(0));
+        CHECK(dotted_matrix_vector.get_y() == doctest::Approx(0));
+        CHECK(dotted_matrix_vector.get_z() == doctest::Approx(0));
       }
       SUBCASE("test simple multiplication") {
         math::Vector3 vec_1 = {1, 2, 3};
         math::Matrix3x3 matrix_1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-        math::Vector3 dotted_matrix_vector = {};
-        // TODO what is the proper syntax for multiplying?
+        math::Vector3 dotted_matrix_vector = matrix_1.dot(vec_1);
+        CHECK(dotted_matrix_vector.get_x() == doctest::Approx(14));
+        CHECK(dotted_matrix_vector.get_y() == doctest::Approx(32));
+        CHECK(dotted_matrix_vector.get_z() == doctest::Approx(50));
       }
       SUBCASE("test complex multiplication") {
         math::Vector3 vec_1 = {4, 2.5, -2};
         math::Matrix3x3 matrix_1 = {5, 18, -42, 0, -19, .043, 32, -29.2, 17};
-        math::Vector3 dotted_matrix_vector = {};
-        // TODO what is the proper syntax for multiplying?
+        math::Vector3 dotted_matrix_vector = matrix_1.dot(vec_1);
+        CHECK(dotted_matrix_vector.get_x() == doctest::Approx(149));
+        CHECK(dotted_matrix_vector.get_y() == doctest::Approx(-47.586));
+        CHECK(dotted_matrix_vector.get_z() == doctest::Approx(21));
+      }
+      SUBCASE("test matrix/vector void multiplication") {
+        SUBCASE("test zero multiplication") {
+          math::Vector3 vec_1 = {};
+          math::Vector3 vec_2 = {};
+          math::Matrix3x3 matrix_1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+          matrix_1.dot(vec_1, vec_2);
+          CHECK(vec_2.get_x() == doctest::Approx(0));
+          CHECK(vec_2.get_y() == doctest::Approx(0));
+          CHECK(vec_2.get_z() == doctest::Approx(0));
+        }
+        SUBCASE("test simple multiplication") {
+          math::Vector3 vec_1 = {1, 2, 3};
+          math::Vector3 vec_2 = {};
+          math::Matrix3x3 matrix_1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+          matrix_1.dot(vec_1, vec_2);
+          CHECK(vec_2.get_x() == doctest::Approx(14));
+          CHECK(vec_2.get_y() == doctest::Approx(32));
+          CHECK(vec_2.get_z() == doctest::Approx(50));
+        }
+        SUBCASE("test complex multiplication") {
+          math::Vector3 vec_1 = {4, 2.5, -2};
+          math::Vector3 vec_2 = {};
+          math::Matrix3x3 matrix_1 = {5, 18, -42, 0, -19, .043, 32, -29.2, 17};
+          matrix_1.dot(vec_1, vec_2);
+          CHECK(vec_2.get_x() == doctest::Approx(149));
+          CHECK(vec_2.get_y() == doctest::Approx(-47.586));
+          CHECK(vec_2.get_z() == doctest::Approx(21));
+        }
       }
     }
     SUBCASE("test flip orientation") {
@@ -689,60 +814,83 @@ SUBCASE("Test unitarize in batch with 1000 matrices") {
       SUBCASE("test complex difference") {
         math::Matrix3x3 matrix_1 = {12, 3.5, -8, 0, -3, 0.7, 22, 11, 90};
         math::Matrix3x3 matrix_2 = {-2, 23.5, 18, -1, 9, 4.1213, 2.71828, -1.41, 0};
-
         CHECK(matrix_2.difference(matrix_1) == doctest::Approx(198.11302));
       }
     }
-
-
-
-
-
-
-
-
   }
-
-  // TODO is it even possible to check if they stringify?
   SUBCASE("test stringifications") {
-    SUBCASE("stringify simple matrix") {
-      math::Matrix3x3 matrix_1 = {1, 2, 3, 4, 5, 6, 7, 8, 0};
-
-    }
-    SUBCASE("stringify complex matrix") {
-      math::Matrix3x3 matrix_1 = {12, 3.5, -8, 0, -3, 0.7, 22, 11, 90};
-
-    }
-    SUBCASE("matrix to string") {
-      math::Matrix3x3 matrix_1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-
-    }
     SUBCASE("string to matrix") {
       SUBCASE("test normal circumtances") {
         String matrix_1_string = "1 2 3 4 5 6 7 8 9";
-        //math::Matrix3x3 matrix_1 = math::Matrix3x3::matrix_from_str(matrix_1_string);
-        //CHECK(matrix_1.get_xx() == doctest::Approx(1));
-        //CHECK(matrix_1.get_xy() == doctest::Approx(2));
-        //CHECK(matrix_1.get_xz() == doctest::Approx(3));
-        //CHECK(matrix_1.get_yx() == doctest::Approx(4));
-        //CHECK(matrix_1.get_yy() == doctest::Approx(5));
-        //CHECK(matrix_1.get_yz() == doctest::Approx(6));
-        //CHECK(matrix_1.get_zx() == doctest::Approx(7));
-        //CHECK(matrix_1.get_zy() == doctest::Approx(8));
-        //CHECK(matrix_1.get_zz() == doctest::Approx(9));
+        math::Matrix3x3 matrix_1 = math::matrix_from_str(matrix_1_string);
+        CHECK(matrix_1.get_xx() == doctest::Approx(1));
+        CHECK(matrix_1.get_xy() == doctest::Approx(2));
+        CHECK(matrix_1.get_xz() == doctest::Approx(3));
+        CHECK(matrix_1.get_yx() == doctest::Approx(4));
+        CHECK(matrix_1.get_yy() == doctest::Approx(5));
+        CHECK(matrix_1.get_yz() == doctest::Approx(6));
+        CHECK(matrix_1.get_zx() == doctest::Approx(7));
+        CHECK(matrix_1.get_zy() == doctest::Approx(8));
+        CHECK(matrix_1.get_zz() == doctest::Approx(9));
       }
       SUBCASE("test too many inputs") {
         String matrix_1_string = "1 2 3 4 5 6 7 8 9 0";
-        //CHECK_THROWS_AS(math::Matrix3x3::matrix_from_str(matrix_1_string), base::MathException);
+        CHECK_THROWS_AS(math::matrix_from_str(matrix_1_string), base::InputException);
       }
       SUBCASE("test too few inputs") {
         String matrix_1_string = "1 2 3 4 5 6 7 8";
-        //CHECK_THROWS_AS(math::Matrix3x3::matrix_from_str(matrix_1_string), base::MathException);
+        CHECK_THROWS_AS(math::matrix_from_str(matrix_1_string), base::InputException);
       }
       SUBCASE("test no inputs") {
         String matrix_1_string = "";
-        //CHECK_THROWS_AS(math::Matrix3x3::matrix_from_str(matrix_1_string), base::MathException);
+        CHECK_THROWS_AS(math::matrix_from_str(matrix_1_string), base::InputException);
       }
     }
   }
+  SUBCASE("test transform 1") {
+    SUBCASE("test simple transform") {
+      math::Matrix3x3 matrix = {0, 1, 2, 3, 4, 5, 6, 7, 8};
+      math::Matrix3x3 matrix_1 = matrix.transform_1();
+      CHECK(matrix_1.get_xx() == doctest::Approx(0));
+      CHECK(matrix_1.get_xy() == doctest::Approx(1));
+      CHECK(matrix_1.get_xz() == doctest::Approx(2));
+      CHECK(matrix_1.get_yx() == doctest::Approx(-3));
+      CHECK(matrix_1.get_yy() == doctest::Approx(-4));
+      CHECK(matrix_1.get_yz() == doctest::Approx(-5));
+      CHECK(matrix_1.get_zx() == doctest::Approx(-6));
+      CHECK(matrix_1.get_zy() == doctest::Approx(-7));
+      CHECK(matrix_1.get_zz() == doctest::Approx(-8));
+    }
+    SUBCASE("test complex transform") {
+      math::Matrix3x3 matrix = {5, 18, -42, 0, -19, .043, 32, -29.2, 17};
+      math::Matrix3x3 matrix_1 = matrix.transform_1();
+      CHECK(matrix_1.get_xx() == doctest::Approx(5));
+      CHECK(matrix_1.get_xy() == doctest::Approx(18));
+      CHECK(matrix_1.get_xz() == doctest::Approx(-42));
+      CHECK(matrix_1.get_yx() == doctest::Approx(0));
+      CHECK(matrix_1.get_yy() == doctest::Approx(19));
+      CHECK(matrix_1.get_yz() == doctest::Approx(-0.043));
+      CHECK(matrix_1.get_zx() == doctest::Approx(-32));
+      CHECK(matrix_1.get_zy() == doctest::Approx(29.2));
+      CHECK(matrix_1.get_zz() == doctest::Approx(-17));
+    }
+  }
+  SUBCASE("test unitarize") {
+    math::Matrix3x3 matrix_1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    matrix_1.get_unitarize();
+    // TODO unitarize unit tests
+    /*
+    CHECK(matrix_1.get_xx() == doctest::Approx(0.26726f));
+    CHECK(matrix_1.get_xy() == doctest::Approx(0.53452f));
+    CHECK(matrix_1.get_xz() == doctest::Approx(0.80178f));
+    CHECK(matrix_1.get_yx() == doctest::Approx(1.14286f));
+    CHECK(matrix_1.get_yy() == doctest::Approx(-0.71429f));
+    CHECK(matrix_1.get_yz() == doctest::Approx(2.57143f));
+    CHECK(matrix_1.get_zx() == doctest::Approx(3.42857f));
+    CHECK(matrix_1.get_zy() == doctest::Approx(0.85714f));
+    CHECK(matrix_1.get_zz() == doctest::Approx(1.71429f));
+     */
+
+  }
 }
+
