@@ -695,32 +695,47 @@ SUBCASE("Test unitarize in batch with 1000 matrices") {
       CHECK(matrix_2.get_zy() == doctest::Approx(0));
       CHECK(matrix_2.get_zz() == doctest::Approx(1));
     }
-    SUBCASE("test transposition") {
-      math::Matrix3x3 matrix_1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-      math::Matrix3x3 matrix_2 = matrix_1.transpose();
-      CHECK(matrix_2.get_xx() == doctest::Approx(1));
-      CHECK(matrix_2.get_xy() == doctest::Approx(4));
-      CHECK(matrix_2.get_xz() == doctest::Approx(7));
-      CHECK(matrix_2.get_yx() == doctest::Approx(2));
-      CHECK(matrix_2.get_yy() == doctest::Approx(5));
-      CHECK(matrix_2.get_yz() == doctest::Approx(8));
-      CHECK(matrix_2.get_zx() == doctest::Approx(3));
-      CHECK(matrix_2.get_zy() == doctest::Approx(6));
-      CHECK(matrix_2.get_zz() == doctest::Approx(9));
-    }
-    SUBCASE("test transpoisition into matrix") {
-      math::Matrix3x3 matrix_1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-      math::Matrix3x3 matrix_2 = {};
-      matrix_2.transpose(matrix_1);
-      CHECK(matrix_2.get_xx() == doctest::Approx(1));
-      CHECK(matrix_2.get_xy() == doctest::Approx(4));
-      CHECK(matrix_2.get_xz() == doctest::Approx(7));
-      CHECK(matrix_2.get_yx() == doctest::Approx(2));
-      CHECK(matrix_2.get_yy() == doctest::Approx(5));
-      CHECK(matrix_2.get_yz() == doctest::Approx(8));
-      CHECK(matrix_2.get_zx() == doctest::Approx(3));
-      CHECK(matrix_2.get_zy() == doctest::Approx(6));
-      CHECK(matrix_2.get_zz() == doctest::Approx(9));
+    SUBCASE("test transposition functions") {
+      SUBCASE("test transposition") {
+        math::Matrix3x3 matrix_1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        math::Matrix3x3 matrix_2 = matrix_1.transpose();
+        CHECK(matrix_2.get_xx() == doctest::Approx(1));
+        CHECK(matrix_2.get_xy() == doctest::Approx(4));
+        CHECK(matrix_2.get_xz() == doctest::Approx(7));
+        CHECK(matrix_2.get_yx() == doctest::Approx(2));
+        CHECK(matrix_2.get_yy() == doctest::Approx(5));
+        CHECK(matrix_2.get_yz() == doctest::Approx(8));
+        CHECK(matrix_2.get_zx() == doctest::Approx(3));
+        CHECK(matrix_2.get_zy() == doctest::Approx(6));
+        CHECK(matrix_2.get_zz() == doctest::Approx(9));
+      }
+      SUBCASE("test transpoisition into matrix") {
+        math::Matrix3x3 matrix_1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        math::Matrix3x3 matrix_2 = {};
+        matrix_2.transpose(matrix_1);
+        CHECK(matrix_2.get_xx() == doctest::Approx(1));
+        CHECK(matrix_2.get_xy() == doctest::Approx(4));
+        CHECK(matrix_2.get_xz() == doctest::Approx(7));
+        CHECK(matrix_2.get_yx() == doctest::Approx(2));
+        CHECK(matrix_2.get_yy() == doctest::Approx(5));
+        CHECK(matrix_2.get_yz() == doctest::Approx(8));
+        CHECK(matrix_2.get_zx() == doctest::Approx(3));
+        CHECK(matrix_2.get_zy() == doctest::Approx(6));
+        CHECK(matrix_2.get_zz() == doctest::Approx(9));
+      }
+      SUBCASE ("test get transposed") {
+        math::Matrix3x3 matrix_0 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        math::Matrix3x3 matrix_1 = matrix_0.get_transposed();
+        CHECK(matrix_1.get_xx() == doctest::Approx(1));
+        CHECK(matrix_1.get_xy() == doctest::Approx(4));
+        CHECK(matrix_1.get_xz() == doctest::Approx(7));
+        CHECK(matrix_1.get_yx() == doctest::Approx(2));
+        CHECK(matrix_1.get_yy() == doctest::Approx(5));
+        CHECK(matrix_1.get_yz() == doctest::Approx(8));
+        CHECK(matrix_1.get_zx() == doctest::Approx(3));
+        CHECK(matrix_1.get_zy() == doctest::Approx(6));
+        CHECK(matrix_1.get_zz() == doctest::Approx(9));
+      }
     }
     SUBCASE("test matrix/vector multiplication") {
       SUBCASE("test zero multiplication") {
