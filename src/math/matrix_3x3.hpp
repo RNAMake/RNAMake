@@ -362,6 +362,7 @@ public:
 
     return m;
   }
+  
 // TODO find out what it does and write unittests
   inline void unitarize() {
     double dot = sqrt(_xx * _xx + _xy * _xy + _xz * _xz);
@@ -451,6 +452,7 @@ public:// Properties: value assignment
   /// @brief zz assignment
   inline void set_zz(Real const &_zza) { _zz = _zza; }
 
+  // spits out transposed matrix
   inline Matrix3x3 get_transposed() const {
     return Matrix3x3(
             _xx, _yx, _zx,
@@ -462,16 +464,15 @@ public:// Properties: value assignment
 
   // TODO Remove old code and check for duplicates
 
-  //
-  /*
+  // TODO this vector fxn is the only problem rn, commment out before compiling
+/*
   inline void dot_vectors(Vector3s const &v, Vector3s &vr) {
     int i;
     for (i = 0; i < v.size(); i++) {
       dot_vector(v[i], vr[i]);
     }
   }
-   */
-
+*/
   inline Matrix3x3 transform_1() {
     return Matrix3x3(
             get_xx(), get_xy(), get_xz(),
