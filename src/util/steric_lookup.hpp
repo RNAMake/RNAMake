@@ -12,7 +12,7 @@
 #include <map>
 #include <stdio.h>
 
-#include "math/xyz_vector.h"
+#include "math/vector_3.hpp"
 #include "math/hashing.h"
 
 namespace util {
@@ -31,11 +31,11 @@ public:
 public:
     void
     add_point(
-            math::Point const &);
+            math::Vector3 const &);
 
     void
     add_points(
-            math::Points const &);
+            math::Vector3s const &);
 
     int
     clash(

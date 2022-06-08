@@ -2,7 +2,7 @@
 // Created by Joseph Yesselman on 12/30/17.
 //
 
-#include <base/log.h>
+#include <base/log.hpp>
 #include <util/sqlite/connection.h>
 
 
