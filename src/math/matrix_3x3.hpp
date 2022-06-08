@@ -362,7 +362,7 @@ public:
 
     return m;
   }
-  
+
 // TODO find out what it does and write unittests
   inline void unitarize() {
     double dot = sqrt(_xx * _xx + _xy * _xy + _xz * _xz);
