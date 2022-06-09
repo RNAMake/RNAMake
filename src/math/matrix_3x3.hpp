@@ -251,8 +251,8 @@ public:
     _zy = a._yz;
   }
 
-  // multiplies a matrix and vector and spits out the value
-  inline Vector3 dot(const Vector3 &v) {
+  ///@brief - multiplies a matrix and vector and spits out the value in a different object
+  inline Vector3 dot(const Vector3 &v) const {
     Vector3 new_v = {0, 0, 0};
     new_v.set_x(_xx * v.get_x() + _xy * v.get_y() + _xz * v.get_z());
     new_v.set_y(_yx * v.get_x() + _yy * v.get_y() + _yz * v.get_z());
@@ -260,15 +260,15 @@ public:
     return new_v;
   }
 
-  // multiplies a matrix with a vector and saves the value
-  inline void dot(Vector3 const &v, Vector3 &vr /* return */ ) {
+  ///@brief - multiplies a matrix with a vector and saves the value
+  inline void dot(Vector3 const &v, Vector3 &vr /* return */ ) const {
     vr.set_x(get_xx() * v.get_x() + get_xy() * v.get_y() + get_xz() * v.get_z());
     vr.set_y(get_yx() * v.get_x() + get_yy() * v.get_y() + get_yz() * v.get_z());
     vr.set_z(get_zx() * v.get_x() + get_zy() * v.get_y() + get_zz() * v.get_z());
   }
 
-  // multiplies two matrices and saves the value
-  inline void dot(const Matrix3x3 &b, Matrix3x3 &c /* return */) {
+  /// @brief - multiplies two matrices and saves the value
+  inline void dot(const Matrix3x3 &b, Matrix3x3 &c /* return */) const {
     c.set_xx(_xx * b.get_xx() + _xy * b.get_yx() + _xz * b.get_zx());
     c.set_xy(_xx * b.get_xy() + _xy * b.get_yy() + _xz * b.get_zy());
     c.set_xz(_xx * b.get_xz() + _xy * b.get_yz() + _xz * b.get_zz());
@@ -282,22 +282,30 @@ public:
     c.set_zz(_zx * b.get_xz() + _zy * b.get_yz() + _zz * b.get_zz());
   }
 
-  // multiplies two matrices and spits out the value
-  inline Matrix3x3 dot(Matrix3x3 const &a, Matrix3x3 const &b) {
+  /// @brief - multiplies two matrices and spits out the value in a different matrix
+  inline Matrix3x3 dot(Matrix3x3 const &b) const {
     return Matrix3x3(
-            a.get_xx() * b.get_xx() + a.get_xy() * b.get_yx() + a.get_xz() * b.get_zx(),
-            a.get_xx() * b.get_xy() + a.get_xy() * b.get_yy() + a.get_xz() * b.get_zy(),
-            a.get_xx() * b.get_xz() + a.get_xy() * b.get_yz() + a.get_xz() * b.get_zz(),
+            _xx * b.get_xx() + _xy * b.get_yx() + _xz * b.get_zx(),
+            _xx * b.get_xy() + _xy * b.get_yy() + _xz * b.get_zy(),
+            _xx * b.get_xz() + _xy * b.get_yz() + _xz * b.get_zz(),
 
-            a.get_yx() * b.get_xx() + a.get_yy() * b.get_yx() + a.get_yz() * b.get_zx(),
-            a.get_yx() * b.get_xy() + a.get_yy() * b.get_yy() + a.get_yz() * b.get_zy(),
-            a.get_yx() * b.get_xz() + a.get_yy() * b.get_yz() + a.get_yz() * b.get_zz(),
+            _yx * b.get_xx() + _yy * b.get_yx() + _yz * b.get_zx(),
+            _yx * b.get_xy() + _yy * b.get_yy() + _yz * b.get_zy(),
+            _yx * b.get_xz() + _yy * b.get_yz() + _yz * b.get_zz(),
 
-            a.get_zx() * b.get_xx() + a.get_zy() * b.get_yx() + a.get_zz() * b.get_zx(),
-            a.get_zx() * b.get_xy() + a.get_zy() * b.get_yy() + a.get_zz() * b.get_zy(),
-            a.get_zx() * b.get_xz() + a.get_zy() * b.get_yz() + a.get_zz() * b.get_zz());
+            _zx * b.get_xx() + _zy * b.get_yx() + _zz * b.get_zx(),
+            _zx * b.get_xy() + _zy * b.get_yy() + _zz * b.get_zy(),
+            _zx * b.get_xz() + _zy * b.get_yz() + _zz * b.get_zz());
   }
 
+  /// @brief multiplies vectors in a given array and saves the value in a pre-created array
+  inline void dot_vectors(Vector3s const &v, Vector3s &vr /* return */) {
+    for (int i = 0; i < v.size(); i++) {
+      dot(v[i], vr[i]);
+    }
+  }
+
+  /// @brief find the sum of the absolute values of the difference of the components of two matrices
   inline double difference(Matrix3x3 const &b) const {
     double dist = 0.0f;
     dist += std::abs(_xx - b._xx);
@@ -313,6 +321,7 @@ public:
     return dist;
   }
 
+  /// @brief turns the matrix (and vectors) around
   inline Matrix3x3 get_flip_orientation() const {
     return Matrix3x3(
             _xx, _xy, _xz,
@@ -320,9 +329,40 @@ public:
             -_zx, -_zy, -_zz);
   }
 
+  /// @brief turns the matrix (and vectors) around
+  inline Matrix3x3 transform_1() {
+    return Matrix3x3(
+            get_xx(), get_xy(), get_xz(),
+            -get_yx(), -get_yy(), -get_yz(),
+            -get_zx(), -get_zy(), -get_zz());
+  }
 
-  // TODO find out what unitarize is and write unittests
+  /// @brief makes the components of the matrix into three unit vectors and spits them out back into the matrix
   inline Matrix3x3 get_unitarize() const {
+    auto m = Matrix3x3(
+            _xx, _xy, _xz,
+            _yx, _yy, _yz,
+            _zx, _zy, _zz
+    );
+
+    double xx_normal = sqrt(_xx * _xx + _yx * _yx + _zx * _zx);
+    double xy_normal = sqrt(_xy * _xy + _yy * _yy + _zy * _zy);
+    double xz_normal = sqrt(_xz * _xz + _yz * _yz + _zz * _zz);
+
+    m._xx = _xx / xx_normal;
+    m._yx = _yx / xx_normal;
+    m._zx = _zx / xx_normal;
+
+    m._xy = _xy / xy_normal;
+    m._yy = _yy / xy_normal;
+    m._zy = _zy / xy_normal;
+
+    m._xz = _xz / xz_normal;
+    m._yz = _yz / xz_normal;
+    m._zz = _zz / xz_normal;
+
+    return m;
+    /*
     auto m = Matrix3x3(
             _xx, _xy, _xz,
             _yx, _yy, _yz,
@@ -361,9 +401,10 @@ public:
     m._zz /= dot;
 
     return m;
+     */
   }
 
-// TODO find out what it does and write unittests
+  /// @brief makes the components of the matrix into three unit vectors and changes the original matrix
   inline void unitarize() {
     double dot = sqrt(_xx * _xx + _xy * _xy + _xz * _xz);
     _xx /= dot;
@@ -452,7 +493,7 @@ public:// Properties: value assignment
   /// @brief zz assignment
   inline void set_zz(Real const &_zza) { _zz = _zza; }
 
-  // spits out transposed matrix
+  /// @brief spits out transposed matrix
   inline Matrix3x3 get_transposed() const {
     return Matrix3x3(
             _xx, _yx, _zx,
@@ -462,26 +503,9 @@ public:// Properties: value assignment
 
   typedef std::vector<Matrix3x3> Matrix3x3s;
 
-  // TODO Remove old code and check for duplicates
-
-  // TODO this vector fxn is the only problem rn, commment out before compiling
-/*
-  inline void dot_vectors(Vector3s const &v, Vector3s &vr) {
-    int i;
-    for (i = 0; i < v.size(); i++) {
-      dot_vector(v[i], vr[i]);
-    }
-  }
-*/
-  inline Matrix3x3 transform_1() {
-    return Matrix3x3(
-            get_xx(), get_xy(), get_xz(),
-            -get_yx(), -get_yy(), -get_yz(),
-            -get_zx(), -get_zy(), -get_zz());
-  }
-
-
   template<typename T>
+
+  /// @brief takes a matrix and puts it in string format
   std::ostream &operator<<(std::ostream &stream) {
     stream << "(" << get_xx() << ", " << get_xy() << ", " << get_xz() << ")" << std::endl;
     stream << "(" << get_yx() << ", " << get_yy() << ", " << get_yz() << ")" << std::endl;
@@ -489,7 +513,8 @@ public:// Properties: value assignment
     return stream;
   }
 
-  inline String matrix_to_str(Matrix3x3 const &m) {
+  /// @brief takes a matrix and returns it in string format
+  inline String matrix_to_str(Matrix3x3 const &m) const {
     std::stringstream ss;
     ss << m.get_xx() << " " << m.get_xy() << " " << m.get_xz() << " ";
     ss << m.get_yx() << " " << m.get_yy() << " " << m.get_yz() << " ";
@@ -504,6 +529,7 @@ private:
   Real _zx, _zy, _zz;
 };
 
+  /// @brief takes a string and returns it in Matrix3x3 format
 Matrix3x3 matrix_from_str(const String &s);
 
 // add end comment on the line above

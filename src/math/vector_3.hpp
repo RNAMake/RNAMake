@@ -207,7 +207,7 @@ public: // methods  //////////////////////////////////////////////////////////
   [[nodiscard]] inline Vector3 negated() const { return {-_x, -_y, -_z}; }
 
   /// @brief Negated: Return via argument (slightly faster)
-  inline void negated(Vector3 &a) const {
+  inline void negated(Vector3 &a /* return */) const {
     a._x = -_x;
     a._y = -_y;
     a._z = -_z;
@@ -216,11 +216,11 @@ public: // methods  //////////////////////////////////////////////////////////
   /// @brief Normalize
   inline Vector3 &normalize() {
     double const length_ = get_length();
-    assert(length_ != double(0));
     if (length_ == 0) {
       String msg = "Vector is zero, cannot be normalized!";
       base::log_and_throw<base::MathException>(msg);
     }
+
     double const inv_length(double(1) / length_);
     _x *= inv_length;
     _y *= inv_length;
