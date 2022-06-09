@@ -345,21 +345,21 @@ public:
             _zx, _zy, _zz
     );
 
-    double xx_normal = sqrt(_xx * _xx + _yx * _yx + _zx * _zx);
-    double xy_normal = sqrt(_xy * _xy + _yy * _yy + _zy * _zy);
-    double xz_normal = sqrt(_xz * _xz + _yz * _yz + _zz * _zz);
+    double xx_normal = sqrt(_xx * _xx + _xy * _xy + _xz * _xz);
+    double yx_normal = sqrt(_yx * _yx + _yy * _yy + _yz * _yz);
+    double zx_normal = sqrt(_zx * _zx + _zy * _zy + _zz * _zz);
 
     m._xx = _xx / xx_normal;
-    m._yx = _yx / xx_normal;
-    m._zx = _zx / xx_normal;
+    m._xy = _xy / xx_normal;
+    m._xz = _xz / xx_normal;
 
-    m._xy = _xy / xy_normal;
-    m._yy = _yy / xy_normal;
-    m._zy = _zy / xy_normal;
+    m._yx = _yx / yx_normal;
+    m._yy = _yy / yx_normal;
+    m._yz = _yz / yx_normal;
 
-    m._xz = _xz / xz_normal;
-    m._yz = _yz / xz_normal;
-    m._zz = _zz / xz_normal;
+    m._zx = _zx / zx_normal;
+    m._zy = _zy / zx_normal;
+    m._zz = _zz / zx_normal;
 
     return m;
     /*
@@ -406,6 +406,24 @@ public:
 
   /// @brief makes the components of the matrix into three unit vectors and changes the original matrix
   inline void unitarize() {
+
+    double xx_normal = sqrt(_xx * _xx + _xy * _xy + _xz * _xz);
+    double yx_normal = sqrt(_yx * _yx + _yy * _yy + _yz * _yz);
+    double zx_normal = sqrt(_zx * _zx + _zy * _zy + _zz * _zz);
+
+    _xx = _xx / xx_normal;
+    _xy = _xy / xx_normal;
+    _xz = _xz / xx_normal;
+
+    _yx = _yx / yx_normal;
+    _yy = _yy / yx_normal;
+    _yz = _yz / yx_normal;
+
+    _zx = _zx / zx_normal;
+    _zy = _zy / zx_normal;
+    _zz = _zz / zx_normal;
+
+    /*
     double dot = sqrt(_xx * _xx + _xy * _xy + _xz * _xz);
     _xx /= dot;
     _xy /= dot;
@@ -435,6 +453,7 @@ public:
     _zx /= dot;
     _zy /= dot;
     _zz /= dot;
+     */
   }
 
 public:// Properties: scalars
