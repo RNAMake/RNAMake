@@ -955,7 +955,46 @@ SUBCASE("Test unitarize in batch with 1000 matrices") {
       CHECK(sqrt((matrix_2.get_xx() * matrix_2.get_xx()) + (matrix_2.get_xy() * matrix_2.get_xy()) + (matrix_2.get_xz() * matrix_2.get_xz())) == doctest::Approx(1.0f));
       CHECK(sqrt((matrix_2.get_yx() * matrix_2.get_yx()) + (matrix_2.get_yy() * matrix_2.get_yy()) + (matrix_2.get_yz() * matrix_2.get_yz())) == doctest::Approx(1.0f));
       CHECK(sqrt((matrix_2.get_zx() * matrix_2.get_zx()) + (matrix_2.get_zy() * matrix_2.get_zy()) + (matrix_2.get_zz() * matrix_2.get_zz())) == doctest::Approx(1.0f));
+    }
+  }
+  SUBCASE("test dot of matrix and vectors in a given array") {
+    SUBCASE("test simple dot of matrix and vectors in a given array") {
+      math::Matrix3x3 matrix_1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+      math::Vector3s vector3s_2 = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+      math::Vector3s vector3s_3 = {};
+      vector3s_3.resize(3);
+      matrix_1.dot_vectors(vector3s_2, vector3s_3);
 
+      CHECK(vector3s_3[0].get_x() == doctest::Approx(14));
+      CHECK(vector3s_3[0].get_y() == doctest::Approx(32));
+      CHECK(vector3s_3[0].get_z() == doctest::Approx(50));
+
+      CHECK(vector3s_3[1].get_x() == doctest::Approx(32));
+      CHECK(vector3s_3[1].get_y() == doctest::Approx(77));
+      CHECK(vector3s_3[1].get_z() == doctest::Approx(122));
+
+      CHECK(vector3s_3[2].get_x() == doctest::Approx(50));
+      CHECK(vector3s_3[2].get_y() == doctest::Approx(122));
+      CHECK(vector3s_3[2].get_z() == doctest::Approx(194));
+    }
+    SUBCASE("test complex dot of matrix and vectors in a given array") {
+      math::Matrix3x3 matrix_1 = {5, 18, -42, 0, -19, .043, 32, -29.2, 17};
+      math::Vector3s vector3s_2 = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+      math::Vector3s vector3s_3 = {};
+      vector3s_3.resize(3);
+      matrix_1.dot_vectors(vector3s_2, vector3s_3);
+
+      CHECK(vector3s_3[0].get_x() == doctest::Approx(-85));
+      CHECK(vector3s_3[0].get_y() == doctest::Approx(-37.871));
+      CHECK(vector3s_3[0].get_z() == doctest::Approx(24.6));
+
+      CHECK(vector3s_3[1].get_x() == doctest::Approx(-142));
+      CHECK(vector3s_3[1].get_y() == doctest::Approx(-94.742));
+      CHECK(vector3s_3[1].get_z() == doctest::Approx(84));
+
+      CHECK(vector3s_3[2].get_x() == doctest::Approx(-199));
+      CHECK(vector3s_3[2].get_y() == doctest::Approx(-151.613));
+      CHECK(vector3s_3[2].get_z() == doctest::Approx(143.4));
     }
   }
 }

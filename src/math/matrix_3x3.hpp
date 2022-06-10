@@ -298,7 +298,7 @@ public:
             _zx * b.get_xz() + _zy * b.get_yz() + _zz * b.get_zz());
   }
 
-  /// @brief multiplies vectors in a given array and saves the value in a pre-created array
+  /// @brief multiplies a matrix by vectors in a given array and saves the values in a pre-created array
   inline void dot_vectors(Vector3s const &v, Vector3s &vr /* return */) {
     for (int i = 0; i < v.size(); i++) {
       dot(v[i], vr[i]);
