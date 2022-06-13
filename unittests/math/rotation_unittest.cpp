@@ -10,7 +10,7 @@ TEST_CASE("test rotation math ") {
   SUBCASE("test rotation between frames") {
     SUBCASE("test simple rotation between two frames") {
       SUBCASE("test reflection around x-axis") {
-        math::Matrix3x3 matrix_1 = {1, 2, 3, 4, 5,6 ,7 , 8, 9};
+        math::Matrix3x3 matrix_1 = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f,6.0f,7.0f, 8.0f, 9.0f};
         math::Matrix3x3 matrix_2 = {-1, 0, 0, 0, 1, 0, 0, 0, 1};
         math::Matrix3x3 matrix_3 = math::rotation_between_frames(matrix_1, matrix_2);
         CHECK(matrix_3.get_xx() == doctest::Approx(-0.123091491));
@@ -24,7 +24,7 @@ TEST_CASE("test rotation math ") {
         CHECK(matrix_3.get_zz() == doctest::Approx(0.8017837257));
       }
       SUBCASE("test reflection around y-axis") {
-        math::Matrix3x3 matrix_1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        math::Matrix3x3 matrix_1 = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f};
         math::Matrix3x3 matrix_2 = {1, 0, 0, 0, -1, 0, 0, 0, 1};
         math::Matrix3x3 matrix_3 = math::rotation_between_frames(matrix_1, matrix_2);
         CHECK(matrix_3.get_xx() == doctest::Approx(0.123091491));
@@ -38,7 +38,7 @@ TEST_CASE("test rotation math ") {
         CHECK(matrix_3.get_zz() == doctest::Approx(0.8017837257));
       }
       SUBCASE("test reflection around z-axis") {
-        math::Matrix3x3 matrix_1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        math::Matrix3x3 matrix_1 = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f};
         math::Matrix3x3 matrix_2 = {1, 0, 0, 0, 1, 0, 0, 0, -1};
         math::Matrix3x3 matrix_3 = math::rotation_between_frames(matrix_1, matrix_2);
         CHECK(matrix_3.get_xx() == doctest::Approx(0.123091491));
@@ -54,7 +54,7 @@ TEST_CASE("test rotation math ") {
     }
     SUBCASE("test complex rotation between two frames") {
       SUBCASE("test reflection around x-axis") {
-        math::Matrix3x3 matrix_1 = {54, 0, -33, 42, -5, 16, -17, 38, 19};
+        math::Matrix3x3 matrix_1 = {54.0f, 0.0f, -33.0f, 42.0f, -5.0f, 16.0f, -17.0f, 38.0f, 19.0f};
         math::Matrix3x3 matrix_2 = {-1, 0, 0, 0, 1, 0, 0, 0, 1};
         math::Matrix3x3 matrix_3 = math::rotation_between_frames(matrix_1, matrix_2);
         CHECK(matrix_3.get_xx() == doctest::Approx(-0.7660537828));
@@ -68,7 +68,7 @@ TEST_CASE("test rotation math ") {
         CHECK(matrix_3.get_zz() == doctest::Approx(0.4600066262));
       }
       SUBCASE("test reflection around y-axis") {
-        math::Matrix3x3 matrix_1 = {54, 0, -33, 42, -5, 16, -17, 38, 19};
+        math::Matrix3x3 matrix_1 = {54.0f, 0.0f, -33.0f, 42.0f, -5.0f, 16.0f, -17.0f, 38.0f, 19.0f};
         math::Matrix3x3 matrix_2 = {1, 0, 0, 0, -1, 0, 0, 0, 1};
         math::Matrix3x3 matrix_3 = math::rotation_between_frames(matrix_1, matrix_2);
         CHECK(matrix_3.get_xx() == doctest::Approx(0.7660537828));
@@ -82,7 +82,7 @@ TEST_CASE("test rotation math ") {
         CHECK(matrix_3.get_zz() == doctest::Approx(0.4600066262));
       }
       SUBCASE("test reflection around z-axis") {
-        math::Matrix3x3 matrix_1 = {54, 0, -33, 42, -5, 16, -17, 38, 19};
+        math::Matrix3x3 matrix_1 = {54.0f, 0.0f, -33.0f, 42.0f, -5.0f, 16.0f, -17.0f, 38.0f, 19.0f};
         math::Matrix3x3 matrix_2 = {1, 0, 0, 0, 1, 0, 0, 0, -1};
         math::Matrix3x3 matrix_3 = math::rotation_between_frames(matrix_1, matrix_2);
         CHECK(matrix_3.get_xx() == doctest::Approx(0.7660537828));
@@ -100,7 +100,7 @@ TEST_CASE("test rotation math ") {
   SUBCASE("test void rotation between frames") {
     SUBCASE("test simple rotation between two frames") {
       SUBCASE("test reflection around x-axis") {
-        math::Matrix3x3 matrix_1 = {1, 2, 3, 4, 5, 6,7 , 8, 9};
+        math::Matrix3x3 matrix_1 = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f,7.0f, 8.0f, 9.0f};
         math::Matrix3x3 matrix_2 = {-1, 0, 0, 0, 1, 0, 0, 0, 1};
         math::Matrix3x3 matrix_3 = {};
         math::rotation_between_frames(matrix_1, matrix_2, matrix_3);
@@ -115,7 +115,7 @@ TEST_CASE("test rotation math ") {
         CHECK(matrix_3.get_zz() == doctest::Approx(0.8017837257));
       }
       SUBCASE("test reflection around y-axis") {
-        math::Matrix3x3 matrix_1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        math::Matrix3x3 matrix_1 = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f};
         math::Matrix3x3 matrix_2 = {1, 0, 0, 0, -1, 0, 0, 0, 1};
         math::Matrix3x3 matrix_3 = {};
         math::rotation_between_frames(matrix_1, matrix_2, matrix_3);
@@ -131,7 +131,7 @@ TEST_CASE("test rotation math ") {
       }
       SUBCASE("test reflection around z-axis") {
         SUBCASE("test reflection around z-axis") {
-          math::Matrix3x3 matrix_1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+          math::Matrix3x3 matrix_1 = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f};
           math::Matrix3x3 matrix_2 = {1, 0, 0, 0, 1, 0, 0, 0, -1};
           math::Matrix3x3 matrix_3 = {};
           math::rotation_between_frames(matrix_1, matrix_2, matrix_3);
@@ -149,7 +149,7 @@ TEST_CASE("test rotation math ") {
     }
     SUBCASE("test complex rotation between two frames") {
       SUBCASE("test reflection around x-axis") {
-        math::Matrix3x3 matrix_1 = {54, 0, -33, 42, -5, 16, -17, 38, 19};
+        math::Matrix3x3 matrix_1 = {54.0f, 0.0f, -33.0f, 42.0f, -5.0f, 16.0f, -17.0f, 38.0f, 19.0f};
         math::Matrix3x3 matrix_2 = {-1, 0, 0, 0, 1, 0, 0, 0, 1};
         math::Matrix3x3 matrix_3 = {};
         math::rotation_between_frames(matrix_1, matrix_2, matrix_3);
@@ -164,7 +164,7 @@ TEST_CASE("test rotation math ") {
         CHECK(matrix_3.get_zz() == doctest::Approx(0.4600066262));
       }
       SUBCASE("test reflection around y-axis") {
-        math::Matrix3x3 matrix_1 = {54, 0, -33, 42, -5, 16, -17, 38, 19};
+        math::Matrix3x3 matrix_1 = {54.0f, 0.0f, -33.0f, 42.0f, -5.0f, 16.0f, -17.0f, 38.0f, 19.0f};
         math::Matrix3x3 matrix_2 = {1, 0, 0, 0, -1, 0, 0, 0, 1};
         math::Matrix3x3 matrix_3 = {};
         math::rotation_between_frames(matrix_1, matrix_2, matrix_3);
@@ -179,7 +179,7 @@ TEST_CASE("test rotation math ") {
         CHECK(matrix_3.get_zz() == doctest::Approx(0.4600066262));
       }
       SUBCASE("test reflection around z-axis") {
-        math::Matrix3x3 matrix_1 = {54, 0, -33, 42, -5, 16, -17, 38, 19};
+        math::Matrix3x3 matrix_1 = {54.0f, 0.0f, -33.0f, 42.0f, -5.0f, 16.0f, -17.0f, 38.0f, 19.0f};
         math::Matrix3x3 matrix_2 = {1, 0, 0, 0, 1, 0, 0, 0, -1};
         math::Matrix3x3 matrix_3 = {};
         math::rotation_between_frames(matrix_1, matrix_2, matrix_3);
