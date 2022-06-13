@@ -346,63 +346,25 @@ public:
             _zx, _zy, _zz
     );
 
-    double xx_normal = sqrt(_xx * _xx + _xy * _xy + _xz * _xz);
-    double yx_normal = sqrt(_yx * _yx + _yy * _yy + _yz * _yz);
-    double zx_normal = sqrt(_zx * _zx + _zy * _zy + _zz * _zz);
+    double normal = sqrt(_xx * _xx + _xy * _xy + _xz * _xz);
 
-    m._xx = _xx / xx_normal;
-    m._xy = _xy / xx_normal;
-    m._xz = _xz / xx_normal;
+    m._xx /= normal;
+    m._xy /= normal;
+    m._xz /= normal;
 
-    m._yx = _yx / yx_normal;
-    m._yy = _yy / yx_normal;
-    m._yz = _yz / yx_normal;
+    normal = sqrt(_yx * _yx + _yy * _yy + _yz * _yz);
 
-    m._zx = _zx / zx_normal;
-    m._zy = _zy / zx_normal;
-    m._zz = _zz / zx_normal;
+    m._yx /= normal;
+    m._yy /= normal;
+    m._yz /= normal;
 
-    return m;
-    /*
-    auto m = Matrix3x3(
-            _xx, _xy, _xz,
-            _yx, _yy, _yz,
-            _zx, _zy, _zz
-            );
+    normal = sqrt(_zx * _zx + _zy * _zy + _zz * _zz);
 
-    // R[0] /= math.sqrt(R[0].dot(R[0]))
-    double dot = sqrt(_xx * _xx + _xy * _xy + _xz * _xz);
-    m._xx /= dot;
-    m._xy /= dot;
-    m._xz /= dot;
-    // R[1] -= R[1].dot(R[0]) * R[0]
-    dot = _yx * m._xx + _yy * m._xy + _yz * m._xz;
-    m._yx -= dot * m._xx;
-    m._yy -= dot * m._xy;
-    m._yz -= dot * m._xz;
-    // R[1] /= math.sqrt(R[1].dot(R[1]))
-    dot = sqrt(m._yx * m._yx + m._yy * m._yy + m._yz * m._yz);
-    m._yx /= dot;
-    m._yy /= dot;
-    m._yz /= dot;
-    // R[2] -= R[2].dot(R[0]) * R[0]
-    dot = m._zx * m._xx + m._zy * m._xy + m._zz * m._xz;
-    m._zx -= dot * m._xx;
-    m._zy -= dot * m._xy;
-    m._zz -= dot * m._xz;
-    // R[2] -= R[2].dot(R[1]) * R[1]
-    dot = m._zx * m._yx + m._zy * m._yy + m._zz * m._yz;
-    m._zx -= dot * m._yx;
-    m._zy -= dot * m._yy;
-    m._zz -= dot * m._yz;
-    // R[2] /= math.sqrt(R[2].dot(R[2]))
-    dot = sqrt(m._zx * m._zx + m._zy * m._zy + m._zz * m._zz);
-    m._zx /= dot;
-    m._zy /= dot;
-    m._zz /= dot;
+    m._zx /= normal;
+    m._zy /= normal;
+    m._zz /= normal;
 
     return m;
-     */
   }
 
   /// @brief makes the components of the matrix into three unit vectors and changes the original matrix
