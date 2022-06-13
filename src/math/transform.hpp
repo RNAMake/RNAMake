@@ -12,48 +12,56 @@
 #include <iostream>
 
 // RNAMake Headers
-#include "matrix_3x3.hpp"
-#include "vector_3.hpp"
-#include <../math/matrix_3x3.hpp>
-#include <../math/vector_3.hpp>
+#include <math/matrix_3x3.hpp>
+#include <math/vector_3.hpp>
 
 namespace math {
-/*
-class Transform {
 
-public:
+class Transform {
   friend class Matrix3x3;
 
 public:
-   friend inline void dot(Matrix3x3 const &a, Matrix3x3 const &b, Transform &c) {
-    c._xx = a.get_xx() * b.get_xx() + a.get_xy() * b.get_yx() + a.get_xz() * b.get_zx();
-    c._xy = a.get_xx() * b.get_xy() + a.get_xy() * b.get_yy() + a.get_xz() * b.get_zy();
-    c._xz = a.get_xx() * b.get_xz() + a.get_xy() * b.get_yz() + a.get_xz() * b.get_zz();
+   inline void dot(Matrix3x3 const &b, Transform &c) const {
+    c._xx = _xx * b.get_xx() + _xy * b.get_yx() + _xz * b.get_zx();
+    c._xy = _xx * b.get_xy() + _xy * b.get_yy() + _xz * b.get_zy();
+    c._xz = _xx * b.get_xz() + _xy * b.get_yz() + _xz * b.get_zz();
 
-    c._yx = a.get_yx() * b.get_xx() + a.get_yy() * b.get_yx() + a.get_yz() * b.get_zx();
-    c._yy = a.get_yx() * b.get_xy() + a.get_yy() * b.get_yy() + a.get_yz() * b.get_zy();
-    c._yz = a.get_yx() * b.get_xz() + a.get_yy() * b.get_yz() + a.get_yz() * b.get_zz();
+    c._yx = _yx * b.get_xx() + _yy * b.get_yx() + _yz * b.get_zx();
+    c._yy = _yx * b.get_xy() + _yy * b.get_yy() + _yz * b.get_zy();
+    c._yz = _yx * b.get_xz() + _yy * b.get_yz() + _yz * b.get_zz();
 
-    c._zx = a.get_zx() * b.get_xx() + a.get_zy() * b.get_yx() + a.get_zz() * b.get_zx();
-    c._zy = a.get_zx() * b.get_xy() + a.get_zy() * b.get_yy() + a.get_zz() * b.get_zy();
-    c._zz = a.get_zx() * b.get_xz() + a.get_zy() * b.get_yz() + a.get_zz() * b.get_zz();
+    c._zx = _zx * b.get_xx() + _zy * b.get_yx() + _zz * b.get_zx();
+    c._zy = _zx * b.get_xy() + _zy * b.get_yy() + _zz * b.get_zy();
+    c._zz = _zx * b.get_xz() + _zy * b.get_yz() + _zz * b.get_zz();
   }
 
- public:  // creation
+ public:  // initialization ////////////////////////////////////////////////////
   /// @brief Default constructor
   inline Transform()
       : _xx(1.0), _yx(0.0), _zx(0.0), _px(0.0),
         _xy(0.0), _yy(1.0), _zy(0.0), _py(0.0),
         _xz(0.0), _yz(0.0), _zz(1.0), _pz(0.0) {}
 
+  inline Transform(
+          const double &xx, const double &xy, const double &xz,
+          const double &yx, const double &yy, const double &yz,
+          const double &zx, const double &zy, const double &zz,
+          const double &px, const double &py, const double &pz)
+      : _xx(xx), _xy(xy), _xz(xz),
+        _yx(yx), _yy(yy), _yz(yz),
+        _zx(zx), _zy(zy), _zz(zz),
+        _px(px), _py(py), _pz(pz) {}
+
   inline Transform(Matrix3x3 const& r, Vector3 const& t) {
     rotation(r);
     translation(t);
   }
 
+  /// @brief - destructor
+  inline ~Transform() = default;
+
  public:
   // Accessors
-
   [[nodiscard]] float get_xx() const { return _xx; }
 
   [[nodiscard]] float get_xy() const { return _xy; }
@@ -137,11 +145,11 @@ public:
   }
 
  private:
-  float _xx{}, _yx{}, _zx{}, _px{};
-  float _xy{}, _yy{}, _zy{}, _py{};
-  float _xz{}, _yz{}, _zz{}, _pz{};
+  float _xx, _yx, _zx, _px;
+  float _xy, _yy, _zy, _py;
+  float _xz, _yz, _zz, _pz;
 };
-*/
+
 }  // namespace math
 
 #endif /* defined(__REDESIGNC__Transform__) */

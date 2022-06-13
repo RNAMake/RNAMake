@@ -17,7 +17,6 @@
 // RNAMake Headers
 #include <base/string.hpp>
 #include <base/types.hpp>
-#include <math/transform.hpp>
 #include <math/vector_3.hpp>
 #include <base/exception.hpp>
 
@@ -25,10 +24,12 @@ namespace math {
 // add comment here
 
 class Matrix3x3 {
-
+public:
+  friend class Transform;
 
   // initiation ////////////////////////////////////////////////////////
 public:
+
   inline Matrix3x3() = default;
   inline Matrix3x3(
           const double &xx, const double &xy, const double &xz,
@@ -546,6 +547,7 @@ private:
   Real _xx, _xy, _xz;
   Real _yx, _yy, _yz;
   Real _zx, _zy, _zz;
+
 };
 
   /// @brief takes a string and returns it in Matrix3x3 format
