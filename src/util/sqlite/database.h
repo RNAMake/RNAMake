@@ -5,79 +5,59 @@
 #ifndef RNAMAKE_NEW_SQLITE_DATABASE_H
 #define RNAMAKE_NEW_SQLITE_DATABASE_H
 
-#include <sqlite3.h>
-#include <base/types.hpp>
-#include <base/file_io.h>
 
-namespace util {
-namespace sqlite {
+#include <base/paths.hpp>
+#include <base/types.hpp>
+#include <sqlite3.h>
+
+namespace util::sqlite {
 
 class Database {
+public:// construction
+  inline explicit Database(const String &name) { _connect(name); }
+
+  inline ~Database() {
+    // close the db
+    (void) close();
+  }
+
+  // cannot copy
+  Database &operator=(const Database &) = delete;
+
+
 public:
-    Database(
-            String name) :
-            name_(name),
-            db_(nullptr),
-            created_(false){ open(); }
+  // close the database
+  int close();
 
-    ~Database() {
-        // close the db
-        (void) close();
-    }
+public:// getters
+  /// @brief Bool is the database file open?
+  [[nodiscard]] inline bool is_open() const { return _open; }
+
+  /// @brief Bool did the database need to be created
+  [[nodiscard]] inline bool is_created() const { return _created; }
+
+  // SQLite3 access
+  [[nodiscard]] inline const sqlite3 *get() const { return _db; }
+
+  // @brief get name of database file
+  [[nodiscard]] inline const String &get_name() const { return _name; }
 
 public:
-    // close the database
-    int close() {
-        int err = sqlite3_close(db_);
-        open_ = false;
-        db_ = nullptr;
-        return err;
-    }
+  inline sqlite3 *operator()() const { return _db; }
 
-    // returns true if the database is open
-    inline
-    bool
-    is_open() const { return open_; }
-
-    inline
-    bool
-    is_created() const { return created_; }
-
-    // SQLite3 access
-    inline
-    sqlite3
-    *get() const { return db_; }
-
-    inline
-    sqlite3
-    *operator()() const { return db_; }
-
-    inline
-    String const &
-    get_name() const { return name_; }
+private:
+  // open (connect) the database
+  void _connect(const String &name,
+                int flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
 
 
 private:
-    // open (connect) the database
-    int open(int flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE) {
-        if(!base::file_exists(name_)) { created_ = true; }
-
-        int err = sqlite3_open_v2(name_.c_str(), &db_, flags, nullptr);
-        open_ = !err;
-        return err;
-    }
-
-private:
-    Database & operator=(const Database &) = delete;
-
-private:
-    sqlite3 *db_;    // associated db
-    String const name_;  // db filename
-    bool open_;  // db open status
-    bool created_;
+  sqlite3 *_db = nullptr;// associated db
+  String _name;          // db filename
+  bool _open = false;    // db open status
+  bool _created = false;
 };
 
-}
-}
+}// namespace util::sqlite
 
-#endif //RNAMAKE_NEW_SQLITE_DATABASE_H
+#endif//RNAMAKE_NEW_SQLITE_DATABASE_H
