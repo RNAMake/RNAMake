@@ -13,15 +13,15 @@ namespace util::sqlite {
 
 class Connection {
 public:
-  explicit Connection(const Database &db) : db_(db) {}
+  inline explicit Connection(const Database &db) : db_(db) {}
 
   ~Connection() = default;
 
 public:// interface to get rows
-  int start_iterate_rows(const String &command) { return _prepare(command); }
-
+  int setup_row_iteration(const String &);
 
   RowOP next() {
+    // TODO throw error here!!
     if (sqlite3_step(stmt_) != SQLITE_ROW) { return RowOP(nullptr); }
     return _generate_row_from_statement();
   }
@@ -33,7 +33,6 @@ public:// interface to get rows
       sqlite3_finalize(stmt_);
       return {nullptr};
     }
-
     auto row = _generate_row_from_statement();
     sqlite3_finalize(stmt_);
     return row;
@@ -58,14 +57,14 @@ public:// get other table infos
     if (spl.size() != 3) {
       throw SqliteException("not a valid table declaration: " + table_str);
     }
-    auto columns = base::split_str_by_delimiter(spl[1], ",");
+    auto columns = base::string::split(spl[1], ",");
     auto names = Strings();
     auto types = Strings();
     auto primary_keys = std::map<String, bool>();
     for (auto const &col: columns) {
       auto trimed_col = col;
-      base::trim(trimed_col);
-      auto col_spl = base::split_str_by_delimiter(trimed_col, " ");
+      trimed_col = base::string::trim(trimed_col);
+      auto col_spl = base::string::split(trimed_col, " ");
       if (col_spl.size() < 2) {
         throw SqliteException("cannot parse table declaration section: " + col);
       }
@@ -140,7 +139,7 @@ public:
 
 private:
   int _execute(String const &command) {
-    rc_ = sqlite3_exec(db_(), command.c_str(), NULL, 0, &zErrMsg_);
+    rc_ = sqlite3_exec(db_(), command.c_str(), nullptr, 0, &zErrMsg_);
     if (rc_ != SQLITE_OK) { throw SqliteException(String(zErrMsg_)); }
     return rc_;
   }
@@ -156,32 +155,34 @@ private:
   }
 
   RowOP _generate_row_from_statement() {
-    auto fields = std::vector<Field>();
-    auto col_type = -1;
+    int col_type;
+    if (_first_row) { _row.resize(sqlite3_column_count(stmt_)); }
+    int pos = 0;
     for (int i = 0; i < sqlite3_column_count(stmt_); ++i) {
       col_type = sqlite3_column_type(stmt_, i);
       if (col_type == SQLITE_INTEGER) {
-        fields.push_back(Field(sqlite3_column_name(stmt_, i),
-                               sqlite3_column_int(stmt_, i)));
+        _row[pos] = Field(sqlite3_column_name(stmt_, i),
+                          sqlite3_column_int(stmt_, i));
       } else if (col_type == SQLITE_FLOAT) {
-        fields.push_back(Field(sqlite3_column_name(stmt_, i),
-                               sqlite3_column_double(stmt_, i)));
+        _row[pos] = Field(sqlite3_column_name(stmt_, i),
+                          sqlite3_column_double(stmt_, i));
       } else if (col_type == SQLITE_BLOB) {
-        std::uint8_t const *blob = reinterpret_cast<const std::uint8_t *>(
+        auto const *blob = reinterpret_cast<const std::uint8_t *>(
                 ::sqlite3_column_blob(stmt_, i));
         std::vector<std::uint8_t> v(&blob[0],
                                     &blob[::sqlite3_column_bytes(stmt_, i)]);
-        fields.push_back(Field(sqlite3_column_name(stmt_, i), v));
+        _row[pos] = Field(sqlite3_column_name(stmt_, i), v);
       } else if (col_type == SQLITE3_TEXT) {
-        fields.push_back(Field(
+        _row[pos] = Field(
                 sqlite3_column_name(stmt_, i),
-                reinterpret_cast<const char *>(sqlite3_column_text(stmt_, i))));
+                reinterpret_cast<const char *>(sqlite3_column_text(stmt_, i)));
       } else {
         throw SqliteException("not supported sqlite3_column type: " +
                               std::to_string(col_type));
       }
+      pos++;
     }
-    return std::make_shared<Row>(fields);
+    return std::make_shared<Row>(_row);
   }
 
 
@@ -258,12 +259,15 @@ private:
   char *zErrMsg_{};
   int rc_{};
   std::vector<BindType> bind_;
+  mutable Row _row = {};
+  mutable bool _first_row = false;
 };
 
-void create_table(Connection &, TableDetails const &);
+// wrapper functions ///////////////////////////////////////////////////////////
+void create_table(Connection &, const TableDetails &);
 
-void insert_many(Connection &, String const &, std::vector<Strings> const &);
+void insert_many(Connection &, const String &, const std::vector<Strings> &);
 
-}// namespace util
+}// namespace util::sqlite
 
 #endif//RNAMAKE_NEW_SQLITE3_CONNECTION_H

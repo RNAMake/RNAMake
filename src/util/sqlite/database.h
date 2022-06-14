@@ -5,65 +5,59 @@
 #ifndef RNAMAKE_NEW_SQLITE_DATABASE_H
 #define RNAMAKE_NEW_SQLITE_DATABASE_H
 
-#include <base/file_io.h>
+
+#include <base/paths.hpp>
 #include <base/types.hpp>
 #include <sqlite3.h>
 
-namespace util {
-namespace sqlite {
+namespace util::sqlite {
 
 class Database {
-public:
-  Database(String name) : name_(name), db_(nullptr), created_(false) { open(); }
+public:// construction
+  inline explicit Database(const String &name) { _connect(name); }
 
-  ~Database() {
+  inline ~Database() {
     // close the db
     (void) close();
   }
 
+  // cannot copy
+  Database &operator=(const Database &) = delete;
+
+
 public:
   // close the database
-  int close() {
-    int err = sqlite3_close(db_);
-    open_ = false;
-    db_ = nullptr;
-    return err;
-  }
+  int close();
 
-  // returns true if the database is open
-  inline bool is_open() const { return open_; }
+public:// getters
+  /// @brief Bool is the database file open?
+  [[nodiscard]] inline bool is_open() const { return _open; }
 
-  inline bool is_created() const { return created_; }
+  /// @brief Bool did the database need to be created
+  [[nodiscard]] inline bool is_created() const { return _created; }
 
   // SQLite3 access
-  inline sqlite3 *get() const { return db_; }
+  [[nodiscard]] inline const sqlite3 *get() const { return _db; }
 
-  inline sqlite3 *operator()() const { return db_; }
+  // @brief get name of database file
+  [[nodiscard]] inline const String &get_name() const { return _name; }
 
-  inline String const &get_name() const { return name_; }
-
+public:
+  inline sqlite3 *operator()() const { return _db; }
 
 private:
   // open (connect) the database
-  int open(int flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE) {
-    if (!base::file_exists(name_)) { created_ = true; }
+  void _connect(const String &name,
+                int flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
 
-    int err = sqlite3_open_v2(name_.c_str(), &db_, flags, nullptr);
-    open_ = !err;
-    return err;
-  }
 
 private:
-  Database &operator=(const Database &) = delete;
-
-private:
-  sqlite3 *db_;      // associated db
-  String const name_;// db filename
-  bool open_;        // db open status
-  bool created_;
+  sqlite3 *_db = nullptr;// associated db
+  String _name;          // db filename
+  bool _open = false;    // db open status
+  bool _created = false;
 };
 
-}// namespace sqlite
-}// namespace util
+}// namespace util::sqlite
 
 #endif//RNAMAKE_NEW_SQLITE_DATABASE_H

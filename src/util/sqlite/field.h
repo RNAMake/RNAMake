@@ -22,6 +22,7 @@ public:
 
 class Field {
 public:
+  inline Field() = default;
   inline Field(const String &name, int i)
       : _name(name), _int(i), _type(SQLITE_INTEGER) {}
   inline Field(const String &name, sqlite3_int64 i64)
@@ -30,11 +31,11 @@ public:
       : _name(name), _float(d), _type(SQLITE_FLOAT) {}
   inline Field(const String &name, const String &s)
       : _name(name), _str(s), _type(SQLITE_TEXT) {}
-  inline Field(const String &name, std::vector<std::uint8_t> const &v)
+  inline Field(const String &name, const std::vector<std::uint8_t> &v)
       : _name(name), _vec(v), _type(SQLITE_BLOB) {}
 
 public:// getters
-  inline explicit operator int() const {
+  [[nodiscard]] inline int get_int() const {
     if (_type != SQLITE_INTEGER) {
       String msg = "cannot get int value, field is not int type value";
       base::log_and_throw<SqliteException>(msg);
