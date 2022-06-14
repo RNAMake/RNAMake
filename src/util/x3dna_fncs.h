@@ -1,3 +1,9 @@
+#include <sstream>
+#include <math.h>
+
+
+
+
 
 /* alc2img.c */
 

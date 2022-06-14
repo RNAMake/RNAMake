@@ -61,7 +61,7 @@ public:
 
     MotifEnsemble(
             MotifOPs const & motifs,
-            Floats const & energies) :
+            Reals const & energies) :
             members_(MotifEnsembleMemberOPs()),
             block_end_add_(0) {
 
@@ -91,7 +91,7 @@ public:
     MotifEnsemble( // extra ctor added by cj 10/20
             String const& id,
             MotifOPs const & motifs,
-            Floats const & energies
+            Reals const & energies
             ) : MotifEnsemble(motifs, energies) {
             id_ = id;
     }

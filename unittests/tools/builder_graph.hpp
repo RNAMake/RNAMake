@@ -32,12 +32,12 @@ public:
             return g_.add_data(type, -1, -1, -1, ends);
         }
         
-        Ints avail_pos;
+        Indexes avail_pos;
         if(parent_end_index == -1) {
             avail_pos = parent->available_children_pos();
         }
         else {
-            avail_pos = Ints{parent_end_index};
+            avail_pos = Indexes{parent_end_index};
         }
         
         if(avail_pos.size() == 0) { return -1; }

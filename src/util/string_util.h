@@ -3,6 +3,7 @@
 //
 
 #ifndef RNAMAKE_STRING_UTIL_H
+#include <sstream>
 
 std::string replace_char(std::string str, char ch1, char ch2) {
     for (int i = 0; i < str.length(); ++i) {

@@ -60,8 +60,8 @@ private:
     _within_size_limit();
 
 private:
-    Ints indices_;
-    Ints maxes_;
+    Indexes indices_;
+    Indexes maxes_;
     std::vector<motif::MotifStateOPs> motif_states_;
     motif::MotifStateOPs current_;
     structure::BasepairStateOP start_bp_;

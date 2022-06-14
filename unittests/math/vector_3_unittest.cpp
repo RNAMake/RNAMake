@@ -3,9 +3,7 @@
 //
 
 #include "../common.hpp"
-
 #include <sstream>
-
 #include <math/vector_3.hpp>
 
 TEST_CASE("Test xyz vector ") {
@@ -16,7 +14,6 @@ TEST_CASE("Test xyz vector ") {
       CHECK(vec.get_y() == doctest::Approx(0));
       CHECK(vec.get_z() == doctest::Approx(0));
     }
-
     SUBCASE("test supply ints") {
       math::Vector3 vec = {0, 1, 2};
       CHECK(vec.get_x() == doctest::Approx(0));
@@ -282,6 +279,14 @@ TEST_CASE("Test xyz vector ") {
       CHECK(vec_2.get_x() == doctest::Approx(0));
       CHECK(vec_2.get_y() == doctest::Approx(-1));
       CHECK(vec_2.get_z() == doctest::Approx(-2));
+    }
+    SUBCASE("test negating and saving") {
+      math::Vector3 vec_1 = {0.0f, 1.0f, -1.0f};
+      math::Vector3 vec_2 = {};
+      vec_1.negated(vec_2);
+      CHECK(vec_2.get_x() == doctest::Approx(0));
+      CHECK(vec_2.get_y() == doctest::Approx(-1));
+      CHECK(vec_2.get_z() == doctest::Approx(1));
     }
     SUBCASE("test distance function") {
       math::Vector3 vec_1 = {0.0f, 0.0f, 0.0f};

@@ -20,11 +20,11 @@
 
 //RNAMake Headers
 #include <base/settings.h>
-#include <base/string.h>
-#include <math/xyz_vector.h>
-#include <math/xyz_matrix.h>
+#include <base/string.hpp>
+#include <math/vector_3.hpp>
+#include <math/matrix_3x3.hpp>
 #include <util/dssr.h>
-#include <math/numerical.h>
+#include <math/numerical.hpp>
 
 namespace util {
 

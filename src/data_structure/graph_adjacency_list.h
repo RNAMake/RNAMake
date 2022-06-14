@@ -5,7 +5,7 @@
 #ifndef RNAMAKE_NEW_GRAPH_ADJACENCY_LIST_H
 #define RNAMAKE_NEW_GRAPH_ADJACENCY_LIST_H
 
-#include <base/log.h>
+#include <base/log.hpp>
 #include <data_structure/graph_base.h>
 
 namespace data_structure {

@@ -13,7 +13,7 @@
 #include <stdio.h>
 
 //RNAMake Headers
-#include <base/types.h>
+#include <base/types.hpp>
 #include <secondary_structure/chain.h>
 #include <primitives/structure.h>
 

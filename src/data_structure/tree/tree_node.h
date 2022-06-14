@@ -17,7 +17,7 @@
 #include <algorithm>
 
 //RNAMake Headers
-#include "base/types.h"
+#include "base/types.hpp"
 #include "data_structure/tree/tree_node.fwd.hh"
 
 namespace data_structure {
@@ -66,9 +66,9 @@ public: //Vitrual functions need to be implemented in derived clases
 
 public:
     inline
-    Ints
+    Indexes
     available_children_pos() const {
-        Ints pos;
+        Indexes pos;
         int i = 0;
         for (auto const & c : children_) {
             if (c == nullptr) { pos.push_back(i); }

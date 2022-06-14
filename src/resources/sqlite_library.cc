@@ -11,6 +11,7 @@
 //RNAMake Headers
 #include "base/settings.h"
 #include "resources/sqlite_library.h"
+#include "base/types.hpp"
 
 namespace resources {
 

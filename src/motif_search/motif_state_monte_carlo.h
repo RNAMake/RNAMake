@@ -157,7 +157,7 @@ private:
     util::MonteCarlo mc_;
     util::RandomNumberGenerator rng_;
     util::StericLookupNew lookup_;
-    math::Points beads_;
+    math::Vector3s beads_;
     base::Options options_;
     std::vector<motif::MotifStateOPs> mses_;
     structure::BasepairStateOP end_, end_flip_;

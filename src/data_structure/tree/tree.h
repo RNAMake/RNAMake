@@ -16,7 +16,7 @@
 #include <cassert>
 
 //RNAMAke Headers
-#include "base/types.h"
+#include "base/types.hpp"
 #include "data_structure/tree/tree_node.fwd.hh"
 #include "data_structure/tree/tree_node.h"
 
@@ -244,7 +244,7 @@ public:
     }
 
     inline
-    Ints
+    Indexes
     get_available_pos(
             TreeNodeOP<DataType> const & n,
             int pos = -1) {
@@ -255,7 +255,7 @@ public:
             if (n->available_pos(pos) == 0) {
                 throw TreeException("tree pos is not available");
             }
-            return Ints {pos};
+            return Indexes {pos};
         }
 
     }

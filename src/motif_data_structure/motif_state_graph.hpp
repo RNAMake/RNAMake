@@ -64,7 +64,7 @@ private://add function helpers
             String const &,
             int);
 
-    Ints
+    Indexes
     _get_available_parent_end_pos(
             data_structure::graph::GraphNodeOP<MSNodeDataOP> const &,
             int);

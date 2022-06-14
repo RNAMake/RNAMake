@@ -7,6 +7,7 @@
 //
 
 #include "motif_data_structure/motif_connection.h"
+#include "base/types.hpp"
 
 
 namespace motif_data_structure {

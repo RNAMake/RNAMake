@@ -20,6 +20,7 @@
 #include "secondary_structure/structure.h"
 #include "secondary_structure/motif.h"
 #include "secondary_structure/pose.h"
+#include "base/exception.hpp"
 
 namespace secondary_structure {
     

@@ -7,13 +7,14 @@
 //
 
 #include "motif/motif_ensemble.h"
+#include "base/types.hpp"
 
 namespace motif {
 
 MotifStateEnsembleOP
 MotifEnsemble::get_state() {
     auto motif_states = MotifStateOPs();
-    auto energies = Floats();
+    auto energies = Reals();
 
     for (auto const & mem : members_) {
         motif_states.push_back(mem->motif->get_state());

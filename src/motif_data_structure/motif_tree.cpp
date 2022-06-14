@@ -164,12 +164,12 @@ namespace motif_data_structure {
       return parent;
   }
 
-  Ints
+  Indexes
   MotifTree::_get_available_parent_end_pos(
           data_structure::tree::TreeNodeOP<motif::MotifOP> const &parent,
           int parent_end_index) {
 
-      auto avail_pos = Ints();
+      auto avail_pos = Indexes();
 
       if (parent == nullptr) { return avail_pos; }
 

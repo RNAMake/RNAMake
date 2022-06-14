@@ -9,7 +9,7 @@
 #include <stdexcept>
 #include <algorithm>
 
-#include "math/xyz_vector.h"
+#include "math/vector_3.hpp"
 #include "structure/basepair_state.h"
 #include "motif/motif_state.h"
 

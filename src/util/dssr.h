@@ -7,8 +7,9 @@
 #include <limits>
 
 #include <math/quaternion.h>
-#include <math/xyz_vector.h>
-#include <base/types.h>
+#include <math/vector_3.hpp>
+#include <base/types.hpp>
+#include <math/matrix_3x3.hpp>
 #include <base/sys_interface.h>
 
 namespace util {
@@ -26,19 +27,19 @@ get_char(const nlohmann::json& , const String&);
 String
 get_string(const nlohmann::json& , const String&);
 
-math::Point
+math::Vector3
 get_point(const nlohmann::json& , const String&);
 
 math::Quaternion
 get_quaternion(const nlohmann::json&, const String&);
 
-math::Matrix
+math::Matrix3x3
 get_matrix(const nlohmann::json&);
 
 Reals
 get_reals(const nlohmann::json&, const String&);
 
-Ints
+Indexes
 get_ints(const nlohmann::json&, const String&);
 
 
@@ -50,9 +51,9 @@ struct DssrElem {
 };
 
 struct DssrNt : public DssrElem {
-    math::Point C5prime_xyz{-1.,-1.,-1.};
+    math::Vector3 C5prime_xyz{-1.,-1.,-1.};
     double Dp{-1.};
-    math::Point P_xyz{-1.,-1.,-1.};
+    math::Vector3 P_xyz{-1.,-1.,-1.};
     double alpha{-1.};
     double amplitude{-1.};
     String bb_type{"NA"}; // TODO make into an enum
@@ -70,10 +71,10 @@ struct DssrNt : public DssrElem {
     double eta_prime{-1.};
     double filter_rmsd{-1.};
     char form{' '};
-    math::Point frame_origin{-1.,-1.,-1.};
+    math::Vector3 frame_origin{-1.,-1.,-1.};
     math::Quaternion frame_quaternion{-1.,-1.,-1.,-1.};
     double frame_rmsd {-1.}; 
-    math::Matrix ref_frame {-1.,-1.,-1., -1,-1.,-1., -1.,-1.,-1.};
+    math::Matrix3x3 ref_frame {-1.,-1.,-1., -1,-1.,-1., -1.,-1.,-1.};
     double gamma {-1.};
     String glyco_bond {"NA"};
     int index{-1};
@@ -123,10 +124,10 @@ struct DssrPair : public DssrElem {
     double chi2	{-1.}; 
     String conf1{"NA"}; //TODO enum	"anti"
     String conf2{"NA"};	//TODO enum
-    math::Point frame_origin{-1.,-1.,-1.};
+    math::Vector3 frame_origin{-1.,-1.,-1.};
     math::Quaternion frame_quaternion{-1.,-1.,-1.,-1.};
     double frame_rmsd {-1.}; 
-    math::Matrix ref_frame {-1.,-1.,-1., -1,-1.,-1., -1.,-1.,-1.};
+    math::Matrix3x3 ref_frame {-1.,-1.,-1., -1,-1.,-1., -1.,-1.,-1.};
     String hbonds_desc{"NA"}; //	"N1(imino)-N3[3.14],N2(amino)-O2(carbonyl)[3.27],O6(carbonyl)-N4(amino)[2.96]"
     int hbonds_num{-1};
     int index{-1};
@@ -157,8 +158,8 @@ struct DssrHairpin : public DssrElem {
     String nts_long{"NA"};
     String nts_short{"NA"};
     String type{"NA"};
-    Ints bridging_nts{-1}; 
-    Ints stem_indices{-1}; 
+    Indexes bridging_nts{-1};
+    Indexes stem_indices{-1};
     String summary{"NA"};
     int num_nts{-1};
     int num_stems{-1};
@@ -182,9 +183,9 @@ struct DssrHelix : public DssrElem {
     double helical_rise_std{-1};    
     double helical_radius{-1};    
     double helical_radius_std{-1};    
-    math::Point helical_axis{-1.,-1.,-1.};
-    math::Point point1{-1.,-1.,-1.};
-    math::Point point2{-1.,-1.,-1.};
+    math::Vector3 helical_axis{-1.,-1.,-1.};
+    math::Vector3 point1{-1.,-1.,-1.};
+    math::Vector3 point2{-1.,-1.,-1.};
     int num_pairs{-1};
     std::vector<DssrPair> pairs;
 
@@ -205,9 +206,9 @@ struct DssrStem : public DssrElem {
     double helical_rise_std{-1};    
     double helical_radius{-1};    
     double helical_radius_std{-1};    
-    math::Point helical_axis{-1.,-1.,-1.};
-    math::Point point1{-1.,-1.,-1.};
-    math::Point point2{-1.,-1.,-1.};
+    math::Vector3 helical_axis{-1.,-1.,-1.};
+    math::Vector3 point1{-1.,-1.,-1.};
+    math::Vector3 point2{-1.,-1.,-1.};
     int num_pairs{-1};
     std::vector<DssrPair> pairs;
 
@@ -221,8 +222,8 @@ struct DssrILoop : public DssrElem {
     
     int index{-1};
     String type{"NA"}; 
-    Ints bridging_nts{};
-    Ints stem_indices{};
+    Indexes bridging_nts{};
+    Indexes stem_indices{};
     String summary{"NA"};
     int num_nts{-1};
     String nts_short{"NA"};
@@ -240,8 +241,8 @@ struct DssrILoop : public DssrElem {
 struct DssrJunc : public DssrElem {
     int index{-1};
     String type{"NA"};
-    Ints bridging_nts{};
-    Ints stem_indices{};
+    Indexes bridging_nts{};
+    Indexes stem_indices{};
     String summary{"NA"};
     int num_nts{-1};
     String nts_short{"NA"};
@@ -275,7 +276,7 @@ struct DssrKissingLoop : public DssrElem {
 
     int index{-1};
     int stem_index{-1};
-    Ints hairpin_indices{};
+    Indexes hairpin_indices{};
 
     bool 
     valid() const override {

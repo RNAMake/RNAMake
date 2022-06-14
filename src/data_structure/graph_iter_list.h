@@ -7,7 +7,7 @@
 
 #include <queue>
 
-#include <base/types.h>
+#include <base/types.hpp>
 #include <base/assertions.h>
 #include <base/vector_container.h>
 #include <data_structure/graph_base.h>

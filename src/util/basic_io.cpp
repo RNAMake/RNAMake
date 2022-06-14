@@ -13,7 +13,7 @@ namespace util {
 
 String
 points_to_pdb_str(
-        math::Points const & points) {
+        math::Vector3s const & points) {
 
     String s;
     int i = 1;
@@ -32,7 +32,7 @@ points_to_pdb_str(
 void
 points_to_pdb(
         String const & filename,
-        math::Points const & points) {
+        math::Vector3s const & points) {
 
     auto s = points_to_pdb_str(points);
     std::ofstream out;

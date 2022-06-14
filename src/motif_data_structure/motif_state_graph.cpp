@@ -100,11 +100,11 @@ MotifStateGraph::_get_parent(
     return parent;
 }
 
-Ints
+Indexes
 MotifStateGraph::_get_available_parent_end_pos(
         data_structure::graph::GraphNodeOP<MSNodeDataOP> const & parent,
         int parent_end_index) {
-    auto avail_pos = Ints();
+    auto avail_pos = Indexes();
 
     if (parent_end_index != -1) {
         int avail = parent->available_pos(parent_end_index);
