@@ -6,12 +6,11 @@
 #define RNAMAKE_NEW_TABLE_DETAILS_H
 
 #include <base/types.hpp>
+#include <utility>
 
 #include <util/sqlite/field.h>
 
-namespace util {
-namespace sqlite {
-
+namespace util::sqlite {
 
 class TableDetails {
 public:
@@ -22,56 +21,49 @@ public:
     };
 
 public:
-    inline
-    TableDetails(
-            String const & name):
-            name_(name),
-            columns_(std::vector<ColumnDetails>()) {}
+  inline TableDetails(const String &name)
+      : name_(name), columns_(std::vector<ColumnDetails>()) {}
 
-    ~TableDetails() {}
+  ~TableDetails() = default;
 
-public:
-    //iterator
-    typedef std::vector<ColumnDetails>::const_iterator const_iterator;
+public: // iterators
+  typedef std::vector<ColumnDetails>::const_iterator const_iterator;
 
-    const_iterator begin() const { return columns_.begin(); }
-    const_iterator end() const { return columns_.end(); }
+  [[nodiscard]] const_iterator begin() const { return columns_.begin(); }
+  [[nodiscard]] const_iterator end() const { return columns_.end(); }
 
-public:
-    inline
-    ColumnDetails const &
-    operator [] (
-            Index i) const { return columns_[i]; }
+public: // getters
+  [[nodiscard]] inline const ColumnDetails &get_column(int i) const {
+    return columns_[i];
+  }
 
-public:
+  [[nodiscard]] inline size_t size() const { return columns_.size(); }
 
-    inline
-    size_t
-    size() const { return columns_.size(); }
-
-    void
-    add_column(
-            String const & name,
-            String const & type,
-            bool is_primary = false) {
-        if(!_is_valid_sqlite_type(type)) { throw SqliteException("not a valid sqlite3 type: " + type); }
-        if(_name_exists(name)) { throw SqliteException("col name already exists in table cannot repeat"); }
-
-        columns_.push_back(ColumnDetails{name, type, is_primary});
+  void add_column(String const &name, String const &type,
+                  bool is_primary = false) {
+    if (!_is_valid_sqlite_type(type)) {
+      throw SqliteException("not a valid sqlite3 type: " + type);
+    }
+    if (_name_exists(name)) {
+      throw SqliteException("col name already exists in table cannot repeat");
     }
 
-    bool
-    has_primary_key() const {
-        for(auto const & col : columns_) {
-            if(col.is_primary) { return true; }
-        }
-        return false;
+    columns_.push_back(ColumnDetails{name, type, is_primary});
+  }
+
+  [[nodiscard]] bool has_primary_key() const {
+    if (std::any_of(columns_.begin(), columns_.end(),
+                    [](const ColumnDetails &c) { return c.is_primary; })) {
+      return true;
+    } else {
+      return false;
     }
+  }
 
 public:
-    inline
-    String const &
-    name() const { return name_; }
+  [[nodiscard]] inline const String &name() const { return name_; }
+
+  inline ColumnDetails const &operator[](Index i) const { return columns_[i]; }
 
 private:
     bool
@@ -81,14 +73,14 @@ private:
         else { return false; }
     }
 
-    bool
-    _name_exists(
-            String const & name) {
-        for(auto const & col : columns_) {
-            if(col.name == name) { return true; }
-        }
-        return false;
+  bool _name_exists(String const &name) {
+    for (auto const &col : columns_) {
+      if (col.name == name) {
+        return true;
+      }
     }
+    return false;
+  }
 
 private:
     String name_;
@@ -98,8 +90,6 @@ private:
 
 typedef std::shared_ptr<TableDetails> TableDetailsOP;
 
-}
-}
+} // namespace util::sqlite
 
-
-#endif //RNAMAKE_NEW_TABLE_DETAILS_H
+#endif // RNAMAKE_NEW_TABLE_DETAILS_H

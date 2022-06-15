@@ -7,32 +7,30 @@
 
 #include <sqlite3.h>
 
-#include <base/exception.hpp>
 #include <base/string.hpp>
 #include <base/types.hpp>
+#include <util/exception.hpp>
 #include <utility>
 
 namespace util::sqlite {
 
-class SqliteException : public std::runtime_error {
-public:
-  explicit SqliteException(const String &message)
-      : std::runtime_error(message) {}
-};
+typedef std::vector<std::uint8_t> Blob;
 
 class Field {
 public:
   inline Field() = default;
-  inline Field(const String &name, int i)
-      : _name(name), _int(i), _type(SQLITE_INTEGER) {}
-  inline Field(const String &name, sqlite3_int64 i64)
-      : _name(name), _int(i64), _type(SQLITE_INTEGER) {}
-  inline Field(const String &name, double d)
-      : _name(name), _float(d), _type(SQLITE_FLOAT) {}
-  inline Field(const String &name, const String &s)
-      : _name(name), _str(s), _type(SQLITE_TEXT) {}
-  inline Field(const String &name, const std::vector<std::uint8_t> &v)
-      : _name(name), _vec(v), _type(SQLITE_BLOB) {}
+  inline Field(String &&name, int i)
+      : _name(std::move(name)), _int(i), _type(SQLITE_INTEGER) {}
+  inline Field(String &&name, sqlite3_int64 i64)
+      : _name(std::move(name)), _int(i64), _type(SQLITE_INTEGER) {}
+  inline Field(String &&name, double d)
+      : _name(std::move(name)), _float(d), _type(SQLITE_FLOAT) {}
+  inline Field(String &&name, String &&s)
+      : _name(std::move(name)), _str(std::move(s)), _type(SQLITE_TEXT) {}
+  inline Field(String &&name, Blob b)
+      : _name(std::move(name)), _blob(std::move(b)), _type(SQLITE_BLOB) {}
+
+  inline ~Field() = default;
 
 public:// getters
   [[nodiscard]] inline int get_int() const {
@@ -43,7 +41,7 @@ public:// getters
     return static_cast<int>(_int);
   }
 
-  inline explicit operator sqlite3_int64() const {
+  [[nodiscard]] inline sqlite3_int64 get_int64() const {
     if (_type != SQLITE_INTEGER) {
       String msg = "cannot get int value, field is not int type value";
       base::log_and_throw<SqliteException>(msg);
@@ -51,7 +49,7 @@ public:// getters
     return _int;
   }
 
-  inline explicit operator double() const {
+  [[nodiscard]] inline double get_double() const {
     if (_type != SQLITE_FLOAT) {
       String msg = "cannot get double value, field is not double type value";
       base::log_and_throw<SqliteException>(msg);
@@ -59,9 +57,21 @@ public:// getters
     return _float;
   }
 
-  inline explicit operator String() const { return get_str(); }
+  [[nodiscard]] inline Blob get_blob() const {
+    if (_type != SQLITE_BLOB) {
+      String msg = "cannot get blob value, field is not blob type value";
+      base::log_and_throw<SqliteException>(msg);
+    }
+    return _blob;
+  }
 
-  explicit operator std::vector<std::uint8_t>() const { return _vec; }
+  [[nodiscard]] inline String get_str() const {
+    if (_type != SQLITE_TEXT) {
+      String msg = "cannot get str value, field is not str type value";
+      base::log_and_throw<SqliteException>(msg);
+    }
+    return _str;
+  }
 
 
 public:
@@ -69,7 +79,7 @@ public:
 
   [[nodiscard]] inline String get_name() const { return _name; }
 
-  [[nodiscard]] inline String get_str() const {
+  [[nodiscard]] inline String get_type_str() const {
     if (_type == SQLITE3_TEXT) {
       return _str;
     } else if (_type == SQLITE_INTEGER) {
@@ -85,12 +95,12 @@ public:
 
 
 private:
-  std::int64_t _int = 0;              // int data
-  double _float = 0.0f;               // float data
-  std::vector<std::uint8_t> _vec = {};// vector (blob) data
-  String _str;                        // string (text) data
-  String _name;                       // field (col) name
-  int _type;                          // sqlte type
+  std::int64_t _int = 0;// int data
+  double _float = 0.0f; // float data
+  Blob _blob = {};      // vector (blob) data
+  String _str;          // string (text) data
+  String _name;         // field (col) name
+  int _type = 0;        // sqlte type
 };
 
 typedef std::vector<Field> Row;
