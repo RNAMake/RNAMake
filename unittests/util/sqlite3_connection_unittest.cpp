@@ -3,6 +3,7 @@
 #include "../common.hpp"
 
 #include <base/paths.hpp>
+#include <util/exception.hpp>
 #include <util/sqlite/connection.h>
 
 using namespace util::sqlite;
@@ -14,7 +15,14 @@ TEST_CASE("Test sqlite3 interface ") {
     CHECK(db.is_open());
   }
 
-  /*SUBCASE("test basic features of connection") {
+  SUBCASE("test fields") {
+    Field f("test", 1);
+    CHECK(f.get_int() == 1);
+    CHECK_THROWS_AS(double d = f.get_double(), util::SqliteException);
+    CHECK_THROWS_AS(Blob b = f.get_blob(), util::SqliteException);
+  }
+
+  SUBCASE("test basic features of connection") {
     auto db = util::sqlite::Database(":memory:");
     auto q = util::sqlite::Connection(db);
 
@@ -29,37 +37,76 @@ TEST_CASE("Test sqlite3 interface ") {
 
     SUBCASE("test getting first row") {
       q.setup_row_iteration("SELECT * FROM data_table");
-      auto row = q.next();
-      CHECK(row->at(0).get_name() == "word");
-      CHECK(row->at(0).get_str() == "the_word");
+      auto &row = q.next();
+      CHECK(row.size() == 2);
+      CHECK(row[0].get_name() == "word");
+      CHECK(row[0].get_type_str() == "the_word");
 
-      int id = row->at(1).get_int();
+      int id = row[1].get_int();
       CHECK(id == 0);
+    }
 
-      //stop from weird casting ...
-      //REQUIRE_THROWS_AS(int id = row->at(0), util::sqlite::SqliteException);
+    SUBCASE("test going thgrough all rows") {
+      q.setup_row_iteration("SELECT * FROM data_table");
+      int count = 0;
+      while(q.has_more_rows()) {
+        auto &row = q.next();
+        count += 1;
+      }
+      CHECK(count == 3);
     }
 
     SUBCASE("test get table details") {
       auto tb = q.get_table_details("data_table");
-
+      CHECK(tb->name() == "data_table");
+      CHECK(tb->size() == 2);
+      CHECK(tb->has_primary_key() == true);
+      CHECK(tb->get_column(0).name == "word");
     }
-  }*/
+  }
 
+  /*SUBCASE("test create table") {
+    auto db = util::sqlite::Database(":memory:");
+    auto conn = util::sqlite::Connection(db);
+    auto td = util::sqlite::TableDetails("data_table");
+    td.add_column("word", "TEXT");
+    td.add_column("id", "INT", true);
+    util::sqlite::create_table(conn, td);
 
+    SUBCASE("test reading table details from sqlite database") {
+
+      auto new_td = *conn.get_table_details("data_table");
+      CHECK(new_td.size() == 2);
+      CHECK(new_td[0].name == "word");
+      CHECK(new_td[0].type == "TEXT");
+      CHECK(new_td[1].is_primary == true);
+    }
+
+    SUBCASE("test inserting multiple rows") {
+      auto data =
+          std::vector<Strings>{{"the_word", "0"}, {"the", "1"}, {"hello", "2"}};
+      util::sqlite::insert_many(conn, "data_table", data);
+
+      auto & row = conn.get_first_row("SELECT * FROM data_table");
+      CHECK(row[0].get_name() == "word");
+      CHECK(row[0].get_str() == "the_word");
+    }
+  }    */
 }
 
 /*TEST_CASE( "Test basic connection sqlite3 connection utilty" ) {
-    
+
     SUBCASE("test catching nonexistant database files") {
-        REQUIRE_THROWS_AS(util::Sqlite3Connection("test.db"), util::Sqlite3ConnectionException);
+        CHECK_THROWS_AS(util::Sqlite3Connection("test.db"),
+util::Sqlite3ConnectionException);
     }
-    
-    SUBCASE("require a database file to perform query") {
+
+    SUBCASE("CHECK a database file to perform query") {
         auto sql_con = util::Sqlite3Connection();
-        REQUIRE_THROWS_AS(sql_con.query("SELECT *"), util::Sqlite3ConnectionException);
+        CHECK_THROWS_AS(sql_con.query("SELECT *"),
+util::Sqlite3ConnectionException);
     }
-    
+
     auto path = base::resources_path()+"/motif_libraries_new/bp_steps.db";
     auto sql_con = util::Sqlite3Connection(path);
 
@@ -67,11 +114,11 @@ TEST_CASE("Test sqlite3 interface ") {
         auto row = sql_con.fetch_one("SELECT * from data_table");
         CHECK(row.size() == 5);
     }
-    
+
     SUBCASE("count number of rows in database") {
         auto count = sql_con.count();
         CHECK(count > 0);
-        
+
     }
-    
+
 }      */
