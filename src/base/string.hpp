@@ -29,6 +29,6 @@ String trim(String s);
 
 String quoted(const String &);
 
-}
+} // namespace base::string
 
 #endif /* defined(__RNAMake__string__) */

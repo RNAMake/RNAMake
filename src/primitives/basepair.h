@@ -5,6 +5,7 @@
 #ifndef RNAMAKE_PRIMITIVES_BASEPAIR_H
 #define RNAMAKE_PRIMITIVES_BASEPAIR_H
 
+#include <base/simple_string.h>
 #include <util/uuid.h>
 //#include <util/x3dna.h>
 #include <primitives/residue.h>
@@ -18,8 +19,7 @@ public:
    * Standard constructor for BasepairException
    * @param   message   Error message for basepair
    */
-  explicit BasepairException(String const &message)
-      : std::runtime_error(message) {}
+  BasepairException(String const &message) : std::runtime_error(message) {}
 };
 
 namespace primitives {
@@ -27,19 +27,26 @@ namespace primitives {
 // WC: watson crick basepair
 // GU: gu basepair
 // NC : mismatched basepair (non-conical)
-enum class BasepairType { WC, GU, NC };
+enum BasepairType { WC, GU, NC };
 
 class Basepair {
 public:
-  inline Basepair(const util::Uuid &res1_uuid, const util::Uuid &res2_uuid,
-                  const util::Uuid &uuid, const BasepairType &bp_type,
-                  String &name)
+  inline Basepair(util::Uuid const &res1_uuid, util::Uuid const &res2_uuid,
+                  util::Uuid const &uuid, BasepairType const &bp_type,
+                  base::SimpleStringCOP const &name)
       : _res1_uuid(res1_uuid), _res2_uuid(res2_uuid), _uuid(uuid),
-        _bp_type(bp_type), _name(std::move(name)) {}
+        _bp_type(bp_type), _name(name) {}
 
-  inline Basepair(Basepair const &bp) = default;
+  inline Basepair(Basepair const &bp)
+      : _res1_uuid(bp._res1_uuid), _res2_uuid(bp._res2_uuid), _uuid(bp._uuid),
+        _bp_type(bp._bp_type), _name(bp._name) {}
 
-  virtual ~Basepair() = default;
+  inline Basepair(util::Uuid const &res1_uuid, util::Uuid const &res2_uuid,
+                  util::Uuid const &uuid)
+      : _res1_uuid(res1_uuid), _res2_uuid(res2_uuid), _uuid(uuid),
+        _bp_type(BasepairType::NC), _name(base::SimpleStringOP(nullptr)) {}
+
+  virtual ~Basepair() {}
 
 protected:
   Basepair() {}
@@ -49,6 +56,7 @@ public:
    * equal operator checks whether the unique indentifier is the same
    * @param other another basepair to check if its the same
    */
+
   inline bool operator==(Basepair const &other) const {
     return _uuid == other._uuid;
   }
@@ -58,30 +66,25 @@ public:
   }
 
 public:
-  [[nodiscard]] util::Uuid const &get_partner(util::Uuid const &) const;
+  util::Uuid const &get_partner(util::Uuid const &) const;
 
-  [[nodiscard]] inline BasepairType const &get_bp_type() const {
-    return _bp_type;
-  }
+  inline BasepairType const &get_bp_type() const { return _bp_type; }
 
-  [[nodiscard]] inline util::Uuid const &get_uuid() const { return _uuid; }
+  inline util::Uuid const &get_uuid() const { return _uuid; }
 
-  [[nodiscard]] inline const String & get_name() const { return _name; }
+  inline base::SimpleStringCOP get_name() const { return _name; }
 
-  [[nodiscard]] inline util::Uuid const &get_res1_uuid() const {
-    return _res1_uuid;
-  }
+  String get_name_str() const { return _name->get_str(); }
 
-  [[nodiscard]] inline util::Uuid const &get_res2_uuid() const {
-    return _res2_uuid;
-  }
+  inline util::Uuid const &get_res1_uuid() const { return _res1_uuid; }
+
+  inline util::Uuid const &get_res2_uuid() const { return _res2_uuid; }
 
 protected:
   util::Uuid _uuid;
-  util::Uuid _res1_uuid;
-  util::Uuid _res2_uuid;
+  util::Uuid _res1_uuid, _res2_uuid;
   BasepairType _bp_type;
-  String _name;
+  base::SimpleStringCOP _name;
 };
 
 typedef Basepair PrimitiveBasepair;

@@ -5,6 +5,8 @@
 #ifndef RNAMAKE_NEW_RESIDUE_FWD_H
 #define RNAMAKE_NEW_RESIDUE_FWD_H
 
+#include <vector>
+
 namespace secondary_structure {
 
   class Residue;

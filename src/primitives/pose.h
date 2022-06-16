@@ -61,7 +61,7 @@ public:
       : structure_(rs.structure_), basepairs_(rs.basepairs_),
         end_indexes_(rs.end_indexes_), end_ids_(rs.end_ids_), name_(rs.name_) {}
 
-  Pose(String const &s) { auto spl = base::split_str_by_delimiter(s, "&"); }
+  Pose(String const &s) { auto spl = base::string::split(s, "&"); }
 
 protected:
   // let dervived classes fill in members

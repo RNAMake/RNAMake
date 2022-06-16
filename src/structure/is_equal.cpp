@@ -7,7 +7,7 @@
 //
 
 #include "structure/is_equal.h"
-#include "math/numerical.h"
+#include <math/numerical.hpp>
 
 namespace structure {
 
@@ -17,64 +17,65 @@ namespace structure {
 //          AtomOP const &a2,
 //          float tol) {
 //
-//      return math::are_xyzVector_equal(a1->get_coords(), a2->get_coords(), tol) &&
+//      return math::are_xyzVector_equal(a1->get_coords(), a2->get_coords(),
+//      tol) &&
 //             a1->get_name() == a2->get_name();
 //  }
 
-  bool
-  are_atoms_equal(
-          AtomOP const &a1,
-          AtomOP const &a2,
-          float tol) {
+bool are_atoms_equal(AtomOP const &a1, AtomOP const &a2, float tol) {
 
-      return a1->get_coords() == a2->get_coords();
+  return a1->get_coords() == a2->get_coords();
+}
+
+bool are_atom_vectors_equal(AtomOPs const &atoms_1, AtomOPs const &atoms_2,
+                            float tol) {
+
+  if (atoms_1.size() != atoms_2.size()) {
+    return false;
   }
 
+  for (int i = 0; i < atoms_1.size(); i++) {
+    int result = are_atoms_equal(atoms_1[i], atoms_2[i], tol);
+    // std::cout << atoms_1[i]->to_str() << " " << atoms_2[i]->to_str() <<
+    // std::endl;
+    if (!result) {
+      return false;
+    }
+  }
+  return true;
+}
 
-  bool
-  are_atom_vectors_equal(
-          AtomOPs const &atoms_1,
-          AtomOPs const &atoms_2,
-          float tol) {
+bool are_residues_equal(ResidueOP const &r1, ResidueOP const &r2,
+                        int check_uuids) {
 
-      if (atoms_1.size() != atoms_2.size()) { return false; }
-
-      for (int i = 0; i < atoms_1.size(); i++) {
-          int result = are_atoms_equal(atoms_1[i], atoms_2[i], tol);
-          //std::cout << atoms_1[i]->to_str() << " " << atoms_2[i]->to_str() << std::endl;
-          if (!result) { return false; }
-      }
-      return true;
-
+  if (r1->get_name() != r2->get_name()) {
+    return false;
+  }
+  if (check_uuids && r1->get_uuid() != r2->get_uuid()) {
+    return false;
   }
 
-  bool
-  are_residues_equal(
-          ResidueOP const &r1,
-          ResidueOP const &r2,
-          int check_uuids) {
+  int i = -1;
+  auto r2_atoms = r2->get_atoms();
+  bool result;
+  for (auto const &a : r1->get_atoms()) {
+    i++;
+    if (a == nullptr && r2_atoms[i] != nullptr) {
+      return false;
+    } else if (a != nullptr && r2_atoms[i] == nullptr) {
+      return false;
+    } else if (a == nullptr && r2_atoms[i] == nullptr) {
+      continue;
+    }
 
-      if (r1->get_name() != r2->get_name()) { return false; }
-      if (check_uuids && r1->get_uuid() != r2->get_uuid()) { return false; }
-
-      int i = -1;
-      auto r2_atoms = r2->get_atoms();
-      bool result;
-      for (auto const &a : r1->get_atoms()) {
-          i++;
-          if (a == nullptr && r2_atoms[i] != nullptr) { return false; }
-          else if (a != nullptr && r2_atoms[i] == nullptr) { return false; }
-          else if (a == nullptr && r2_atoms[i] == nullptr) { continue; }
-
-          result = are_atoms_equal(a, r2_atoms[i]);
-          if (!result) { return false; }
-
-      }
-
-      return true;
-
+    result = are_atoms_equal(a, r2_atoms[i]);
+    if (!result) {
+      return false;
+    }
   }
 
+  return true;
+}
 
 //  bool
 //  are_chains_equal(
@@ -129,4 +130,4 @@ namespace structure {
 //
 //  }
 
-}
+} // namespace structure

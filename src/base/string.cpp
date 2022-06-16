@@ -81,4 +81,4 @@ String trim(String s) {
 // @brief adds quotes to around the string. string -> 'string'
 String quoted(const String &s) { return String("'") + s + String("'"); }
 
-}
+} // namespace base::string

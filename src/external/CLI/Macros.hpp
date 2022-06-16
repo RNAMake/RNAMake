@@ -1,6 +1,6 @@
-// Copyright (c) 2017-2020, University of Cincinnati, developed by Henry Schreiner
-// under NSF AWARD 1414736 and by the respective contributors.
-// All rights reserved.
+// Copyright (c) 2017-2020, University of Cincinnati, developed by Henry
+// Schreiner under NSF AWARD 1414736 and by the respective contributors. All
+// rights reserved.
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
@@ -20,8 +20,9 @@
 #endif
 #endif
 #elif defined(_MSC_VER) && __cplusplus == 199711L
-// MSVC sets _MSVC_LANG rather than __cplusplus (supposedly until the standard is fully implemented)
-// Unless you use the /Zc:__cplusplus flag on Visual Studio 2017 15.7 Preview 3 or newer
+// MSVC sets _MSVC_LANG rather than __cplusplus (supposedly until the standard
+// is fully implemented) Unless you use the /Zc:__cplusplus flag on Visual
+// Studio 2017 15.7 Preview 3 or newer
 #if _MSVC_LANG >= 201402L
 #define CLI11_CPP14
 #if _MSVC_LANG > 201402L && _MSC_VER >= 1910

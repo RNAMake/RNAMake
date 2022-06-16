@@ -17,7 +17,7 @@ public:
    * Standard constructor for ResidueException
    * @param   message   Error message for residue
    */
-  ResidueException(const String &message) : std::runtime_error(message) {}
+  ResidueException(String const &message) : std::runtime_error(message) {}
 };
 
 namespace primitives {
@@ -25,14 +25,14 @@ namespace primitives {
 class Residue {
 public:
   /**
-   * @brief constructor for Residue class
+   * constructor for Residue class
    * @param   name        residue name (A, G, C, T)
    * @param   num         residue num
    * @param   chain_id    what chain does this residue belong to ("A", "B")
    * @param   uuid        residue unique indentifier
    */
   inline Residue(char name, int num, char chain_id, char i_code,
-                 const util::Uuid &uuid)
+                 util::Uuid const &uuid)
       : _name(name), _num(num), _chain_id(chain_id), _i_code(i_code),
         _uuid(uuid) {}
 
@@ -40,9 +40,11 @@ public:
    * copy construtor for residue class
    * @param  r   residue to be copied from
    */
-  Residue(const Residue &r) = default;
+  inline Residue(Residue const &r)
+      : _name(r._name), _num(r._num), _chain_id(r._chain_id), _uuid(r._uuid),
+        _i_code(r._i_code) {}
 
-  virtual ~Residue() = default;
+  virtual ~Residue() {}
 
 protected:
   // let derived class setup members
@@ -53,11 +55,11 @@ public:
    * equal operator checks whether the unique indentifier is the same
    * @param   r   another residue to check if its the same
    */
-  inline bool operator==(const Residue &other) const {
+  inline bool operator==(Residue const &other) const {
     return _uuid == other._uuid;
   }
 
-  inline bool operator!=(const Residue &other) const {
+  inline bool operator!=(Residue const &other) const {
     return _uuid != other._uuid;
   }
 
@@ -66,29 +68,29 @@ public: // getters
    * getter the chain_id, i.e. "A", "B", the id of the chain this residue
    * belongs to
    */
-  [[nodiscard]] inline char get_chain_id() const { return _chain_id; }
+  inline char get_chain_id() const { return _chain_id; }
 
   /**
    * getter for the name of the residue, i.e. "A", "G" etc
    */
-  [[nodiscard]] inline char get_name() const { return _name; }
+  inline char get_name() const { return _name; }
 
   /**
    * getter for the residue num
    */
-  [[nodiscard]] inline int get_num() const { return _num; }
+  inline int get_num() const { return _num; }
 
   /**
    * getter for the residue insertion code
    */
-  [[nodiscard]] inline char get_i_code() const { return _i_code; }
+  inline char get_i_code() const { return _i_code; }
 
   /**
    * getter for residue unique indentifier
    */
-  [[nodiscard]] inline util::Uuid const &get_uuid() const { return _uuid; }
+  inline util::Uuid const &get_uuid() const { return _uuid; }
 
-  [[nodiscard]] virtual String get_str() const { return {""}; }
+  virtual String get_str() const { return String(""); }
 
 protected:
   char _name;
