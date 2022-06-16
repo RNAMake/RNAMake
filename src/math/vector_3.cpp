@@ -9,7 +9,6 @@
 #include <base/exception.hpp>
 #include <base/string.hpp>
 
-
 namespace math {
 void vectors_from_str(const String &s, math::Vector3s &vecs /* return */) {
   Strings doubles = base::string::split(s, " ");
@@ -21,7 +20,7 @@ void vectors_from_str(const String &s, math::Vector3s &vecs /* return */) {
     base::log_and_throw<base::InputException>(msg);
   }
 
-  for (auto const &d: doubles) {
+  for (auto const &d : doubles) {
     point[pos] = std::stod(d);
     pos += 1;
     if (pos == 3) {
@@ -36,4 +35,4 @@ void vectors_from_str(const String &s, math::Vector3s &vecs /* return */) {
     base::log_and_throw<base::InputException>(msg);
   }
 }
-}// namespace math
+} // namespace math

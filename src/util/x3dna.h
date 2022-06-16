@@ -20,11 +20,11 @@
 #include <stdlib.h>
 
 // RNAMake Headers
+#include <base/paths.hpp>
 #include <base/string.hpp>
 #include <math/matrix_3x3.hpp>
 #include <math/numerical.hpp>
 #include <math/vector_3.hpp>
-#include <base/paths.hpp>
 
 namespace util {
 
@@ -228,8 +228,7 @@ public:
         }
       }
       if (i != 8) {
-        throw X3dnaException(
-            "could not properly parse X3dna ref frame line:");
+        throw X3dnaException("could not properly parse X3dna ref frame line:");
       }
     }
     String res1_type_name, res2_type_name;

@@ -37,7 +37,7 @@ public: // initiation ////////////////////////////////////////////////////////
   inline Vector3(const double &x, const double &y, const double &z)
       : _x(x), _y(y), _z(z) {}
   inline explicit Vector3(const Reals &v) : _x(v[0]), _y(v[1]), _z(v[2]) {
-    if(v.size() > 3) {
+    if (v.size() > 3) {
       String msg = "Too many input arguments!";
       base::log_and_throw<base::MathException>(msg);
     } else if (v.size() < 3) {
@@ -248,7 +248,6 @@ public:
   [[nodiscard]] inline double get_length() const {
     return std::sqrt((_x * _x) + (_y * _y) + (_z * _z));
   }
-
 
   /// @brief Length squared
   [[nodiscard]] inline double get_length_squared() const {

@@ -80,14 +80,11 @@ void PairFinder::_write_fpmst(double *morg, double *morien, FILE *rframe,
   auto reg = std::regex(
       "#\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)\\s+"
       "\\-\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)");
-  auto r = math::Matrix3x3(
-      rs[0].get_x(), rs[0].get_y(), rs[0].get_z(),
-      rs[1].get_x(), rs[1].get_y(), rs[1].get_z(),
-      rs[2].get_x(), rs[2].get_y(), rs[2].get_z());
-  auto res1 = X3dna::X3Residue{
-      bp_info->res1_num, bp_info->res1_chain_id, ' '};
-  auto res2 = X3dna::X3Residue{
-      bp_info->res2_num, bp_info->res2_chain_id, ' '};
+  auto r = math::Matrix3x3(rs[0].get_x(), rs[0].get_y(), rs[0].get_z(),
+                           rs[1].get_x(), rs[1].get_y(), rs[1].get_z(),
+                           rs[2].get_x(), rs[2].get_y(), rs[2].get_z());
+  auto res1 = X3dna::X3Residue{bp_info->res1_num, bp_info->res1_chain_id, ' '};
+  auto res2 = X3dna::X3Residue{bp_info->res2_num, bp_info->res2_chain_id, ' '};
 
   const double max_distance = 3.5;
 

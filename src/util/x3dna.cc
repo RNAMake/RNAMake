@@ -10,9 +10,9 @@
 #include <set>
 
 // RNAMake Headers
+#include <math/matrix_3x3.hpp>
 #include <util/find_pair.h>
 #include <util/x3dna.h>
-#include <math/matrix_3x3.hpp>
 
 namespace util {
 X3dna::X3dna()

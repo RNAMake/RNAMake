@@ -73,7 +73,7 @@ public:
   void to_pdb(String const &);
 
   int size() {
-//    return _histo.size();
+    //    return _histo.size();
   }
 
 private:
@@ -84,38 +84,13 @@ private:
   float _cutoff;
   int _radius;
   math::Vector3s _additions;
-//  math::ThreeDHistogram _histo;
+  //  math::ThreeDHistogram _histo;
   math::Vector3 _dummy;
 };
 
 typedef std::shared_ptr<StericLookup> StericLookupOP;
 typedef std::shared_ptr<StericLookupNew> StericLookupNewOP;
 
-}
+} // namespace util
 
 #endif /* steric_lookup_hpp */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
