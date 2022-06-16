@@ -8,17 +8,17 @@
 //#include <resources/resource_manager.h>
 //#include <segment_data_structure/segment_merger.h>
 //
-//namespace secondary_structure {
+// namespace secondary_structure {
 //
-//class SequenceUpdater {
-//public:
+// class SequenceUpdater {
+// public:
 //    SequenceUpdater(
 //            resources::ResourceManager const & rm):
 //            sm_(SegmentMerger(rm)) {}
 //
 //    ~SequenceUpdater() {}
 //
-//public:
+// public:
 //    SegmentGraphOP
 //    get_updated_graph(
 //            SegmentGraph const & sg,
@@ -27,7 +27,8 @@
 //        merged_seg_ = smr->segment;
 //        merged_seg_->set_sequence(seq);
 //        auto new_sg = std::make_shared<SegmentGraph>(sg);
-//        _update_graph_from_merged_segment(*new_sg, merged_seg_, smr->res_uuid_map);
+//        _update_graph_from_merged_segment(*new_sg, merged_seg_,
+//        smr->res_uuid_map);
 //
 //        return new_sg;
 //    }
@@ -43,7 +44,7 @@
 //
 //    }
 //
-//private:
+// private:
 //    void
 //    _update_graph_from_merged_segment(
 //            SegmentGraph & sg,
@@ -66,7 +67,7 @@
 //    }
 //
 //
-//private:
+// private:
 //    SegmentMerger sm_;
 //    SegmentOP merged_seg_;
 //};
@@ -74,10 +75,10 @@
 //
 //}
 //
-//namespace structure {
+// namespace structure {
 //
-//class SequenceUpdater {
-//public:
+// class SequenceUpdater {
+// public:
 //    SequenceUpdater(
 //            resources::ResourceManager const & rm):
 //            rm_(rm),
@@ -85,7 +86,7 @@
 //
 //    ~SequenceUpdater() {}
 //
-//public:
+// public:
 //
 //    SegmentGraphOP
 //    get_updated_graph(
@@ -97,14 +98,15 @@
 //        ss_su_.update_graph(*ss_sg, seq);
 //        for(auto const & n : *ss_sg) {
 //            //std::cout << n->data().get_sequence() << std::endl;
-//            auto seg = rm_.get_segment(StringStringMap{{"end_id", n->data().get_end_id(0)->get_str()}});
+//            auto seg = rm_.get_segment(StringStringMap{{"end_id",
+//            n->data().get_end_id(0)->get_str()}});
 //            sg_new->replace_segment(n->index(), *seg, false);
 //        }
 //        return sg_new;
 //    }
 //
 //
-//private:
+// private:
 //    resources::ResourceManager const & rm_;
 //    secondary_structure::SequenceUpdater ss_su_;
 //

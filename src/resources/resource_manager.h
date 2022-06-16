@@ -15,13 +15,13 @@
 
 //RNAMake Headers
 #include "base/types.h"
+#include "motif/motif_ensemble.h"
 #include "motif/motif_factory.h"
 #include "motif/motif_state.h"
-#include "motif/motif_ensemble.h"
-#include "resources/segment_sqlite_library.h"
-#include "resources/motif_state_sqlite_library.h"
-#include "resources/motif_state_ensemble_sqlite_library.h"
 #include "resources/added_motif_library.h"
+#include "resources/motif_state_ensemble_sqlite_library.h"
+#include "resources/motif_state_sqlite_library.h"
+#include "resources/segment_sqlite_library.h"
 
 
 namespace resources {

@@ -14,39 +14,29 @@
 #include "eternabot/feature_generator.h"
 
 namespace eternabot {
-    
+
 class Strategy {
 public:
-    
-    Strategy() {}
-    
-    virtual
-    ~Strategy() {}
-    
+  Strategy() {}
+
+  virtual ~Strategy() {}
+
 public:
-    
-    virtual
-    float
-    score(FeaturesOP const &) = 0;
-    
+  virtual float score(FeaturesOP const &) = 0;
+
 public:
-    inline
-    float
-    mean() const { return mean_; }
-    
-    inline
-    float
-    stdev() const { return stdev_; }
-    
+  inline float mean() const { return mean_; }
+
+  inline float stdev() const { return stdev_; }
+
 protected:
-    float mean_, stdev_;
-    Reals params_;
-    
+  float mean_, stdev_;
+  Reals params_;
 };
 
 typedef std::shared_ptr<Strategy> StrategyOP;
-typedef std::vector<StrategyOP>   StrategyOPs;
-    
-}
+typedef std::vector<StrategyOP> StrategyOPs;
+
+} // namespace eternabot
 
 #endif /* defined(__RNAMake__strategy__) */

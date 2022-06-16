@@ -8,5 +8,4 @@
 
 #include "secondary_structure/chain.h"
 
-namespace secondary_structure {
-}
+namespace secondary_structure {}

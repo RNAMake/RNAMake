@@ -9,14 +9,14 @@
 #ifndef RNAMake_types_h
 #define RNAMake_types_h
 
+#include <filesystem>
 #include <map>
 #include <memory>
 #include <string>
 #include <unordered_set>
 #include <vector>
-#include <filesystem>
 
-// renaming basic types to correspond with their use 
+// renaming basic types to correspond with their use
 using Index = int;
 using Size = size_t;
 using Flag = bool;
@@ -32,11 +32,9 @@ using Strings = std::vector<String>;
 
 using StringOP = std::shared_ptr<String>;
 
-
 typedef std::map<String, int> StringIntMap;
 typedef std::map<String, float> StringFloatMap;
 typedef std::map<String, String> StringStringMap;
-
 
 // to keep track of data that may be many different types
 // TODO unclear if I will use this?
@@ -45,12 +43,12 @@ enum class DataType {
   FLOAT,
   STRING,
   BOOL,
-  STRINGS,     // vector of string
-  INTS,        // vector of ints
-  FLOATS,      // vector of floats
-  BOOLS,       // vector of bools
-  XYZ_VECTOR,  // {x,y,z} coords
-  XYZ_MATRIX   // 3x3 matrix
+  STRINGS,    // vector of string
+  INTS,       // vector of ints
+  FLOATS,     // vector of floats
+  BOOLS,      // vector of bools
+  XYZ_VECTOR, // {x,y,z} coords
+  XYZ_MATRIX  // 3x3 matrix
 };
 
 typedef std::vector<DataType> DataTypes;

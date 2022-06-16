@@ -9,205 +9,123 @@
 #ifndef __RNAMake__sec_rna_structure__
 #define __RNAMake__sec_rna_structure__
 
-#include <stdio.h>
 #include <algorithm>
+#include <stdio.h>
 
-
-//RNAMake
+// RNAMake
 #include "secondary_structure/basepair.h"
 #include "secondary_structure/structure.h"
 
 namespace secondary_structure {
 
-
 class RNAStructure {
 public:
-    RNAStructure():
-    structure_(StructureOP()),
-    basepairs_(BasepairOPs()),
-    ends_(BasepairOPs()),
-    name_(""),
-    path_(""),
-    score_(0),
-    end_ids_(Strings())
-    {}
-    
-    RNAStructure(
-        StructureOP const & structure,
-        BasepairOPs const & basepairs,
-        BasepairOPs const & ends):
-    structure_(structure),
-    basepairs_(basepairs),
-    ends_(ends),
-    name_(""),
-    path_(""),
-    score_(0),
-    end_ids_(Strings())
-    {}
-    
-    RNAStructure(
-        StructureOP const & structure,
-        BasepairOPs const & basepairs,
-        BasepairOPs const & ends,
-        Strings const & end_ids,
-        String const & name,
-        String const & path,
-        float score):
-    structure_(structure),
-    basepairs_(basepairs),
-    ends_(ends),
-    name_(name),
-    path_(path),
-    score_(score),
-    end_ids_(end_ids)
-    {}
-  
-    inline
-    RNAStructure(
-        RNAStructure const & rs):
-    structure_( std::make_shared<Structure>(*rs.structure_)),
-    basepairs_( BasepairOPs(rs.basepairs_.size()) ),
-    ends_( BasepairOPs(rs.ends_.size()) )
-    {
-    
-        int i = 0;
-        for(auto const & bp : rs.basepairs_) {
-            auto new_bp = std::make_shared<Basepair>(structure_->get_residue(bp->res1()->uuid()),
-                                                     structure_->get_residue(bp->res2()->uuid()),
-                                                     bp->uuid());
-            basepairs_[i] = new_bp;
-            i++;
-        }
-        
-        i = 0;
-        for(auto const & end : rs.ends_) {
-            int pos = (int)(std::find(rs.basepairs_.begin(),
-                                      rs.basepairs_.end(), end) - rs.basepairs_.begin());
-            ends_[i] = basepairs_[pos];
-            i++;
-            
-        }
-        
-        name_    = rs.name_;
-        path_    = rs.path_;
-        end_ids_ = rs.end_ids_;
-    
+  RNAStructure()
+      : structure_(StructureOP()), basepairs_(BasepairOPs()),
+        ends_(BasepairOPs()), name_(""), path_(""), score_(0),
+        end_ids_(Strings()) {}
+
+  RNAStructure(StructureOP const &structure, BasepairOPs const &basepairs,
+               BasepairOPs const &ends)
+      : structure_(structure), basepairs_(basepairs), ends_(ends), name_(""),
+        path_(""), score_(0), end_ids_(Strings()) {}
+
+  RNAStructure(StructureOP const &structure, BasepairOPs const &basepairs,
+               BasepairOPs const &ends, Strings const &end_ids,
+               String const &name, String const &path, float score)
+      : structure_(structure), basepairs_(basepairs), ends_(ends), name_(name),
+        path_(path), score_(score), end_ids_(end_ids) {}
+
+  inline RNAStructure(RNAStructure const &rs)
+      : structure_(std::make_shared<Structure>(*rs.structure_)),
+        basepairs_(BasepairOPs(rs.basepairs_.size())),
+        ends_(BasepairOPs(rs.ends_.size())) {
+
+    int i = 0;
+    for (auto const &bp : rs.basepairs_) {
+      auto new_bp = std::make_shared<Basepair>(
+          structure_->get_residue(bp->res1()->uuid()),
+          structure_->get_residue(bp->res2()->uuid()), bp->uuid());
+      basepairs_[i] = new_bp;
+      i++;
     }
-    
-    virtual
-    ~RNAStructure() {}
-    
-public:
-    
-    BasepairOPs
-    get_basepair(
-        String const &);
 
-    BasepairOPs
-    get_basepair(
-        util::Uuid const &);
+    i = 0;
+    for (auto const &end : rs.ends_) {
+      int pos =
+          (int)(std::find(rs.basepairs_.begin(), rs.basepairs_.end(), end) -
+                rs.basepairs_.begin());
+      ends_[i] = basepairs_[pos];
+      i++;
+    }
 
-    BasepairOPs
-    get_basepair(
-        ResidueOP const &,
-        ResidueOP const &);
+    name_ = rs.name_;
+    path_ = rs.path_;
+    end_ids_ = rs.end_ids_;
+  }
 
-    BasepairOPs
-    get_basepair(
-        util::Uuid const &,
-        util::Uuid const &);
+  virtual ~RNAStructure() {}
 
 public:
-    BasepairOP
-    get_end(
-            String const &);
+  BasepairOPs get_basepair(String const &);
 
-    virtual
-    void
-    replace_sequence(
-        String const &);
+  BasepairOPs get_basepair(util::Uuid const &);
 
-public: //wrappers for structure
+  BasepairOPs get_basepair(ResidueOP const &, ResidueOP const &);
 
-    inline
-    ResidueOP
-    get_residue(
-        int num,
-        String const & chain_id,
-        String const & i_code) {
-        return structure_->get_residue(num, chain_id, i_code);
-    }
+  BasepairOPs get_basepair(util::Uuid const &, util::Uuid const &);
 
-    inline
-    ResidueOP
-    get_residue(
-        util::Uuid const & uuid) {
-        return structure_->get_residue(uuid);
-    }
+public:
+  BasepairOP get_end(String const &);
 
-    inline
-    String
-    sequence() { return structure_->sequence(); }
+  virtual void replace_sequence(String const &);
 
-    inline
-    String
-    dot_bracket() { return structure_->dot_bracket(); }
+public: // wrappers for structure
+  inline ResidueOP get_residue(int num, String const &chain_id,
+                               String const &i_code) {
+    return structure_->get_residue(num, chain_id, i_code);
+  }
 
-    inline
-    ChainOPs const &
-    chains() { return structure_->chains(); }
+  inline ResidueOP get_residue(util::Uuid const &uuid) {
+    return structure_->get_residue(uuid);
+  }
 
-    inline
-    ResidueOPs
-    residues() { return structure_->residues(); }
+  inline String sequence() { return structure_->sequence(); }
 
-    inline
-    StructureOP
-    structure() { return structure_; }
+  inline String dot_bracket() { return structure_->dot_bracket(); }
 
-public: //getters
+  inline ChainOPs const &chains() { return structure_->chains(); }
 
-    inline
-    BasepairOPs const &
-    basepairs() { return basepairs_; }
+  inline ResidueOPs residues() { return structure_->residues(); }
 
-    inline
-    BasepairOPs const &
-    ends() { return ends_; }
+  inline StructureOP structure() { return structure_; }
 
-    inline
-    String const &
-    name() { return name_; }
+public: // getters
+  inline BasepairOPs const &basepairs() { return basepairs_; }
 
-    inline
-    Strings const &
-    end_ids() { return end_ids_; }
+  inline BasepairOPs const &ends() { return ends_; }
 
-public: //setters
+  inline String const &name() { return name_; }
 
-    inline
-    void
-    name(String const & name) { name_ = name; }
+  inline Strings const &end_ids() { return end_ids_; }
 
-    inline
-    void
-    path(String const & path) { path_ = path; }
+public: // setters
+  inline void name(String const &name) { name_ = name; }
 
-    inline
-    void
-    end_ids(Strings const & end_ids) { end_ids_ = end_ids; }
+  inline void path(String const &path) { path_ = path; }
+
+  inline void end_ids(Strings const &end_ids) { end_ids_ = end_ids; }
 
 protected:
-    StructureOP structure_;
-    BasepairOPs basepairs_, ends_;
-    String name_, path_;
-    Strings end_ids_;
-    float score_;
-    
+  StructureOP structure_;
+  BasepairOPs basepairs_, ends_;
+  String name_, path_;
+  Strings end_ids_;
+  float score_;
 };
 
 typedef std::shared_ptr<RNAStructure> RNAStructureOP;
-    
-}
+
+} // namespace secondary_structure
 
 #endif /* defined(__RNAMake__rna_structure__) */

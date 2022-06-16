@@ -21,64 +21,52 @@ namespace resources {
  */
 class AddedMotifLibraryException : public std::runtime_error {
 public:
-    /**
-     * Standard constructor for AddedMotifLibraryException
-     * @param   message   Error message for added motif library
-     */
-    AddedMotifLibraryException(String const & message) :
-            std::runtime_error(message) {}
+  /**
+   * Standard constructor for AddedMotifLibraryException
+   * @param   message   Error message for added motif library
+   */
+  AddedMotifLibraryException(String const &message)
+      : std::runtime_error(message) {}
 };
-
 
 class AddedMotifLibrary {
 public:
-    AddedMotifLibrary() :
-            motifs_(motif::MotifOPs()) {}
+  AddedMotifLibrary() : motifs_(motif::MotifOPs()) {}
 
-    ~AddedMotifLibrary() {}
+  ~AddedMotifLibrary() {}
 
 public:
-
-    void
-    add_motif(
-            motif::MotifOP const & m) {
-        if (_find_motifs(m->name(), m->end_ids()[0], m->ends()[0]->name()).size() != 0) {
-            throw AddedMotifLibraryException("trying to add the same motif twice to library");
-        }
-
-        motifs_.push_back(m);
+  void add_motif(motif::MotifOP const &m) {
+    if (_find_motifs(m->name(), m->end_ids()[0], m->ends()[0]->name()).size() !=
+        0) {
+      throw AddedMotifLibraryException(
+          "trying to add the same motif twice to library");
     }
 
-    motif::MotifOP
-    get(
-            String const & name = dummy_name,
-            String const & end_id = dummy_end_id,
-            String const & end_name = dummy_name);
+    motifs_.push_back(m);
+  }
 
-    motif::MotifOPs
-    get_multi(
-            String const & name = dummy_name,
-            String const & end_id = dummy_end_id,
-            String const & end_name = dummy_name);
+  motif::MotifOP get(String const &name = dummy_name,
+                     String const &end_id = dummy_end_id,
+                     String const &end_name = dummy_name);
 
-    int
-    contains(
-            String const & name = dummy_name,
-            String const & end_id = dummy_end_id,
-            String const & end_name = dummy_name);
+  motif::MotifOPs get_multi(String const &name = dummy_name,
+                            String const &end_id = dummy_end_id,
+                            String const &end_name = dummy_name);
+
+  int contains(String const &name = dummy_name,
+               String const &end_id = dummy_end_id,
+               String const &end_name = dummy_name);
 
 private:
-
-    motif::MotifOPs
-    _find_motifs(
-            String const & name = dummy_name,
-            String const & end_id = dummy_end_id,
-            String const & end_name = dummy_name);
+  motif::MotifOPs _find_motifs(String const &name = dummy_name,
+                               String const &end_id = dummy_end_id,
+                               String const &end_name = dummy_name);
 
 private:
-    motif::MotifOPs motifs_;
+  motif::MotifOPs motifs_;
 };
 
-}
+} // namespace resources
 
 #endif /* defined(__RNAMake__added_motif_library__) */

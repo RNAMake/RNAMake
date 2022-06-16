@@ -35,14 +35,14 @@ inline String demangle(String trace) {
     Size maxName = 1024;
     int demangleStatus;
 
-    char* demangledName = (char*)malloc(maxName);
+    char *demangledName = (char *)malloc(maxName);
     if ((demangledName =
              abi::__cxa_demangle(mangled_trace.c_str(), demangledName, &maxName,
                                  &demangleStatus)) &&
         demangleStatus == 0) {
       trace =
           trace.substr(0, begin) + demangledName +
-          trace.substr(end);  // the demangled name is now in our trace string
+          trace.substr(end); // the demangled name is now in our trace string
     }
     free(demangledName);
   }
@@ -73,8 +73,9 @@ void print_backtrace() {
   try {
     // try once to re-throw currently active exception
     tried_throw++;
-    if (tried_throw == 0) throw;
-  } catch (const std::exception& e) {
+    if (tried_throw == 0)
+      throw;
+  } catch (const std::exception &e) {
     std::cerr << __FUNCTION__
               << " caught unhandled exception. what(): " << e.what()
               << std::endl;
@@ -84,12 +85,12 @@ void print_backtrace() {
   }
 
   size_t const callstack_size = 128;
-  void* callstack[callstack_size];
+  void *callstack[callstack_size];
   const int nMaxFrames = sizeof(callstack) / sizeof(callstack[0]);
   int i = 0;
   int frames = backtrace(callstack, nMaxFrames);
   std::cout << frames << std::endl;
-  char** strs = backtrace_symbols(callstack, frames);
+  char **strs = backtrace_symbols(callstack, frames);
   // std::cerr << utility::CSI_Magenta; // set color of cerr to magenta
   for (i = 3; i < frames; ++i) {
     std::cerr << demangle(strs[i]).c_str() << std::endl;
@@ -112,8 +113,9 @@ void save_backtrace() {
   try {
     // try once to re-throw currently active exception
     tried_throw++;
-    if (tried_throw == 0) throw;
-  } catch (const std::exception& e) {
+    if (tried_throw == 0)
+      throw;
+  } catch (const std::exception &e) {
     outfile << __FUNCTION__
             << " caught unhandled exception. what(): " << e.what() << std::endl;
   } catch (...) {
@@ -122,11 +124,11 @@ void save_backtrace() {
   }
 
   size_t const callstack_size = 128;
-  void* callstack[callstack_size];
+  void *callstack[callstack_size];
   const int nMaxFrames = sizeof(callstack) / sizeof(callstack[0]);
   int i = 0;
   int frames = backtrace(callstack, nMaxFrames);
-  char** strs = backtrace_symbols(callstack, frames);
+  char **strs = backtrace_symbols(callstack, frames);
 
   for (i = 3; i < frames; ++i) {
     outfile << demangle(strs[i]).c_str() << std::endl;
@@ -137,4 +139,4 @@ void save_backtrace() {
        << outfile_name;
 }
 
-}
+} // namespace base

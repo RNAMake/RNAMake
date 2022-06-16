@@ -14,16 +14,14 @@
 namespace data_structure {
 namespace tree {
 
-template<class DataType>
-class TreeNode;
+template <class DataType> class TreeNode;
 
-template<class DataType>
-using TreeNodeOP  = std::shared_ptr<TreeNode<DataType>>;
+template <class DataType>
+using TreeNodeOP = std::shared_ptr<TreeNode<DataType>>;
 
-template<class DataType>
-using TreeNodeOPs = std::vector<TreeNodeOP<DataType>>;
+template <class DataType> using TreeNodeOPs = std::vector<TreeNodeOP<DataType>>;
 
-}
-}
+} // namespace tree
+} // namespace data_structure
 
 #endif

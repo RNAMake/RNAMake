@@ -5,7 +5,4 @@
 
 #include "primitives/structure.h"
 
-namespace primitives {
-
-
-}
+namespace primitives {}

@@ -19,45 +19,36 @@ namespace secondary_structure {
 
 class SecondaryStructureTree {
 public:
-    SecondaryStructureTree():
-    tree_(data_structure::tree::TreeStatic<MotifOP>())
-    {}
-    
-    
-    ~SecondaryStructureTree() {}
-    
-public: //iterators
-    
-    typedef typename data_structure::tree::TreeStatic<MotifOP>::iterator iterator;
-    typedef typename data_structure::tree::TreeStatic<MotifOP>::const_iterator const_iterator;
-    
-    iterator begin() { return tree_.begin(); }
-    iterator end()   { return tree_.end(); }
-    
-    const_iterator begin() const { return tree_.begin(); }
-    const_iterator end()   const { return tree_.end(); }
-    
+  SecondaryStructureTree()
+      : tree_(data_structure::tree::TreeStatic<MotifOP>()) {}
+
+  ~SecondaryStructureTree() {}
+
+public: // iterators
+  typedef typename data_structure::tree::TreeStatic<MotifOP>::iterator iterator;
+  typedef typename data_structure::tree::TreeStatic<MotifOP>::const_iterator
+      const_iterator;
+
+  iterator begin() { return tree_.begin(); }
+  iterator end() { return tree_.end(); }
+
+  const_iterator begin() const { return tree_.begin(); }
+  const_iterator end() const { return tree_.end(); }
+
 public:
-    size_t
-    size() { return tree_.size(); }
-    
-    int
-    add_motif(
-        MotifOP const & m,
-        int parent_index = -1,
-        int parent_end_index = -1);
-    
+  size_t size() { return tree_.size(); }
+
+  int add_motif(MotifOP const &m, int parent_index = -1,
+                int parent_end_index = -1);
+
 private:
-    data_structure::tree::TreeStatic<MotifOP> tree_;
+  data_structure::tree::TreeStatic<MotifOP> tree_;
 };
 
 typedef std::shared_ptr<SecondaryStructureTree> SecondaryStructureTreeOP;
 
-SecondaryStructureTreeOP
-tree_from_pose(PoseOP const &);
-    
+SecondaryStructureTreeOP tree_from_pose(PoseOP const &);
 
-    
-}
+} // namespace secondary_structure
 
 #endif /* defined(__RNAMake__secondary_structure_tree__) */

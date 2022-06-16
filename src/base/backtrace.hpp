@@ -19,8 +19,8 @@
 #include <execinfo.h>
 #endif
 
-#include <cxxabi.h>
 #include <cstdio>
+#include <cxxabi.h>
 
 #include <fstream>
 #include <iostream>
@@ -37,5 +37,5 @@ void print_backtrace();
 
 void save_backtrace();
 
-}  // namespace base
-#endif  // BASE_LIB_BACKTRACE_H
+} // namespace base
+#endif // BASE_LIB_BACKTRACE_H

@@ -11,46 +11,37 @@
 
 #include <stdio.h>
 
-//RNAMake Headers
+// RNAMake Headers
 #include "structure/residue_type_set.h"
 
 namespace structure {
 
 class ResidueTypeSetManager {
 public:
-    static ResidueTypeSetManager & getInstance() {
-        static ResidueTypeSetManager instance;
-        return instance;
-    }
+  static ResidueTypeSetManager &getInstance() {
+    static ResidueTypeSetManager instance;
+    return instance;
+  }
 
 public:
-
-    inline
-    ResidueTypeSet const &
-    residue_type_set() {
-        return rts_;
-    }
-
+  inline ResidueTypeSet const &residue_type_set() { return rts_; }
 
 protected:
-    ResidueTypeSetManager() { //Prevent construction
-        rts_ = ResidueTypeSet();
-        //std::cout << "created\n"; should only see this once!!!
-    }
+  ResidueTypeSetManager() { // Prevent construction
+    rts_ = ResidueTypeSet();
+    // std::cout << "created\n"; should only see this once!!!
+  }
 
-    ResidueTypeSetManager(ResidueTypeSetManager const &); //Prevent construction
-    void operator=(ResidueTypeSetManager const &);
-
-private:
-    ~ResidueTypeSetManager() {}
+  ResidueTypeSetManager(ResidueTypeSetManager const &); // Prevent construction
+  void operator=(ResidueTypeSetManager const &);
 
 private:
-    ResidueTypeSet rts_;
+  ~ResidueTypeSetManager() {}
 
+private:
+  ResidueTypeSet rts_;
 };
 
-}
-
-
+} // namespace structure
 
 #endif /* defined(__RNAMake__resource_manager__) */

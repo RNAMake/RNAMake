@@ -11,22 +11,19 @@ namespace thermo_fluctuation {
 
 class ThermoFlucRelax {
 public:
-    ThermoFlucRelax() :
-            sampler_(ThermoFlucSampler()) {
-        sampler_.temperature(1000);
+  ThermoFlucRelax() : sampler_(ThermoFlucSampler()) {
+    sampler_.temperature(1000);
+  }
 
-    }
-
-    ~ThermoFlucRelax() {}
+  ~ThermoFlucRelax() {}
 
 public:
-    void
-    run_with_graph();
+  void run_with_graph();
 
 private:
-    ThermoFlucSampler sampler_;
+  ThermoFlucSampler sampler_;
 };
 
-}
+} // namespace thermo_fluctuation
 
-#endif //TEST_THERMO_FLUC_RELAX_H
+#endif // TEST_THERMO_FLUC_RELAX_H

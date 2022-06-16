@@ -9,9 +9,9 @@
 //#include "structure/residue_type_set_manager.h"
 //#include "resources/resource_manager.h"
 //
-//namespace resources {
+// namespace resources {
 //
-//Manager::Manager() {
+// Manager::Manager() {
 //    mf_ = motif::MotifFactory();
 //    added_motifs_ = AddedMotifLibrary();
 //    mlibs_ = std::map<String, MotifSqliteLibraryOP>();
@@ -26,32 +26,35 @@
 //
 //    for (auto const & kv : MotifStateSqliteLibrary::get_libnames()) {
 //        //if(kv.first == "bp_steps") { continue; }
-//        ms_libs_[kv.first] = std::make_shared<MotifStateSqliteLibrary>(kv.first);
+//        ms_libs_[kv.first] =
+//        std::make_shared<MotifStateSqliteLibrary>(kv.first);
 //    }
 //
 //    for (auto const & kv : MotifStateEnsembleSqliteLibrary::get_libnames()) {
-//        mse_libs_[kv.first] = std::make_shared<MotifStateEnsembleSqliteLibrary>(kv.first);
+//        mse_libs_[kv.first] =
+//        std::make_shared<MotifStateEnsembleSqliteLibrary>(kv.first);
 //    }
 //
 //}
 //
 //
-//// getting functions  //////////////////////////////////////////////////////////////////////////////
+//// getting functions
+/////////////////////////////////////////////////////////////////////////////////
 //
-//motif::MotifOP
-//Manager::bp_step(
+// motif::MotifOP
+// Manager::bp_step(
 //        String const & end_id) {
 //    return mlibs_["new_bp_steps"]->get("", end_id);
 //}
 //
-//motif::MotifStateOP
-//Manager::bp_step_state(
+// motif::MotifStateOP
+// Manager::bp_step_state(
 //        String const & end_id) {
 //    return bp_step(end_id)->get_state();
 //}
 //
-//motif::MotifOP
-//Manager::motif(
+// motif::MotifOP
+// Manager::motif(
 //        String const & name,
 //        String const & end_id,
 //        String const & end_name) {
@@ -68,12 +71,13 @@
 //
 //    throw ResourceManagerException(
 //            "cannot find motif in resource manager with search: "
-//                    "name=" + name + " end_id=" + end_id + " end_name= " + end_name);
+//                    "name=" + name + " end_id=" + end_id + " end_name= " +
+//                    end_name);
 //
 //}
 //
-//motif::MotifStateOP
-//Manager::motif_state(
+// motif::MotifStateOP
+// Manager::motif_state(
 //        String const & name,
 //        String const & end_id,
 //        String const & end_name) {
@@ -90,11 +94,12 @@
 //
 //    throw ResourceManagerException(
 //            "cannot find motif state in resource manager with search: "
-//                    "name=" + name + " end_id=" + end_id + " end_name= " + end_name);
+//                    "name=" + name + " end_id=" + end_id + " end_name= " +
+//                    end_name);
 //}
 //
-//motif::MotifStateEnsembleOP
-//Manager::motif_state_ensemble(
+// motif::MotifStateEnsembleOP
+// Manager::motif_state_ensemble(
 //        String const & name) {
 //
 //    for (auto const & kv : mse_libs_) {
@@ -104,15 +109,17 @@
 //    }
 //
 //    throw ResourceManagerException(
-//            "cannot find motif state ensemble in resource manager with search: "
+//            "cannot find motif state ensemble in resource manager with search:
+//            "
 //                    "name=" + name);
 //}
 //
 //
-//// add functions  //////////////////////////////////////////////////////////////////////////////////
+//// add functions
+/////////////////////////////////////////////////////////////////////////////////////
 //
-//structure::RNAStructureOP
-//Manager::get_structure(
+// structure::RNAStructureOP
+// Manager::get_structure(
 //        String const & path,
 //        String name,
 //        int force_num_chains) {
@@ -140,8 +147,8 @@
 //}
 //
 //
-//void
-//Manager::add_motif(
+// void
+// Manager::add_motif(
 //        String const & path,
 //        String name,
 //        util::MotifType mtype) {
@@ -162,7 +169,8 @@
 //
 //    if (motifs.size() == 0) {
 //        throw ResourceManagerException(
-//                "attempted to add motif from path " + path + " unforunately it has no viable "
+//                "attempted to add motif from path " + path + " unforunately it
+//                has no viable "
 //                        "basepair ends to be build from ");
 //    }
 //
@@ -177,8 +185,8 @@
 //
 //}
 //
-//void
-//Manager::add_motif(
+// void
+// Manager::add_motif(
 //        motif::MotifOP const & m,
 //        String name) {
 //
@@ -190,15 +198,15 @@
 //        auto m_added = mf_.can_align_motif_to_end(m, i);
 //        if (m_added == nullptr) {
 //            //TODO switch this to logging system
-//            std::cout << "RESOURCE MANAGER WARNING: cannot create standardized motif for ";
-//            std::cout << m->name() << " with end" << m->ends()[i]->name() << std::endl;
-//            continue;
+//            std::cout << "RESOURCE MANAGER WARNING: cannot create standardized
+//            motif for "; std::cout << m->name() << " with end" <<
+//            m->ends()[i]->name() << std::endl; continue;
 //        }
 //        m_added = mf_.align_motif_to_common_frame(m_added, i);
 //        if (m_added == nullptr) {
-//            std::cout << "RESOURCE MANAGER WARNING: cannot create standardized motif for ";
-//            std::cout << m->name() << " with end" << m->ends()[i]->name() << std::endl;
-//            continue;
+//            std::cout << "RESOURCE MANAGER WARNING: cannot create standardized
+//            motif for "; std::cout << m->name() << " with end" <<
+//            m->ends()[i]->name() << std::endl; continue;
 //        }
 //
 //        motifs.push_back(m_added);
@@ -207,7 +215,8 @@
 //
 //    if (motifs.size() == 0) {
 //        throw ResourceManagerException(
-//                "attempted to add motif " + m->name() + " unforunately it has no viable "
+//                "attempted to add motif " + m->name() + " unforunately it has
+//                no viable "
 //                        "basepair ends to be build from ");
 //    }
 //
@@ -222,8 +231,8 @@
 //}
 //
 //
-//void
-//Manager::register_motif(
+// void
+// Manager::register_motif(
 //        motif::MotifOP const & m) {
 //
 //    if(m->name() == "") {
@@ -237,8 +246,8 @@
 //
 //}
 //
-//void
-//Manager::register_extra_motif_ensembles(
+// void
+// Manager::register_extra_motif_ensembles(
 //        String const & f_name) {
 //
 //    auto lines = base::get_lines_from_file(f_name);
@@ -255,13 +264,14 @@
 //            } catch (AddedMotifLibraryException) {}
 //        }
 //
-//        std::cout << "RESOURCE MANAGER: motif ensemble for " << spl[0] << " registered" << std::endl;
+//        std::cout << "RESOURCE MANAGER: motif ensemble for " << spl[0] << "
+//        registered" << std::endl;
 //    }
 //
 //}
 //
-//int
-//Manager::has_supplied_motif_ensemble(
+// int
+// Manager::has_supplied_motif_ensemble(
 //        String const & m_name,
 //        String const & end_name) {
 //
@@ -271,16 +281,17 @@
 //
 //}
 //
-//motif::MotifEnsembleOP const &
-//Manager::get_supplied_motif_ensemble(
+// motif::MotifEnsembleOP const &
+// Manager::get_supplied_motif_ensemble(
 //        String const & m_name,
 //        String const & end_name) {
 //
 //    auto key = m_name + "-" + end_name;
 //    if (extra_me_.find(key) == extra_me_.end()) {
 //        throw ResourceManagerException(
-//                "motif ensemble with name: " + m_name + " and end_name: " + end_name +
-//                " has not been supplied please use register_extra_motif_ensembles to "
+//                "motif ensemble with name: " + m_name + " and end_name: " +
+//                end_name + " has not been supplied please use
+//                register_extra_motif_ensembles to "
 //                        "do so");
 //    }
 //

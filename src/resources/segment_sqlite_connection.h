@@ -9,55 +9,47 @@
 #ifndef __RNAMake__segment_sqlite3_connection__
 #define __RNAMake__segment_sqlite3_connection__
 
-#include <stdio.h>
 #include <iostream>
 #include <sqlite3.h>
+#include <stdio.h>
 
-//RNAMake Libraries
+// RNAMake Libraries
 #include "base/types.hpp"
 #include "util/sqlite3_connection.h"
 
 namespace resources {
 
 struct SegmentSqliteData {
-    SegmentSqliteData() :
-            data(""), name(""), end_name(""), end_id(""),
-            id("0") {}
+  SegmentSqliteData() : data(""), name(""), end_name(""), end_id(""), id("0") {}
 
-    String data, name, end_name, end_id, id;
-
+  String data, name, end_name, end_id, id;
 };
 
 typedef std::shared_ptr<SegmentSqliteData> SegmentSqliteDataOP;
 
 class SegmentSqliteConnection : public util::Sqlite3Connection {
 public:
-    SegmentSqliteConnection() {}
+  SegmentSqliteConnection() {}
 
-    SegmentSqliteConnection(
-            String const & path):
-            util::Sqlite3Connection(path),
-            data_(std::make_shared<SegmentSqliteData>()) {}
+  SegmentSqliteConnection(String const &path)
+      : util::Sqlite3Connection(path),
+        data_(std::make_shared<SegmentSqliteData>()) {}
+
 public:
+  SegmentSqliteDataOP const &next();
 
-    SegmentSqliteDataOP const &
-    next();
+  SegmentSqliteDataOP const &contains();
 
-    SegmentSqliteDataOP const &
-    contains();
-
-    inline
-    void
-    clear() {
-        if (rc_ == SQLITE_ROW || rc_ == SQLITE_DONE) {
-            sqlite3_finalize(stmt_);
-        }
+  inline void clear() {
+    if (rc_ == SQLITE_ROW || rc_ == SQLITE_DONE) {
+      sqlite3_finalize(stmt_);
     }
+  }
 
 private:
-    SegmentSqliteDataOP data_;
+  SegmentSqliteDataOP data_;
 };
 
-}
+} // namespace resources
 
 #endif /* defined(__RNAMake__segment_sqlite3_connection__) */
