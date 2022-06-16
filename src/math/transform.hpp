@@ -21,7 +21,7 @@ class Transform {
   friend class Matrix3x3;
 
 public:
-   inline void dot(Matrix3x3 const &b, Transform &c) const {
+  inline void dot(Matrix3x3 const &b, Transform &c) const {
     c._xx = _xx * b.get_xx() + _xy * b.get_yx() + _xz * b.get_zx();
     c._xy = _xx * b.get_xy() + _xy * b.get_yy() + _xz * b.get_zy();
     c._xz = _xx * b.get_xz() + _xy * b.get_yz() + _xz * b.get_zz();
@@ -35,24 +35,20 @@ public:
     c._zz = _zx * b.get_xz() + _zy * b.get_yz() + _zz * b.get_zz();
   }
 
- public:  // initialization ////////////////////////////////////////////////////
+public: // initialization ////////////////////////////////////////////////////
   /// @brief Default constructor
   inline Transform()
-      : _xx(1.0), _yx(0.0), _zx(0.0), _px(0.0),
-        _xy(0.0), _yy(1.0), _zy(0.0), _py(0.0),
-        _xz(0.0), _yz(0.0), _zz(1.0), _pz(0.0) {}
+      : _xx(1.0), _yx(0.0), _zx(0.0), _px(0.0), _xy(0.0), _yy(1.0), _zy(0.0),
+        _py(0.0), _xz(0.0), _yz(0.0), _zz(1.0), _pz(0.0) {}
 
-  inline Transform(
-          const double &xx, const double &xy, const double &xz,
-          const double &yx, const double &yy, const double &yz,
-          const double &zx, const double &zy, const double &zz,
-          const double &px, const double &py, const double &pz)
-      : _xx(xx), _xy(xy), _xz(xz),
-        _yx(yx), _yy(yy), _yz(yz),
-        _zx(zx), _zy(zy), _zz(zz),
-        _px(px), _py(py), _pz(pz) {}
+  inline Transform(const double &xx, const double &xy, const double &xz,
+                   const double &yx, const double &yy, const double &yz,
+                   const double &zx, const double &zy, const double &zz,
+                   const double &px, const double &py, const double &pz)
+      : _xx(xx), _xy(xy), _xz(xz), _yx(yx), _yy(yy), _yz(yz), _zx(zx), _zy(zy),
+        _zz(zz), _px(px), _py(py), _pz(pz) {}
 
-  inline Transform(Matrix3x3 const& r, Vector3 const& t) {
+  inline Transform(Matrix3x3 const &r, Vector3 const &t) {
     rotation(r);
     translation(t);
   }
@@ -60,7 +56,7 @@ public:
   /// @brief - destructor
   inline ~Transform() = default;
 
- public:
+public:
   // Accessors
   [[nodiscard]] float get_xx() const { return _xx; }
 
@@ -118,15 +114,12 @@ public:
 
   [[nodiscard]] Vector3 translation() const { return Vector3(_px, _py, _pz); }
 
- public:
+public:
   [[nodiscard]] inline Matrix3x3 rotation() const {
-    return Matrix3x3(
-            _xx, _xy, _xz,
-            _yx, _yy, _yz,
-            _zx, _zy, _zz);
+    return Matrix3x3(_xx, _xy, _xz, _yx, _yy, _yz, _zx, _zy, _zz);
   }
 
-  inline void rotation(Matrix3x3 const& m) {
+  inline void rotation(Matrix3x3 const &m) {
     _xx = m.get_xx();
     _xy = m.get_xy();
     _xz = m.get_xz();
@@ -138,18 +131,18 @@ public:
     _zz = m.get_zz();
   }
 
-  inline void translation(Vector3 const& v) {
+  inline void translation(Vector3 const &v) {
     _px = v.get_x();
     _py = v.get_y();
     _pz = v.get_z();
   }
 
- private:
+private:
   float _xx, _yx, _zx, _px;
   float _xy, _yy, _zy, _py;
   float _xz, _yz, _zz, _pz;
 };
 
-}  // namespace math
+} // namespace math
 
 #endif /* defined(__REDESIGNC__Transform__) */

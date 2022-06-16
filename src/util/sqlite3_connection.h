@@ -9,21 +9,20 @@
 #ifndef __RNAMake__sqlite3_connection__
 #define __RNAMake__sqlite3_connection__
 
-#include <stdio.h>
 #include <iostream>
 #include <sqlite3.h>
 #include <stdexcept>
-//RNAMake Libraries
+#include <stdio.h>
+// RNAMake Libraries
 #include "base/types.hpp"
-
 
 namespace util {
 
 class Sqlite3ConnectionException : public std::runtime_error {
 public:
-  Sqlite3ConnectionException(String const & message) : std::runtime_error(message) {}
+  Sqlite3ConnectionException(String const &message)
+      : std::runtime_error(message) {}
 };
-
 
 class Sqlite3Connection {
 public:
@@ -39,15 +38,13 @@ public:
   }
 
 public:
-
   void query(String const &);
 
   int count();
 
   Strings fetch_one(String const &);
 
-public: //getters
-
+public: // getters
 protected:
   int _rc;
   int _ic;
@@ -59,6 +56,6 @@ protected:
   char *_zErrMsg;
 };
 
-}
+} // namespace util
 
 #endif /* defined(__RNAMake__sqlite3_connection__) */

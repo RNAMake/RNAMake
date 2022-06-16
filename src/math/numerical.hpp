@@ -39,11 +39,9 @@ bool roughly_equal(T const &v1, T const &v2, double tolerance = 0.001) {
   return true;
 }
 // template specialiation for doubles
-template <>
-bool roughly_equal<double>(double const &, double const &, double);
+template <> bool roughly_equal<double>(double const &, double const &, double);
 
-template <>
-bool roughly_equal<float>(float const &, float const &, double);
+template <> bool roughly_equal<float>(float const &, float const &, double);
 
 template <>
 bool roughly_equal<Matrix3x3>(Matrix3x3 const &, Matrix3x3 const &, double);
@@ -53,6 +51,6 @@ bool roughly_equal<Vector3>(Vector3 const &, Vector3 const &, double);
 
 Matrix3x3 get_random_rotation_matrix();
 
-}  // namespace math
+} // namespace math
 
 #endif /* defined(__REDESIGNC__Numeric_Test__) */

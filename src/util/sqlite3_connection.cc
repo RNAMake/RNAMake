@@ -13,13 +13,14 @@
 
 namespace util {
 
-Sqlite3Connection::Sqlite3Connection(String const & path) {
+Sqlite3Connection::Sqlite3Connection(String const &path) {
 
   _zErrMsg = 0;
   _ic = 0;
 
   if (!base::file_exists(path)) {
-    throw Sqlite3ConnectionException("Can't open sqlite3 database " + path + " it does not exist");
+    throw Sqlite3ConnectionException("Can't open sqlite3 database " + path +
+                                     " it does not exist");
   }
 
   _rc = sqlite3_open(path.c_str(), &_db);
@@ -30,18 +31,16 @@ Sqlite3Connection::Sqlite3Connection(String const & path) {
   _setup = 1;
 }
 
-void Sqlite3Connection::query(String const & query_statement) {
+void Sqlite3Connection::query(String const &query_statement) {
   if (_setup == 0) {
-    throw Sqlite3ConnectionException("Cannot call query if no database file is supplied!");
+    throw Sqlite3ConnectionException(
+        "Cannot call query if no database file is supplied!");
   }
 
-  _rc = sqlite3_prepare_v2(_db,
-                           query_statement.c_str(),
-                           (int) strlen(query_statement.c_str()) + 1,
-                           &_stmt,
+  _rc = sqlite3_prepare_v2(_db, query_statement.c_str(),
+                           (int)strlen(query_statement.c_str()) + 1, &_stmt,
                            NULL);
   _rc = sqlite3_step(_stmt);
-
 }
 
 int Sqlite3Connection::count() {
@@ -51,7 +50,7 @@ int Sqlite3Connection::count() {
   return count;
 }
 
-Strings Sqlite3Connection::fetch_one(String const & query_statement) {
+Strings Sqlite3Connection::fetch_one(String const &query_statement) {
   query(query_statement);
 
   auto results = Strings();
@@ -59,11 +58,11 @@ Strings Sqlite3Connection::fetch_one(String const & query_statement) {
   int col = sqlite3_column_count(_stmt);
 
   for (int i = 0; i < col; i++) {
-    results.push_back(String(reinterpret_cast<const char *>(sqlite3_column_text(_stmt, i))));
+    results.push_back(
+        String(reinterpret_cast<const char *>(sqlite3_column_text(_stmt, i))));
   }
 
   sqlite3_finalize(_stmt);
   return results;
 }
-}
-
+} // namespace util

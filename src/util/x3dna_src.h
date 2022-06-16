@@ -150,9 +150,10 @@ extern struct_Gvars Gvars;
 
 #define REF_FILE "ref_frames.dat" /* reference frames */
 #define MREF_FILE                                                              \
-  "mref_frames.dat"              /* multiplet reference frames in <find_pair> */
-#define POC_FILE "poc_haxis.r3d" /* P, O4' and C1' atom radius in r3d format   \
-                                  */
+  "mref_frames.dat" /* multiplet reference frames in <find_pair> */
+#define POC_FILE                                                               \
+  "poc_haxis.r3d"                  /* P, O4' and C1' atom radius in r3d format \
+                                    */
 #define MUL_FILE "multiplets.pdb"  /* multiplets */
 #define ALLP_FILE "allpairs.pdb"   /* all base-pairs */
 #define BESTP_FILE "bestpairs.pdb" /* best base-pairs */
@@ -165,9 +166,10 @@ extern struct_Gvars Gvars;
 #define COLHLX_FILE "col_helices.scr" /* color helices in <find_pair> */
 #define AUX_FILE "auxiliary.par"      /* auxiliary parameters in <analyze> */
 #define BPSTEP_FILE "bp_step.par" /* base-pair step parameters in <analyze> */
-#define HLXSTEP_FILE "bp_helical.par" /* helical step parameters in <analyze>  \
-                                       */
-#define SEVEN_FILE "cf_7methods.par"  /* compare seven methods in <analyze> */
+#define HLXSTEP_FILE                                                           \
+  "bp_helical.par"                   /* helical step parameters in <analyze>   \
+                                      */
+#define SEVEN_FILE "cf_7methods.par" /* compare seven methods in <analyze> */
 #define HB_FILE                                                                \
   "hbonds_info.dat" /* H-bonding information <r3d_atom/stack2img> */
 #define LKG_FILE "bonds_lkg.dat"    /* bond linkage, as in HB_FILE */
@@ -236,8 +238,9 @@ extern struct_Gvars Gvars;
 #define LBIG 1000000
 #define DNA_BASE "ACGT"
 #define SNAP_AAA "snap_aaa.pdb"
-#define ABLKALC_FILE "ablk_lkg.alc" /* amino acid planar moiety block linkage  \
-                                     */
+#define ABLKALC_FILE                                                           \
+  "ablk_lkg.alc" /* amino acid planar moiety block linkage                     \
+                  */
 #define SNAP_NTS "snap_nts.pdb"
 #define SNAP_OPTS "snap_options"
 #define WITH_BASE 1 /* base or side-chain */

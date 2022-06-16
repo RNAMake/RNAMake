@@ -7,4 +7,3 @@
 //
 
 #include "util/monte_carlo.h"
-
