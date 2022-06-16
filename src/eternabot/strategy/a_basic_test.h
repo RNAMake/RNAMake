@@ -11,14 +11,14 @@
 
 #include <stdio.h>
 
-#include "eternabot/strategy.h"
+#include <eternabot/strategy.h>
 
 namespace eternabot {
 
 class ABasicTest : public Strategy {
 public:
     ABasicTest() {
-        params_ = Floats(7);
+        params_ = Reals(7);
         params_[0] = 0.303497971269;
         params_[1] = 92.9893755247;
         params_[2] = -1.37878787864;

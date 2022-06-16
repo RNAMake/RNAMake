@@ -11,7 +11,7 @@
 
 #include <stdio.h>
 
-#include "eternabot/strategy.h"
+#include <eternabot/strategy.h>
 
 namespace eternabot {
     

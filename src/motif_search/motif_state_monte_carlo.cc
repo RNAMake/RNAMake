@@ -3,7 +3,7 @@
 //
 
 #include <fstream>
-#include "base/log.h"
+#include "base/log.hpp"
 
 #include <motif_search/motif_state_monte_carlo.h>
 

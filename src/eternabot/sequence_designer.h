@@ -134,7 +134,7 @@ private:
     SequenceDesignerResultOPs results_;
 
     // tracking sequence constraints
-    Ints current_violations_, next_violations_;
+    Indexes current_violations_, next_violations_;
     secondary_structure::SequenceConstraints seq_constraints_;
 
     int designs_, steps_;

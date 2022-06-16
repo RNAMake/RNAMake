@@ -7,10 +7,10 @@
 
 #include <sqlite3.h>
 
-#include <base/assertions.h>
+//#include <base/assertions.h>
 #include <base/types.hpp>
 #include <base/string.hpp>
-#include <base/vector_container.h>
+//#include <base/vector_container.h>
 
 namespace util {
 namespace sqlite {

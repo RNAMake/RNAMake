@@ -19,52 +19,44 @@
 
 namespace util {
 
-
 class Sqlite3ConnectionException : public std::runtime_error {
 public:
-    Sqlite3ConnectionException(String const & message) :
-            std::runtime_error(message) {}
+  Sqlite3ConnectionException(String const & message) : std::runtime_error(message) {}
 };
 
 
 class Sqlite3Connection {
 public:
-    Sqlite3Connection() :
-            setup_(0) {}
+  Sqlite3Connection() : _setup(0) {}
 
-    Sqlite3Connection(String const &);
+  Sqlite3Connection(String const &);
 
-    ~Sqlite3Connection() {
-        if (setup_) {
-            delete zErrMsg_;
-            sqlite3_close(db_);
-        }
+  ~Sqlite3Connection() {
+    if (_setup) {
+      delete _zErrMsg;
+      sqlite3_close(_db);
     }
+  }
 
 public:
 
-    void
-    query(String const &);
+  void query(String const &);
 
-    int
-    count();
+  int count();
 
-    Strings
-    fetch_one(String const &);
-
+  Strings fetch_one(String const &);
 
 public: //getters
 
-
 protected:
-    int rc_;
-    int ic_;
-    int setup_;
-    String query_statement_;
-    String db_name_;
-    sqlite3 *db_;
-    sqlite3_stmt *stmt_;
-    char *zErrMsg_;
+  int _rc;
+  int _ic;
+  int _setup;
+  String _query_statement;
+  String _db_name;
+  sqlite3 *_db;
+  sqlite3_stmt *_stmt;
+  char *_zErrMsg;
 };
 
 }

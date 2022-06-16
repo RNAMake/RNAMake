@@ -8,6 +8,7 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include <stdexcept>
 
 #include <base/assertions.h>
 #include <base/string.hpp>

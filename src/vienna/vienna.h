@@ -241,24 +241,24 @@ private:
     setup_part_func() {
         int size  =((size_+1)*(size_+2)/2);
 
-        q         = Floats(size);
-        qb        = Floats(size);
-        qm        = Floats(size);
-        probs     = Floats(size);
-        qm1       = Floats(size_+1);
-        q1k       = Floats(size_+1);
-        qln       = Floats(size_+2);
-        qq        = Floats(size_+2);
-        qq1       = Floats(size_+2);
-        qqm       = Floats(size_+2);
-        qqm1      = Floats(size_+2);
-        prm_l     = Floats(size_+2);
-        prm_l1    = Floats(size_+2);
-        prml      = Floats(size_+2);
-        expMLbase = Floats(size_+1);
-        scale     = Floats(size_+1);
-        Gj        = Floats(size_+2);
-        Gj1       = Floats(size_+2);
+        q         = Reals(size);
+        qb        = Reals(size);
+        qm        = Reals(size);
+        probs     = Reals(size);
+        qm1       = Reals(size_+1);
+        q1k       = Reals(size_+1);
+        qln       = Reals(size_+2);
+        qq        = Reals(size_+2);
+        qq1       = Reals(size_+2);
+        qqm       = Reals(size_+2);
+        qqm1      = Reals(size_+2);
+        prm_l     = Reals(size_+2);
+        prm_l1    = Reals(size_+2);
+        prml      = Reals(size_+2);
+        expMLbase = Reals(size_+1);
+        scale     = Reals(size_+1);
+        Gj        = Reals(size_+2);
+        Gj1       = Reals(size_+2);
         
         my_iindx  = Indexes(size_);
         iindx     = Indexes(size_);
@@ -329,7 +329,7 @@ private:
     
     inline
     void
-    get_indx(Ints & c_idx) {
+    get_indx(Indexes & c_idx) {
         for (int i = 1; i < size_; i++) {
             c_idx[i] = (i*(i-1)) >> 1;
         }
@@ -337,7 +337,7 @@ private:
     
     inline
     void
-    get_iindx(Ints & c_idx, int length) {
+    get_iindx(Indexes & c_idx, int length) {
         unsigned int i;
         for (i = 1; i < length; i++) {
             c_idx[i] = (((length + 1 - i) * (length - i))>>1) + length + 1;
@@ -528,7 +528,7 @@ private:
     void
     bppm_to_structure(
         String &,
-        Floats &,
+        Reals &,
         unsigned int);
     
     char
@@ -884,8 +884,8 @@ private: //Energy calculations
     
 private:
     //variables from fold
-    Ints c, fML, fM1, f5, f53, cc, cc1, Fmi, DMLi, DMLi1, DMLi2;
-    Ints indx, BP;
+    Indexes c, fML, fM1, f5, f53, cc, cc1, Fmi, DMLi, DMLi1, DMLi2;
+    Indexes indx, BP;
     String structure, pf_structure;
     Chars ptype;
     bondTs base_pair2;
@@ -899,9 +899,9 @@ private:
     sects sector;
     char backtrack_type;
     //varibles from part_func
-    Floats q, qb, qm, probs, q1k, qln, qq, qq1, qqm, qqm1, prml, prm_l, prm_l1, qm1;
-    Floats expMLbase, scale, Gj, Gj1;
-    Ints my_iindx, iindx, jindx, diindx;
+    Reals q, qb, qm, probs, q1k, qln, qq, qq1, qqm, qqm1, prml, prm_l, prm_l1, qm1;
+    Reals expMLbase, scale, Gj, Gj1;
+    Indexes my_iindx, iindx, jindx, diindx;
     plists pl;
     
     

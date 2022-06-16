@@ -120,7 +120,7 @@ Vienna::pf_create_bppm(
     int n, i,j,k,l, ij, kl, ii, i1, ll, type, type_2, tt, u1, ov=0, qo=0.;
     double  temp, Qmax=0, prm_MLb;
     double  prmt,prmt1;
-    Floats tmp, G;
+    Reals tmp, G;
     double  tmp2;
     double  expMLclosing = pf.expMLclosing;
     double      max_real;
@@ -307,7 +307,7 @@ Vienna::pf_create_bppm(
             
             if(with_gquad){
                 /* 2.5. bonding k,l as gquad enclosed by i,j */
-                Floats expintern;
+                Reals expintern;
                 double qe;
                 
                 if(l < n - 3){

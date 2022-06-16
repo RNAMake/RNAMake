@@ -11,7 +11,6 @@
 
 #include <stdio.h>
 
-
 #include "base/types.hpp"
 
 namespace util {

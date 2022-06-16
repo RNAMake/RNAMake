@@ -441,7 +441,7 @@ MotifGraph::_add_motif_tree(
 
     auto parent = _get_parent("motif_tree", parent_index);
 
-    auto avail_pos = Ints();
+    auto avail_pos = Indexes();
     try { avail_pos = graph_.get_available_pos(parent, parent_end_index); }
     catch (data_structure::graph::GraphException const & e) {
         throw MotifGraphException("could not add motif_tree with parent: "
