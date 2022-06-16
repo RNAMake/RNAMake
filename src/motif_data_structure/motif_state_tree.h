@@ -13,7 +13,7 @@
 #include <queue>
 
 //RNAMake Headers
-#include "base/types.h"
+#include "base/types.hpp"
 #include "base/option.h"
 #include "data_structure/tree/tree.h"
 #include "data_structure/tree/tree_node.h"
@@ -161,7 +161,7 @@ public: // getters
     inline
     math::Vector3
     centers() {
-        auto centers = math::Points();
+        auto centers = math::Vector3s();
         for (auto const & n : tree_) {
             for (auto const & b : n->data()->cur_state->beads()) {
                 centers.push_back(b);

@@ -11,7 +11,7 @@
 
 #include <stdio.h>
 
-#include "eternabot/strategy.h"
+#include <eternabot/strategy.h>
 
 namespace eternabot {
 
@@ -20,12 +20,12 @@ public:
     NumofYellowNucleotidesperLengthofString() {
         params_ = std::vector<float>(1);
         params_[0] = 791.641998291;
-        upper_length_ = Ints(10);
+        upper_length_ = Indexes(10);
         upper_length_[0] = 0; upper_length_[1] = 1; upper_length_[2] = 2;
         upper_length_[3] = 2; upper_length_[4] = 2; upper_length_[5] = 3;
         upper_length_[6] = 3; upper_length_[7] = 4; upper_length_[8] = 5;
         upper_length_[9] = 4;
-        lower_length_ = Ints(10);
+        lower_length_ = Indexes(10);
         lower_length_[0] = 0; lower_length_[1] = 0; lower_length_[2] = 0;
         lower_length_[3] = 1; lower_length_[4] = 1; lower_length_[5] = 1;
         lower_length_[6] = 2; lower_length_[7] = 3; lower_length_[8] = 2;
@@ -81,7 +81,7 @@ public:
     
     
 private:
-    Ints upper_length_, lower_length_;
+    Indexes upper_length_, lower_length_;
 };
     
 }

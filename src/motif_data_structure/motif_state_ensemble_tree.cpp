@@ -11,7 +11,7 @@
 #include "motif/motif_ensemble.h"
 #include "resources/resource_manager.h"
 #include "util/cartesian_product.h"
-#include "math/xyz_matrix.h"
+#include "math/matrix_3x3.hpp"
 
 namespace motif_data_structure {
 

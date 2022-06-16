@@ -6,7 +6,7 @@
 //  Copyright (c) 2016 Joseph Yesselman. All rights reserved.
 //
 
-#include <base/log.h>
+#include <base/log.hpp>
 #include <secondary_structure/sequence_tools.h>
 #include <eternabot/sequence_designer.h>
 
