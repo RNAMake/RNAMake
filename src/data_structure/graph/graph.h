@@ -1,573 +1,193 @@
 //
-//  graph.h
-//  RNAMake
-//
-//  Created by Joseph Yesselman on 6/2/15.
-//  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
+// Created by Joseph Yesselman on 1/14/18.
 //
 
-#ifndef __RNAMake__graph__
-#define __RNAMake__graph__
+#ifndef RNAMAKE_NEW_NEW_GRAPH_H
+#define RNAMAKE_NEW_NEW_GRAPH_H
 
-#include <stdio.h>
-#include <sstream> 
-#include <typeinfo>
-#include <algorithm>
 #include <queue>
-#include <map>
-#include <cassert>
 
-#include "data_structure/graph/graph_node.h"
-#include "data_structure/graph/graph_node.fwd.h"
 #include <base/types.hpp>
+#include <data_structure/graph/graph_adjacency_list.h>
+#include <data_structure/graph/graph_base.h>
+#include <data_structure/graph/graph_iter_list.h>
 
-namespace data_structure {
-namespace graph {
+namespace data_structure::graph {
 
-template<typename DataType>
-class GraphIterator;
-
-template<typename DataType>
-class Graph {
+template <typename DataType, typename AdjacencyListType, typename IterListType>
+class _Graph {
 public:
-    Graph() :
-            index_(0),
-            level_(0) {}
+  _Graph() : adjacency_list_(AdjacencyListType()), iter_list_(IterListType()) {}
 
-    virtual
-    ~Graph() {}
+  virtual ~_Graph() {}
 
 public:
-    typedef GraphIterator<DataType> iterator;
-    typedef const GraphIterator<DataType> const_iterator;
+  typedef typename IterListType::const_iterator const_iterator;
+  typedef typename IterListType::iterator iterator;
 
-    friend class GraphIterator<DataType>;
+  iterator begin() { return iter_list_.begin(); }
+  iterator end() { return iter_list_.end(); }
 
-    iterator begin();
-
-    iterator end();
-
-    const_iterator begin() const;
-
-    const_iterator end() const;
-
-    iterator transverse(GraphNodeOP<DataType> const &) const;
+  const_iterator begin() const noexcept { return iter_list_.begin(); }
+  const_iterator end() const noexcept { return iter_list_.end(); }
 
 public:
+  void setup_transversal(Index start_n) {
+    iter_list_.transversal(adjacency_list_, start_n);
+  }
 
-    inline
-    size_t
-    size() const { return nodes_.size(); }
+  void setup_path_transversal(Index start_n, Index end_n) {
+    iter_list_.path_transversal(adjacency_list_, start_n, end_n);
+  }
 
-    inline
-    GraphNodeOP<DataType> const &
-    get_node(
-            int index) const {
+public:
+  virtual inline Index add_node(DataType const &d, Size n_edges) {
+    return adjacency_list_.add_node(d, n_edges);
+  }
 
-        for (auto const & n : nodes_) {
-            if (n->index() == index) { return n; }
-        }
+  inline void add_edge(NodeIndexandEdge const &nie1,
+                       NodeIndexandEdge const &nie2) {
+    return adjacency_list_.add_edge(nie1, nie2);
+  }
 
-        throw GraphException("cannot find node with index: " + std::to_string(index));
-    }
+  inline void remove_node(Index ni) { return adjacency_list_.remove_node(ni); }
 
-    inline
-    GraphNodeOP<DataType>
-    oldest_node() {
-        auto node = last_node_;
-        assert(node != nullptr && "attemped to call oldest_node but there are no nodes");
+  inline void remove_edge(NodeIndexandEdge const &nie1,
+                          NodeIndexandEdge const &nie2) {
+    return adjacency_list_.remove_edge(nie1, nie2);
+  }
 
-        for (auto const & n : nodes_) {
-            if (n->index() < node->index()) { node = n; }
-        }
+public:
+  inline size_t get_num_nodes() const {
+    return adjacency_list_.get_num_nodes();
+  }
 
-        return node;
-    }
+  inline size_t get_num_edges() const {
+    return adjacency_list_.get_num_edges();
+  }
 
+  inline std::vector<Edge const *> const &get_node_edges(Index ni) const {
+    return adjacency_list_.get_node_edges(ni);
+  }
 
-    inline
-    void
-    increase_level() { level_ += 1; }
+  inline Node<DataType> const &get_node(Index ni) const {
+    return adjacency_list_.get_node(ni);
+  }
 
-    inline
-    void
-    decrease_level() {
-        level_ -= 1;
-        assert(level_ > -1 && "level has to be positive");
-    }
+  inline DataType const &get_node_data(Index ni) const {
+    return adjacency_list_.get_node_data(ni);
+  }
 
+  inline DataType &get_node_data(Index ni) {
+    return adjacency_list_.get_node_data(ni);
+  }
 
-public: //getters
+  inline NodeIndexandEdge
+  get_connected_node_info(NodeIndexandEdge const &nei) const {
+    return adjacency_list_.get_connected_node_info(nei);
+  }
 
-    inline
-    GraphNodeOPs<DataType> const &
-    nodes() const {
-        return nodes_;
-    }
+  inline bool edge_between_nodes(Index n1, Index n2) const {
+    return adjacency_list_.edge_between_nodes(n1, n2);
+  }
 
-    inline
-    GraphConnectionOPs<DataType> const &
-    connections() const {
-        return connections_;
-    }
-
-    inline
-    GraphNodeOP<DataType> const &
-    last_node() { return last_node_; }
-
-    inline
-    int
-    level() { return level_; }
-
-    inline
-    int
-    index() { return index_; }
-
-public: //setters
-
-    inline
-    void
-    index(int nindex) { index_ = nindex; }
-
+  inline bool edge_index_empty(Index ni, Index ei) const {
+    return adjacency_list_.edge_index_empty(ni, ei);
+  }
 
 protected:
-    GraphNodeOP<DataType> last_node_;
-    GraphNodeOPs<DataType> nodes_;
-    GraphConnectionOPs<DataType> connections_;
-    GraphNodeOPs<DataType> empty_;
-    int index_, level_;
+  AdjacencyListType adjacency_list_;
+  mutable IterListType iter_list_; // needs to update to iterate
 };
 
-template<typename DataType>
-class GraphIterator {
-    friend class Graph<DataType>;
+template <typename Datatype, typename EdgeType>
+using _UndirectedGraph =
+    _Graph<Datatype, AdjacencyList<Datatype, EdgeType>,
+           IterList<Datatype, AdjacencyList<Datatype, EdgeType>>>;
+
+template <typename DataType, typename EdgeType>
+using _DirectedGraph = _Graph<
+    DataType, DirectedAdjacencyList<DataType, EdgeType>,
+    DirectedIterList<DataType, DirectedAdjacencyList<DataType, EdgeType>>>;
+
+template <typename DataType, typename EdgeType>
+class UndirectedGraph : public _UndirectedGraph<DataType, EdgeType> {
+public:
+  typedef _UndirectedGraph<DataType, EdgeType> BaseClass;
 
 public:
-    GraphIterator() {}
+  UndirectedGraph() : BaseClass() {}
 
-public:
-    GraphIterator & operator++();
-
-    GraphIterator operator++(int);
-
-    bool operator==(const GraphIterator & rhs) const;
-
-    bool operator!=(const GraphIterator & rhs) const;
-
-    GraphNodeOP<DataType> & operator*();
-
-
-private:
-    GraphNodeOPs<DataType> nodes_, leafs_;
-    GraphNodeOP<DataType> current_;
-    GraphNodeQueue<DataType> queue_;
-    std::map<GraphNodeOP<DataType>, int> seen_;
-
-    GraphIterator(
-            GraphNodeOPs<DataType> const & nodes) :
-            nodes_(nodes) {
-        if (nodes_.size() == 0) {
-            current_ = nullptr;
-            return;
-        }
-
-        queue_ = GraphNodeQueue<DataType>();
-        seen_ = std::map<GraphNodeOP<DataType>, int>();
-
-        for (auto const & n : nodes) {
-            int active_conn = 0;
-            for (auto const & c : n->connections()) {
-                if (c != nullptr) { active_conn += 1; }
-            }
-
-            if (active_conn < 2) {
-                leafs_.push_back(n);
-            }
-        }
-
-        if (leafs_.size() > 0) {
-            current_ = leafs_[0];
-        } else {
-            current_ = nodes_[0];
-        }
-
-        seen_[current_] = 1;
-
-    }
-
-    GraphIterator(
-            GraphNodeOP<DataType> const & node) :
-            nodes_(GraphNodeOPs<DataType>()),
-            queue_(GraphNodeQueue<DataType>()),
-            seen_(std::map<GraphNodeOP<DataType>, int>()),
-            leafs_(GraphNodeOPs<DataType>()),
-            current_(node) {
-        seen_[current_] = 1;
-    }
+  UndirectedGraph(UndirectedGraph const &g) {
+    this->adjacency_list_ = g.adjacency_list_;
+  }
 };
 
+template <typename DataType>
+using FixedEdgeUndirectedGraph = UndirectedGraph<DataType, FixedEdges>;
 
-template<typename DataType>
-typename Graph<DataType>::iterator
-Graph<DataType>::begin() {
-    return iterator(nodes_);
-}
+template <typename DataType>
+using DynamicEdgedUndirectedGraph = UndirectedGraph<DataType, DynamicEdges>;
 
-template<typename DataType>
-typename Graph<DataType>::iterator
-Graph<DataType>::end() {
-    return iterator(empty_);
-}
-
-template<typename DataType>
-typename Graph<DataType>::iterator
-Graph<DataType>::transverse(
-        GraphNodeOP<DataType> const & node) const {
-    return iterator(node);
-
-}
-
-
-template<typename DataType>
-typename Graph<DataType>::const_iterator
-Graph<DataType>::begin() const {
-    return iterator(nodes_);
-}
-
-template<typename DataType>
-typename Graph<DataType>::const_iterator
-Graph<DataType>::end() const {
-    return iterator(empty_);
-}
-
-template<typename DataType>
-GraphNodeOP<DataType> &
-GraphIterator<DataType>::operator*() {
-    return current_;
-}
-
-template<typename DataType>
-GraphIterator<DataType> &
-GraphIterator<DataType>::operator++() {
-    for (auto const & c : current_->connections()) {
-        if (c == nullptr) { continue; }
-        auto n = c->partner(current_->index());
-        if (seen_.find(n) != seen_.end()) {
-            continue;
-        }
-        queue_.push(n);
-        seen_[n] = 1;
-
-    }
-
-    if (!queue_.empty()) {
-        current_ = queue_.top();
-        queue_.pop();
-    } else {
-        int found = 0;
-        for (auto const & n : leafs_) {
-            if (seen_.find(n) == seen_.end()) {
-                seen_[n] = 1;
-                current_ = n;
-                found = 1;
-                break;
-            }
-        }
-
-        if (!found) {
-            current_ = nullptr;
-        }
-    }
-
-
-    return *this;
-}
-
-template<typename DataType>
-bool
-GraphIterator<DataType>::operator==(
-        GraphIterator<DataType> const & rhs) const {
-    return current_ == rhs.current_;
-}
-
-template<typename DataType>
-bool
-GraphIterator<DataType>::operator!=(
-        GraphIterator<DataType> const & rhs) const {
-    return current_ != rhs.current_;
-}
-
-
-template<typename DataType>
-class GraphDynamic : public Graph<DataType> {
+template <typename DataType, typename EdgeType>
+class DirectedGraph : public _DirectedGraph<DataType, EdgeType> {
 public:
-    GraphDynamic() : Graph<DataType>() {}
-
-    ~GraphDynamic() {
-        for (int i = 0; i < this->nodes_.size(); i++) {
-            //this->nodes_[i]->unset_connections();
-        }
-    }
+  typedef _DirectedGraph<DataType, EdgeType> BaseClass;
 
 public:
+  DirectedGraph() : BaseClass() {}
 
-    inline
-    int
-    add_data(
-            DataType const & data,
-            int parent_index = -1,
-            int orphan = 0) {
+  DirectedGraph(DirectedGraph const &g) : BaseClass() {
+    this->adjacency_list_ = g.adjacency_list_;
+  }
 
-        GraphNodeOP<DataType> parent = this->last_node_;
-        if (parent_index != -1) { parent = this->get_node(parent_index); }
-
-        auto n = std::make_shared<GraphNodeDynamic<DataType>>(data, this->index_, this->level_);
-
-        if (parent != nullptr && !orphan) {
-            auto c = std::make_shared<GraphConnection<DataType>>(parent, n, 0, 0);
-            parent->add_connection(c);
-            n->add_connection(c);
-            this->connections_.push_back(c);
-        }
-
-        this->nodes_.push_back(n);
-        this->index_++;
-        this->last_node_ = n;
-        return this->index_ - 1;
-    }
-
-    inline
-    void
-    connect(
-            int i,
-            int j) {
-
-        auto n1 = this->get_node(i);
-        auto n2 = this->get_node(j);
-        auto c = std::make_shared<GraphConnection<DataType>>(n1, n2, 0, 0);
-        n1->add_connection(c);
-        if (n1 != n2) { n2->add_connection(c); }
-        this->connections_.push_back(c);
-
-
-    }
-
-
-};
-
-template<typename DataType>
-class GraphStatic : public Graph<DataType> {
 public:
-    inline
-    GraphStatic() : Graph<DataType>() {}
+  inline void setup_sub_graph_transversal(Index start_n, Index end_n) {
+    return this->iter_list_.sub_graph_transversal(this->adjacency_list_,
+                                                  start_n, end_n);
+  }
 
-    inline
-    GraphStatic(
-            GraphStatic<DataType> const & g) {
-        this->nodes_ = GraphNodeOPs<DataType>(g.nodes_.size());
-        int i = 0;
-        for (auto const & n : g.nodes_) {
-            this->nodes_[i] = std::make_shared<GraphNodeStatic<DataType>>(*n);
-            i++;
-        }
+public:
+  inline Index add_node(DataType const &d, Size n_edges, Index n_end_index,
+                        NodeIndexandEdge const &pie) {
+    return this->adjacency_list_.add_node(d, n_edges, n_end_index, pie);
+  }
 
-        i = 0;
-        for (auto const & c : g.connections_) {
-            i = c->node_1()->index();
-            int j = c->node_2()->index();
-            int ei = c->end_index(i);
-            int ej = c->end_index(j);
-            connect(i, j, ei, ej);
-        }
+  inline Index add_node(DataType const &d, Size n_edges) {
+    return this->adjacency_list_.add_node(d, n_edges);
+  }
 
-        if (g.last_node_ != nullptr) {
-            this->last_node_ = this->get_node(g.last_node_->index());
-        }
+public:
+  inline bool has_parent(Index ni) const {
+    return this->adjacency_list_.has_parent(ni);
+  }
 
-        this->level_ = g.level_;
-        this->index_ = g.index_;
-    }
+  inline Index get_parent_index(Index ni) const {
+    return this->adjacency_list_.get_parent_index(ni);
+  }
 
-    ~GraphStatic() {
-      for (int i = 0; i < this->nodes_.size(); i++) {
-        this->nodes_[i]->unset_connections();
+  inline Index get_parent_end_index(Index ni) const {
+    return this->adjacency_list_.get_parent_end_index(ni);
+  }
+
+public:
+  Indexes get_root_indexes() {
+    auto roots = Indexes();
+    for (auto const &kv : this->adjacency_list_) {
+      if (!this->adjacency_list_.has_parent(kv.first)) {
+        roots.push_back(kv.first);
       }
     }
-
-public:
-
-    inline
-    int
-    add_data(
-            DataType const & data,
-            int parent_index = -1,
-            int parent_pos = -1,
-            int child_pos = -1,
-            int n_children = 0,
-            int orphan = 0,
-            int index = -1) {
-
-        int given_index = this->index_;
-        if (index != -1) {
-            given_index = index;
-        }
-
-        auto parent = this->last_node_;
-        auto n = std::make_shared<GraphNodeStatic<DataType>>(data, given_index, this->level_,
-                                                             n_children);
-
-        if (parent_index != -1) { parent = this->get_node(parent_index); }
-        if (orphan == 1) {
-            parent = nullptr;
-        }
-        if (parent != nullptr) {
-            parent_pos = check_pos_is_valid(parent, parent_pos);
-            child_pos = check_pos_is_valid(n, child_pos);
-            auto c = std::make_shared<GraphConnection<DataType>>(parent, n, parent_pos, child_pos);
-            parent->add_connection(c, parent_pos);
-            n->add_connection(c, child_pos);
-            this->connections_.push_back(c);
-        }
-
-        this->nodes_.push_back(n);
-        this->index_++;
-        this->last_node_ = n;
-        return given_index;
-
-    }
-
-    inline
-    void
-    connect(
-            int i,
-            int j,
-            int i_pos,
-            int j_pos) {
-
-        auto n1 = this->get_node(i);
-        auto n2 = this->get_node(j);
-        i_pos = check_pos_is_valid(n1, i_pos);
-        j_pos = check_pos_is_valid(n2, j_pos);
-        auto c = std::make_shared<GraphConnection<DataType>>(n1, n2, i_pos, j_pos);
-        n1->add_connection(c, i_pos);
-        n2->add_connection(c, j_pos);
-        this->connections_.push_back(c);
-    }
-
-    inline
-    int
-    check_pos_is_valid(
-            GraphNodeOP<DataType> const & n,
-            int & pos) {
-
-        if (pos == -1) {
-            Indexes avail_pos = n->available_children_pos();
-            if (avail_pos.size() == 0) {
-                throw GraphException("cannot add connection to node, has not available ends");
-            }
-            return avail_pos[0];
-        } else {
-            if (n->available_pos(pos) == 0) {
-                throw GraphException("graph pos is not availabe");
-            }
-            return pos;
-        }
-
-    }
-
-    inline
-    Indexes
-    get_available_pos(
-            GraphNodeOP<DataType> const & n,
-            int & pos) {
-
-        if (pos == -1) {
-            return n->available_children_pos();
-        } else {
-            if (n->available_pos(pos) == 0) {
-                std::stringstream ss;
-                ss << "graph pos is not available " << pos << std::endl;
-                throw GraphException(ss.str());
-            }
-            Indexes r(1);
-            r[0] = pos;
-            return r;
-        }
-
-    }
-
-    inline
-    void
-    remove_node(
-            int pos) {
-
-        auto n = this->get_node(pos);
-        for (auto c : n->connections()) {
-            if (c == nullptr) { continue; }
-            auto partner = c->partner(n->index());
-            n->remove_connection(c);
-            partner->remove_connection(c);
-            this->connections_.erase(std::remove(this->connections_.begin(),
-                                                 this->connections_.end(), c));
-            c->disconnect();
-
-        }
-
-        this->nodes_.erase(std::remove(this->nodes_.begin(), this->nodes_.end(),
-                                       n), this->nodes_.end());
-
-        if (this->nodes_.size() != 0) {
-            this->last_node_ = this->nodes_.back();
-        } else { this->last_node_ = nullptr; }
-    }
-
-    inline
-    void
-    remove_level(
-            int level) {
-
-        int pos = 0;
-        while (pos < this->nodes_.size()) {
-            auto n = this->nodes_[pos];
-            if (n->level() >= level) {
-                remove_node(n->index());
-                continue;
-            }
-            pos++;
-        }
-
-    }
-
-
+    return roots;
+  }
 };
 
-}
-}
+template <typename DataType>
+using FixedEdgeDirectedGraph = DirectedGraph<DataType, FixedEdges>;
 
+template <typename DataType>
+using DynamicEdgedDirectedGraph = DirectedGraph<DataType, DynamicEdges>;
 
+} // namespace data_structure::graph
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#endif /* defined(__RNAMake__graph__) */
+#endif // RNAMAKE_NEW_NEW_GRAPH_H
