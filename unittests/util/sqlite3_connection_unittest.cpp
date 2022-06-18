@@ -4,7 +4,7 @@
 
 #include <base/paths.hpp>
 #include <util/exception.hpp>
-#include <util/sqlite/connection.h>
+#include <util/sqlite/connection.hpp>
 
 using namespace util::sqlite;
 
