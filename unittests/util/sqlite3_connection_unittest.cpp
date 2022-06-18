@@ -46,10 +46,10 @@ TEST_CASE("Test sqlite3 interface ") {
       CHECK(id == 0);
     }
 
-    SUBCASE("test going thgrough all rows") {
+    SUBCASE("test going through all rows") {
       q.setup_row_iteration("SELECT * FROM data_table");
       int count = 0;
-      while(q.has_more_rows()) {
+      while (q.has_more_rows()) {
         auto &row = q.next();
         count += 1;
       }
@@ -65,10 +65,10 @@ TEST_CASE("Test sqlite3 interface ") {
     }
   }
 
-  /*SUBCASE("test create table") {
-    auto db = util::sqlite::Database(":memory:");
-    auto conn = util::sqlite::Connection(db);
-    auto td = util::sqlite::TableDetails("data_table");
+  SUBCASE("test create table") {
+    auto db = Database(":memory:");
+    auto conn = Connection(db);
+    auto td = TableDetails("data_table");
     td.add_column("word", "TEXT");
     td.add_column("id", "INT", true);
     util::sqlite::create_table(conn, td);
@@ -87,11 +87,24 @@ TEST_CASE("Test sqlite3 interface ") {
           std::vector<Strings>{{"the_word", "0"}, {"the", "1"}, {"hello", "2"}};
       util::sqlite::insert_many(conn, "data_table", data);
 
-      auto & row = conn.get_first_row("SELECT * FROM data_table");
+      auto &row = conn.get_first_row("SELECT * FROM data_table");
       CHECK(row[0].get_name() == "word");
       CHECK(row[0].get_str() == "the_word");
     }
-  }    */
+  }
+  SUBCASE("test actual sql table") {
+    String path =
+        base::path::resources_path() + "/motif_libraries_new/bp_steps.db";
+    Database db(path);
+    Connection q(db);
+    auto const & row = q.get_first_row("SELECT * FROM data_table");
+    CHECK(row[0].get_name() == "data");
+    // example parsing existing motif
+    Strings spl = base::string::split(row[0].get_str(), "&");
+    CHECK(spl.size() == 11);
+
+
+  }
 }
 
 /*TEST_CASE( "Test basic connection sqlite3 connection utilty" ) {
