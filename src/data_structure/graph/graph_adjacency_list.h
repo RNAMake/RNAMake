@@ -10,14 +10,17 @@
 
 namespace data_structure::graph {
 
-template <typename DataType, typename EdgeType> class AdjacencyList {
-public: // Construction
-  inline AdjacencyList() = default;
+// adjecnecy list
+// D is the type of data stored in a node
+// E is the type of the edge either FixedEdges or DynamicEdges
+template <typename D, typename E> class AdjList {
+public: // construction ///////////////////////////////////////////////////////
+  inline AdjList() = default;
 
-  AdjacencyList(const AdjacencyList &);
+  AdjList(const AdjList &);
 
-  virtual ~AdjacencyList() {
-    for (auto &kv : edges_) {
+  virtual ~AdjList() {
+    for (auto &kv : _edges) {
       for (auto &e : kv.second) {
         // TODO can I just do "delete e"?
         if (e != nullptr) {
@@ -27,78 +30,53 @@ public: // Construction
     }
   }
 
-public:
-  AdjacencyList &operator=(AdjacencyList const &abj_list) {
-    this->nodes_ = abj_list.nodes_;
-    this->index_ = abj_list.index_;
-    for (auto const &kv : nodes_) {
-      this->edges_[kv.first] =
-          Connections(abj_list.get_node_edges(kv.first).size());
-    }
-    for (auto const &kv : abj_list.edges_) {
-      for (auto const &e : kv.second) {
-        if (e == nullptr) {
-          continue;
-        }
-        if (this->edge_between_nodes(e->node_i, e->node_j)) {
-          continue;
-        }
-        this->add_edge(NodeIndexandEdge{e->node_i, e->edge_i},
-                       NodeIndexandEdge{e->node_j, e->edge_j});
-      }
-    }
-    return *this;
+public: // operators //////////////////////////////////////////////////////////
+  AdjList &operator=(const AdjList &);
+
+public: // iteration //////////////////////////////////////////////////////////
+  typedef typename std::map<Index, Node<D>>::const_iterator const_iterator;
+
+  const_iterator begin() const { return _nodes.begin(); }
+  const_iterator end() const { return _nodes.end(); }
+
+public: // non const methods //////////////////////////////////////////////////
+  void add_edge(const NodeIndexandEdge &, const NodeIndexandEdge &);
+
+  virtual Index add_node(D &d, Size n_edges) {
+    _nodes.insert({_index, Node<D>{d, _index}});
+    _edges[_index] = Connections(n_edges);
+    _index += 1;
+    return _index - 1;
   }
 
-public:
-  typedef
-      typename std::map<Index, Node<DataType>>::const_iterator const_iterator;
-
-  const_iterator begin() const { return nodes_.begin(); }
-  const_iterator end() const { return nodes_.end(); }
-
-public:
-  virtual Index add_node(DataType const &d, Size n_edges) {
-    nodes_.insert(
-        std::pair<int, Node<DataType>>(index_, Node<DataType>(d, index_)));
-    edges_[index_] = std::vector<Edge const *>(n_edges);
-    index_ += 1;
-    return index_ - 1;
-  }
-
-  void add_edge(NodeIndexandEdge const &nie1, NodeIndexandEdge const &nie2) {
-    if (std::is_same<EdgeType, DynamicEdges>::value) {
-      _update_dyanmic_edges(nie1);
-      _update_dyanmic_edges(nie2);
+  virtual void remove_edge(NodeIndexandEdge const &nie1,
+                           NodeIndexandEdge const &nie2) {
+    if (edge_index_empty(nie1.ni, nie1.ei)) {
+      String msg =
+          "cannot remove edge, " + nie1.get_str() + " it is not filled";
+      base::log_and_throw<GraphException>(msg);
     }
-
-    if (!edge_index_empty(nie1.ni, nie1.ei)) {
-      throw GraphException("cannot add edge, " + nie1.to_str() +
-                           " already is connected to -> " +
-                           get_connected_node_info(nie1).to_str());
+    if (edge_index_empty(nie2.ni, nie2.ei)) {
+      String msg =
+          "cannot remove edge, " + nie2.get_str() + " it is not filled";
+      base::log_and_throw<GraphException>(msg);
     }
-    if (!edge_index_empty(nie2.node_index, nie2.edge_index)) {
-      throw GraphException("cannot add edge, " + nie2.to_str() +
-                           " already is connected to -> " +
-                           get_connected_node_info(nie2).to_str());
-    }
-
-    edges_[nie1.node_index][nie1.edge_index] = new Edge(
-        nie1.node_index, nie2.node_index, nie1.edge_index, nie2.edge_index);
-    edges_[nie2.node_index][nie2.edge_index] = new Edge(
-        nie1.node_index, nie2.node_index, nie1.edge_index, nie2.edge_index);
+    delete _edges[nie1.ni][nie1.ei];
+    delete _edges[nie2.ni][nie2.ei];
+    _edges[nie1.ni][nie1.ei] = nullptr;
+    _edges[nie2.ni][nie2.ei] = nullptr;
   }
 
   virtual void remove_node(Index ni) {
-    auto edges = get_node_edges(ni);
+    auto edges = get_node_connections(ni);
     for (auto &e : edges) {
       if (e == nullptr) {
         continue;
       }
-      auto partner_index = e->partner(ni);
-      auto partner_end_index = e->end_index(partner_index);
-      delete edges_[partner_index][partner_end_index];
-      edges_[partner_index][partner_end_index] = nullptr;
+      Index partner_index = e->get_partner(ni);
+      Index partner_end_index = e->get_partner(partner_index);
+      delete _edges[partner_index][partner_end_index];
+      _edges[partner_index][partner_end_index] = nullptr;
     }
 
     for (int i = 0; i < edges.size(); i++) {
@@ -106,38 +84,65 @@ public:
         continue;
       }
       delete edges[i];
-      edges_[ni][i] = nullptr;
+      _edges[ni][i] = nullptr;
     }
-    edges_.erase(ni);
-    nodes_.erase(ni);
+    _edges.erase(ni);
+    _nodes.erase(ni);
     _update_next_index();
   }
 
-  virtual void remove_edge(NodeIndexandEdge const &nie1,
-                           NodeIndexandEdge const &nie2) {
-
-    if (edge_index_empty(nie1.node_index, nie1.edge_index)) {
-      throw GraphException("cannot remove edge, " + nie1.to_str() +
-                           " it is not filled");
+public: // getters ////////////////////////////////////////////////////////////
+  [[nodiscard]] bool are_nodes_connected(Index, Index) const;
+  /// @brief checks to see if an edge on a node is filled
+  /// must be implemented in hpp as its called by virtual member
+  [[nodiscard]] bool edge_index_empty(Index ni, Index ei) const {
+    if (_edges.find(ni) == _edges.end()) {
+      String msg = "cannot find node of index: " + std::to_string(ni);
+      base::log_and_throw<GraphException>(msg);
     }
-    if (edge_index_empty(nie2.node_index, nie2.edge_index)) {
-      throw GraphException("cannot remove edge, " + nie2.to_str() +
-                           " it is not filled");
+    if (_edges.find(ni)->second.size() < ei) {
+      String msg =
+          "node has fewer edges then requested one: " + std::to_string(ni);
+      base::log_and_throw<GraphException>(msg);
     }
-
-    delete edges_[nie1.ni][nie1.ei];
-    delete edges_[nie2.ni][nie2.ei];
-
-    edges_[nie1.node_index][nie1.edge_index] = nullptr;
-    edges_[nie2.node_index][nie2.edge_index] = nullptr;
+    if (_edges.find(ni)->second[ei] == nullptr) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
-public:
-  [[nodiscard]] inline size_t get_num_nodes() const { return nodes_.size(); }
+  [[nodiscard]] NodeIndexandEdge
+  get_connected_node_info(const NodeIndexandEdge &) const;
+  /// @brief get all the connections a node has both filled and not
+  /// must be implemented in hpp as its called by virtual member
+  [[nodiscard]] const Connections &get_node_connections(Index ni) const {
+    if (_nodes.find(ni) == _nodes.end()) {
+      String msg = "cannot find node of index: " + std::to_string(ni);
+      base::log_and_throw<GraphException>(msg);
+    }
+    return _edges.at(ni);
+  }
 
-  [[nodiscard]] size_t get_num_edges() const {
+  [[nodiscard]] Node<D> const &get_node(Index ni) const {
+    if (_nodes.find(ni) == _nodes.end()) {
+      String msg = "cannot find node of index: " + std::to_string(ni);
+      base::log_and_throw<GraphException>(msg);
+    }
+    return _nodes.find(ni)->second;
+  }
+
+  [[nodiscard]] D const &get_node_data(Index ni) const {
+    if (_nodes.find(ni) == _nodes.end()) {
+      String msg = "cannot find node of index: " + std::to_string(ni);
+      base::log_and_throw<GraphException>(msg);
+    }
+    return _nodes.find(ni)->second.get_data();
+  }
+
+  [[nodiscard]] size_t get_num_connections() const {
     auto n_edges = 0;
-    for (auto const &kv : edges_) {
+    for (auto const &kv : _edges) {
       for (auto const &e : kv.second) {
         if (e != nullptr) {
           n_edges += 1;
@@ -147,107 +152,44 @@ public:
     return (size_t)n_edges / 2;
   }
 
-  [[nodiscard]] const std::vector<const Connection *> &
-  get_node_edges(Index ni) const {
-    expects<GraphException>(edges_.find(ni) != edges_.end(),
-                            "this node has no edges : " + std::to_string(ni));
-    return edges_.at(ni);
-  }
+  [[nodiscard]] inline size_t get_num_nodes() const { return _nodes.size(); }
 
-  DataType const &get_node_data(Index ni) const {
-    std::cout << "I am in get node data" << std::endl;
-    expects<GraphException>(nodes_.find(ni) != nodes_.end(),
-                            "cannot find node of index: " + std::to_string(ni));
-    return nodes_.find(ni)->second.data();
-  }
-
-  DataType &get_node_data(Index ni) {
-    std::cout << "I am in get node data" << std::endl;
-    expects<GraphException>(nodes_.find(ni) != nodes_.end(),
-                            "cannot find node of index: " + std::to_string(ni));
-    return nodes_.find(ni)->second.data();
-  }
-
-  Node<DataType> const &get_node(Index ni) const {
-    expects<GraphException>(nodes_.find(ni) != nodes_.end(),
-                            "cannot find node of index: " + std::to_string(ni));
-    return nodes_.find(ni)->second;
-  }
-
-  Node<DataType> &get_node(Index ni) {
-    expects<GraphException>(nodes_.find(ni) != nodes_.end(),
-                            "cannot find node of index: " + std::to_string(ni));
-    return nodes_.find(ni)->second;
-  }
-
-  NodeIndexandEdge get_connected_node_info(NodeIndexandEdge const &nei) const {
-
-    expects<GraphException>(edges_.find(nei.node_index) != edges_.end() ||
-                                edges_.find(nei.node_index)->second.size() >
-                                    nei.edge_index - 1,
-                            "node has fewer edges then requested one");
-
-    auto edge = edges_.find(nei.node_index)->second[nei.edge_index];
-    auto partner_index = edge->partner(nei.node_index);
-    auto partner_end_index = edge->end_index(partner_index);
-    return NodeIndexandEdge{partner_index, partner_end_index};
-  }
-
-  [[nodiscard]] bool edge_between_nodes(Index n1, Index n2) const {
-    if (edges_.find(n1) == edges_.end()) {
-      return false;
+public: // setters
+  void set_node_data(Index ni, D &data) {
+    if (_nodes.find(ni) == _nodes.end()) {
+      String msg = "cannot find node of index: " + std::to_string(ni);
+      base::log_and_throw<GraphException>(msg);
     }
-    auto &edges = edges_.at(n1);
-    for (auto const &edge : edges) {
-      if (edge == nullptr) {
-        continue;
-      }
-      if (edge->node_i == n2 or edge->node_j == n2) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-public:
-  [[nodiscard]] bool edge_index_empty(Index ni, Index ei) const {
-
-    expects<GraphException>(edges_.find(ni) != edges_.end() ||
-                                edges_.find(ni)->second.size() > ei - 1,
-                            "node has fewer edges then requested one");
-
-    if (edges_.find(ni)->second[ei] == nullptr) {
-      return true;
-    } else {
-      return false;
-    }
+    _nodes.find(ni)->second.set_data(data);
   }
 
 protected:
   void _update_dyanmic_edges(NodeIndexandEdge const &nie) {
-    expects<GraphException>(edges_.find(nie.ni) != edges_.end(),
-                            "node with index: " + std::to_string(nie.ni) +
-                                " does not exist!");
-
-    if (edges_.find(nie.ni)->second.size() < nie.ei - 1) {
-      edges_.find(nie.ni)->second.resize(nie.ei);
+    if (_edges.find(nie.ni) == _edges.end()) {
+      String msg = "cannot find node of index: " + std::to_string(nie.ni);
+      base::log_and_throw<GraphException>(msg);
+    }
+    if (_edges.find(nie.ni)->second.size() < nie.ei - 1) {
+      _edges.find(nie.ni)->second.resize(nie.ei);
     }
   }
 
   void _update_next_index() {
     auto largest = 0;
-    for (auto const &kv : nodes_) {
+    for (auto const &kv : _nodes) {
       if (kv.first > largest) {
         largest = kv.first;
       }
     }
-    index_ = largest + 1;
+    _index = largest + 1;
   }
 
+  void _copy_list(const AdjList &);
+
 protected:
-  std::map<Index, std::vector<Connection const *>> edges_ = {};
-  std::map<Index, Node<DataType>> nodes_ = {};
-  Index index_ = 0;
+  std::map<Index, Connections> _edges = {};
+  std::map<Index, Node<D>> _nodes = {};
+  Index _index = 0;
 };
 
 /*
@@ -264,15 +206,15 @@ public:
 
   DirectedAdjacencyList(DirectedAdjacencyList const &abj_list)
       : DirectedAdjacencyList() {
-    this->nodes_ = abj_list.nodes_;
-    this->index_ = abj_list.index_;
+    this->_nodes = abj_list._nodes;
+    this->_index = abj_list._index;
     this->parent_ = abj_list.parent_;
-    for (auto const &kv : this->nodes_) {
-      this->edges_[kv.first] =
+    for (auto const &kv : this->_nodes) {
+      this->_edges[kv.first] =
           std::vector<Edge const *>(abj_list.get_node_edges(kv.first).size());
     }
 
-    for (auto const &kv : abj_list.edges_) {
+    for (auto const &kv : abj_list._edges) {
       for (auto const &e : kv.second) {
         if (e == nullptr) {
           continue;
@@ -288,15 +230,15 @@ public:
 
 public:
   DirectedAdjacencyList &operator=(DirectedAdjacencyList const &abj_list) {
-    this->nodes_ = abj_list.nodes_;
-    this->index_ = abj_list.index_;
+    this->_nodes = abj_list._nodes;
+    this->_index = abj_list._index;
     this->parent_ = abj_list.parent_;
-    for (auto const &kv : this->nodes_) {
-      this->edges_[kv.first] =
+    for (auto const &kv : this->_nodes) {
+      this->_edges[kv.first] =
           std::vector<Edge const *>(abj_list.get_node_edges(kv.first).size());
     }
 
-    for (auto const &kv : abj_list.edges_) {
+    for (auto const &kv : abj_list._edges) {
       for (auto const &e : kv.second) {
         if (e == nullptr) {
           continue;
@@ -327,13 +269,13 @@ public:
 
     // parent should exist
     expects<GraphException>(
-        this->nodes_.find(pie.node_index) != this->nodes_.end(),
+        this->_nodes.find(pie.ni) != this->_nodes.end(),
         "cannot add node to graph, parent with index: " +
-            std::to_string(pie.node_index) + " does not exist");
+            std::to_string(pie.ni) + " does not exist");
 
     auto n_index = add_node(d, n_edges);
     BaseClass::add_edge(pie, NodeIndexandEdge{n_index, n_end_index});
-    parent_[n_index] = pie.node_index;
+    parent_[n_index] = pie.ni;
     return n_index;
   }
 
