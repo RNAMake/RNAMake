@@ -38,18 +38,21 @@ public:
   [[nodiscard]] inline Index get_index() const { return _index; }
 
 public:
-  inline void set_data(DataType & data) {
-    _data = std::move(data);
-  }
+  inline void set_data(DataType &data) { _data = std::move(data); }
 
 private:
   DataType _data;
   Index _index;
 };
 
-/// @brief each graph node has an index and N edges NodeIndexandEdge allows
+/// @brief each graph node has an index and N edges ConnectionPoint allows
 /// specification of which node and edge position is involved in a connection
-struct NodeIndexandEdge {
+struct ConnectionPoint {
+public:
+  inline bool operator==(const ConnectionPoint &other) const {
+    return ni == other.ni && ei == other.ei;
+  }
+
 public:
   [[nodiscard]] String get_str() const {
     return "ni: " + std::to_string(ni) + " ei: " + std::to_string(ei);
@@ -60,9 +63,9 @@ public:     // members
   Index ei; // edge index
 };
 
-struct NodeIndexandEdgeCompare {
-  bool operator()(const NodeIndexandEdge &nie1,
-                  const NodeIndexandEdge &nie2) const {
+struct ConnectionPointCompare {
+  bool operator()(const ConnectionPoint &nie1,
+                  const ConnectionPoint &nie2) const {
     if (nie1.ni != nie2.ni) {
       return nie1.ni > nie2.ni;
     } else {
@@ -71,31 +74,30 @@ struct NodeIndexandEdgeCompare {
   }
 };
 
-typedef std::map<NodeIndexandEdge, NodeIndexandEdge, NodeIndexandEdgeCompare>
-    NodeIndexandEdgeMap;
+typedef std::map<ConnectionPoint, ConnectionPoint, ConnectionPointCompare>
+    ConnectionPointMap;
 
 struct Connection {
 public:
   inline bool operator==(const Connection &other) const {
-    return node_i == other.node_i && node_j == other.node_j &&
-           edge_i == other.edge_i && edge_j == other.edge_j;
+    return cp1 == other.cp1 && cp2 == other.cp2;
   }
 
 public: // getters
+  /// @brief get other connection point
+  [[nodiscard]] const ConnectionPoint &
+  get_partner(const ConnectionPoint &) const;
   /// @brief get other node in the connection
-  [[nodiscard]] Index get_partner(Index) const;
+  [[nodiscard]] Index get_partner_index(Index) const;
   /// @brief get index of edge a node is connected in
   [[nodiscard]] Index get_edge_index(Index index) const;
   /// @brief
   [[nodiscard]] String get_str() const;
 
-public:         // members
-  Index node_i; // index of node 1 in graph
-  Index node_j; // index of node 2 in graph
-  Index edge_i; // index of edge of connection in node 1
-  Index edge_j; // index of edge of connection in node 2
+public: // members
+  ConnectionPoint cp1;
+  ConnectionPoint cp2;
 };
-
 
 // typedefs
 typedef std::vector<Connection const *> Connections;

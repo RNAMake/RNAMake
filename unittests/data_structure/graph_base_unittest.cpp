@@ -20,27 +20,27 @@ TEST_CASE("test graph components") {
   }
   SUBCASE("test connection") {
     SUBCASE("test proper initiation") {
-      Connection c1 = {1, 2, 3, 4};
-      CHECK(c1.node_i == 1);
-      CHECK(c1.node_j == 2);
-      CHECK(c1.edge_i == 3);
-      CHECK(c1.edge_j == 4);
+      Connection c1 = {ConnectionPoint{1, 3}, ConnectionPoint{2, 4}};
+      CHECK(c1.cp1.ni == 1);
+      CHECK(c1.cp2.ni == 2);
+      CHECK(c1.cp1.ei == 3);
+      CHECK(c1.cp2.ei == 4);
     }
     SUBCASE("check == ") {
-      Connection c1 = {1, 2, 3, 4};
-      Connection c2 = {1, 2, 3, 4};
+      Connection c1 = {ConnectionPoint{1, 3}, ConnectionPoint{2, 4}};
+      Connection c2 = {ConnectionPoint{1, 3}, ConnectionPoint{2, 4}};
       CHECK(c1 == c2);
-      Connection c3 = {2, 2, 3, 4};
+      Connection c3 = {ConnectionPoint{2, 3}, ConnectionPoint{2, 4}};
       CHECK(!(c1 == c3));
     }
     SUBCASE("test partner") {
-      Connection c1 = {1, 2, 3, 4};
-      CHECK(c1.get_partner(1) == 2);
-      CHECK(c1.get_partner(2) == 1);
-      CHECK_THROWS_AS(Index i = c1.get_partner(-1), GraphException);
+      Connection c1 = {ConnectionPoint{1, 3}, ConnectionPoint{2, 4}};
+      CHECK(c1.get_partner_index(1) == 2);
+      CHECK(c1.get_partner_index(2) == 1);
+      CHECK_THROWS_AS(Index i = c1.get_partner_index(-1), GraphException);
     }
     SUBCASE("test get edge index") {
-      Connection c1 = {1, 2, 3, 4};
+      Connection c1 = {ConnectionPoint{1, 3}, ConnectionPoint{2, 4}};
       CHECK(c1.get_edge_index(1) == 3);
       CHECK(c1.get_edge_index(2) == 4);
       CHECK_THROWS_AS(Index i = c1.get_edge_index(-1), GraphException);
