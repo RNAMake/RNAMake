@@ -53,6 +53,10 @@ public:
     return ni == other.ni && ei == other.ei;
   }
 
+  inline bool operator!=(const ConnectionPoint &other) const {
+    return !(ni == other.ni && ei == other.ei);
+  }
+
 public:
   [[nodiscard]] String get_str() const {
     return "ni: " + std::to_string(ni) + " ei: " + std::to_string(ei);
