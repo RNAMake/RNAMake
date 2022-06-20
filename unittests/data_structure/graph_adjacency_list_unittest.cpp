@@ -119,14 +119,26 @@ TEST_CASE("Test Graph Data Structure ") {
         GraphException);
   }
   SUBCASE("test remove_connection errors") {
-    int i = 0, j = 1;
+    int i = 0, j = 1, k = 2;
     AdjacencyList<int, FixedEdges> adj_list;
-    adj_list.add_node(i, 2);
-    adj_list.add_node(j, 2);
+    adj_list.add_node(i, 3);
+    adj_list.add_node(j, 3);
+    adj_list.add_node(k, 3);
     adj_list.add_connection(ConnectionPoint{0, 0}, ConnectionPoint{1, 0});
+    adj_list.add_connection(ConnectionPoint{0, 1}, ConnectionPoint{2, 0});
+    // first connection point is empty
+    CHECK_THROWS_AS(adj_list.remove_connection(ConnectionPoint{0, 2},
+                                               ConnectionPoint{1, 0}),
+                    GraphException);
+    // second connection point is empty
+    CHECK_THROWS_AS(adj_list.remove_connection(ConnectionPoint{0, 0},
+                                               ConnectionPoint{1, 1}),
+                    GraphException);
+    //  but are filled but not connected to each other
     CHECK_THROWS_AS(adj_list.remove_connection(ConnectionPoint{0, 1},
                                                ConnectionPoint{1, 0}),
                     GraphException);
+
   }
   SUBCASE("test copying") {
     int i = 0, j = 1;
@@ -139,42 +151,17 @@ TEST_CASE("Test Graph Data Structure ") {
     CHECK(adj_list_2.get_num_connections() == 1);
     CHECK(adj_list_2.get_num_nodes() == 2);
   }
-
-  /*
-
-
   SUBCASE("test directed") {
-    auto adj_list = data_structure::FixedEdged_DAL<int>();
-    adj_list.add_node(0, 3);
-    adj_list.add_node(1, 3, 0, data_structure::NodeIndexandEdge{0, 0});
-
+    int i = -3, j = -2;
+    FixedEdged_DAL<int> adj_list;
+    adj_list.add_node(i, 3);
+    adj_list.add_node(j, 3, 0, ConnectionPoint{0, 0});
     CHECK(adj_list.get_num_nodes() == 2);
-
     CHECK(adj_list.has_parent(0) == false);
     CHECK(adj_list.has_parent(1) == true);
+    CHECK(adj_list.get_parent_index(1) == 0);
+    CHECK(adj_list.get_parent_end_index(1) == 0);
   }
-
-
-
-  SUBCASE("test directed copy") {
-    auto adj_list = data_structure::FixedEdged_DAL<int>();
-    adj_list.add_node(0, 3);
-    adj_list.add_node(1, 3, 0, data_structure::NodeIndexandEdge{0, 0});
-
-    auto adj_list_2 = data_structure::FixedEdged_DAL<int>(adj_list);
-
-    adj_list.remove_node(0);
-
-    CHECK(adj_list_2.get_num_nodes() == 2);
-
-    CHECK(adj_list_2.has_parent(0) == false);
-    CHECK(adj_list_2.has_parent(1) == true);
-
-    adj_list_2.add_node(2, 3, 0, data_structure::NodeIndexandEdge{1, 1});
-
-    CHECK(adj_list_2.get_num_nodes() == 3);
-  }  */
-
   SUBCASE("test directed copying") {
     int i = 0, j = 1;
     FixedEdged_DAL<int> adj_list;
@@ -184,5 +171,7 @@ TEST_CASE("Test Graph Data Structure ") {
     adj_list.remove_node(0);
     CHECK(adj_list_2.get_num_connections() == 1);
     CHECK(adj_list_2.get_num_nodes() == 2);
+    CHECK(adj_list_2.get_parent_index(1) == 0);
+    CHECK(adj_list_2.get_parent_end_index(1) == 0);
   }
 }
