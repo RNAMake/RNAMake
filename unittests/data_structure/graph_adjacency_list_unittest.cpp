@@ -5,10 +5,19 @@
 #include "../common.hpp"
 #include <iostream>
 
-#include <data_structure/graph/graph_base.h>
 #include <data_structure/graph/graph_adjacency_list.h>
 
 TEST_CASE("Test Graph Data Structure ") {
+  using namespace data_structure::graph;
+  SUBCASE("test basic adjacency list") {
+    int i = 0;
+    AdjList<int, FixedEdges> adj_list;
+    CHECK(adj_list.get_num_nodes() == 0);
+    adj_list.add_node(i, 0);
+    CHECK(adj_list.get_num_nodes() == 1);
+    CHECK(adj_list.get_num_connections() == 0);
+  }
+
   SUBCASE("testing adding nodes and edges") {
     //auto adj_list = data_structure::graph::FixedEdged_AL<int>();
     //adj_list.add_node(0, 3);

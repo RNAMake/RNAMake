@@ -29,7 +29,7 @@ public:
 // @brief holds data and the index of a given node
 template <typename DataType> class Node {
 public:
-  inline Node(DataType &data, const Index index)
+  inline Node(DataType &data, Index index)
       : _data(std::move(data)), _index(index) {}
 
 public:
@@ -84,7 +84,7 @@ public:
 public: // getters
   /// @brief get other node in the connection
   [[nodiscard]] Index get_partner(Index) const;
-  /// @brief get index of edge a node is connected in 
+  /// @brief get index of edge a node is connected in
   [[nodiscard]] Index get_edge_index(Index index) const;
   /// @brief
   [[nodiscard]] String get_str() const;
@@ -95,6 +95,7 @@ public:         // members
   Index edge_i; // index of edge of connection in node 1
   Index edge_j; // index of edge of connection in node 2
 };
+
 
 // typedefs
 typedef std::vector<Connection const *> Connections;
