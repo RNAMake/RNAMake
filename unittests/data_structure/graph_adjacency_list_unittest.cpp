@@ -24,6 +24,8 @@ TEST_CASE("Test Graph Data Structure ") {
       adj_list.add_node(i, 1);
       adj_list.set_node_data(0, j);
       CHECK(adj_list.get_node_data(0) == 1);
+      adj_list.get_node_data(0) = 5;
+      CHECK(adj_list.get_node_data(0) == 5);
     }
     SUBCASE("test add connection") {
       int i = 0, j = 1;

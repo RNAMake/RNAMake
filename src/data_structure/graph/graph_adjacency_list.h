@@ -185,6 +185,11 @@ public: // setters ////////////////////////////////////////////////////////////
     _nodes.find(ni)->second.set_data(data);
   }
 
+  [[nodiscard]] Data &get_node_data(Index ni) {
+    _error_if_node_not_exist(ni);
+    return _nodes.find(ni)->second.get_data();
+  }
+
 protected: // internal functions //////////////////////////////////////////////
   void _update_dyanmic_edges(ConnectionPoint const &cp) {
     _error_if_node_not_exist(cp.ni);
@@ -229,7 +234,7 @@ protected: // internal functions //////////////////////////////////////////////
   }
 
 protected: // error checks ////////////////////////////////////////////////////
-  void _error_if_connection_point_empty(const ConnectionPoint & cp) const {
+  void _error_if_connection_point_empty(const ConnectionPoint &cp) const {
     if (connection_point_empty(cp.ni, cp.ei)) {
       String msg = "cannot get paired connection point for: " + cp.get_str() +
                    " its empty!";
@@ -286,7 +291,7 @@ public:
   Index add_node(Data &d, Size n_edges, Index n_edge_index,
                  const ConnectionPoint &cp) {
     // not sure why this would happen but will catch anyway
-    if(n_edges < n_edge_index) {
+    if (n_edges < n_edge_index) {
       String msg = "n_edges must be greater than n_edge_index";
       base::log_and_throw<GraphException>(msg);
     }
@@ -318,7 +323,7 @@ public:
 
   [[nodiscard]] Index get_parent_index(Index ni) const {
     this->_error_if_node_not_exist(ni);
-    if(parent_.at(ni) == -1) {
+    if (parent_.at(ni) == -1) {
       String msg = "node does not have a parent cannot get parent index";
       base::log_and_throw<GraphException>(msg);
     }
