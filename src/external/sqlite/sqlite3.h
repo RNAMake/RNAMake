@@ -4585,7 +4585,7 @@ SQLITE_API const char *sqlite3_column_origin_name(sqlite3_stmt*,int);
 SQLITE_API const void *sqlite3_column_origin_name16(sqlite3_stmt*,int);
 
 /*
-** CAPI3REF: Declared Datatype Of A Query Result
+** CAPI3REF: Declared Data Of A Query Result
 ** METHOD: sqlite3_stmt
 **
 ** ^(The first parameter is a [prepared statement].

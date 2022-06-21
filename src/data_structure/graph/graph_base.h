@@ -35,6 +35,8 @@ public:
 public:
   inline DataType const &get_data() const { return _data; }
 
+  inline DataType &get_data() { return _data; }
+
   [[nodiscard]] inline Index get_index() const { return _index; }
 
 public:
