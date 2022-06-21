@@ -21,13 +21,18 @@ public: // construction ///////////////////////////////////////////////////////
 
   virtual ~_Graph() = default;
 
-public:
+public: // iteration //////////////////////////////////////////////////////////
   typedef typename IterList::const_iterator const_iterator;
 
   const_iterator begin() const noexcept { return iter_list_.begin(); }
   const_iterator end() const noexcept { return iter_list_.end(); }
 
-public:
+public: // operators //////////////////////////////////////////////////////////
+  Data & operator[](Index ni) {
+    return get_node_data(ni);
+  }
+
+public: // transversal ////////////////////////////////////////////////////////
   void setup_transversal(Index start_n) {
     iter_list_.transversal(adjacency_list_, start_n);
   }
@@ -36,7 +41,7 @@ public:
     iter_list_.path_transversal(adjacency_list_, start_n, end_n);
   }
 
-public:
+public: // node and connection management  ////////////////////////////////////
   virtual inline Index add_node(Data &d, Size n_edges) {
     return adjacency_list_.add_node(d, n_edges);
   }
@@ -78,18 +83,18 @@ public:
     return adjacency_list_.get_node_data(ni);
   }
 
-  /*inline ConnectionPoint
-  get_connected_node_info(ConnectionPoint const &nei) const {
-    return adjacency_list_.get_connected_node_info(nei);
+  inline ConnectionPoint
+  get_paired_connection_point(ConnectionPoint const &nei) const {
+    return adjacency_list_.get_paired_connection_point(nei);
   }
 
-  inline bool edge_between_nodes(Index n1, Index n2) const {
-    return adjacency_list_.edge_between_nodes(n1, n2);
+  inline bool are_nodes_connected(Index n1, Index n2) const {
+    return adjacency_list_.are_nodes_connected(n1, n2);
   }
 
-  inline bool edge_index_empty(Index ni, Index ei) const {
-    return adjacency_list_.edge_index_empty(ni, ei);
-  }    */
+  inline bool connection_point_empty(Index ni, Index ei) const {
+    return adjacency_list_.connection_point_empty(ni, ei);
+  }
 
 public: // setters ////////////////////////////////////////////////////////////
   inline void set_node_data(Index ni, Data & d) {

@@ -45,62 +45,66 @@ TEST_CASE("Test Graph Data Structure ") {
     g3.add_connection(ConnectionPoint{0, 0}, ConnectionPoint{1, 0});
   }
   SUBCASE("test setting new values") {
-    int i = 0, j = 1, k = 2, l = 3;
+    std::vector<int> data = {0, 1, 2, 3, 4, 5, 6, 7};
     auto g = FixedEdgeDirectedGraph<int>();
-    g.add_node(i, 3);
-    g.add_node(j, 3, 0, ConnectionPoint{0, 0});
-    g.set_node_data(0, k);
-    CHECK(g.get_node_data(0) == k);
-    g.get_node_data(0) = l;
-    CHECK(g.get_node_data(0) == l);
-
+    g.add_node(data[0], 3);
+    g.add_node(data[1], 3, 0, ConnectionPoint{0, 0});
+    g.set_node_data(0, data[2]);
+    CHECK(g.get_node_data(0) == data[2]);
+    g.get_node_data(0) = data[3];
+    CHECK(g.get_node_data(0) == data[3]);
+    g[0] = data[4];
+    CHECK(g[0] == data[4]);
+    g.setup_transversal(0);
+    for (auto const &n : g) {
+      g[n->get_index()] = data[5];
+      CHECK(n->get_data() == data[5]);
+    }
   }
-
-  /*SUBCASE("test new types") {
-
+  SUBCASE("test new types") {
     struct X {
       int x;
       int y;
     };
-
-    auto g1 = data_structure::FixedEdgeDirectedGraph<X>();
-    g1.add_node(X{0, 0}, 3);
-
-    CHECK(g1.get_node_data(0).x == 0);
-
+    FixedEdgeDirectedGraph<X> g1;
+    X x1 = {1, 1};
+    g1.add_node(x1, 3);
+    CHECK(g1.get_node_data(0).x == 1);
     g1.setup_transversal(0);
     int i = 0;
     for (auto const &n : g1) {
       i++;
     }
+    CHECK(i == 1);
   }
-
   SUBCASE("test iteration forwarding") {
     struct GraphStruct {
     public:
-      GraphStruct() : graph_(data_structure::FixedEdgeDirectedGraph<int>()) {}
-
-    public:
       typedef
-          typename data_structure::FixedEdgeDirectedGraph<int>::const_iterator
-              const_iterator;
-      typedef typename data_structure::FixedEdgeDirectedGraph<int>::iterator
-          iterator;
-
-      iterator begin() { return graph_.begin(); }
-      iterator end() { return graph_.end(); }
-
-      const_iterator begin() const { return graph_.begin(); }
+          typename FixedEdgeDirectedGraph<int>::const_iterator const_iterator;
+      const_iterator begin() const {
+        graph_.setup_transversal(0);
+        return graph_.begin();
+      }
       const_iterator end() const { return graph_.end(); }
 
+    public:
+      int add_node() {
+        int i = 1;
+        return graph_.add_node(i, 1);
+      }
+
     private:
-      data_structure::FixedEdgeDirectedGraph<int> graph_;
+      mutable FixedEdgeDirectedGraph<int> graph_;
     };
 
-    int i = 0;
     auto gs = GraphStruct();
+    gs.add_node();
+    gs.add_node();
+    int i = 0;
     for (auto &n : gs) {
       i++;
     }
-  }*/
+    CHECK(i == 2);
+  }
 }
