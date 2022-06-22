@@ -4,7 +4,4 @@
 
 #include "primitives/chain.h"
 
-namespace primitives {
-
-
-}
+namespace primitives {}

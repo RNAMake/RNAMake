@@ -3,10 +3,9 @@
 #include "../common.hpp"
 
 #include <map>
-
 #include <util/uuid.h>
 
-TEST_CASE( "Test unique indentifiers for finding objects" ) {
+TEST_CASE("Test unique indentifiers for finding objects") {
   using namespace util;
   SUBCASE("test trival") {
     Uuid uuid1 = generate_uuid();
@@ -21,5 +20,10 @@ TEST_CASE( "Test unique indentifiers for finding objects" ) {
     Uuid uuid_copy = uuid1;
     CHECK(uuid_copy.str() == uuid_str);
   }
-    
+  SUBCASE("test hashing") {
+    Uuid uuid1 = generate_uuid();
+    std::map<Uuid, int> map;
+    map[uuid1] = 10;
+    CHECK(map.find(uuid1) != map.end());
+  }
 }
