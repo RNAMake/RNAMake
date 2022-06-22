@@ -13,73 +13,18 @@
 #include <iostream>
 
 //RNAMake Headers
+#include <external/sole/sole.hpp>
 #include <base/types.hpp>
 
 namespace util {
+  typedef sole::uuid Uuid;
+  Uuid generate_uuid() {
+    return sole::uuid0();
+  }
 
-  class Uuid {
-  public:
-      Uuid();
-
-      Uuid(Uuid const &uuid) :
-              id_(uuid.id_) {}
-
-      ~Uuid() {}
-
-  public:
-
-
-      inline
-      bool
-      operator==(Uuid const &uuid) const {
-          return id_ == uuid.id_;
-      }
-
-      inline
-      bool
-      operator!=(Uuid const &uuid) const {
-          return id_ != uuid.id_;
-      }
-
-      inline
-      bool
-      operator<(Uuid const &uuid) const {
-          return id_ < uuid.id_;
-      }
-
-      inline
-      bool
-      operator>(Uuid const &uuid) const {
-          return id_ > uuid.id_;
-      }
-
-      friend
-      std::ostream &
-      operator<<(
-              std::ostream &stream,
-              Uuid const &uuid) {
-          stream << uuid.id_;
-          return stream;
-      }
-
-      uint64_t
-      get_id() const { return id_; }
-
-
-  private:
-      uint64_t id_;
-
-  };
-
-  typedef std::shared_ptr<Uuid> UuidOP;
-
-  struct UuidCompare {
-      bool operator()(
-              Uuid const & u1,
-              Uuid const & u2) const {
-          return u1.get_id() < u2.get_id();
-      }
-  };
+  Uuid uuid_from_str(const String & str) {
+    return sole::rebuild(str);
+  }
 
 }
 

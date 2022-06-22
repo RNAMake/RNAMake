@@ -4,31 +4,22 @@
 
 #include <map>
 
-#include "base/settings.h"
-#include "base/file_io.h"
-#include "util/uuid.h"
+#include <util/uuid.h>
 
 TEST_CASE( "Test unique indentifiers for finding objects" ) {
+  using namespace util;
+  SUBCASE("test trival") {
+    Uuid uuid1 = generate_uuid();
+    Uuid uuid2 = generate_uuid();
+    CHECK(uuid1 != uuid2);
+  }
+  SUBCASE("test comparsions") {
+    String uuid_str = "3f49aaa8-d40b-003a-2efb-46f2ed9c470b";
+    Uuid uuid1 = uuid_from_str(uuid_str);
+    Uuid uuid2 = generate_uuid();
+    CHECK(uuid1 != uuid2);
+    Uuid uuid_copy = uuid1;
+    CHECK(uuid_copy.str() == uuid_str);
+  }
     
-    SUBCASE("test comparing unique indentifiers") {
-        auto u1 = util::Uuid(), u2 = util::Uuid();
-        auto u3 = u1;
-        
-        CHECK(!(u1 == u2));
-        CHECK(u1 == u3);
-    }
-    
-    SUBCASE("test using uuids with maps") {
-        auto uuid_int_map = std::map<util::Uuid, int, util::UuidCompare>();
-        auto u1 = util::Uuid();
-        uuid_int_map[u1] = 1;
-        
-        for(int i = 0; i < 1000; i++) {
-            auto u = util::Uuid();
-            uuid_int_map[u] = 1;
-        }
-        
-        CHECK(uuid_int_map.find(u1) != uuid_int_map.end());
-    }
-
 }
