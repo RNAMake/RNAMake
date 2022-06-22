@@ -11,9 +11,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-//#include <math/numerical.h>
 
 // RNAMAke headers
+#include <math/numerical.hpp>
 #include <math/matrix_3x3.hpp>
 #include <math/vector_3.hpp>
 
@@ -250,7 +250,5 @@ extern struct_Gvars Gvars;
 #define PDBX "PDBx:"
 #define O2_STACK "o2_stack.dat"
 /* personal_end */
-
-#include <util/x3dna_fncs.h>
 
 #endif /* _X3DNA_H */

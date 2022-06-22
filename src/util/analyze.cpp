@@ -1,7 +1,8 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wwritable-strings"
 
-#include "x3dna_src.h"
+#include <util/x3dna_src.h>
+#include <util/x3dna_fncs.h>
 #include <iostream>
 #include <vector>
 

@@ -3,6 +3,8 @@
 /* alc2img.c */
 /* ana_fncs.c */
 
+#include <util/x3dna_src.h>
+
 void populate_nt_info(long num_residue, long **seidx, char **ResName,
                       char *ChainID, long *ResSeq, char **Miscs, char *bseq,
                       char **nt_info);
