@@ -5,12 +5,10 @@
 #include <limits>
 #include <vector>
 
-//#include <math/quaternion.h>
 #include <base/types.hpp>
 #include <math/matrix_3x3.hpp>
 #include <math/vector_3.hpp>
 #include <nlohmann/json.hpp>
-//#include <base/sys_interface.h>
 
 // TODO : math::Quaternion class does not exist, fix and then remove the
 // comments

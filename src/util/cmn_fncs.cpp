@@ -2,7 +2,9 @@
 #pragma GCC diagnostic ignored "-Wwritable-strings"
 
 #include <string>
+
 #include <util/x3dna_src.h>
+#include <util/x3dna_fncs.h>
 
 using namespace std;
 

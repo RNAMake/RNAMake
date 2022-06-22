@@ -7,9 +7,7 @@
 
 #include <queue>
 
-#include <base/assertions.h>
 #include <base/types.hpp>
-#include <base/vector_container.h>
 #include <data_structure/graph_adjacency_list.h>
 #include <data_structure/graph_base.h>
 #include <data_structure/graph_iter_list.h>

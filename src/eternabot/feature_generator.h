@@ -11,8 +11,8 @@
 
 #include <stdio.h>
 
-#include "secondary_structure/pose.h"
-#include "vienna/vienna.h"
+#include <secondary_structure/pose.h>
+#include <vienna/vienna.h>
 
 namespace eternabot {
 

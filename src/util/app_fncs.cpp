@@ -1,7 +1,7 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wwritable-strings"
 
-#include <util/x3dna_src.h>
+#include <util/x3dna_fncs.h>
 
 /* global variables definition */
 struct_Gvars Gvars;

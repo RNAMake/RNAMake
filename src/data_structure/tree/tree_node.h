@@ -17,8 +17,8 @@
 #include <vector>
 
 // RNAMake Headers
-#include "base/types.hpp"
-#include "data_structure/tree/tree_node.fwd.hh"
+#include <base/types.hpp>
+#include <data_structure/tree/tree_node.fwd.hh>
 
 namespace data_structure {
 namespace tree {

@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include <base/assertions.h>
 #include <base/types.hpp>
 
 namespace data_structure {

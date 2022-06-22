@@ -17,8 +17,8 @@
 #include <stdio.h>
 #include <typeinfo>
 
-#include "data_structure/graph/graph_node.fwd.h"
-#include "data_structure/graph/graph_node.h"
+#include <data_structure/graph/graph_node.fwd.h>
+#include <data_structure/graph/graph_node.h>
 #include <base/types.hpp>
 
 namespace data_structure {

@@ -5,8 +5,8 @@
 #define __FIND_PAIR_H__
 
 #include <math/numerical.hpp>
+#include <util/x3dna_fncs.h>
 #include <util/x3dna.h>
-#include <util/x3dna_src.h>
 
 namespace util {
 

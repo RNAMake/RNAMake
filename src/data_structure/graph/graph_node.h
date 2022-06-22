@@ -16,8 +16,8 @@
 #include <stdexcept>
 #include <stdio.h>
 
-#include "base/types.hpp"
-#include "data_structure/graph/graph_node.fwd.h"
+#include <data_structure/graph/graph_node.fwd.h>
+#include <base/types.hpp>
 
 namespace data_structure {
 namespace graph {

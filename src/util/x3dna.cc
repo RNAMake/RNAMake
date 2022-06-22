@@ -11,7 +11,6 @@
 
 // RNAMake Headers
 #include <math/matrix_3x3.hpp>
-#include <util/find_pair.h>
 #include <util/x3dna.h>
 
 namespace util {
@@ -45,8 +44,8 @@ math::Vector3 X3dna::_convert_string_to_point(String const &str) const {
 
 void X3dna::_parse_ref_frame_file(String const &pdb_path,
                                   X3Basepairs &basepairs) const {
-  auto finder = PairFinder(pdb_path);
-  finder.find_pair(basepairs);
+  //auto finder = PairFinder(pdb_path);
+  //finder.find_pair(basepairs);
 }
 
 Strings X3dna::_split_over_white_space(String const &str) const {

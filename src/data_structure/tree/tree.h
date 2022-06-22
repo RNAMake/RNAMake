@@ -16,9 +16,9 @@
 #include <stdio.h>
 
 // RNAMAke Headers
-#include "base/types.hpp"
-#include "data_structure/tree/tree_node.fwd.hh"
-#include "data_structure/tree/tree_node.h"
+#include <base/types.hpp>
+#include <data_structure/tree/tree_node.fwd.hh>
+#include <data_structure/tree/tree_node.h>
 
 namespace data_structure {
 namespace tree {

@@ -11,13 +11,13 @@
 
 #include <stdio.h>
 
-#include "eternabot/feature_generator.h"
-#include "eternabot/strategy.h"
-#include "eternabot/strategy/a_basic_test.h"
-#include "eternabot/strategy/berex_test.h"
-#include "eternabot/strategy/clear_plot.h"
-#include "eternabot/strategy/direction_of_gc.h"
-#include "eternabot/strategy/num_of_yellow.h"
+#include <eternabot/feature_generator.h>
+#include <eternabot/strategy.h>
+#include <eternabot/strategy/a_basic_test.h>
+#include <eternabot/strategy/berex_test.h>
+#include <eternabot/strategy/clear_plot.h>
+#include <eternabot/strategy/direction_of_gc.h>
+#include <eternabot/strategy/num_of_yellow.h>
 
 namespace eternabot {
 

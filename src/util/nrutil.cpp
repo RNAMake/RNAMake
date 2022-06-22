@@ -2,6 +2,7 @@
 #pragma GCC diagnostic ignored "-Wwritable-strings"
 
 #include <util/x3dna_src.h>
+#include <util/x3dna_fncs.h>
 
 /* standard error handler */
 void nrerror(char *error_text) {
