@@ -15,5 +15,5 @@ public:
       : std::runtime_error(message) {}
 };
 
-}// namespace util
-#endif//RNAMAKE_SRC_UTIL_SQLITE_EXCEPTION_HPP_
+} // namespace util
+#endif // RNAMAKE_SRC_UTIL_SQLITE_EXCEPTION_HPP_

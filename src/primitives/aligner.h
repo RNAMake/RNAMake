@@ -9,31 +9,22 @@
 
 namespace primitives {
 
-  template <typename SegmentType, typename BasepairType>
-  class Aligner  {
-  public:
-      typedef std::shared_ptr<SegmentType> SegmentTypeOP;
+template <typename SegmentType, typename BasepairType> class Aligner {
+public:
+  typedef std::shared_ptr<SegmentType> SegmentTypeOP;
 
-  public:
-      Aligner() {}
+public:
+  Aligner() {}
 
-      ~Aligner() {}
+  ~Aligner() {}
 
-  public:
-      virtual
-      void
-      align(
-              BasepairType const & ref_bp,
-              SegmentType & seg) const = 0;
+public:
+  virtual void align(BasepairType const &ref_bp, SegmentType &seg) const = 0;
 
-      virtual
-      SegmentTypeOP
-      get_aligned(
-              BasepairType const & ref_bp,
-              SegmentType const & seg) const = 0;
-  };
+  virtual SegmentTypeOP get_aligned(BasepairType const &ref_bp,
+                                    SegmentType const &seg) const = 0;
+};
 
-}
+} // namespace primitives
 
-
-#endif //RNAMAKE_NEW_ALIGNER_H
+#endif // RNAMAKE_NEW_ALIGNER_H

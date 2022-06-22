@@ -4,7 +4,4 @@
 
 #include "primitives/residue.h"
 
-namespace primitives {
-
-
-}
+namespace primitives {}
