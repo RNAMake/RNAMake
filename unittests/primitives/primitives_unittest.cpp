@@ -27,7 +27,10 @@ TEST_CASE("brief test of primitive functionility") {
     }
     SUBCASE("test name construction") {
       primitives::Residue r1 = {'A', 1, 'A', ' ', util::generate_uuid()};
-      
+      primitives::Residue r2 = {'A', 1, 'A', ' ', util::generate_uuid()};
+      String bp_name =
+          primitives::generate_bp_name<primitives::Residue>(r1, r2);
+      std::cout << bp_name << std::endl;
     }
   }
 }

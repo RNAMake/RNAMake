@@ -17,8 +17,8 @@ namespace util {
 PairFinder::PairFinder(string pdb) {
   char *c = &pdb[0];
 
-  sprintf(args.pdbfile, c);
-  sprintf(args.outfile, "stdout");
+  sprintf(_args.pdbfile, c);
+  sprintf(_args.outfile, "stdout");
 
   util::x3dna::X3dna::X3BPInfo *bp_info;
 }
@@ -80,21 +80,24 @@ void PairFinder::_write_fpmst(double *morg, double *morien, FILE *rframe,
   auto r = math::Matrix3x3(rs[0].get_x(), rs[0].get_y(), rs[0].get_z(),
                            rs[1].get_x(), rs[1].get_y(), rs[1].get_z(),
                            rs[2].get_x(), rs[2].get_y(), rs[2].get_z());
-  auto res1 = util::x3dna::X3dna::X3Residue{bp_info->res1_num, bp_info->res1_chain_id, ' '};
-  auto res2 = util::x3dna::X3dna::X3Residue{bp_info->res2_num, bp_info->res2_chain_id, ' '};
+  auto res1 = util::x3dna::X3dna::X3Residue{bp_info->res1_num,
+                                            bp_info->res1_chain_id, ' '};
+  auto res2 = util::x3dna::X3dna::X3Residue{bp_info->res2_num,
+                                            bp_info->res2_chain_id, ' '};
 
   const double max_distance = 3.5;
 
   if (bp_info->res1_name == 'A' && bp_info->res2_name == 'U') {
 
-    math::Vector3 vector1 = atoms[pair(res1.num, "N3")];
-    math::Vector3 vector2 = atoms[pair(res2.num, "N1")];
-    math::Vector3 vector3 = atoms[pair(res1.num, "O4")];
-    math::Vector3 vector4 = atoms[pair(res2.num, "N6")];
+    math::Vector3 vector1 = _atoms[pair(res1.num, "N3")];
+    math::Vector3 vector2 = _atoms[pair(res2.num, "N1")];
+    math::Vector3 vector3 = _atoms[pair(res1.num, "O4")];
+    math::Vector3 vector4 = _atoms[pair(res2.num, "N6")];
 
     if (vector1.distance(vector2) <= max_distance &&
         vector3.distance(vector4) <= max_distance) {
-      auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r, util::x3dna::X3dnaBPType::cWUW};
+      auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r,
+                                               util::x3dna::X3dnaBPType::cWUW};
       bps.push_back(bp);
     } else {
       LOG_INFO << "Removed baspair: " << res1.num << "|" << res2.num
@@ -104,14 +107,15 @@ void PairFinder::_write_fpmst(double *morg, double *morien, FILE *rframe,
 
   } else if (bp_info->res1_name == 'U' && bp_info->res2_name == 'A') {
 
-    math::Vector3 vector1 = atoms[pair(res1.num, "N1")];
-    math::Vector3 vector2 = atoms[pair(res2.num, "N3")];
-    math::Vector3 vector3 = atoms[pair(res1.num, "N6")];
-    math::Vector3 vector4 = atoms[pair(res2.num, "O4")];
+    math::Vector3 vector1 = _atoms[pair(res1.num, "N1")];
+    math::Vector3 vector2 = _atoms[pair(res2.num, "N3")];
+    math::Vector3 vector3 = _atoms[pair(res1.num, "N6")];
+    math::Vector3 vector4 = _atoms[pair(res2.num, "O4")];
 
     if (vector1.distance(vector2) <= max_distance &&
         vector3.distance(vector4) <= max_distance) {
-      auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r, util::x3dna::X3dnaBPType::cWUW};
+      auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r,
+                                               util::x3dna::X3dnaBPType::cWUW};
       bps.push_back(bp);
     } else {
       LOG_INFO << "Removed baspair: " << res1.num << "|" << res2.num
@@ -121,17 +125,18 @@ void PairFinder::_write_fpmst(double *morg, double *morien, FILE *rframe,
 
   } else if (bp_info->res1_name == 'G' && bp_info->res2_name == 'C') {
 
-    math::Vector3 vector1 = atoms[pair(res1.num, "O6")];
-    math::Vector3 vector2 = atoms[pair(res2.num, "N4")];
-    math::Vector3 vector3 = atoms[pair(res1.num, "N1")];
-    math::Vector3 vector4 = atoms[pair(res2.num, "N3")];
-    math::Vector3 vector5 = atoms[pair(res1.num, "N2")];
-    math::Vector3 vector6 = atoms[pair(res2.num, "O2")];
+    math::Vector3 vector1 = _atoms[pair(res1.num, "O6")];
+    math::Vector3 vector2 = _atoms[pair(res2.num, "N4")];
+    math::Vector3 vector3 = _atoms[pair(res1.num, "N1")];
+    math::Vector3 vector4 = _atoms[pair(res2.num, "N3")];
+    math::Vector3 vector5 = _atoms[pair(res1.num, "N2")];
+    math::Vector3 vector6 = _atoms[pair(res2.num, "O2")];
 
     if (vector1.distance(vector2) <= max_distance &&
         vector3.distance(vector4) <= max_distance &&
         vector5.distance(vector6) <= max_distance) {
-      auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r, util::x3dna::X3dnaBPType::cWUW};
+      auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r,
+                                               util::x3dna::X3dnaBPType::cWUW};
       bps.push_back(bp);
     } else {
       LOG_INFO << "Removed baspair: " << res1.num << "|" << res2.num
@@ -141,17 +146,18 @@ void PairFinder::_write_fpmst(double *morg, double *morien, FILE *rframe,
 
   } else if (bp_info->res1_name == 'C' && bp_info->res2_name == 'G') {
 
-    math::Vector3 vector1 = atoms[pair(res1.num, "N4")];
-    math::Vector3 vector2 = atoms[pair(res2.num, "O6")];
-    math::Vector3 vector3 = atoms[pair(res1.num, "N3")];
-    math::Vector3 vector4 = atoms[pair(res2.num, "N1")];
-    math::Vector3 vector5 = atoms[pair(res1.num, "O2")];
-    math::Vector3 vector6 = atoms[pair(res2.num, "N2")];
+    math::Vector3 vector1 = _atoms[pair(res1.num, "N4")];
+    math::Vector3 vector2 = _atoms[pair(res2.num, "O6")];
+    math::Vector3 vector3 = _atoms[pair(res1.num, "N3")];
+    math::Vector3 vector4 = _atoms[pair(res2.num, "N1")];
+    math::Vector3 vector5 = _atoms[pair(res1.num, "O2")];
+    math::Vector3 vector6 = _atoms[pair(res2.num, "N2")];
 
     if (vector1.distance(vector2) <= max_distance &&
         vector3.distance(vector4) <= max_distance &&
         vector5.distance(vector6) <= max_distance) {
-      auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r, util::x3dna::X3dnaBPType::cWUW};
+      auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r,
+                                               util::x3dna::X3dnaBPType::cWUW};
       bps.push_back(bp);
     } else {
       LOG_INFO << "Removed baspair: " << res1.num << "|" << res2.num
@@ -160,14 +166,15 @@ void PairFinder::_write_fpmst(double *morg, double *morien, FILE *rframe,
     }
   } else if (bp_info->res1_name == 'G' && bp_info->res2_name == 'U') {
 
-    math::Vector3 vector1 = atoms[pair(res1.num, "O6")];
-    math::Vector3 vector2 = atoms[pair(res2.num, "N3")];
-    math::Vector3 vector3 = atoms[pair(res1.num, "N1")];
-    math::Vector3 vector4 = atoms[pair(res2.num, "O2")];
+    math::Vector3 vector1 = _atoms[pair(res1.num, "O6")];
+    math::Vector3 vector2 = _atoms[pair(res2.num, "N3")];
+    math::Vector3 vector3 = _atoms[pair(res1.num, "N1")];
+    math::Vector3 vector4 = _atoms[pair(res2.num, "O2")];
 
     if (vector1.distance(vector2) <= max_distance &&
         vector3.distance(vector4) <= max_distance) {
-      auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r, util::x3dna::X3dnaBPType::cWUW};
+      auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r,
+                                               util::x3dna::X3dnaBPType::cWUW};
       bps.push_back(bp);
     } else {
       LOG_INFO << "Removed baspair: " << res1.num << "|" << res2.num
@@ -177,14 +184,15 @@ void PairFinder::_write_fpmst(double *morg, double *morien, FILE *rframe,
 
   } else if (bp_info->res1_name == 'U' && bp_info->res2_name == 'G') {
 
-    math::Vector3 vector1 = atoms[pair(res1.num, "N3")];
-    math::Vector3 vector2 = atoms[pair(res2.num, "O6")];
-    math::Vector3 vector3 = atoms[pair(res1.num, "O2")];
-    math::Vector3 vector4 = atoms[pair(res2.num, "N1")];
+    math::Vector3 vector1 = _atoms[pair(res1.num, "N3")];
+    math::Vector3 vector2 = _atoms[pair(res2.num, "O6")];
+    math::Vector3 vector3 = _atoms[pair(res1.num, "O2")];
+    math::Vector3 vector4 = _atoms[pair(res2.num, "N1")];
 
     if (vector1.distance(vector2) <= max_distance &&
         vector3.distance(vector4) <= max_distance) {
-      auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r, util::x3dna::X3dnaBPType::cWUW};
+      auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r,
+                                               util::x3dna::X3dnaBPType::cWUW};
       bps.push_back(bp);
     } else {
       LOG_INFO << "Removed baspair: " << res1.num << "|" << res2.num
@@ -193,42 +201,12 @@ void PairFinder::_write_fpmst(double *morg, double *morien, FILE *rframe,
     }
 
   } else {
-    auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r, util::x3dna::X3dnaBPType::cDDD};
+    auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r,
+                                             util::x3dna::X3dnaBPType::cDDD};
     bps.push_back(bp);
   }
 }
 
-/* print out selected list for checking: temporary */
-static void print_list(long num_residue, long **mylist, char *my_str,
-                       FILE *fp) {
-  long i, j, numb;
-
-  // frprintf(fp, "====================== %s ======================\n", my_str);
-  for (i = 1; i <= num_residue; i++) {
-    numb = mylist[i][0];
-    if (!numb)
-      continue;
-    // frprintf(fp, "%4ld[%+2ld]:", i, numb);
-    // for (j = 1; j <= labs(numb); j++)
-    //     // frprintf(fp, " %5ld", mylist[i][j]);
-    // frprintf(fp, "\n");
-  }
-  // frprintf(fp, "\n");
-}
-
-/* check if two lists are identical: same # & residue order */
-static int isequal_list(int *listA, int *listB) {
-  int i, is_equal = 0;
-
-  if (listA[0] == listB[0]) {
-    for (i = 1; i <= listA[0]; i++)
-      if (listA[i] != listB[i])
-        break;
-    if (i > listA[0])
-      is_equal = 1;
-  }
-  return is_equal;
-}
 
 /* find the best-paired residue id#
  * pair_stat[PSTNUM]:
@@ -1524,7 +1502,7 @@ void PairFinder::_duplex(long num, long num_residue, char *bseq, long **seidx,
   atom_idx(num, AtomName, NULL, idx);
 
   htm_water = lmatrix(1, 4, 0, num); /* HETATM and water index */
-  init_htm_water(args.waters, num, num_residue, idx, htm_water);
+  init_htm_water(_args.waters, num, num_residue, idx, htm_water);
   identify_htw(num_residue, seidx, RY, AtomName, ResName, ChainID, ResSeq,
                Miscs, xyz, htm_water);
 
@@ -1548,7 +1526,7 @@ void PairFinder::_duplex(long num, long num_residue, char *bseq, long **seidx,
       find_bestpair(nout, base_pairs, num_residue, bseq, seidx, RY, AtomName,
                     xyz, idx, orien, org, NC1xyz, ring_atom, misc_pars);
   if (!num_bp) {
-    no_basepairs(args.pdbfile, args.outfile, parfile);
+    no_basepairs(_args.pdbfile, _args.outfile, parfile);
     goto NO_BASE_PAIR; /* to clean up */
   }
 
@@ -1563,46 +1541,28 @@ void PairFinder::_duplex(long num, long num_residue, char *bseq, long **seidx,
   write_helix(num_helix, helix_idx, bp_idx, seidx, AtomName, ResName, ChainID,
               ResSeq, Miscs, xyz, base_pairs, htm_water, misc_pars);
 
-  if (args.curves) { /* generate Curves input file */
-    if (args.divide && num_helix > 1)
-      for (i = 1; i <= num_helix; i++)
-        curves_input(i, helix_idx[i][1], helix_idx[i][2], helix_idx[i][3],
-                     args.pdbfile, args.outfile, parfile, bp_idx, base_pairs,
-                     helix_idx[i][4], helix_idx[i][6]);
-    else
-      curves_input(0, 1, num_bp, num_bp, args.pdbfile, args.outfile, parfile,
-                   bp_idx, base_pairs, helix_idx[1][4], helix_idx[1][6]);
-  } else if (args.curves_plus) {
-    if (args.divide && num_helix > 1)
-      for (i = 1; i <= num_helix; i++)
-        curves_plus_input(i, helix_idx[i][1], helix_idx[i][2], helix_idx[i][3],
-                          args.pdbfile, args.outfile, parfile, bp_idx,
-                          base_pairs, helix_idx[i][4], helix_idx[i][6]);
-    else
-      curves_plus_input(0, 1, num_bp, num_bp, args.pdbfile, args.outfile,
-                        parfile, bp_idx, base_pairs, helix_idx[1][4],
-                        helix_idx[1][6]);
+  if (_args.curves) { /* generate Curves input file */
   } else {
     /* 3DNA/CEHS input file */
 
-    col_helices(num_helix, helix_idx, bp_idx, base_pairs, seidx, args.pdbfile,
+    col_helices(num_helix, helix_idx, bp_idx, base_pairs, seidx, _args.pdbfile,
                 ChainID, ResSeq);
 
-    if (args.divide && num_helix > 1)
+    if (_args.divide && num_helix > 1)
       for (i = 1; i <= num_helix; i++) {
 
         x3dna_input(i, helix_idx[i][1], helix_idx[i][2], helix_idx[i][3],
-                    args.pdbfile, args.outfile, parfile, args.hetatm, bp_idx,
+                    _args.pdbfile, _args.outfile, parfile, _args.hetatm, bp_idx,
                     helix_marker, helix_idx, base_pairs, seidx, ResName,
-                    ChainID, ResSeq, Miscs, bseq, misc_pars, args.detailed);
+                    ChainID, ResSeq, Miscs, bseq, misc_pars, _args.detailed);
       }
 
     else /* overall */
 
-      x3dna_input(0, 1, num_bp, num_bp, args.pdbfile, args.outfile, parfile,
-                  args.hetatm, bp_idx, helix_marker, helix_idx, base_pairs,
+      x3dna_input(0, 1, num_bp, num_bp, _args.pdbfile, _args.outfile, parfile,
+                  _args.hetatm, bp_idx, helix_marker, helix_idx, base_pairs,
                   seidx, ResName, ChainID, ResSeq, Miscs, bseq, misc_pars,
-                  args.detailed);
+                  _args.detailed);
   }
   free_lvector(bp_idx, 1, num_bp);
   free_lvector(helix_marker, 1, num_bp);
@@ -1687,17 +1647,17 @@ void PairFinder::_handle_str() {
   double **xyz;
   long num, num_residue, *ResSeq, *RY, **seidx;
 
-  del_extension(args.pdbfile, parfile);
+  del_extension(_args.pdbfile, parfile);
   /* read in the PDB file */
-  num = number_of_atoms(args.pdbfile, args.hetatm, Gvars.misc_pars.alt_list);
+  num = number_of_atoms(_args.pdbfile, _args.hetatm, Gvars.misc_pars.alt_list);
   AtomName = cmatrix(1, num, 0, 4);
   ResName = cmatrix(1, num, 0, 3);
   ChainID = cvector(1, num);
   ResSeq = lvector(1, num);
   xyz = dmatrix(1, num, 1, 3);
   Miscs = cmatrix(1, num, 0, NMISC);
-  read_pdb(args.pdbfile, NULL, AtomName, ResName, ChainID, ResSeq, xyz, Miscs,
-           args.hetatm, Gvars.misc_pars.alt_list);
+  read_pdb(_args.pdbfile, NULL, AtomName, ResName, ChainID, ResSeq, xyz, Miscs,
+           _args.hetatm, Gvars.misc_pars.alt_list);
 
   /* get the numbering information of each residue */
   seidx = residue_idx(num, ResSeq, Miscs, ChainID, ResName, &num_residue);
@@ -1728,7 +1688,7 @@ void PairFinder::find_pair(x3dna::X3dna::X3Basepairs &basepairs) {
 
   set_my_globals("find_pair");
 
-  std::ifstream infile(args.pdbfile);
+  std::ifstream infile(_args.pdbfile);
   std::string line;
 
   double x, y, z;
@@ -1764,7 +1724,7 @@ void PairFinder::find_pair(x3dna::X3dna::X3Basepairs &basepairs) {
       i++;
     }
     math::Vector3 v = math::Vector3(x, y, z);
-    atoms[std::pair(res_num, atom)] = v;
+    _atoms[std::pair(res_num, atom)] = v;
   }
 
   PairFinder::_handle_str();

@@ -7,6 +7,7 @@
 #include <math/numerical.hpp>
 #include <util/x3dna/x3dna.h>
 
+
 namespace util {
 
 class PairFinder {
@@ -39,7 +40,7 @@ private:
 
   std::vector<x3dna::X3dna::X3Basepair> bps;
 
-  std::map<std::pair<int, std::string>, math::Vector3> atoms;
+  std::map<std::pair<int, std::string>, math::Vector3> _atoms;
 
   math::Vector3s vectors;
 
@@ -57,7 +58,7 @@ private:
     long hjb = false;
   };
 
-  Args args = Args();
+  Args _args = Args();
 };
 
 } // namespace util
