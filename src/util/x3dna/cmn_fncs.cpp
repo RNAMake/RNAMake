@@ -3,8 +3,8 @@
 
 #include <string>
 
-#include <util/x3dna_src.h>
-#include <util/x3dna_fncs.h>
+#include <util/x3dna/x3dna_fncs.h>
+#include <util/x3dna/x3dna_src.h>
 
 using namespace std;
 

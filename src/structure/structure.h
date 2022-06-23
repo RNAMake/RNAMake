@@ -10,7 +10,7 @@
 #include <structure/basepair.h>
 #include <structure/chain.h>
 #include <structure/residue.h>
-#include <util/x3dna.h>
+#include <util/x3dna/x3dna.h>
 
 namespace structure {
 

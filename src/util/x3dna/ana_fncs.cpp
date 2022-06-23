@@ -1,7 +1,10 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wwritable-strings"
 
-#include <util/x3dna_fncs.h>
+#include <util/x3dna/x3dna_fncs.h>
+
+
+// this code is an unused file, you can safely delete once compiled;
 
 enum {
   TOR_XXX = 0,
@@ -5218,3 +5221,4 @@ void other_pars(long num_bp, char **bp_seq, long *bphlx, double **orien,
 
   close_file(fp);
 }
+

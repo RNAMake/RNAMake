@@ -12,7 +12,7 @@
 #include "motif/motif_factory.h"
 #include "secondary_structure/util.h"
 #include "structure/chain.h"
-#include "util/x3dna.h"
+#include "util/x3dna/x3dna.h"
 
 namespace motif {
 

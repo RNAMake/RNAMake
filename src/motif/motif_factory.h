@@ -12,7 +12,7 @@
 #include <filesystem>
 
 #include <stdio.h>
-#include <util/x3dna.h>
+#include <util/x3dna/x3dna.h>
 
 // RNAMake Headers
 #include "base/env_manager.h"

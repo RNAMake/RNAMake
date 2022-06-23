@@ -12,7 +12,7 @@
 #include <math/xyz_vector.h>
 #include <primitives/basepair.h>
 #include <structure/residue.h>
-#include <util/x3dna.h>
+#include <util/x3dna/x3dna.h>
 
 namespace structure {
 

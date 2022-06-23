@@ -1,10 +1,12 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wwritable-strings"
 
-#include <util/x3dna_src.h>
-#include <util/x3dna_fncs.h>
 #include <iostream>
+#include <util/x3dna/x3dna_fncs.h>
+#include <util/x3dna/x3dna_src.h>
 #include <vector>
+
+// safely delete this file after proper compilation
 
 using namespace std;
 

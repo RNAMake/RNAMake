@@ -15,7 +15,7 @@
 #include "motif/motif.h"
 #include "structure/chain.h"
 #include "structure/residue_type_set_manager.h"
-#include "util/x3dna.h"
+#include "util/x3dna/x3dna.h"
 
 namespace motif {
 
