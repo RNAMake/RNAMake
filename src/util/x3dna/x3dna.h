@@ -16,18 +16,16 @@
 #include <regex>
 #include <sstream>
 #include <stdexcept>
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <ctype.h>
-#include <errno.h>
-#include <limits.h>
-#include <math.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cassert>
+#include <cctype>
+#include <cerrno>
+#include <climits>
+#include <cmath>
+#include <cstdarg>
+#include <cstring>
+#include <ctime>
 
 // RNAMake Headers
 #include <base/paths.hpp>
@@ -36,8 +34,7 @@
 #include <math/numerical.hpp>
 #include <math/vector_3.hpp>
 
-namespace util {
-namespace x3dna {
+namespace util::x3dna {
 
 // lowercase x3dna is the namespace
 // uppercase X3dna is the object class
@@ -305,7 +302,6 @@ String get_str_from_x3dna_type(X3dnaBPType);
 String compare_bps(X3dna::X3Basepairs &, X3dna::X3Basepairs &);
 
 void json_cleanup();
-}
 } // namespace util
 
 template <typename T1, typename T2, typename T3>
@@ -344,7 +340,6 @@ struct triplet {
 #define BUF32 32
 #define BUF512 512
 #define BUF1K 1024
-#define BUF2K 2048
 #define BUFBIG 8192
 
 #define UNUSED_PARAMETER(x) (void)(x)
@@ -383,11 +378,6 @@ typedef struct {
 
   double o3p_dist;
 } miscPars;
-
-typedef struct {
-  std::vector<math::Vector3> vect;
-  std::vector<String> info_vect;
-} bp_vectors;
 
 typedef struct {
   double origin[3];
@@ -441,12 +431,9 @@ extern struct_Gvars Gvars;
 
 #define DEBUG_LEVEL 6
 
-#define SEPC '\t'        /* tab-delimited fields */
-#define WSPACES " ,\t\n" /* space, comma, tab & newline */
 #define SKIPS "#\0"      /* lines to be skipped */
 
 #define UNKATM "XX"
-#define DUMSTR "XXXXXX"
 #define SFACTOR 2L /* scale factor for increasing memory */
 #define PI 3.141592653589793
 #define XEPS 1.0e-7
@@ -492,38 +479,24 @@ extern struct_Gvars Gvars;
 #define HB_FILE                                                                \
   "hbonds_info.dat" /* H-bonding information <r3d_atom/stack2img> */
 #define LKG_FILE "bonds_lkg.dat"    /* bond linkage, as in HB_FILE */
-#define SNUM_FILE "serial_num.pdb"  /* PDB file with serial atom numbers */
-#define ATOMALC_FILE "atom_lkg.alc" /* atomic linkage <r3d_atom/stack2img> */
-#define BBLKALC_FILE "bblk_lkg.alc" /* base block linkage <pdb2img> */
 #define TMP_FILE "tmp_file"    /* temporary multiplets input file <find_pair> */
 #define MULBP_FILE "mulbp.inp" /* multiplets input file <find_pair> */
-#define ROTMAT_FILE "rotmat.dat" /* rotation matrix <rotate_mol> */
-#define VIEW1_FILE "pmiview1"    /* PMI view #1 file <rotate_mol> */
-#define VIEW2_FILE "pmiview2"    /* PMI view #2 file <rotate_mol> */
-#define VIEW3_FILE "pmiview3"    /* PMI view #3 file <rotate_mol> */
 
-#define NP 101L                       /* maximum number of pairs per base */
 #define BOND_UPPER_LIMIT 2.5          /* for function torsion */
 #define HTWIST0 0.05                  /* minimum helical twist */
 #define BOND_FACTOR 1.15              /* bond distance criterion */
 #define NBOND_FNUM 2.0                /* estimated # of bond from # of atoms */
 #define NON_WC_IDX 6                  /* non-Watson-Crick base index */
-#define AXIS_LENGTH 3.5               /* reference axis length */
-#define NUM_BASE_ATOMS BUF512         /* max. no. of base atoms in a residue */
 #define NUM_RESIDUE_ATOMS BUF512      /* max. no. of atoms in a residue */
-#define NUM_DINUCLEOTIDE_ATOMS BUFBIG /* max. no. of atoms per dinucleotide */
-#define EMPTY_NUMBER -9999.99
-#define EMPTY_CRITERION -9999
-#define MAXBASE 30000        /* maximum number of bases in regular/fiber */
+#define EMPTY_NUMBER (-9999.99)
+#define EMPTY_CRITERION (-9999)
 #define NELE 12              /* 12 elements */
 #define O3P_UPPER 2.5        /* upper limit for O3-P connection */
 #define RTNNUM 37            /* number of returned values from check_pair */
 #define PSTNUM 29            /* number of parameters kept in pair_stat */
 #define OLCRT 1.2            /* criterion for overlaps */
 #define MBASES 50            /* maximum bases per unit */
-#define MAXCH 100            /* maximum # of chains in a biological unit */
 #define END_STACK_XANG 125.0 /* find_pair; bdl070 (105 deg) */
-#define MAXCLEN 52           /* Maximum length of a color name */
 
 #define RA_LIST                                                                \
   " C4 ", " N3 ", " C2 ", " N1 ", " C6 ", " C5 ", " N7 ", " C8 ", " N9 "
@@ -536,8 +509,6 @@ extern struct_Gvars Gvars;
 
 #define WATER_LIST "H2O", "HHO", "OHH", "HOH", "OH2", "SOL", "WAT", "TIP"
 
-#define NUM_SAA 20 /* number of standard amino acids */
-#define NUM_ATM 12 /* number of side chain atoms, excluding Ca */
 #define AA_LIST                                                                \
   "ALA", "VAL", "PHE", "PRO", "MET", "ILE", "LEU", /* hydrophobic */           \
       "ASP", "GLU", "LYS", "ARG",                  /* charged */               \
@@ -546,28 +517,13 @@ extern struct_Gvars Gvars;
 
 #define OVERLAP 0.01
 
-#define PBLKALC_FILE "pblk_lkg.alc" /* peptide block linkage */
-#define SNAP_PEP_PDB "snap_pep.pdb"
-#define SNAP_PEP_ALC "snap_pep.alc"
-#define TRSP_RMS 0.25
-#define DUMCHAR '@'
-
 /* personal_begin */
 /* for snap */
-#define LBIG 1000000
 #define DNA_BASE "ACGT"
-#define SNAP_AAA "snap_aaa.pdb"
-#define ABLKALC_FILE                                                           \
-  "ablk_lkg.alc" /* amino acid planar moiety block linkage                     \
-                  */
-#define SNAP_NTS "snap_nts.pdb"
 #define SNAP_OPTS "snap_options"
 #define WITH_BASE 1 /* base or side-chain */
 #define WITH_BKBN 2 /* backbone */
-#define WITH_BOTH 3
 
-#define PDBX "PDBx:"
-#define O2_STACK "o2_stack.dat"
 /* personal_end */
 
 #endif /* _X3DNA_H */
@@ -741,22 +697,9 @@ void get_cntatom(long *ringlist, long **connect, long *idx);
 double get_oarea(long r1, long r2, long **ring_atom, double *oave, double *zave,
                  double **xyz, long only_ring);
 
-void verify_oarea(void);
-
-void cehs_base_atoms(char **AtomName, long ib, long ie, long *num_batom,
-                     long *batom);
-
 void cehs_bppar(double **rot1, double *org1, double **rot2, double *org2,
                 double *pars, double **mst_orien, double *mst_org);
 
-void cehs_pars(long num_bp, long istart, long istep, long **pair_num,
-               char **bp_seq, long **seidx, long **c6_c8, long *RY,
-               char **AtomName, char **ResName, char *ChainID, long *ResSeq,
-               char **Miscs, double **xyz, double *bp_orien, double *bp_org,
-               FILE *fp);
-
-void schnaap_global(long num_bp, long num, char **bp_seq, long **chi,
-                    double **xyz, double *bp_orien, double *bp_org, FILE *fp);
 
 void out_cehs(long num_bp, char **bp_seq, long *bphlx, double **orien,
               double **org, FILE *fp);
@@ -809,16 +752,6 @@ void out_rna(long ds, long num_bp, char **bp_seq, long *bphlx, double **orien,
 void other_pars(long num_bp, char **bp_seq, long *bphlx, double **orien,
                 double **org);
 
-/* analyze.c */
-
-/* anyhelix.c */
-
-/* app_fncs.c */
-
-long string_contains_only_those_characters(char *str, char *chars_set);
-
-void bpid_wc_str(long bpid, double zdir, char *wc);
-
 int case_strcmp(const char *s1, const char *s2);
 
 int case_strncmp(const char *s1, const char *s2, long n);
@@ -827,21 +760,9 @@ char *case_strstr(const char *haystack, const char *needle);
 
 char *case_strchr(const char *s, int c);
 
-void kbd_input(char *msg);
-
-long get_line_number(char *filename, long skips);
-
 long is_empty_string(const char *str);
 
 long is_equal_string(const char *str1, const char *str2);
-
-long is_equal_case_string(const char *str1, const char *str2);
-
-void null_line_comment(char *str);
-
-long is_comment_line(char *line);
-
-long is_empty_line(char *line);
 
 long is_skip_line(char *line);
 
@@ -855,9 +776,6 @@ void get_tag_string_pair(char *prefix, char *tag, char *btag, char *etag);
 void get_xml_tag(FILE *fpxml, char *prefix, char *line, char *connector,
                  char *tag, char *tag_str);
 
-void print_xml_tag(FILE *fpxml, char *prefix, char *line, char *tag, char *otag,
-                   FILE *fp);
-
 void get_xml_tag_long(FILE *fpxml, char *prefix, char *line, char *tag,
                       long *lval);
 
@@ -866,56 +784,23 @@ void get_xml_tag_double(FILE *fpxml, char *prefix, char *line, char *tag,
 
 long tag_match(char *prefix, char *line, char *tag);
 
-void extract_attribute(char *line, char *attr, char *attr_val, long to_lower);
-
-void print_ptable();
 
 long set_switch_default_true(char *option);
-
-void check_required_file(char *filename, char *invalid_str, char *msg);
-
-void define_frame_by_3atoms(long num, double **xyz, double **refmat);
-
-long get_xmlArgNumber(char *str, char *pstr);
 
 void base_frame(long num_residue, char *bseq, long **seidx, long *res_type,
                 char **AtomName, char **ResName, char *ChainID, long *ResSeq,
                 char **Miscs, double **xyz, char *BDIR, double **orien,
                 double **org);
 
-void peptide_info(long num_residue, long **seidx, char **AtomName,
-                  char **ResName, char *ChainID, long *ResSeq, char **Miscs,
-                  double **xyz, long *res_type, long *cidx, long *mchain);
-
-void base_blks(long num_residue, long *res_type, double **orien, double **org,
-               char *bseq, char *BDIR, char *alcfile);
-
 void set_default_misc_pars(miscPars *misc_pars);
 
-void lsplane_xyz(double **xyz, long num_plane, long *atom_plane, double **nxyz,
-                 double *z);
-
 long read_PairInfo(char *inpfile, long **pair_info);
-
-long is_linked_by_gap(long i, long j, double **o3_p);
 
 long is_linked(long i, long j, double **o3_p);
 
 double distance_ab(double **o3_p, long ia, long ib, long ipa, long ipb);
 
-void write_rotmat(double **rotmat);
-
-void read_rotmat(char *rotfile, double **rotmat);
-
 void reverse_y_z_columns(double **R);
-
-long get_num_nt(long num_residue, long *RY);
-
-void peptide_frame(long num_residue, char *BDIR, long *res_type, long *mchain,
-                   double **xyz, double **orien, double **org);
-
-void peptide_blks(long num_residue, char *BDIR, long *cidx, double **orien,
-                  double **org, char *alcfile);
 
 void set_my_globals(char *pgname);
 
@@ -923,122 +808,23 @@ void clear_my_globals(void);
 
 long check_global_options(char *option);
 
-void get_AA_frames(long num_residue, long **seidx, long *res_type,
-                   char **AtomName, char **ResName, char *ChainID, long *ResSeq,
-                   char **Miscs, double **xyz, char *BDIR, double **orien,
-                   double **org);
-
-void verify_Cb_coordinates(long nmatch, double **ePxyz, double **fitted_xyz);
-
-void residue_chain_resnum(char chain_id, long res_seq, char *misc, char *idmsg);
-
 void residue_strid(char chain_id, long res_seq, char *misc, char *rname,
                    char *idmsg);
 
 void convert_resNameSpace(char *resName, char replacement, char *newName);
 
-void get_planarFrame(char *aa, long pnum, char *planar_atoms[], char *BDIR,
-                     char *idmsg, long ib, long ie, char **AtomName,
-                     double **xyz, double *orien_i, double *org_i);
-
-void get_argFrame(char *BDIR, char *idmsg, long ib, long ie, char **AtomName,
-                  double **xyz, double *orien_i, double *org_i);
-
-void get_pheFrame(char *BDIR, char *idmsg, long ib, long ie, char **AtomName,
-                  double **xyz, double *orien_i, double *org_i);
-
-void get_tyrFrame(char *BDIR, char *idmsg, long ib, long ie, char **AtomName,
-                  double **xyz, double *orien_i, double *org_i);
-
-void get_trpFrame(char *BDIR, char *idmsg, long ib, long ie, char **AtomName,
-                  double **xyz, double *orien_i, double *org_i);
-
-void get_hisFrame(char *BDIR, char *idmsg, long ib, long ie, char **AtomName,
-                  double **xyz, double *orien_i, double *org_i);
-
-void get_lysFrame(char *BDIR, char *idmsg, long ib, long ie, char **AtomName,
-                  double **xyz, double *orien_i, double *org_i);
-
-void get_asnFrame(char *BDIR, char *idmsg, long ib, long ie, char **AtomName,
-                  double **xyz, double *orien_i, double *org_i);
-
-void get_glnFrame(char *BDIR, char *idmsg, long ib, long ie, char **AtomName,
-                  double **xyz, double *orien_i, double *org_i);
-
-void get_aspFrame(char *BDIR, char *idmsg, long ib, long ie, char **AtomName,
-                  double **xyz, double *orien_i, double *org_i);
-
-void get_gluFrame(char *BDIR, char *idmsg, long ib, long ie, char **AtomName,
-                  double **xyz, double *orien_i, double *org_i);
-
-void get_planarAA_frames(long num_residue, long **seidx, char **AtomName,
-                         char **ResName, char *ChainID, long *ResSeq,
-                         char **Miscs, double **xyz, long *res_type,
-                         long *cidx);
-
-void planarAA_blks(long num_residue, long **seidx, char **ResName, char *BDIR,
-                   long *cidx, double **paa_orien, double **paa_org,
-                   char *alcfile);
-
-void print_resid(long num_residue, long **seidx, char **ResName, char *ChainID,
-                 long *ResSeq, char **Miscs, long *res_type);
-
 void snap_atype(char **AtomName, long num_residue, long **seidx, long *res_type,
                 long **atom_cidx);
 
-long number_of_aa(long num_residue, long *res_type);
-
-long number_of_nt(long num_residue, long *res_type);
-
-void get_snap_par(double **rot1, double *org1, double **rot2, double *org2,
-                  char *direction, double *trs_dist, double *rot_dist,
-                  double *pars, double *orgP, double **rotP);
-
-void write_snap_par(FILE *fp, char *direction, double dist, double rot_ang,
-                    double *pars, double *orgP, double **rotP);
-
-void write_atom_xyz(FILE *fp, char *fmt, double *xyz, double dft);
-
-long set2frame(long inum, long *ivec, long **seidx, double **xyz, double *morg,
-               double **mst, long *serial, double **xyz_pair);
-
-long set2frameCa(long inum, long *ivec, long **seidx, long *res_type,
-                 char **AtomName, double **xyz, double *morg, double **mst,
-                 long *serial, double **xyz_pair);
-
-long get_nextModelNumber(char *pdbfile);
-
-void output_naa_str(char *filename, char *fmode, char *idmsg, long num,
-                    long *serial, char **AtomName, char **ResName,
-                    char *ChainID, long *ResSeq, double **xyz_pair,
-                    char **Miscs, long out_org);
-
 void cleanup_files(long renew, long cleanup);
-
-/* cehs.c */
-
-/* cmn_fncs.c */
-long set_3letter_base_pdb(char *res_name, char *spdb);
 
 void set_std_base_pdb(char *bdir, long irna, char bname, char *spdb);
 
-void set_std_base_pdb00(char *bdir, long irna, char bname, char *spdb);
-
-void print_used_time(time_t time0);
-
 void parcat(char *str, double par, char *format, char *bstr);
-
-void print_bp_crit(miscPars *misc_pars, FILE *fp);
 
 char *my_getline(FILE *fp);
 
-long csplit(char *str, char *item[], long itemsize, char sepc);
-
 char *trim(char *a);
-
-char *ltrim(char *a);
-
-char *rtrim(char *a);
 
 long itemize(char *str, char *item[], long itemsize);
 
@@ -1064,19 +850,10 @@ void mtx_2_x_y_z(double **mtx, double *x, double *y, double *z);
 void cehs_average(long inum_base, long *ivec, double **orien, double **org,
                   double **mst, double *morg);
 
-void geom_average(long inum_base, long *ivec, double **orien, double **org,
-                  double **mst, double *morg);
-
 void pair2mst(long inum_base, long *ivec, char **AtomName, char **ResName,
               char *ChainID, long *ResSeq, char **Miscs, double **xyz,
               double **orien, double **org, long **seidx, double *mst_orien,
               double *mst_org, long **htm_water, miscPars *misc_pars, FILE *fp);
-
-void get_chi_angle(long num_residue, long *RY, char *bseq, long **seidx,
-                   double **xyz, char **AtomName, char **ResName, char *ChainID,
-                   long *ResSeq, char **Miscs, double *chi, long **idxCN);
-
-FILE *open_tmpfile(void);
 
 FILE *open_file(char *filename, char *filemode);
 
@@ -1090,8 +867,6 @@ void rename_file(char *src, char *dst);
 
 void copy_file_pointer(FILE *fpi, FILE *fpo, char *msg);
 
-void cpcat_file(char *src, char *dst, char *method);
-
 long upperstr(char *a);
 
 long lowerstr(char *a);
@@ -1101,8 +876,6 @@ char *my_strdup(const char *src);
 void print_sep(FILE *fp, char x, long n);
 
 void check_slash(char *BDIR);
-
-void delete_end_slash(char *str);
 
 long lround(double d);
 
@@ -1136,27 +909,12 @@ void pdb_record(long ib, long ie, long *inum, long idx, char **AtomName,
                 char **ResName, char *ChainID, long *ResSeq, double **xyz,
                 char **Miscs, FILE *fp);
 
-void write_pdb(long num, char **AtomName, char **ResName, char *ChainID,
-               long *ResSeq, double **xyz, char **Miscs, char *pdbfile);
-
-void write_mmcif(long num, char **AtomName, char **ResName, char *ChainID,
-                 long *ResSeq, double **xyz, char *pdbfile);
-
-void write_pdbcnt(long num, char **AtomName, char **ResName, char *ChainID,
-                  long *ResSeq, double **xyz, long **connect, char *pdbfile);
-
 void move_position(double **d, long nr, long nc, double *mpos);
 
 long **residue_idx(long num, long *ResSeq, char **Miscs, char *ChainID,
                    char **ResName, long *num_residue);
 
-long frag_contain_metal(long ib, long ie, long *is_metal);
-
 void atom_metal(long num_atoms, char **AtomName, long *is_metal);
-
-void residue_wtype(long num_residue, long **seidx, char **ResName,
-                   char **AtomName, double **xyz, char **Miscs, long *res_type,
-                   long only_ntaa);
 
 long residue_ident(char **AtomName, double **xyz, char **Miscs, long ib,
                    long ie);
@@ -1176,8 +934,6 @@ void get_seq(long num_residue, long **seidx, char **AtomName, char **ResName,
 void get_bpseq(long ds, long num_bp, long **pair_num, long **seidx,
                char **AtomName, char **ResName, char *ChainID, long *ResSeq,
                char **Miscs, double **xyz, char **bp_seq, long *RY);
-
-long strmatch_idx(char *str, char **strmat, long nb, long ne);
 
 long num_strmatch(char *str, char **strmat, long nb, long ne);
 
@@ -1221,12 +977,6 @@ void dlubksb(double **a, long n, long *indx, double *b);
 
 void dinverse(double **a, long n, double **y);
 
-void rotx(double ang_deg, double **rotmat);
-
-void roty(double ang_deg, double **rotmat);
-
-void rotz(double ang_deg, double **rotmat);
-
 void get_alc_nums(char *alcname, long *num, long *nbond);
 
 void read_alc(char *alcname, long *num, long *nbond, char **AtomName,
@@ -1237,11 +987,6 @@ void write_alc(long num, long nbond, char **AtomName, double **xyz, long *ibase,
 
 void free_alc(long num, long nbond, char **AtomName, double **xyz, long *ibase,
               long zero_1, long **linkage);
-
-void cnct_org(long num_bp, long ia, long ib, char **tAtomName, double **txyz,
-              long *tibase, long **tlinkage, double **org_xyz);
-
-void dsort(long n, double *a, long *idx);
 
 void lsort(long n, long *a, long *idx);
 
@@ -1491,8 +1236,6 @@ long str_pmatch(char *str, char *sstr);
 
 long case_str_pmatch(char *str, char *sstr);
 
-long is_numeric(char *str);
-
 double cvt2double(char *str);
 
 long cvt2long(char *str);
@@ -1505,10 +1248,6 @@ double get_dvalue(char *str, double vmin, double vmax);
 
 void get_strvalue(char *str, char *dst, long expand_tilde);
 
-void reverse_string(char *str);
-
-void cvtstr_set1toc2(char *str, char *set1, char c2);
-
 void cvtstr_c1toc2(char *str, char c1, char c2);
 
 double z1_z2_angle_in_0_to_90(double *z1, double *z2);
@@ -1517,36 +1256,11 @@ void do_nothing(void);
 
 void skip_lines(long num, FILE *fp);
 
-void check_havefile(char *filename, char *msg);
-
 void print_frame(FILE *fp, double *O, double **R);
-
-/* comb_str.c */
-
-/* ex_str.c */
-
-/* fiber.c */
-
-/* find_pair.c */
-
-/* fncs_slre.c */
-
-const char *slre_match(enum slre_option options, const char *re,
-                       const char *buf, int buf_len, ...);
 
 int lux_match(enum slre_option options, const char *re, const char *buf);
 
-int lux_bcmatch(const char *buf, const char *re);
-
 int lux_ncmatch(const char *buf, const char *re);
-
-/* frame_mol.c */
-
-/* get_part.c */
-
-/* mutate_bases.c */
-
-/* nrutil.c */
 
 void nrerror(char *error_text);
 
@@ -1591,8 +1305,6 @@ void free_dmatrix(double **m, long nrl, long nrh, long ncl, long nch);
 
 void free_lmatrix(long **m, long nrl, long nrh, long ncl, long nch);
 
-double dval_sqr(double dval);
-
 void dval_swap(double *pa, double *pb);
 
 void lval_swap(long *pa, long *pb);
@@ -1603,11 +1315,7 @@ double dval_max(double a, double b);
 
 double dval_min(double a, double b);
 
-long lval_max(long a, long b);
-
 long lval_min(long a, long b);
-
-double abs_dval_diff(double a, double b);
 
 long lval_in_set(long lval, long ib, long ie, long *s);
 
@@ -1642,27 +1350,17 @@ void init_lmatrix(long **lmtx, long nrl, long nrh, long ncl, long nch,
 
 void init_cvector(char *cvec, long ib, long ie, char init_val);
 
-void init_cvector_all(char *cvec, long ib, long ie, char init_val);
-
 void init_dvector(double *dvec, long ib, long ie, double init_val);
 
 void init_lvector(long *lvec, long ib, long ie, long init_val);
 
 void copy_dvector(double *d, double *s, long nl, long nh);
 
-void copy_lvector(long *d, long *s, long nl, long nh);
-
 int dval_compare(const void *v1, const void *v2);
-
-int lval_compare(const void *v1, const void *v2);
-
-int cstr_compare(const void *v1, const void *v2);
 
 void negate_xyz(double *xyz1);
 
 double p1p2_dist(double *xyz1, double *xyz2);
-
-void p1p2_ave(double *xyz1, double *xyz2, double *ave);
 
 long within_limits(double *xyz1, double *xyz2, double dlow, double dhigh);
 
@@ -1696,8 +1394,6 @@ double deg2rad(double ang);
 
 void copy_dmatrix(double **a, long nr, long nc, double **o);
 
-void copy_lmatrix(long **a, long nr, long nc, long **o);
-
 void multi_matrix(double **a, long nra, long nca, double **b, long nrb,
                   long ncb, double **o);
 
@@ -1711,75 +1407,5 @@ void transpose_matrix(double **a, long nr, long nc, double **o);
 
 void identity_matrix(double **d, long n);
 
-/* o1p_o2p.c */
-
-/* pdb2img.c */
-
-/* r3d_atom.c */
-
-/* reb_fncs.c */
-
-void link_o3_p(long num_residue, long **seidx, char **AtomName, double **xyz,
-               char *ChainID, long **connect);
-
-void atom_lkg(long num, char **AtomName, char **ResName, char *ChainID,
-              long *ResSeq, double **xyz, char *outfile);
-
-void atomic_pdb1(long num_bp, long num_atoms, long num_max_per_residue,
-                 long is_helical, long xdir, char **bp_seq, double **step_par,
-                 char *BDIR, char *outfile);
-
-void atomic_pdb2(long parallel, long num_bp, long num_atoms,
-                 long num_max_per_residue, long is_helical, long xdir,
-                 char **bp_seq, double **bp_par, double **step_par, char *BDIR,
-                 char *outfile);
-
-void base_c1_atoms(char **AtomName, long ib, long ie, long *num_batom,
-                   long *batom);
-
-void extract_base_atoms(long num, char **AtomName, double **xyz, long *bnum,
-                        char **bAtomName, double **bxyz);
-
-void atomic_base_p(long parallel, long num_bp, long num_atoms,
-                   long num_max_per_residue, long is_helical, long xdir,
-                   char **bp_seq, double **bp_par, double **step_par,
-                   char *BDIR, long *pidx, char *outfile);
-
-void num_PDB_atoms(long num_bp, long is_single, char **bp_seq, char *BDIR,
-                   long *num_atoms, long *num_max_per_residue);
-
-void set_bp_pdb(long num_max_per_residue, char *fname1, char *fname2,
-                double *param, long xdir, long *num1, long *num2,
-                char **AtomName1, char **AtomName2, double **xyz1,
-                double **xyz2, char ap);
-
-void base_fname(char bname, char *BDIR, char *fname);
-
-void block_alc1(long num_bp, long is_single, long is_helical, long xdir,
-                char **bp_seq, double **step_par, char *BDIR, char *outfile);
-
-void block_alc2(long num_bp, long is_helical, long xdir, char **bp_seq,
-                double **bp_par, double **step_par, char *BDIR, char *outfile);
-
-void set_bp_alc(char *fname1, char *fname2, double *param, long xdir, long num,
-                long nbond, double **bp_xyz, char ap);
-
-void xbpfunc(double *param, double **orien, double **mst, double *pos,
-             double *mpos);
-
 void xhelfunc(double *param, double **orien, double **mst, double *pos,
               double *mpos);
-
-void print_ref_frames(FILE *fp, double *pos_next, double **orien_next);
-
-/* rebuild.c */
-
-/* regular_dna.c */
-
-/* rotate_mol.c */
-
-/* stack2img.c */
-
-/* std_base.c */
-
-/* step_hel.c */

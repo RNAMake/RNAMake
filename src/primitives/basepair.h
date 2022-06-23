@@ -84,9 +84,6 @@ protected:
   String _name;
 };
 
-typedef Basepair PrimitiveBasepair;
-typedef std::vector<PrimitiveBasepair> PrimitiveBasepairs;
-
 template <typename Restype>
 String generate_bp_name(Restype const &res1, Restype const &res2) {
 

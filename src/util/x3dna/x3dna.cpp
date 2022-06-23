@@ -20,713 +20,715 @@
 // analyze.cpp : line ~13740
 // nrutil.cpp : line ~14500
 
+using namespace std;
+
 namespace util {
 namespace x3dna {
-  X3dna::X3dna()
-      : rebuild_files_(true), generated_dssr_(false),
-        generated_ref_frames_(false), no_ref_frames_(false) {
+X3dna::X3dna()
+    : rebuild_files_(true), generated_dssr_(false),
+      generated_ref_frames_(false), no_ref_frames_(false) {
 
-    auto os_name = getprogname();
+  auto os_name = getprogname();
+}
+
+void X3dna::_delete_file(String const &file_name) const {
+  try {
+    std::remove(file_name.c_str());
+  } catch (String const &e) {
   }
+}
 
-  void X3dna::_delete_file(String const &file_name) const {
-    try {
-      std::remove(file_name.c_str());
-    } catch (String const &e) {
+math::Vector3 X3dna::_convert_string_to_point(String const &str) const {
+  auto doubles = std::vector<double>();
+  auto spl = base::string::split(str, " ");
+  for (auto const &s : spl) {
+    if (s.length() > 1) {
+      doubles.push_back(std::stod(s));
+    }
+    if (doubles.size() == 3) {
+      break;
     }
   }
+  return math::Vector3(doubles[0], doubles[1], doubles[2]);
+}
 
-  math::Vector3 X3dna::_convert_string_to_point(String const &str) const {
-    auto doubles = std::vector<double>();
-    auto spl = base::string::split(str, " ");
-    for (auto const &s : spl) {
-      if (s.length() > 1) {
-        doubles.push_back(std::stod(s));
-      }
-      if (doubles.size() == 3) {
-        break;
-      }
+void X3dna::_parse_ref_frame_file(String const &pdb_path,
+                                  X3Basepairs &basepairs) const {
+  // auto finder = PairFinder(pdb_path);
+  // finder.find_pair(basepairs);
+}
+
+Strings X3dna::_split_over_white_space(String const &str) const {
+  Strings spl = base::string::split(str, " ");
+  Strings non_white_space;
+  String temp;
+  for (auto &s : spl) {
+    temp = base::string::trim(s);
+    if (temp.size() == 0) {
+      continue;
     }
-    return math::Vector3(doubles[0], doubles[1], doubles[2]);
+    non_white_space.push_back(temp);
   }
+  return non_white_space;
+}
 
-  void X3dna::_parse_ref_frame_file(String const &pdb_path,
-                                    X3Basepairs &basepairs) const {
-    // auto finder = PairFinder(pdb_path);
-    // finder.find_pair(basepairs);
+/*
+X3dna::X3Basepairs X3dna::get_basepairs_json(String const &pdb_path) const {
+
+  auto dssr_json = base::execute_command_json(
+      bin_path_ + "/x3dna-dssr -i=" + pdb_path + " --json --more 2>.error");
+  // deleting the temp files that we don't want.
+  util::json_cleanup();
+  auto nt_it = dssr_json.find("nts");
+  if (nt_it == dssr_json.end() || nt_it->is_null() || nt_it->empty()) {
+    return X3Basepairs{};
   }
-
-  Strings X3dna::_split_over_white_space(String const &str) const {
-    Strings spl = base::string::split(str, " ");
-    Strings non_white_space;
-    String temp;
-    for (auto &s : spl) {
-      temp = base::string::trim(s);
-      if (temp.size() == 0) {
-        continue;
-      }
-      non_white_space.push_back(temp);
-    }
-    return non_white_space;
+  // loop through the nucleotides and store them in a map
+  auto res_map = std::map<String, X3Residue>{};
+  for (auto &nt : *dssr_json.find("nts")) {
+    auto residue_it = util::get_string(nt, "nt_id");
+    auto ii = util::get_int(nt, "nt_resnum");
+    auto chain = util::get_char(nt, "chain_name");
+    res_map[residue_it] = X3Residue(ii, chain, ' ');
   }
-
-  /*
-  X3dna::X3Basepairs X3dna::get_basepairs_json(String const &pdb_path) const {
-
-    auto dssr_json = base::execute_command_json(
-        bin_path_ + "/x3dna-dssr -i=" + pdb_path + " --json --more 2>.error");
-    // deleting the temp files that we don't want.
-    util::json_cleanup();
-    auto nt_it = dssr_json.find("nts");
-    if (nt_it == dssr_json.end() || nt_it->is_null() || nt_it->empty()) {
-      return X3Basepairs{};
-    }
-    // loop through the nucleotides and store them in a map
-    auto res_map = std::map<String, X3Residue>{};
-    for (auto &nt : *dssr_json.find("nts")) {
-      auto residue_it = util::get_string(nt, "nt_id");
-      auto ii = util::get_int(nt, "nt_resnum");
-      auto chain = util::get_char(nt, "chain_name");
-      res_map[residue_it] = X3Residue(ii, chain, ' ');
-    }
-    // now the basepairs can be constructed
-    auto basepairs = X3Basepairs();
-    auto pairings = dssr_json.find("pairs");
-    if (pairings == dssr_json.end() || pairings->empty()) {
-      return basepairs;
-    }
-    // loop through the pairings
-    for (auto pp : *pairings) {
-      auto name = util::get_string(pp, "name");
-      auto ii = util::get_string(pp, "Saenger");
-      auto nt_1 = util::get_string(pp, "nt1");
-      auto nt_2 = util::get_string(pp, "nt2");
-      auto type = util::get_string(pp, "DSSR");
-      // get the reference frame information
-      auto frame = math::Matrix3x3{};
-      auto origin = math::Vector3{};
-      auto frame_it = pp.find("frame");
-
-      if (frame_it != pp.end() && !frame_it->is_null()) {
-        origin = get_point(*frame_it, "origin");
-        frame = get_matrix(*frame_it);
-      }
-      // define the basepair type and residues
-      auto bp_type = get_x3dna_by_type(type);
-      auto res1 = res_map.at(nt_1); // TODO maybe add an unkown thing?
-      auto res2 = res_map.at(nt_2);
-      // TODO add check that they are correct
-      // add the new basepair i
-      auto new_bp = X3Basepair{res1, res2, origin, frame, bp_type};
-      // std::cout<<nt_1<<"\t"<<nt_2<<"\t"<<type<<std::endl;
-      if (new_bp.valid()) {
-        basepairs.push_back(std::move(new_bp));
-      }
-    }
-
-    const auto num_basepairs = util::get_int(dssr_json, "num_pairs");
-    if (num_basepairs != basepairs.size()) {
-      throw X3dnaException("Basepair count mismatch. Expected " +
-                           std::to_string(num_basepairs) + " but got " +
-                           std::to_string(basepairs.size()));
-    }
+  // now the basepairs can be constructed
+  auto basepairs = X3Basepairs();
+  auto pairings = dssr_json.find("pairs");
+  if (pairings == dssr_json.end() || pairings->empty()) {
     return basepairs;
   }
-  */
+  // loop through the pairings
+  for (auto pp : *pairings) {
+    auto name = util::get_string(pp, "name");
+    auto ii = util::get_string(pp, "Saenger");
+    auto nt_1 = util::get_string(pp, "nt1");
+    auto nt_2 = util::get_string(pp, "nt2");
+    auto type = util::get_string(pp, "DSSR");
+    // get the reference frame information
+    auto frame = math::Matrix3x3{};
+    auto origin = math::Vector3{};
+    auto frame_it = pp.find("frame");
 
-  X3dna::X3Basepairs X3dna::get_basepairs(String const &pdb_path) const {
-    auto basepairs = X3Basepairs();
-    _parse_ref_frame_file(pdb_path, basepairs);
-    return basepairs;
-  }
-
-  X3dnaBPType get_x3dna_by_type(String const &name) {
-    if (name == "cm-") {
-      return X3dnaBPType::cmU;
-    } else if (name == "cM-M") {
-      return X3dnaBPType::cMUM;
-    } else if (name == "tW+W") {
-      return X3dnaBPType::tWPW;
-    } else if (name == "c.+M") {
-      return X3dnaBPType::cDPM;
-    } else if (name == ".W+W") {
-      return X3dnaBPType::DWPW;
-    } else if (name == "tW-M") {
-      return X3dnaBPType::tWUM;
-    } else if (name == "tm-M") {
-      return X3dnaBPType::tmUM;
-    } else if (name == "cW+M") {
-      return X3dnaBPType::cWPM;
-    } else if (name == ".W-W") {
-      return X3dnaBPType::DWUW;
-    } else if (name == "cM+.") {
-      return X3dnaBPType::cMPD;
-    } else if (name == "c.-m") {
-      return X3dnaBPType::cDUm;
-    } else if (name == "cM+W") {
-      return X3dnaBPType::cMPW;
-    } else if (name == "tM+m") {
-      return X3dnaBPType::tMPm;
-    } else if (name == "tM-W") {
-      return X3dnaBPType::tMUW;
-    } else if (name == "cm-m") {
-      return X3dnaBPType::cmUm;
-    } else if (name == "cM-W") {
-      return X3dnaBPType::cMUW;
-    } else if (name == "cW-W") {
-      return X3dnaBPType::cWUW;
-    } else if (name == "c.-M") {
-      return X3dnaBPType::cDUM;
-    } else if (name == "cm+M") {
-      return X3dnaBPType::cmPM;
-    } else if (name == "cm-M") {
-      return X3dnaBPType::cmUM;
-    } else if (name == "....") {
-      return X3dnaBPType::DDDD;
-    } else if (name == "cm-W") {
-      return X3dnaBPType::cmUW;
-    } else if (name == "tM-m") {
-      return X3dnaBPType::tMUm;
-    } else if (name == "c.-W") {
-      return X3dnaBPType::cDUW;
-    } else if (name == "cM+m") {
-      return X3dnaBPType::cMPm;
-    } else if (name == "cM-m") {
-      return X3dnaBPType::cMUm;
-    } else if (name == "c...") {
-      return X3dnaBPType::cDDD;
-    } else if (name == "tW+m") {
-      return X3dnaBPType::tWPm;
-    } else if (name == "c.+m") {
-      return X3dnaBPType::cDPm;
-    } else if (name == "tm+m") {
-      return X3dnaBPType::tmPm;
-    } else if (name == "tW+.") {
-      return X3dnaBPType::tWPD;
-    } else if (name == "tm+W") {
-      return X3dnaBPType::tmPW;
-    } else if (name == "t...") {
-      return X3dnaBPType::tDDD;
-    } else if (name == "cW-.") {
-      return X3dnaBPType::cWUD;
-    } else if (name == "cW-M") {
-      return X3dnaBPType::cWUM;
-    } else if (name == "t.-W") {
-      return X3dnaBPType::tDUW;
-    } else if (name == "tM+M") {
-      return X3dnaBPType::tMPM;
-    } else if (name == "t.-M") {
-      return X3dnaBPType::tDUM;
-    } else if (name == "cM-.") {
-      return X3dnaBPType::cMUD;
-    } else if (name == "cW-m") {
-      return X3dnaBPType::cWUm;
-    } else if (name == "t.+m") {
-      return X3dnaBPType::tDPm;
-    } else if (name == "tM-.") {
-      return X3dnaBPType::tMUD;
-    } else if (name == "cm+W") {
-      return X3dnaBPType::cmPW;
-    } else if (name == "cM+M") {
-      return X3dnaBPType::cMPM;
-    } else if (name == "cm+.") {
-      return X3dnaBPType::cmPD;
-    } else if (name == "cm-.") {
-      return X3dnaBPType::cmUD;
-    } else if (name == "c.-.") {
-      return X3dnaBPType::cDUD;
-    } else if (name == "cW+W") {
-      return X3dnaBPType::cWPW;
-    } else if (name == "t.-.") {
-      return X3dnaBPType::tDUD;
-    } else if (name == "t.+W") {
-      return X3dnaBPType::tDPW;
-    } else if (name == "tm-m") {
-      return X3dnaBPType::tmUm;
-    } else if (name == "cW+.") {
-      return X3dnaBPType::cWPD;
-    } else if (name == "tm+.") {
-      return X3dnaBPType::tmPD;
-    } else if (name == "t.+.") {
-      return X3dnaBPType::tDPD;
-    } else if (name == "c.+.") {
-      return X3dnaBPType::cDPD;
-    } else if (name == "t.-m") {
-      return X3dnaBPType::tDUm;
-    } else if (name == "t.+M") {
-      return X3dnaBPType::tDPM;
+    if (frame_it != pp.end() && !frame_it->is_null()) {
+      origin = get_point(*frame_it, "origin");
+      frame = get_matrix(*frame_it);
     }
-    // added by CJ
-    else if (name == "tW-.") {
-      return X3dnaBPType::tWUD;
-    } else if (name == "tm-W") {
-      return X3dnaBPType::tmUW;
-    } else if (name == "tM-M") {
-      return X3dnaBPType::tMUM;
-    } else if (name == "tM+.") {
-      return X3dnaBPType::tMPD;
-    } else if (name == "c.+W") {
-      return X3dnaBPType::cDPW;
-    } else if (name == "tm+M") {
-      return X3dnaBPType::tmPM;
-    } else if (name == "tW-m") {
-      return X3dnaBPType::tWUm;
-    } else if (name == "cW+m") {
-      return X3dnaBPType::cWPm;
-    } else if (name == "tm-.") {
-      return X3dnaBPType::tmUD;
-    } else if (name == "tW+M") {
-      return X3dnaBPType::tWPM;
-    } else if (name == ".W+m") {
-      return X3dnaBPType::DWPm;
-    } else if (name == "tM+W") {
-      return X3dnaBPType::tMPW;
-    } else if (name == "..+m") {
-      return X3dnaBPType::DDPm;
-    } else if (name == "tW-W") {
-      return X3dnaBPType::tWUW;
-    } else if (name == "cm+m") {
-      return X3dnaBPType::cmPm;
-    } else if (name == ".W-m") {
-      return X3dnaBPType::DWUm;
-    } else if (name == ".M+m") {
-      return X3dnaBPType::DMPm;
-    } else if (name == ".W+M") {
-      return X3dnaBPType::DWPM;
-    } else if (name == ".M+M") {
-      return X3dnaBPType::DMPM;
-    } else if (name == ".m+W") {
-      return X3dnaBPType::DmPW;
-    } else if (name == ".W-M") {
-      return X3dnaBPType::DWUM;
-    } else if (name == ".m+m") {
-      return X3dnaBPType::DmPm;
-    } else if (name == "..-M") {
-      return X3dnaBPType::DDUM;
-    } else if (name == ".M-m") {
-      return X3dnaBPType::DMUm;
-    } else if (name == "..-m") {
-      return X3dnaBPType::DDUm;
-    } else if (name == ".M+W") {
-      return X3dnaBPType::DMPW;
-    } else if (name == ".M+.") {
-      return X3dnaBPType::DMPD;
-    } else if (name == ".M-M") {
-      return X3dnaBPType::DMUM;
-    } else if (name == ".m-m") {
-      return X3dnaBPType::DmUm;
-    } else if (name == ".M-W") {
-      return X3dnaBPType::DMUW;
-    } else if (name == ".W-.") {
-      return X3dnaBPType::DWUD;
-    } else {
-      throw X3dnaException("cannot get x3dna type with: " + name);
+    // define the basepair type and residues
+    auto bp_type = get_x3dna_by_type(type);
+    auto res1 = res_map.at(nt_1); // TODO maybe add an unkown thing?
+    auto res2 = res_map.at(nt_2);
+    // TODO add check that they are correct
+    // add the new basepair i
+    auto new_bp = X3Basepair{res1, res2, origin, frame, bp_type};
+    // std::cout<<nt_1<<"\t"<<nt_2<<"\t"<<type<<std::endl;
+    if (new_bp.valid()) {
+      basepairs.push_back(std::move(new_bp));
     }
   }
 
-  String get_str_from_x3dna_type(X3dnaBPType type) {
-    if (type == X3dnaBPType::cmU) {
-      return "cm-";
-    } else if (type == X3dnaBPType::cMUM) {
-      return "cM-M";
-    } else if (type == X3dnaBPType::tWPW) {
-      return "tW+W";
-    } else if (type == X3dnaBPType::cDPM) {
-      return "c.+M";
-    } else if (type == X3dnaBPType::DWPW) {
-      return ".W+W";
-    } else if (type == X3dnaBPType::tWUM) {
-      return "tW-M";
-    } else if (type == X3dnaBPType::tmUM) {
-      return "tm-M";
-    } else if (type == X3dnaBPType::cWPM) {
-      return "cW+M";
-    } else if (type == X3dnaBPType::DWUW) {
-      return ".W-W";
-    } else if (type == X3dnaBPType::cMPD) {
-      return "cM+.";
-    } else if (type == X3dnaBPType::cDUm) {
-      return "c.-m";
-    } else if (type == X3dnaBPType::cMPW) {
-      return "cM+W";
-    } else if (type == X3dnaBPType::tMPm) {
-      return "tM+m";
-    } else if (type == X3dnaBPType::tMUW) {
-      return "tM-W";
-    } else if (type == X3dnaBPType::cmUm) {
-      return "cm-m";
-    } else if (type == X3dnaBPType::cMUW) {
-      return "cM-W";
-    } else if (type == X3dnaBPType::cWUW) {
-      return "cW-W";
-    } else if (type == X3dnaBPType::cDUM) {
-      return "c.-M";
-    } else if (type == X3dnaBPType::cmPM) {
-      return "cm+M";
-    } else if (type == X3dnaBPType::cmUM) {
-      return "cm-M";
-    } else if (type == X3dnaBPType::DDDD) {
-      return "....";
-    } else if (type == X3dnaBPType::cmUW) {
-      return "cm-W";
-    } else if (type == X3dnaBPType::tMUm) {
-      return "tM-m";
-    } else if (type == X3dnaBPType::cDUW) {
-      return "c.-W";
-    } else if (type == X3dnaBPType::cMPm) {
-      return "cM+m";
-    } else if (type == X3dnaBPType::cMUm) {
-      return "cM-m";
-    } else if (type == X3dnaBPType::cDDD) {
-      return "c...";
-    } else if (type == X3dnaBPType::tWPm) {
-      return "tW+m";
-    } else if (type == X3dnaBPType::cDPm) {
-      return "c.+m";
-    } else if (type == X3dnaBPType::tmPm) {
-      return "tm+m";
-    } else if (type == X3dnaBPType::tWPD) {
-      return "tW+.";
-    } else if (type == X3dnaBPType::tmPW) {
-      return "tm+W";
-    } else if (type == X3dnaBPType::tDDD) {
-      return "t...";
-    } else if (type == X3dnaBPType::cWUD) {
-      return "cW-.";
-    } else if (type == X3dnaBPType::cWUM) {
-      return "cW-M";
-    } else if (type == X3dnaBPType::tDUW) {
-      return "t.-W";
-    } else if (type == X3dnaBPType::tMPM) {
-      return "tM+M";
-    } else if (type == X3dnaBPType::tDUM) {
-      return "t.-M";
-    } else if (type == X3dnaBPType::cMUD) {
-      return "cM-.";
-    } else if (type == X3dnaBPType::cWUm) {
-      return "cW-m";
-    } else if (type == X3dnaBPType::tDPm) {
-      return "t.+m";
-    } else if (type == X3dnaBPType::tMUD) {
-      return "tM-.";
-    } else if (type == X3dnaBPType::cmPW) {
-      return "cm+W";
-    } else if (type == X3dnaBPType::cMPM) {
-      return "cM+M";
-    } else if (type == X3dnaBPType::cmPD) {
-      return "cm+.";
-    } else if (type == X3dnaBPType::cmUD) {
-      return "cm-.";
-    } else if (type == X3dnaBPType::cDUD) {
-      return "c.-.";
-    } else if (type == X3dnaBPType::cWPW) {
-      return "cW+W";
-    } else if (type == X3dnaBPType::tDUD) {
-      return "t.-.";
-    } else if (type == X3dnaBPType::tDPW) {
-      return "t.+W";
-    } else if (type == X3dnaBPType::tmUm) {
-      return "tm-m";
-    } else if (type == X3dnaBPType::cWPD) {
-      return "cW+.";
-    } else if (type == X3dnaBPType::tmPD) {
-      return "tm+.";
-    } else if (type == X3dnaBPType::tDPD) {
-      return "t.+.";
-    } else if (type == X3dnaBPType::cDPD) {
-      return "c.+.";
-    } else if (type == X3dnaBPType::tDUm) {
-      return "t.-m";
-    } else if (type == X3dnaBPType::tDPM) {
-      return "t.+M";
-    }
-    // added by CJ
-    else if (type == X3dnaBPType::tWUD) {
-      return "tW-.";
-    } else if (type == X3dnaBPType::tmUW) {
-      return "tm-W";
-    } else if (type == X3dnaBPType::tMUM) {
-      return "tM-M";
-    } else if (type == X3dnaBPType::tMPD) {
-      return "tM+.";
-    } else if (type == X3dnaBPType::cDPW) {
-      return "c.+W";
-    } else if (type == X3dnaBPType::tmPM) {
-      return "tm+M";
-    } else if (type == X3dnaBPType::tWUm) {
-      return "tW-m";
-    } else if (type == X3dnaBPType::cWPm) {
-      return "cW+m";
-    } else if (type == X3dnaBPType::tmUD) {
-      return "tm-.";
-    } else if (type == X3dnaBPType::tWPM) {
-      return "tW+M";
-    } else if (type == X3dnaBPType::DWPm) {
-      return ".W+m";
-    } else if (type == X3dnaBPType::tMPW) {
-      return "tM+W";
-    } else if (type == X3dnaBPType::DDPm) {
-      return "..+m";
-    } else if (type == X3dnaBPType::tWUW) {
-      return "tW-W";
-    } else if (type == X3dnaBPType::cmPm) {
-      return "cm+m";
-    } else if (type == X3dnaBPType::DWUm) {
-      return ".W-m";
-    } else if (type == X3dnaBPType::DMPm) {
-      return ".M+m";
-    } else if (type == X3dnaBPType::DWPM) {
-      return ".W+M";
-    } else if (type == X3dnaBPType::DMPM) {
-      return ".M+M";
-    } else if (type == X3dnaBPType::DmPW) {
-      return ".m+W";
-    } else if (type == X3dnaBPType::DWUM) {
-      return ".W-M";
-    } else if (type == X3dnaBPType::DmPm) {
-      return ".m+m";
-    } else if (type == X3dnaBPType::DDUM) {
-      return "..-M";
-    } else if (type == X3dnaBPType::DMUm) {
-      return ".M-m";
-    } else if (type == X3dnaBPType::DDUm) {
-      return "..-m";
-    } else if (type == X3dnaBPType::DMPW) {
-      return ".M+W";
-    } else if (type == X3dnaBPType::DMPD) {
-      return ".M+.";
-    } else if (type == X3dnaBPType::DMUM) {
-      return ".M-M";
-    } else if (type == X3dnaBPType::DmUm) {
-      return ".m-m";
-    } else if (type == X3dnaBPType::DMUW) {
-      return ".M-W";
-    } else if (type == X3dnaBPType::DWUD) {
-      return ".W-.";
-    }
+  const auto num_basepairs = util::get_int(dssr_json, "num_pairs");
+  if (num_basepairs != basepairs.size()) {
+    throw X3dnaException("Basepair count mismatch. Expected " +
+                         std::to_string(num_basepairs) + " but got " +
+                         std::to_string(basepairs.size()));
+  }
+  return basepairs;
+}
+*/
 
-    else {
-      throw X3dnaException("unknown x3dna bp type");
-    }
+X3dna::X3Basepairs X3dna::get_basepairs(String const &pdb_path) const {
+  auto basepairs = X3Basepairs();
+  _parse_ref_frame_file(pdb_path, basepairs);
+  return basepairs;
+}
+
+X3dnaBPType get_x3dna_by_type(String const &name) {
+  if (name == "cm-") {
+    return X3dnaBPType::cmU;
+  } else if (name == "cM-M") {
+    return X3dnaBPType::cMUM;
+  } else if (name == "tW+W") {
+    return X3dnaBPType::tWPW;
+  } else if (name == "c.+M") {
+    return X3dnaBPType::cDPM;
+  } else if (name == ".W+W") {
+    return X3dnaBPType::DWPW;
+  } else if (name == "tW-M") {
+    return X3dnaBPType::tWUM;
+  } else if (name == "tm-M") {
+    return X3dnaBPType::tmUM;
+  } else if (name == "cW+M") {
+    return X3dnaBPType::cWPM;
+  } else if (name == ".W-W") {
+    return X3dnaBPType::DWUW;
+  } else if (name == "cM+.") {
+    return X3dnaBPType::cMPD;
+  } else if (name == "c.-m") {
+    return X3dnaBPType::cDUm;
+  } else if (name == "cM+W") {
+    return X3dnaBPType::cMPW;
+  } else if (name == "tM+m") {
+    return X3dnaBPType::tMPm;
+  } else if (name == "tM-W") {
+    return X3dnaBPType::tMUW;
+  } else if (name == "cm-m") {
+    return X3dnaBPType::cmUm;
+  } else if (name == "cM-W") {
+    return X3dnaBPType::cMUW;
+  } else if (name == "cW-W") {
+    return X3dnaBPType::cWUW;
+  } else if (name == "c.-M") {
+    return X3dnaBPType::cDUM;
+  } else if (name == "cm+M") {
+    return X3dnaBPType::cmPM;
+  } else if (name == "cm-M") {
+    return X3dnaBPType::cmUM;
+  } else if (name == "....") {
+    return X3dnaBPType::DDDD;
+  } else if (name == "cm-W") {
+    return X3dnaBPType::cmUW;
+  } else if (name == "tM-m") {
+    return X3dnaBPType::tMUm;
+  } else if (name == "c.-W") {
+    return X3dnaBPType::cDUW;
+  } else if (name == "cM+m") {
+    return X3dnaBPType::cMPm;
+  } else if (name == "cM-m") {
+    return X3dnaBPType::cMUm;
+  } else if (name == "c...") {
+    return X3dnaBPType::cDDD;
+  } else if (name == "tW+m") {
+    return X3dnaBPType::tWPm;
+  } else if (name == "c.+m") {
+    return X3dnaBPType::cDPm;
+  } else if (name == "tm+m") {
+    return X3dnaBPType::tmPm;
+  } else if (name == "tW+.") {
+    return X3dnaBPType::tWPD;
+  } else if (name == "tm+W") {
+    return X3dnaBPType::tmPW;
+  } else if (name == "t...") {
+    return X3dnaBPType::tDDD;
+  } else if (name == "cW-.") {
+    return X3dnaBPType::cWUD;
+  } else if (name == "cW-M") {
+    return X3dnaBPType::cWUM;
+  } else if (name == "t.-W") {
+    return X3dnaBPType::tDUW;
+  } else if (name == "tM+M") {
+    return X3dnaBPType::tMPM;
+  } else if (name == "t.-M") {
+    return X3dnaBPType::tDUM;
+  } else if (name == "cM-.") {
+    return X3dnaBPType::cMUD;
+  } else if (name == "cW-m") {
+    return X3dnaBPType::cWUm;
+  } else if (name == "t.+m") {
+    return X3dnaBPType::tDPm;
+  } else if (name == "tM-.") {
+    return X3dnaBPType::tMUD;
+  } else if (name == "cm+W") {
+    return X3dnaBPType::cmPW;
+  } else if (name == "cM+M") {
+    return X3dnaBPType::cMPM;
+  } else if (name == "cm+.") {
+    return X3dnaBPType::cmPD;
+  } else if (name == "cm-.") {
+    return X3dnaBPType::cmUD;
+  } else if (name == "c.-.") {
+    return X3dnaBPType::cDUD;
+  } else if (name == "cW+W") {
+    return X3dnaBPType::cWPW;
+  } else if (name == "t.-.") {
+    return X3dnaBPType::tDUD;
+  } else if (name == "t.+W") {
+    return X3dnaBPType::tDPW;
+  } else if (name == "tm-m") {
+    return X3dnaBPType::tmUm;
+  } else if (name == "cW+.") {
+    return X3dnaBPType::cWPD;
+  } else if (name == "tm+.") {
+    return X3dnaBPType::tmPD;
+  } else if (name == "t.+.") {
+    return X3dnaBPType::tDPD;
+  } else if (name == "c.+.") {
+    return X3dnaBPType::cDPD;
+  } else if (name == "t.-m") {
+    return X3dnaBPType::tDUm;
+  } else if (name == "t.+M") {
+    return X3dnaBPType::tDPM;
+  }
+  // added by CJ
+  else if (name == "tW-.") {
+    return X3dnaBPType::tWUD;
+  } else if (name == "tm-W") {
+    return X3dnaBPType::tmUW;
+  } else if (name == "tM-M") {
+    return X3dnaBPType::tMUM;
+  } else if (name == "tM+.") {
+    return X3dnaBPType::tMPD;
+  } else if (name == "c.+W") {
+    return X3dnaBPType::cDPW;
+  } else if (name == "tm+M") {
+    return X3dnaBPType::tmPM;
+  } else if (name == "tW-m") {
+    return X3dnaBPType::tWUm;
+  } else if (name == "cW+m") {
+    return X3dnaBPType::cWPm;
+  } else if (name == "tm-.") {
+    return X3dnaBPType::tmUD;
+  } else if (name == "tW+M") {
+    return X3dnaBPType::tWPM;
+  } else if (name == ".W+m") {
+    return X3dnaBPType::DWPm;
+  } else if (name == "tM+W") {
+    return X3dnaBPType::tMPW;
+  } else if (name == "..+m") {
+    return X3dnaBPType::DDPm;
+  } else if (name == "tW-W") {
+    return X3dnaBPType::tWUW;
+  } else if (name == "cm+m") {
+    return X3dnaBPType::cmPm;
+  } else if (name == ".W-m") {
+    return X3dnaBPType::DWUm;
+  } else if (name == ".M+m") {
+    return X3dnaBPType::DMPm;
+  } else if (name == ".W+M") {
+    return X3dnaBPType::DWPM;
+  } else if (name == ".M+M") {
+    return X3dnaBPType::DMPM;
+  } else if (name == ".m+W") {
+    return X3dnaBPType::DmPW;
+  } else if (name == ".W-M") {
+    return X3dnaBPType::DWUM;
+  } else if (name == ".m+m") {
+    return X3dnaBPType::DmPm;
+  } else if (name == "..-M") {
+    return X3dnaBPType::DDUM;
+  } else if (name == ".M-m") {
+    return X3dnaBPType::DMUm;
+  } else if (name == "..-m") {
+    return X3dnaBPType::DDUm;
+  } else if (name == ".M+W") {
+    return X3dnaBPType::DMPW;
+  } else if (name == ".M+.") {
+    return X3dnaBPType::DMPD;
+  } else if (name == ".M-M") {
+    return X3dnaBPType::DMUM;
+  } else if (name == ".m-m") {
+    return X3dnaBPType::DmUm;
+  } else if (name == ".M-W") {
+    return X3dnaBPType::DMUW;
+  } else if (name == ".W-.") {
+    return X3dnaBPType::DWUD;
+  } else {
+    throw X3dnaException("cannot get x3dna type with: " + name);
+  }
+}
+
+String get_str_from_x3dna_type(X3dnaBPType type) {
+  if (type == X3dnaBPType::cmU) {
+    return "cm-";
+  } else if (type == X3dnaBPType::cMUM) {
+    return "cM-M";
+  } else if (type == X3dnaBPType::tWPW) {
+    return "tW+W";
+  } else if (type == X3dnaBPType::cDPM) {
+    return "c.+M";
+  } else if (type == X3dnaBPType::DWPW) {
+    return ".W+W";
+  } else if (type == X3dnaBPType::tWUM) {
+    return "tW-M";
+  } else if (type == X3dnaBPType::tmUM) {
+    return "tm-M";
+  } else if (type == X3dnaBPType::cWPM) {
+    return "cW+M";
+  } else if (type == X3dnaBPType::DWUW) {
+    return ".W-W";
+  } else if (type == X3dnaBPType::cMPD) {
+    return "cM+.";
+  } else if (type == X3dnaBPType::cDUm) {
+    return "c.-m";
+  } else if (type == X3dnaBPType::cMPW) {
+    return "cM+W";
+  } else if (type == X3dnaBPType::tMPm) {
+    return "tM+m";
+  } else if (type == X3dnaBPType::tMUW) {
+    return "tM-W";
+  } else if (type == X3dnaBPType::cmUm) {
+    return "cm-m";
+  } else if (type == X3dnaBPType::cMUW) {
+    return "cM-W";
+  } else if (type == X3dnaBPType::cWUW) {
+    return "cW-W";
+  } else if (type == X3dnaBPType::cDUM) {
+    return "c.-M";
+  } else if (type == X3dnaBPType::cmPM) {
+    return "cm+M";
+  } else if (type == X3dnaBPType::cmUM) {
+    return "cm-M";
+  } else if (type == X3dnaBPType::DDDD) {
+    return "....";
+  } else if (type == X3dnaBPType::cmUW) {
+    return "cm-W";
+  } else if (type == X3dnaBPType::tMUm) {
+    return "tM-m";
+  } else if (type == X3dnaBPType::cDUW) {
+    return "c.-W";
+  } else if (type == X3dnaBPType::cMPm) {
+    return "cM+m";
+  } else if (type == X3dnaBPType::cMUm) {
+    return "cM-m";
+  } else if (type == X3dnaBPType::cDDD) {
+    return "c...";
+  } else if (type == X3dnaBPType::tWPm) {
+    return "tW+m";
+  } else if (type == X3dnaBPType::cDPm) {
+    return "c.+m";
+  } else if (type == X3dnaBPType::tmPm) {
+    return "tm+m";
+  } else if (type == X3dnaBPType::tWPD) {
+    return "tW+.";
+  } else if (type == X3dnaBPType::tmPW) {
+    return "tm+W";
+  } else if (type == X3dnaBPType::tDDD) {
+    return "t...";
+  } else if (type == X3dnaBPType::cWUD) {
+    return "cW-.";
+  } else if (type == X3dnaBPType::cWUM) {
+    return "cW-M";
+  } else if (type == X3dnaBPType::tDUW) {
+    return "t.-W";
+  } else if (type == X3dnaBPType::tMPM) {
+    return "tM+M";
+  } else if (type == X3dnaBPType::tDUM) {
+    return "t.-M";
+  } else if (type == X3dnaBPType::cMUD) {
+    return "cM-.";
+  } else if (type == X3dnaBPType::cWUm) {
+    return "cW-m";
+  } else if (type == X3dnaBPType::tDPm) {
+    return "t.+m";
+  } else if (type == X3dnaBPType::tMUD) {
+    return "tM-.";
+  } else if (type == X3dnaBPType::cmPW) {
+    return "cm+W";
+  } else if (type == X3dnaBPType::cMPM) {
+    return "cM+M";
+  } else if (type == X3dnaBPType::cmPD) {
+    return "cm+.";
+  } else if (type == X3dnaBPType::cmUD) {
+    return "cm-.";
+  } else if (type == X3dnaBPType::cDUD) {
+    return "c.-.";
+  } else if (type == X3dnaBPType::cWPW) {
+    return "cW+W";
+  } else if (type == X3dnaBPType::tDUD) {
+    return "t.-.";
+  } else if (type == X3dnaBPType::tDPW) {
+    return "t.+W";
+  } else if (type == X3dnaBPType::tmUm) {
+    return "tm-m";
+  } else if (type == X3dnaBPType::cWPD) {
+    return "cW+.";
+  } else if (type == X3dnaBPType::tmPD) {
+    return "tm+.";
+  } else if (type == X3dnaBPType::tDPD) {
+    return "t.+.";
+  } else if (type == X3dnaBPType::cDPD) {
+    return "c.+.";
+  } else if (type == X3dnaBPType::tDUm) {
+    return "t.-m";
+  } else if (type == X3dnaBPType::tDPM) {
+    return "t.+M";
+  }
+  // added by CJ
+  else if (type == X3dnaBPType::tWUD) {
+    return "tW-.";
+  } else if (type == X3dnaBPType::tmUW) {
+    return "tm-W";
+  } else if (type == X3dnaBPType::tMUM) {
+    return "tM-M";
+  } else if (type == X3dnaBPType::tMPD) {
+    return "tM+.";
+  } else if (type == X3dnaBPType::cDPW) {
+    return "c.+W";
+  } else if (type == X3dnaBPType::tmPM) {
+    return "tm+M";
+  } else if (type == X3dnaBPType::tWUm) {
+    return "tW-m";
+  } else if (type == X3dnaBPType::cWPm) {
+    return "cW+m";
+  } else if (type == X3dnaBPType::tmUD) {
+    return "tm-.";
+  } else if (type == X3dnaBPType::tWPM) {
+    return "tW+M";
+  } else if (type == X3dnaBPType::DWPm) {
+    return ".W+m";
+  } else if (type == X3dnaBPType::tMPW) {
+    return "tM+W";
+  } else if (type == X3dnaBPType::DDPm) {
+    return "..+m";
+  } else if (type == X3dnaBPType::tWUW) {
+    return "tW-W";
+  } else if (type == X3dnaBPType::cmPm) {
+    return "cm+m";
+  } else if (type == X3dnaBPType::DWUm) {
+    return ".W-m";
+  } else if (type == X3dnaBPType::DMPm) {
+    return ".M+m";
+  } else if (type == X3dnaBPType::DWPM) {
+    return ".W+M";
+  } else if (type == X3dnaBPType::DMPM) {
+    return ".M+M";
+  } else if (type == X3dnaBPType::DmPW) {
+    return ".m+W";
+  } else if (type == X3dnaBPType::DWUM) {
+    return ".W-M";
+  } else if (type == X3dnaBPType::DmPm) {
+    return ".m+m";
+  } else if (type == X3dnaBPType::DDUM) {
+    return "..-M";
+  } else if (type == X3dnaBPType::DMUm) {
+    return ".M-m";
+  } else if (type == X3dnaBPType::DDUm) {
+    return "..-m";
+  } else if (type == X3dnaBPType::DMPW) {
+    return ".M+W";
+  } else if (type == X3dnaBPType::DMPD) {
+    return ".M+.";
+  } else if (type == X3dnaBPType::DMUM) {
+    return ".M-M";
+  } else if (type == X3dnaBPType::DmUm) {
+    return ".m-m";
+  } else if (type == X3dnaBPType::DMUW) {
+    return ".M-W";
+  } else if (type == X3dnaBPType::DWUD) {
+    return ".W-.";
   }
 
-  /*
-  X3dna::X3Motifs get_motifs(String const &pdb_path) {
+  else {
+    throw X3dnaException("unknown x3dna bp type");
+  }
+}
 
-    auto dssr_file_path = _get_dssr_file_path(pdb_path);
-    auto sections = _divide_dssr_file_into_sections(dssr_file_path);
-    X3dna::X3Motifs all_motifs;
+/*
+X3dna::X3Motifs get_motifs(String const &pdb_path) {
 
-    StringStringMap types;
-    types["hairpin"] = "HAIRPIN";
-    types["bulges"] = "TWOWAY";
-    types["internal"] = "TWOWAY";
-    types["junction"] = "NWAY";
-    types["non-loop"] = "SSTRAND";
+  auto dssr_file_path = _get_dssr_file_path(pdb_path);
+  auto sections = _divide_dssr_file_into_sections(dssr_file_path);
+  X3dna::X3Motifs all_motifs;
 
-    for (auto const &kv : types) {
-      if (sections.find(kv.first) != sections.end()) {
-        auto motifs = _parse_dssr_section(sections[kv.first], kv.second);
-        for (auto const &m : motifs) {
-          all_motifs.push_back(m);
-        }
-      }
-    }
-    if (sections.find("stems") != sections.end()) {
-      auto motifs = _parse_dssr_helix_section(sections["stems"]);
+  StringStringMap types;
+  types["hairpin"] = "HAIRPIN";
+  types["bulges"] = "TWOWAY";
+  types["internal"] = "TWOWAY";
+  types["junction"] = "NWAY";
+  types["non-loop"] = "SSTRAND";
+
+  for (auto const &kv : types) {
+    if (sections.find(kv.first) != sections.end()) {
+      auto motifs = _parse_dssr_section(sections[kv.first], kv.second);
       for (auto const &m : motifs) {
         all_motifs.push_back(m);
       }
     }
-
-    return all_motifs;
   }
-   */
-  /*
-  X3dna::X3Motifs X3dna::_parse_dssr_section(Strings const &section,
-                                             String const &mtype) {
-    X3Motifs motifs;
-    X3Residues seen_res;
-    int count = 0;
-    for (auto const &l : section) {
-      auto spl = _split_over_white_space(l);
-      if (spl.size() == 0) {
-        continue;
-      }
-      try {
-        if (spl[0].length() < 3 || spl[0].substr(0, 3) != "nts") {
-          continue;
-        }
-      } catch (...) {
-        continue;
-      }
-      if (spl.size() < 3) {
-        continue;
-      }
+  if (sections.find("stems") != sections.end()) {
+    auto motifs = _parse_dssr_helix_section(sections["stems"]);
+    for (auto const &m : motifs) {
+      all_motifs.push_back(m);
+    }
+  }
 
-      auto res_strs = base::string::split(spl[2], ",");
-      X3Residues res;
-      for (auto const &res_str : res_strs) {
-        auto res_obj = _parse_dssr_res_str(res_str);
-        res.push_back(res_obj);
-      }
-      count = 0;
-      for (auto const &r : res) {
-        for (auto const &r2 : seen_res) {
-          if (r == r2) {
-            count += 1;
-            break;
-          }
-        }
-      }
-      if (count == res.size()) {
+  return all_motifs;
+}
+ */
+/*
+X3dna::X3Motifs X3dna::_parse_dssr_section(Strings const &section,
+                                           String const &mtype) {
+  X3Motifs motifs;
+  X3Residues seen_res;
+  int count = 0;
+  for (auto const &l : section) {
+    auto spl = _split_over_white_space(l);
+    if (spl.size() == 0) {
+      continue;
+    }
+    try {
+      if (spl[0].length() < 3 || spl[0].substr(0, 3) != "nts") {
         continue;
       }
-      for (auto const &r : res) {
-        seen_res.push_back(r);
-      }
-      motifs.push_back(X3Motif{res, mtype});
+    } catch (...) {
+      continue;
+    }
+    if (spl.size() < 3) {
+      continue;
     }
 
-    return motifs;
-  }
-  */
-  /*
-  X3dna::X3Motifs X3dna::_parse_dssr_helix_section(Strings const &section) {
-
-    X3Motifs motifs;
+    auto res_strs = base::string::split(spl[2], ",");
     X3Residues res;
-    int i = 0;
-    for (auto const &l : section) {
-      auto spl = _split_over_white_space(l);
-      if (spl.size() == 0) {
-        continue;
-      }
-      try {
-        i = std::stoi(spl[0]);
-      } catch (...) {
-        continue;
-      }
-      if (i == 1 && res.size() > 0) {
-        motifs.push_back(X3Motif{res, "HELIX"});
-        res = X3Residues();
-      }
-      res.push_back(_parse_dssr_res_str(spl[1]));
-      res.push_back(_parse_dssr_res_str(spl[2]));
+    for (auto const &res_str : res_strs) {
+      auto res_obj = _parse_dssr_res_str(res_str);
+      res.push_back(res_obj);
     }
-
-    if (res.size() > 0) {
-      motifs.push_back(X3Motif{res, "HELIX"});
-    }
-
-    return motifs;
-  }
-  */
-
-  struct X3Basepair {
-    // X3Residue res1, res2;
-    math::Vector3 d;
-    math::Matrix3x3 r;
-    X3dnaBPType bp_type;
-  };
-
-  String X3dna::X3Basepair::to_string() const {
-    auto ss = std::stringstream();
-    ss << get_str_from_x3dna_type(bp_type) << "|" << res1.num << "|" << res2.num
-       << "|" << d << "|" << math::Matrix3x3::matrix_to_str(r);
-    return ss.str();
-  }
-
-  /*
-  void json_cleanup() {
-    auto cleanup_cmd =
-        String{base::x3dna_path()} + String{"/bin/x3dna-dssr --clean 2>"};
-    std::system(cleanup_cmd.c_str());
-  }
-  */
-
-  String compare_bps(X3dna::X3Basepairs &lhs, X3dna::X3Basepairs &rhs) {
-    // first, we want to build the maps
-    auto left_map = std::map<triplet<int, int, int>, X3dna::X3Basepair>();
-    auto right_map = std::map<triplet<int, int, int>, X3dna::X3Basepair>();
-
-    for (auto &bp : lhs) {
-      auto key = triplet<int, int, int>();
-      key.first = round(100. * bp.d.get_x());
-      key.second = round(100. * bp.d.get_y());
-      key.third = round(100. * bp.d.get_z());
-      left_map[key] = bp;
-    }
-    for (auto &bp : rhs) {
-      auto key = triplet<int, int, int>();
-      key.first = round(100. * bp.d.get_x());
-      key.second = round(100. * bp.d.get_y());
-      key.third = round(100. * bp.d.get_z());
-      right_map[key] = bp;
-    }
-    // quick check that there are no basepair repeats
-    if (left_map.size() != lhs.size()) {
-      throw std::runtime_error("error, redudant residue numbers in lhs bps");
-    }
-
-    if (right_map.size() != rhs.size()) {
-      throw std::runtime_error("error, redudant residue numbers in rhs bps");
-    }
-    auto matches(0);
-    auto lhs_it = left_map.begin();
-    const auto lhs_end = left_map.end();
-    while (lhs_it != lhs_end) {
-      // check if right_map has the iterator
-      auto rhs_it = right_map.find(lhs_it->first);
-      // if so, then check if the two are equivalent. delete if so
-      if (rhs_it != right_map.end()) {
-        // need to check that the reference frame, origin and bp_type are
-        // identical
-        const auto same_origin_flag =
-            roughly_equal(rhs_it->second.d, lhs_it->second.d, 0.1);
-        const auto same_frame_flag =
-            roughly_equal(rhs_it->second.r, lhs_it->second.r, 0.1) ||
-            roughly_equal(rhs_it->second.r.get_flip_orientation(),
-                          lhs_it->second.r, 0.1);
-        const auto same_bp_type =
-            rhs_it->second.bp_type == lhs_it->second.bp_type;
-        if (same_origin_flag && same_frame_flag && same_bp_type) {
-          lhs_it = left_map.erase(lhs_it);
-          right_map.erase(rhs_it);
-          ++matches;
-        } else {
-          // otherwise iterate
-          ++lhs_it;
+    count = 0;
+    for (auto const &r : res) {
+      for (auto const &r2 : seen_res) {
+        if (r == r2) {
+          count += 1;
+          break;
         }
+      }
+    }
+    if (count == res.size()) {
+      continue;
+    }
+    for (auto const &r : res) {
+      seen_res.push_back(r);
+    }
+    motifs.push_back(X3Motif{res, mtype});
+  }
+
+  return motifs;
+}
+*/
+/*
+X3dna::X3Motifs X3dna::_parse_dssr_helix_section(Strings const &section) {
+
+  X3Motifs motifs;
+  X3Residues res;
+  int i = 0;
+  for (auto const &l : section) {
+    auto spl = _split_over_white_space(l);
+    if (spl.size() == 0) {
+      continue;
+    }
+    try {
+      i = std::stoi(spl[0]);
+    } catch (...) {
+      continue;
+    }
+    if (i == 1 && res.size() > 0) {
+      motifs.push_back(X3Motif{res, "HELIX"});
+      res = X3Residues();
+    }
+    res.push_back(_parse_dssr_res_str(spl[1]));
+    res.push_back(_parse_dssr_res_str(spl[2]));
+  }
+
+  if (res.size() > 0) {
+    motifs.push_back(X3Motif{res, "HELIX"});
+  }
+
+  return motifs;
+}
+*/
+
+struct X3Basepair {
+  // X3Residue res1, res2;
+  math::Vector3 d;
+  math::Matrix3x3 r;
+  X3dnaBPType bp_type;
+};
+
+String X3dna::X3Basepair::to_string() const {
+  auto ss = std::stringstream();
+  ss << get_str_from_x3dna_type(bp_type) << "|" << res1.num << "|" << res2.num
+     << "|" << d << "|" << math::Matrix3x3::matrix_to_str(r);
+  return ss.str();
+}
+
+/*
+void json_cleanup() {
+  auto cleanup_cmd =
+      String{base::x3dna_path()} + String{"/bin/x3dna-dssr --clean 2>"};
+  std::system(cleanup_cmd.c_str());
+}
+*/
+
+String compare_bps(X3dna::X3Basepairs &lhs, X3dna::X3Basepairs &rhs) {
+  // first, we want to build the maps
+  auto left_map = std::map<triplet<int, int, int>, X3dna::X3Basepair>();
+  auto right_map = std::map<triplet<int, int, int>, X3dna::X3Basepair>();
+
+  for (auto &bp : lhs) {
+    auto key = triplet<int, int, int>();
+    key.first = round(100. * bp.d.get_x());
+    key.second = round(100. * bp.d.get_y());
+    key.third = round(100. * bp.d.get_z());
+    left_map[key] = bp;
+  }
+  for (auto &bp : rhs) {
+    auto key = triplet<int, int, int>();
+    key.first = round(100. * bp.d.get_x());
+    key.second = round(100. * bp.d.get_y());
+    key.third = round(100. * bp.d.get_z());
+    right_map[key] = bp;
+  }
+  // quick check that there are no basepair repeats
+  if (left_map.size() != lhs.size()) {
+    throw std::runtime_error("error, redudant residue numbers in lhs bps");
+  }
+
+  if (right_map.size() != rhs.size()) {
+    throw std::runtime_error("error, redudant residue numbers in rhs bps");
+  }
+  auto matches(0);
+  auto lhs_it = left_map.begin();
+  const auto lhs_end = left_map.end();
+  while (lhs_it != lhs_end) {
+    // check if right_map has the iterator
+    auto rhs_it = right_map.find(lhs_it->first);
+    // if so, then check if the two are equivalent. delete if so
+    if (rhs_it != right_map.end()) {
+      // need to check that the reference frame, origin and bp_type are
+      // identical
+      const auto same_origin_flag =
+          roughly_equal(rhs_it->second.d, lhs_it->second.d, 0.1);
+      const auto same_frame_flag =
+          roughly_equal(rhs_it->second.r, lhs_it->second.r, 0.1) ||
+          roughly_equal(rhs_it->second.r.get_flip_orientation(),
+                        lhs_it->second.r, 0.1);
+      const auto same_bp_type =
+          rhs_it->second.bp_type == lhs_it->second.bp_type;
+      if (same_origin_flag && same_frame_flag && same_bp_type) {
+        lhs_it = left_map.erase(lhs_it);
+        right_map.erase(rhs_it);
+        ++matches;
       } else {
+        // otherwise iterate
         ++lhs_it;
       }
+    } else {
+      ++lhs_it;
     }
-    auto summary = std::to_string(matches) + "," +
-                   std::to_string(left_map.size()) + "," +
-                   std::to_string(right_map.size()) + ",";
-    // check the sizes of the maps... anything leftotver means they are not unique
-    // to that method
-    if (!left_map.empty()) {
-      auto diffs = Strings{};
-      for (auto &kv : left_map) {
-        diffs.push_back(kv.second.to_string());
-      }
-      summary += base::string::join(diffs, "_");
-    }
-    summary += ",";
-    if (!right_map.empty()) {
-      auto diffs = Strings{};
-      for (auto &kv : right_map) {
-        diffs.push_back(kv.second.to_string());
-      }
-      summary += base::string::join(diffs, "_");
-    }
-    summary += "\n";
-
-    return summary;
   }
+  auto summary = std::to_string(matches) + "," +
+                 std::to_string(left_map.size()) + "," +
+                 std::to_string(right_map.size()) + ",";
+  // check the sizes of the maps... anything leftotver means they are not unique
+  // to that method
+  if (!left_map.empty()) {
+    auto diffs = Strings{};
+    for (auto &kv : left_map) {
+      diffs.push_back(kv.second.to_string());
+    }
+    summary += base::string::join(diffs, "_");
+  }
+  summary += ",";
+  if (!right_map.empty()) {
+    auto diffs = Strings{};
+    for (auto &kv : right_map) {
+      diffs.push_back(kv.second.to_string());
+    }
+    summary += base::string::join(diffs, "_");
+  }
+  summary += "\n";
+
+  return summary;
 }
+} // namespace x3dna
 } // namespace util
 
 /// @brief - ana_fncs.cpp
@@ -4736,42 +4738,6 @@ double get_oarea(long r1, long r2, long **ring_atom, double *oave, double *zave,
   return pia_inter(a, n1, b, n2);
 }
 
-void verify_oarea(void) {
-  long na, nb, nc;
-  point a[] = {{0, 0}, {10, 0}, {10, 10}, {0, 10}};
-  point b[] = {{5, 0}, {10, 0}, {10, 5}, {5, 5}};
-  point c[] = {
-      {-3, -2}, {-1, 4}, {6, 1}, {3, 10}, {-4, 9},
-  };
-
-  na = NELEMS(a);
-  nb = NELEMS(b);
-  nc = NELEMS(c);
-
-  printf("Area(%ld): %g\n", na, pia_inter(a, na, a, na));
-  printf("Area(%ld): %g\n", nb, pia_inter(b, nb, b, nb));
-  printf("Area(%ld): %g\n", nc, pia_inter(c, nc, c, nc));
-
-  printf("Overlap area: %g\n", pia_inter(a, na, b, nb));
-  printf("Overlap area: %g\n", pia_inter(a, na, c, nc));
-  printf("Overlap area: %g\n", pia_inter(b, nb, c, nc));
-}
-
-/* Get non-hydrogen base atom index in a residue based on atom name */
-void cehs_base_atoms(char **AtomName, long ib, long ie, long *num_batom,
-                     long *batom) {
-  long i;
-
-  *num_batom = 0;
-
-  for (i = ib; i <= ie; i++)
-    if (is_baseatom(AtomName[i])) {
-      if (++*num_batom > NUM_BASE_ATOMS)
-        fatal("too many base atoms in a residue\n");
-      batom[*num_batom] = i;
-    }
-}
-
 /* Calculate the six local CEHS base-pair parameters.
    Propeller is applied first followed by buckle-opening */
 void cehs_bppar(double **rot1, double *org1, double **rot2, double *org2,
@@ -4851,299 +4817,6 @@ static void check_cehs_pair_frames(double **r1, double **r2) {
     r1[i][2] = -r1[i][2]; /* reverse y */
     r1[i][3] = -r1[i][3]; /* reverse z */
   }
-}
-
-static void check_cehs_step_frames(double **r1, double *o1, double **r2,
-                                   double *o2) {
-  double sum, dd[4];
-  long i;
-
-  ddxyz(o1, o2, dd);
-
-  sum = 0;
-  for (i = 1; i <= 3; i++)
-    sum += dd[i] * r1[i][3];
-  if (sum < 0)
-    reverse_y_z_columns(r1);
-
-  sum = 0;
-  for (i = 1; i <= 3; i++)
-    sum += dd[i] * r2[i][3];
-  if (sum < 0)
-    reverse_y_z_columns(r2);
-}
-
-/* 3DNA uses the CEHS/SCHNAaP scheme but based on a newly recommended reference
-   frame which is base-centered as in Curves, RNA and CompDNA. On the other
-   hand, CEHS, NUPARM and FreeHelix/NewHelix use RC8 and YC6 atom to define
-   base-pair origin and long axis. They represent two classes of reference
-   frames. This C6/C8 style parameters can be compared to the 3DNA ones to show
-   how the same mathematics could give different results depending on the choice
-   of reference frame. */
-void cehs_pars(long num_bp, long istart, long istep, long **pair_num,
-               char **bp_seq, long **seidx, long **c6_c8, long *RY,
-               char **AtomName, char **ResName, char *ChainID, long *ResSeq,
-               char **Miscs, double **xyz, double *bp_orien, double *bp_org,
-               FILE *fp) {
-  char idmsg[BUF512], pn1[5], pn2[5];
-  char **step_str;
-
-  double odist;
-  double adist[2 * NUM_BASE_ATOMS];
-  double o1[4], o2[4], ppos[4], y[4], z[4], mfoi[4];
-  double **bxyz, **org, **orien, **mfi, **r1, **r2;
-  double **bp_par, **step_par;
-
-  long ds = 2, num_step = 0;
-  long i, ib, ie, ioffset, j, k, rnum, rnum2;
-  long ib2, ie2, nbpm1, num_batom, num_batom2, p1, p2, p3;
-  long batom[NUM_BASE_ATOMS], batom2[NUM_BASE_ATOMS];
-  long *bphlx; /* always count continuously */
-
-  nbpm1 = num_bp - 1;
-  bxyz = dmatrix(1, 2 * NUM_BASE_ATOMS, 1, 3);
-
-  /* y-, z- and origin for each base */
-  orien = dmatrix(1, ds, 1, num_bp * 9);
-  org = dmatrix(1, ds, 1, num_bp * 3);
-
-  for (i = 1; i <= ds; i++) {
-    for (j = 1; j <= num_bp; j++) {
-      rnum = pair_num[i][j];
-      ib = seidx[rnum][1];
-      ie = seidx[rnum][2];
-
-      get_idmsg(ResName[ib], ChainID[ib], ResSeq[ib], Miscs[ib][2], idmsg);
-
-      if (RY[rnum] == 1) {
-        strcpy(pn1, " C4 ");
-        strcpy(pn2, " N1 ");
-      } else if (RY[rnum] == 0) {
-        strcpy(pn1, " C6 ");
-        strcpy(pn2, " N3 ");
-      } else
-        fatal("Non-base residue: %s\n", ResName[ib]);
-
-      p1 = find_1st_atom(pn1, AtomName, ib, ie, idmsg);
-      p2 = find_1st_atom(pn2, AtomName, ib, ie, idmsg);
-      if (RY[rnum] == 0 && (bp_seq[i][j] == 'P' || bp_seq[i][j] == 'p'))
-        p3 = find_1st_atom(" C4 ", AtomName, ib, ie, idmsg);
-      else
-        p3 = find_1st_atom(" C2 ", AtomName, ib, ie, idmsg);
-      if (!p1 || !p2 || !p3 || !c6_c8[i][j])
-        fatal("missing required atom(s) in %s\n", idmsg);
-      avexyz(xyz[p1], xyz[p2], org[i] + (j - 1) * 3);
-      ddxyz(xyz[p2], xyz[p1], y); /* y-axis */
-      vec_norm(y);
-      ioffset = (j - 1) * 9;
-      cpxyz(y, orien[i] + ioffset + 3);
-
-      /* base atoms. use ls-plane normal as z-axis */
-      cehs_base_atoms(AtomName, ib, ie, &num_batom, batom);
-      for (k = 1; k <= num_batom; k++)
-        cpxyz(xyz[batom[k]], bxyz[k]);
-      ls_plane(bxyz, num_batom, z, ppos, &odist, adist);
-
-      /* define the direction of z */
-      ddxyz(xyz[p2], xyz[p1], o1);
-      ddxyz(xyz[p2], xyz[p3], o2);
-      cross(o1, o2, ppos); /* along 5'-->3' of strand I */
-      bp_seq[0][j] =
-          (i == 2 && dot(ppos, &orien[1][ioffset + 6]) < 0.0) ? '-' : '+';
-
-      if (dot(z, ppos) < 0)
-        negate_xyz(z);
-
-      vec_orth(z, y); /* correction for z-axis */
-      cpxyz(z, orien[i] + ioffset + 6);
-
-      cross(orien[i] + ioffset + 3, orien[i] + ioffset + 6,
-            orien[i] + ioffset); /* get x-axis */
-    }
-  }
-
-  /*  y-, z- and origin for each base-pair */
-  for (i = 1; i <= num_bp; i++) { /* c6_c8 atoms exist for sure from above */
-    avexyz(xyz[c6_c8[1][i]], xyz[c6_c8[2][i]], bp_org + (i - 1) * 3);
-    ddxyz(xyz[c6_c8[2][i]], xyz[c6_c8[1][i]], y);
-    vec_norm(y);
-    ioffset = (i - 1) * 9;
-    cpxyz(y, bp_orien + ioffset + 3);
-
-    rnum = pair_num[1][i];
-    ib = seidx[rnum][1];
-    ie = seidx[rnum][2];
-    cehs_base_atoms(AtomName, ib, ie, &num_batom, batom);
-    for (j = 1; j <= num_batom; j++)
-      cpxyz(xyz[batom[j]], bxyz[j]);
-
-    rnum2 = pair_num[2][i];
-    ib2 = seidx[rnum2][1];
-    ie2 = seidx[rnum2][2];
-    cehs_base_atoms(AtomName, ib2, ie2, &num_batom2, batom2);
-    for (j = num_batom + 1; j <= num_batom + num_batom2; j++)
-      cpxyz(xyz[batom2[j - num_batom]], bxyz[j]);
-
-    ls_plane(bxyz, num_batom + num_batom2, z, ppos, &odist, adist);
-
-    /* direction of bp follows base I */
-    if (dot(z, &orien[1][ioffset + 6]) < 0)
-      negate_xyz(z);
-
-    vec_orth(z, y); /* correction for z-axis */
-    cpxyz(z, bp_orien + ioffset + 6);
-
-    cross(bp_orien + ioffset + 3, bp_orien + ioffset + 6,
-          bp_orien + ioffset); /* get x-axis */
-  }
-
-  r1 = dmatrix(1, 3, 1, 3);
-  r2 = dmatrix(1, 3, 1, 3);
-  mfi = dmatrix(1, 3, 1, 3);
-  bp_par = dmatrix(1, num_bp, 1, 6);
-  for (i = 1; i <= num_bp; i++) {
-    refs_right_left(i, orien, org, r1, o1, r2, o2);
-    check_cehs_pair_frames(r1, r2);
-    cehs_bppar(r1, o1, r2, o2, bp_par[i], mfi, mfoi);
-  }
-
-  step_par = dmatrix(1, nbpm1, 1, 6);
-  step_str = cmatrix(1, num_bp, 0, 5);
-  bphlx = lvector(1, num_bp); /* helix break marker */
-  ie = istart;
-  for (i = istart; i <= nbpm1; i++) {
-    if (istep > 0) { /* continuous 1 to 3; 2 to 4 etc */
-      ib = i;
-      ie = ib + istep;
-    } else { /* next segment: 1 to 3, 3 to 5 etc */
-      ib = ie;
-      ie = ib - istep;
-    }
-    if (ie > num_bp)
-      break;
-    num_step++;
-    sprintf(step_str[num_step], "%c%c/%c%c", bp_seq[1][ib], bp_seq[1][ie],
-            bp_seq[2][ie], bp_seq[2][ib]);
-    refs_i_j(ib, ie, bp_orien, bp_org, r1, o1, r2, o2);
-    check_cehs_step_frames(r1, o1, r2, o2);
-    bpstep_par(r1, o1, r2, o2, step_par[num_step], mfi, mfoi);
-  }
-
-  print_sep(fp, '*', 76);
-  fprintf(fp, "Local base-pair parameters\n");
-  print_par(bp_seq, num_bp, 1, 0, bp_par, fp);
-
-  print_sep(fp, '*', 76);
-  fprintf(fp, "Local step parameters\n");
-  prt_stepstr(step_str, num_step, bphlx, 0, step_par, fp); /* continuous */
-
-  free_dmatrix(bxyz, 1, 2 * NUM_BASE_ATOMS, 1, 3);
-  free_dmatrix(orien, 1, ds, 1, num_bp * 9);
-  free_dmatrix(org, 1, ds, 1, num_bp * 3);
-  free_dmatrix(bp_par, 1, num_bp, 1, 6);
-  free_dmatrix(r1, 1, 3, 1, 3);
-  free_dmatrix(r2, 1, 3, 1, 3);
-  free_dmatrix(mfi, 1, 3, 1, 3);
-  free_dmatrix(step_par, 1, nbpm1, 1, 6);
-  free_cmatrix(step_str, 1, num_bp, 0, 5);
-  free_lvector(bphlx, 1, num_bp);
-}
-
-/* Calculate Schnaap linear global parameters: to replace orginal SCHNAP */
-void schnaap_global(long num_bp, long num, char **bp_seq, long **chi,
-                    double **xyz, double *bp_orien, double *bp_org, FILE *fp) {
-  char *bstr = "      --- ", *fmt = "%10.2f";
-  double hrise, std_rise, TipInc, phi;
-  double haxis[4], hstart[4], hend[4], hinge[4], dd[7];
-  double **rise_twist, **hpars, **r, **rh, **temp, **yhel;
-  long ds = 2, i, ioffset, j, k, nbpm1;
-  long nvec, C1b[MBASES], C1e[MBASES];
-  long **idx;
-
-  idx = lmatrix(1, 4 * num_bp, 1, 2);
-  get_CNidx(ds, num_bp, chi, idx, &nvec, C1b, C1e);
-  get_axis(nvec, idx, num, xyz, ds, C1b, C1e, &std_rise, &hrise, haxis, hstart,
-           hend);
-
-  if (hrise < EMPTY_CRITERION || std_rise > Gvars.misc_pars.std_curved)
-    return;
-
-  r = dmatrix(1, 3, 1, 3);
-  temp = dmatrix(1, 3, 1, 3);
-  rh = dmatrix(1, 3, 1, 3);
-  hpars = dmatrix(1, num_bp, 1, 6);
-  yhel = dmatrix(1, num_bp, 1, 3);
-  for (i = 1; i <= num_bp; i++) {
-    ioffset = (i - 1) * 9;
-    orien2mst(bp_orien, ioffset, r);
-    TipInc = magang(haxis, &bp_orien[ioffset + 6]);
-    cross(haxis, &bp_orien[ioffset + 6], hinge);
-    arb_rotation(hinge, -TipInc, temp);
-    multi_matrix(temp, 3, 3, r, 3, 3, rh);
-
-    for (j = 1; j <= 3; j++)
-      yhel[i][j] = rh[j][2];
-    ddxyz(hstart, bp_org + (i - 1) * 3, hend);
-    phi = deg2rad(vec_ang(hinge, yhel[i], haxis));
-    hpars[i][4] = TipInc * sin(phi);
-    hpars[i][5] = TipInc * cos(phi);
-
-    for (j = 1; j <= 3; j++) {
-      hpars[i][j] = 0.0;
-      for (k = 1; k <= 3; k++)
-        hpars[i][j] += hend[k] * rh[k][j];
-    }
-  }
-
-  nbpm1 = num_bp - 1;
-  for (i = 1; i < num_bp; i++) {
-    j = i + 1;
-    hpars[i][3] = hpars[j][3] - hpars[i][3];
-    hpars[i][6] = vec_ang(yhel[i], yhel[j], haxis);
-  }
-
-  print_sep(fp, '*', 76);
-  fprintf(fp, "SCHNAaP global helical parameters\n");
-  fprintf(fp, "    step       X-disp    Y-disp   h-Rise     Incl.       Tip"
-              "   h-Twist\n");
-  for (i = 1; i <= num_bp; i++) {
-    fprintf(fp, " %4ld %c%c%c ", i, bp_seq[1][i], bp_seq[0][i], bp_seq[2][i]);
-    for (j = 1; j <= 6; j++)
-      if (i < num_bp)
-        fprintf(fp, fmt, hpars[i][j]);
-      else
-        fprintf(fp, (j == 3 || j == 6) ? bstr : fmt, hpars[i][j]);
-    fprintf(fp, "\n");
-  }
-  rise_twist = dmatrix(1, nbpm1, 1, 2);
-  if (num_bp > 2) {
-    for (i = 1; i < num_bp; i++) {
-      rise_twist[i][1] = hpars[i][3];
-      rise_twist[i][2] = hpars[i][6];
-    }
-    ave_dmatrix(hpars, num_bp, 6, dd);
-    ave_dmatrix(rise_twist, nbpm1, 2, hend);
-    fprintf(fp, "          ");
-    print_sep(fp, '~', 60);
-    fprintf(fp, "      ave.");
-    for (i = 1; i <= 6; i++)
-      fprintf(fp, fmt, (i == 3) ? hend[1] : (i == 6) ? hend[2] : dd[i]);
-    fprintf(fp, "\n");
-
-    std_dmatrix(hpars, num_bp, 6, dd);
-    std_dmatrix(rise_twist, nbpm1, 2, hend);
-    fprintf(fp, "      s.d.");
-    for (i = 1; i <= 6; i++)
-      fprintf(fp, fmt, (i == 3) ? hend[1] : (i == 6) ? hend[2] : dd[i]);
-    fprintf(fp, "\n");
-  }
-  free_lmatrix(idx, 1, 4 * num_bp, 1, 2);
-  free_dmatrix(r, 1, 3, 1, 3);
-  free_dmatrix(temp, 1, 3, 1, 3);
-  free_dmatrix(rh, 1, 3, 1, 3);
-  free_dmatrix(hpars, 1, num_bp, 1, 6);
-  free_dmatrix(yhel, 1, num_bp, 1, 3);
-  free_dmatrix(rise_twist, 1, nbpm1, 1, 2);
 }
 
 /* In CEHS: for base-pair parameters, propeller is applied first */
@@ -6000,18 +5673,6 @@ static void get_3dna_version(char *homedir, char *version) {
   close_file(fp);
 }
 
-long string_contains_only_those_characters(char *str, char *chars_set) {
-  return (strspn(str, chars_set) == strlen(str)) ? true : false;
-}
-
-/* bpid: +2 means a Watson-Crick base-pair;
- * bpid > 0 (+1): means WC geometry, as in G-U wobble
- * zdir < 0: '-' otherwise, '+' */
-void bpid_wc_str(long bpid, double zdir, char *wc) {
-  sprintf(wc, "%c%c%c", (bpid == 2) ? '-' : '*', (bpid > 0) ? '-' : '*',
-          (zdir < 0.0) ? '-' : '+');
-}
-
 int case_strcmp(const char *s1, const char *s2) {
   int i, c1, c2;
 
@@ -6069,79 +5730,12 @@ char *case_strchr(const char *s, int c) {
   return p;
 }
 
-void kbd_input(char *msg) {
-  if (msg != NULL)
-    fprintf(stderr, "%s", msg);
-  fprintf(stderr, "Press return to continue ...\n");
-  getchar();
-}
-
-long get_line_number(char *filename, long skips) {
-  char *p0, *line;
-  long num = 0;
-  FILE *fp;
-
-  fp = open_file(filename, "r");
-
-  while ((p0 = my_getline(fp)) != NULL) {
-    if (skips) {
-      line = trim(p0); /* keep the original address of p0 */
-      if (is_skip_line(line)) {
-        free(p0);
-        continue;
-      }
-    }
-    num++;
-    free(p0);
-  }
-
-  close_file(fp);
-
-  if (!num)
-    fatal("File <%s> contains 0 valid records\n", filename);
-
-  return num;
-}
-
 long is_empty_string(const char *str) {
   return (str == NULL || strcmp(str, "") == 0);
 }
 
 long is_equal_string(const char *str1, const char *str2) {
   return (strcmp(str1, str2) == 0);
-}
-
-long is_equal_case_string(const char *str1, const char *str2) {
-  return (case_strcmp(str1, str2) == 0);
-}
-
-void null_line_comment(char *str) {
-  char *p;
-
-  p = strrchr(str, '#');
-  if (p) {
-    if (!isspace((int)*(p - 1)))
-      fatal("wrong format [%s]: requiring a white space before #\n", str);
-    *p = '\0';
-  }
-}
-
-long is_comment_line(char *line) {
-  char *p = ltrim(line);
-
-  if (*p == '#')
-    return true;
-  else
-    return false;
-}
-
-long is_empty_line(char *line) {
-  char *p = trim(line);
-
-  if (*p == '\0')
-    return true;
-  else
-    return false;
 }
 
 /* no processing of line[] here */
@@ -6225,16 +5819,6 @@ void get_xml_tag(FILE *fpxml, char *prefix, char *line, char *connector,
     fatal("tag <%s> has end match\n", tag);
 }
 
-void print_xml_tag(FILE *fpxml, char *prefix, char *line, char *tag, char *otag,
-                   FILE *fp) {
-  char tag_str[BUFBIG];
-
-  if (tag_match(prefix, line, tag)) {
-    get_xml_tag(fpxml, prefix, line, " ", tag, tag_str);
-    fprintf(fp, "<%s>%s</%s>\n", otag, tag_str, otag);
-  }
-}
-
 void get_xml_tag_long(FILE *fpxml, char *prefix, char *line, char *tag,
                       long *lval) {
   char tag_str[BUFBIG];
@@ -6264,40 +5848,6 @@ long tag_match(char *prefix, char *line, char *tag) {
          !strstr(line, "/>"); /* not short-handed form */
 }
 
-void extract_attribute(char *line, char *attr, char *attr_val, long to_lower) {
-  char *p0, *p1, *p2, str[BUF512];
-
-  sprintf(str, "%s=\"", attr);
-
-  p0 = strstr(line, str);
-  if (!p0)
-    fatal("line <%s> does not contain attribute: \"%s\"\n", line, attr);
-
-  p1 = p0 + strlen(str);
-
-  p2 = strchr(p1, '"');
-  if (!p2)
-    fatal("line <%s> has no matching \"\n", line);
-  *p2 = '\0';
-
-  strcpy(attr_val, p1);
-
-  if (to_lower)
-    lowerstr(attr_val);
-}
-
-void print_ptable() {
-  char str[BUF512];
-  long i;
-
-  for (i = 0; i <= Gvars.NUM_ELE; i++) {
-    sprintf(str, "%2.2s..", Gvars.ATOM_NAMES[i]);
-    if (str[0] == ' ')
-      str[0] = '.';
-    fprintf(stderr, "%4.4s  %2.2s   # %3ld\n", str, Gvars.ATOM_NAMES[i], i + 1);
-  }
-}
-
 long set_switch_default_true(char *option) {
   char str[BUF512];
   long switch_set = true;
@@ -6321,55 +5871,6 @@ static void check_required_option(char *option, char *invalid_str, char *msg) {
     fprintf(stderr, "missing required option: %s\n", msg);
     fatal("Please try \"%s -h\" for usage information\n", Gvars.PROGNAME);
   }
-}
-
-void check_required_file(char *filename, char *invalid_str, char *msg) {
-  check_required_option(filename, invalid_str, msg);
-
-  if (!exist_file(filename))
-    fatal("required file <%s> does NOT exist!\n", filename);
-}
-
-void define_frame_by_3atoms(long num, double **xyz, double **refmat) {
-  double d, tmpx[4], tmpy[4], tmpz[4];
-  long i;
-
-  if (num < 3)
-    return;
-
-  cpxyz(xyz[1], refmat[4]);    /* 1st atom as origin */
-  ddxyz(xyz[1], xyz[2], tmpx); /* 1 ---> 2 as x-axis */
-
-  for (i = 3; i <= num; i++) {
-    ddxyz(xyz[1], xyz[i], tmpy);
-    d = magang(tmpx, tmpy);
-    if (dval_in_range(d, 5, 175)) /* nonlinear */
-      break;
-  }
-
-  if (i > num) {
-    fprintf(stderr, "too few non-linear atoms to define orientation\n");
-    return;
-  }
-
-  vec_norm(tmpx);
-  vec_orth(tmpy, tmpx); /* orthogonal component as y-axis */
-  cross(tmpx, tmpy, tmpz);
-
-  x_y_z_2_mtx(tmpx, tmpy, tmpz, refmat); /* column vector for x, y & z */
-}
-
-/* get a match of partial argument: e.g., -xml=2 */
-long get_xmlArgNumber(char *str, char *pstr) {
-  long lval = 0;
-
-  if (str_pmatch(str, pstr)) {
-    lval = 1;
-    if (strchr(str, '=') != NULL)
-      lval = 2;
-  }
-
-  return lval;
 }
 
 /* get the local reference frame for each base. only the ring atoms are
@@ -6435,35 +5936,6 @@ void base_frame(long num_residue, char *bseq, long **seidx, long *res_type,
   free_dmatrix(R, 1, 3, 1, 3);
 }
 
-/* get residue index, color index and main chain atoms for the peptide bond */
-void peptide_info(long num_residue, long **seidx, char **AtomName,
-                  char **ResName, char *ChainID, long *ResSeq, char **Miscs,
-                  double **xyz, long *res_type, long *cidx, long *mchain) {
-  static char *SAA[] = {AA_LIST};
-  char *col_code = "GGGGGGGAAAATTTTTTTTCX";
-  char *cmn_base = CX_LIST, idmsg[BUF512];
-  long i, ib, ie, ioffset, j, num_saa;
-
-  num_saa = sizeof SAA / sizeof SAA[0] - 1;
-  for (i = 1; i <= num_residue; i++) {
-    ib = seidx[i][1];
-    ie = seidx[i][2];
-    res_type[i] = residue_ident(AtomName, xyz, Miscs, ib, ie);
-    if (res_type[i] != -1) /* non-amino-acid */
-      continue;
-    get_idmsg(ResName[ib], ChainID[ib], ResSeq[ib], Miscs[ib][2], idmsg);
-    ioffset = (i - 1) * 4;
-    mchain[ioffset + 1] = find_1st_atom(" N  ", AtomName, ib, ie, idmsg);
-    mchain[ioffset + 2] = find_1st_atom(" CA ", AtomName, ib, ie, idmsg);
-    mchain[ioffset + 3] = find_1st_atom(" C  ", AtomName, ib, ie, idmsg);
-    mchain[ioffset + 4] = find_1st_atom(" O  ", AtomName, ib, ie, idmsg);
-    for (j = 0; j <= num_saa; j++)
-      if (!strcmp(ResName[ib], SAA[j]))
-        break;
-    cidx[i] = strchr(cmn_base, col_code[j]) - cmn_base;
-  }
-}
-
 static void align_block_xyz(double *orien_i, double *org_i, double *xyz_j,
                             double *new_xyz) {
   long i, j;
@@ -6474,68 +5946,6 @@ static void align_block_xyz(double *orien_i, double *org_i, double *xyz_j,
       temp[j] = orien_i[i + (j - 1) * 3];
     new_xyz[i] = dot(xyz_j, temp) + org_i[i];
   }
-}
-
-void base_blks(long num_residue, long *res_type, double **orien, double **org,
-               char *bseq, char *BDIR, char *alcfile) {
-  char filename[BUF512], **AtomName, **tAtomName;
-  double **txyz, **xyz;
-  long bidx, i, j, k, nbond, num, tnbond, tnum;
-  long ia = 0, ib = 0, num_nt = 0;
-  long *ibase, *tibase, **linkage, **tlinkage;
-
-  for (i = 1; i <= num_residue; i++)
-    if (res_type[i] >= 0)
-      num_nt++; /* number of bases */
-  if (!num_nt) {
-    fprintf(stderr, "No base residues in this structure\n");
-    return;
-  }
-
-  sprintf(filename, "%s%s", BDIR, "Block_R.alc");
-  get_alc_nums(filename, &num, &nbond);
-
-  AtomName = cmatrix(1, num, 0, 2);
-  xyz = dmatrix(1, num, 1, 3);
-  ibase = lvector(1, num);
-  linkage = lmatrix(1, nbond, 1, 2);
-
-  tnum = num * num_nt;
-  tnbond = nbond * num_nt;
-
-  tAtomName = cmatrix(1, tnum, 0, 2);
-  txyz = dmatrix(1, tnum, 1, 3);
-  tibase = lvector(1, tnum);
-  tlinkage = lmatrix(1, tnbond, 1, 2);
-
-  for (i = 1; i <= num_residue; i++) {
-    if (res_type[i] == 1) /* purine */
-      sprintf(filename, "%s%s", BDIR, "Block_R.alc");
-    else if (res_type[i] == 0) /* pyrimidine */
-      sprintf(filename, "%s%s", BDIR, "Block_Y.alc");
-    else /* not a nucleotide */
-      continue;
-    read_alc(filename, &num, &nbond, AtomName, xyz, ibase, linkage);
-
-    base_idx(i, &bseq[i], &bidx, 1); /* for coloring purpose */
-
-    for (j = 1; j <= num; j++) {
-      strcpy(tAtomName[ia + j], AtomName[j]);
-      tibase[ia + j] = bidx;
-      align_block_xyz(orien[i], org[i], xyz[j], txyz[ia + j]);
-    }
-
-    for (j = 1; j <= nbond; j++)
-      for (k = 1; k <= 2; k++)
-        tlinkage[ib + j][k] = ia + linkage[j][k];
-
-    ia += num;
-    ib += nbond;
-  }
-  write_alc(tnum, tnbond, tAtomName, txyz, tibase, tlinkage, alcfile);
-
-  free_alc(num, nbond, AtomName, xyz, ibase, 1, linkage);
-  free_alc(tnum, tnbond, tAtomName, txyz, tibase, 1, tlinkage);
 }
 
 static void reset_alist_symbol_idx(char *alist, long *aidx) {
@@ -6941,25 +6351,6 @@ static long overwrite_misc_pars(char *option) {
   return false;
 }
 
-void lsplane_xyz(double **xyz, long num_plane, long *atom_plane, double **nxyz,
-                 double *z) {
-  long i, k;
-  double **xyz_plane;
-  double odist, adist[BUF512], ppos[4];
-
-  xyz_plane = dmatrix(1, num_plane, 1, 3);
-
-  for (i = 1; i <= num_plane; i++) {
-    k = atom_plane[i];
-    cpxyz(xyz[k], xyz_plane[i]);
-  }
-
-  ls_plane(xyz_plane, num_plane, z, ppos, &odist, adist);
-  plane_xyz(num_plane, xyz_plane, ppos, z, nxyz);
-
-  free_dmatrix(xyz_plane, 1, num_plane, 1, 3);
-}
-
 /* base-pairing type information as in check_pair():
  * +1 WC geometry; +2: WC pair; -1: other cases */
 long read_PairInfo(char *inpfile, long **pair_info) {
@@ -6994,18 +6385,6 @@ long read_PairInfo(char *inpfile, long **pair_info) {
   return num_bp;
 }
 
-/* use O3' and P distance to check if residues i & j are connected by
- * gap-residues */
-long is_linked_by_gap(long i, long j, double **o3_p) {
-  long k;
-
-  for (k = i; k < j; k++)
-    if (!is_linked(k, k + 1, o3_p))
-      return 0L;
-
-  return 1L;
-}
-
 /* use O3' and P distance to check if residues i & j are directly connected */
 long is_linked(long i, long j, double **o3_p) {
   double d;
@@ -7028,64 +6407,6 @@ double distance_ab(double **o3_p, long ia, long ib, long ipa, long ipb) {
              : -1.0;
 }
 
-/* write the position and orientation of the transformation to ROTMAT_FILE
- *     To be used with rotate_mol with -l and -t=ROTMAT option */
-void write_rotmat(double **rotmat) {
-  char *format = "%12.4f%12.4f%12.4f\n";
-  long i;
-  FILE *fp;
-
-  fp = open_file(ROTMAT_FILE, "w");
-  fprintf(fp, "    1  # x-, y-, z-axes row-rise\n");
-  fprintf(fp, format, rotmat[4][1], rotmat[4][2], rotmat[4][3]);
-  for (i = 1; i <= 3; i++)
-    fprintf(fp, format, rotmat[1][i], rotmat[2][i], rotmat[3][i]);
-
-  close_file(fp);
-}
-
-/* read in a rotation matrix: x-axis can be any vector;
-   y-axis orthogonal to it; z-axis forms a right-handed system */
-void read_rotmat(char *rotfile, double **rotmat) {
-  char str[BUF512], *format = "%lf %lf %lf";
-  double tmp[4], **tmprot;
-  long i, row_wise;
-  FILE *fp;
-
-  fp = open_file(rotfile, "r");
-
-  if (fgets(str, sizeof str, fp) == NULL || sscanf(str, "%ld", &row_wise) != 1)
-    fatal("error reading rotmat file: row/column-wise indicator\n");
-  if (fgets(str, sizeof str, fp) == NULL ||
-      sscanf(str, format, &rotmat[4][1], &rotmat[4][2], &rotmat[4][3]) != 3)
-    fatal("error reading origin line\n");
-
-  tmprot = dmatrix(1, 3, 1, 3);
-  for (i = 1; i <= 3; i++) {
-    if (fgets(str, sizeof str, fp) == NULL ||
-        sscanf(str, format, &tmp[1], &tmp[2], &tmp[3]) != 3)
-      fatal("error reading x/y/z directions\n");
-    vec_norm(tmp); /* normalize it */
-    cpxyz(tmp, tmprot[i]);
-  }
-  close_file(fp);
-
-  if (!row_wise) { /* make tmprot row-vector for xyz axes */
-    transpose_matrix(tmprot, 3, 3, rotmat);
-    copy_dmatrix(rotmat, 3, 3, tmprot);
-  }
-  if (fabs(dot(tmprot[1], tmprot[2])) >= 0.005)
-    fprintf(stderr, "Warning: x- and y-axes are not orthogonal\n");
-  vec_orth(tmprot[2], tmprot[1]); /* orthogonal component to x-axis as y-axis */
-  cross(tmprot[1], tmprot[2], tmp);
-  if (fabs(dot(tmp, tmprot[3])) <= 0.9995)
-    fprintf(stderr, "Warning: z-axis is not perpendicular to xy-plane\n");
-  cpxyz(tmp, tmprot[3]);
-  transpose_matrix(tmprot, 3, 3, rotmat); /* make rotmat column-wise */
-
-  free_dmatrix(tmprot, 1, 3, 1, 3);
-}
-
 void reverse_y_z_columns(double **R) {
   long i;
 
@@ -7093,140 +6414,6 @@ void reverse_y_z_columns(double **R) {
     R[i][2] = -R[i][2]; /* reverse y-axis */
     R[i][3] = -R[i][3]; /* reverse z-axis */
   }
-}
-
-long get_num_nt(long num_residue, long *RY) {
-  long i, num_nt = 0;
-
-  for (i = 1; i <= num_residue; i++)
-    if (RY[i] >= 0)
-      num_nt++;
-
-  return num_nt;
-}
-
-/* get the local reference frame for each peptide unit defined by 6 atoms:
-   CA(i), C(i), O(i), N(i+1), H(i+1) & CA(i+1) -- NB: Hs normally N/A */
-void peptide_frame(long num_residue, char *BDIR, long *res_type, long *mchain,
-                   double **xyz, double **orien, double **org) {
-  char filename[BUF512], *sChainID, **sAtomName, **sResName;
-  double rms_fit, **ePxyz, **fitted_xyz, **sPxyz, **sxyz, **R;
-  long i, ioffset, j, nmatch, pnum = 6; /* 6 atoms in snap_pep.pdb */
-  long idx[7], *sResSeq;
-
-  sprintf(filename, "%s%s", BDIR, SNAP_PEP_PDB);
-  fprintf(stderr, " ...... reading file: %s ...... \n", filename);
-
-  sAtomName = cmatrix(1, pnum, 0, 4); /* for standard geometry */
-  sResName = cmatrix(1, pnum, 0, 3);
-  sChainID = cvector(1, pnum);
-  sResSeq = lvector(1, pnum);
-  sxyz = dmatrix(1, pnum, 1, 3);
-  read_pdb(filename, NULL, sAtomName, sResName, sChainID, sResSeq, sxyz, NULL,
-           1, "*");
-
-  ePxyz = dmatrix(1, pnum, 1, 3);
-  sPxyz = dmatrix(1, pnum, 1, 3);
-  fitted_xyz = dmatrix(1, pnum, 1, 3);
-  R = dmatrix(1, 3, 1, 3);
-
-  org[num_residue][4] = -1.0;
-  for (i = 1; i < num_residue; i++) {               /* between i and i + 1 */
-    org[i][4] = -1.0;                               /* as a default indicator */
-    if (res_type[i] != -1 || res_type[i + 1] != -1) /* non-amino-acid */
-      continue;
-    ioffset = (i - 1) * 4;        /* for residue i */
-    idx[1] = mchain[ioffset + 2]; /* CA (i) */
-    idx[2] = mchain[ioffset + 3]; /* C (i) */
-    idx[3] = mchain[ioffset + 4]; /* O (i) */
-    ioffset += 4;                 /* for residue i + 1 */
-    idx[4] = mchain[ioffset + 1]; /* N (i + 1) */
-    idx[5] = 0;                   /* H (i + 1): not counted */
-    idx[6] = mchain[ioffset + 2]; /* CA (i + 1) */
-
-    if (!idx[2] || !idx[4]) /* C(i) or N(i + 1) does not exist */
-      continue;
-    if (p1p2_dist(xyz[idx[2]], xyz[idx[4]]) > 2.0) /* 1.32 C-N */
-      continue; /* AAs (i) and (i + 1) NOT connected by a peptide bond */
-
-    nmatch = 0;
-    for (j = 1; j <= pnum; j++) {
-      if (idx[j]) {
-        ++nmatch;
-        cpxyz(xyz[idx[j]], ePxyz[nmatch]);
-        cpxyz(sxyz[j], sPxyz[nmatch]);
-      }
-    }
-
-    rms_fit = ls_fitting(sPxyz, ePxyz, nmatch, fitted_xyz, R, org[i]);
-
-    org[i][4] = rms_fit;
-    mst2orien(orien[i], 0, R); /* attached to residue i */
-
-    if (Gvars.VERBOSE)
-      fprintf(stderr, "RMS for peptide plane %ld: %g\n", i, rms_fit);
-  }
-
-  free_pdb(pnum, NULL, sAtomName, sResName, sChainID, sResSeq, sxyz, NULL);
-  free_dmatrix(ePxyz, 1, pnum, 1, 3);
-  free_dmatrix(sPxyz, 1, pnum, 1, 3);
-  free_dmatrix(fitted_xyz, 1, pnum, 1, 3);
-  free_dmatrix(R, 1, 3, 1, 3);
-}
-
-/* representing each peptide bond as a rectangular block */
-void peptide_blks(long num_residue, char *BDIR, long *cidx, double **orien,
-                  double **org, char *alcfile) {
-  char filename[BUF512], **AtomName, **tAtomName;
-  double **txyz, **xyz;
-  long i, j, k, nbond, num, tnbond, tnum;
-  long ia = 0, ib = 0, num_pep = 0;
-  long *ibase, *tibase, **linkage, **tlinkage;
-
-  for (i = 1; i < num_residue; i++) /* NB: org[i][4] default to -1.0 */
-    if (dval_in_range(org[i][4], 0.0, TRSP_RMS))
-      num_pep++;
-  if (!num_pep) {
-    fprintf(stderr, "No trans peptide bonds in this structure\n");
-    return;
-  }
-
-  sprintf(filename, "%s%s", BDIR, SNAP_PEP_ALC);
-  fprintf(stderr, " ...... reading file: %s ...... \n", filename);
-
-  get_alc_nums(filename, &num, &nbond);
-  AtomName = cmatrix(1, num, 0, 2);
-  xyz = dmatrix(1, num, 1, 3);
-  ibase = lvector(1, num); /* of no use here */
-  linkage = lmatrix(1, nbond, 1, 2);
-  read_alc(filename, &num, &nbond, AtomName, xyz, ibase, linkage);
-
-  tnum = num * num_pep; /* total # of vertices & linkages */
-  tnbond = nbond * num_pep;
-
-  tAtomName = cmatrix(1, tnum, 0, 2);
-  txyz = dmatrix(1, tnum, 1, 3);
-  tibase = lvector(1, tnum);
-  tlinkage = lmatrix(1, tnbond, 1, 2);
-
-  for (i = 1; i < num_residue; i++) {
-    if (!dval_in_range(org[i][4], 0.0, TRSP_RMS))
-      continue;                  /* not a trans peptide bond */
-    for (j = 1; j <= num; j++) { /* for current block vertices */
-      strcpy(tAtomName[ia + j], AtomName[j]);
-      tibase[ia + j] = cidx[i]; /* cidx is for [1 .. num_residue] */
-      align_block_xyz(orien[i], org[i], xyz[j], txyz[ia + j]);
-    }
-    for (j = 1; j <= nbond; j++)
-      for (k = 1; k <= 2; k++)
-        tlinkage[ib + j][k] = ia + linkage[j][k];
-    ia += num;
-    ib += nbond;
-  }
-  write_alc(tnum, tnbond, tAtomName, txyz, tibase, tlinkage, alcfile);
-
-  free_alc(num, nbond, AtomName, xyz, ibase, 1, linkage);
-  free_alc(tnum, tnbond, tAtomName, txyz, tibase, 1, tlinkage);
 }
 
 /* this function must be run before calling atom_idx() */
@@ -7381,91 +6568,6 @@ long check_global_options(char *option) {
     return false;
 }
 
-/* ++++++++++++++++++++++++++++++++++++ SNAP-related functions
- * ++++++++++++++++++++++++++++++++++++ */
-
-/* get the local AA reference frame based on Ca-Cb-N as in Pabo/Honig */
-void get_AA_frames(long num_residue, long **seidx, long *res_type,
-                   char **AtomName, char **ResName, char *ChainID, long *ResSeq,
-                   char **Miscs, double **xyz, char *BDIR, double **orien,
-                   double **org) {
-  char idmsg[BUF512];
-  char filename[BUF512], *sChainID, **sAtomName, **sResName;
-  double rms_fit, **ePxyz, **fitted_xyz, **sPxyz, **sxyz, **R;
-  long i, ib, ie, j, nmatch, pnum = 4; /* 4 atoms in SNAP_AAA */
-  long idx[5], *sResSeq;
-
-  sprintf(filename, "%s%s", BDIR, SNAP_AAA);
-  fprintf(stderr, " ...... reading file: %s ...... \n", filename);
-
-  sAtomName = cmatrix(1, pnum, 0, 4); /* for standard geometry */
-  sResName = cmatrix(1, pnum, 0, 3);
-  sChainID = cvector(1, pnum);
-  sResSeq = lvector(1, pnum);
-  sxyz = dmatrix(1, pnum, 1, 3);
-  read_pdb(filename, NULL, sAtomName, sResName, sChainID, sResSeq, sxyz, NULL,
-           1, "*");
-
-  ePxyz = dmatrix(1, pnum, 1, 3);
-  sPxyz = dmatrix(1, pnum, 1, 3);
-  fitted_xyz = dmatrix(1, pnum, 1, 3);
-  R = dmatrix(1, 3, 1, 3);
-
-  for (i = 1; i <= num_residue; i++) {
-    if (res_type[i] != -1) /* non-amino-acid */
-      continue;
-    ib = seidx[i][1];
-    ie = seidx[i][2];
-    get_idmsg(ResName[ib], ChainID[ib], ResSeq[ib], Miscs[ib][2], idmsg);
-    idx[1] = find_1st_atom(" N  ", AtomName, ib, ie, idmsg);
-    idx[2] = find_1st_atom(" CA ", AtomName, ib, ie, idmsg);
-    idx[3] = find_1st_atom(" C  ", AtomName, ib, ie, idmsg);
-    idx[4] = find_1st_atom(" CB ", AtomName, ib, ie, ""); /* for glycine */
-
-    org[i][4] = -1.0; /* as a default indicator */
-    nmatch = 0;
-    for (j = 1; j <= pnum; j++) {
-      if (idx[j]) {
-        ++nmatch;
-        cpxyz(xyz[idx[j]], ePxyz[nmatch]);
-        cpxyz(sxyz[j], sPxyz[nmatch]);
-      }
-    }
-
-    if (nmatch >= 3) { /* extract match Cb xyz later ... */
-      rms_fit = ls_fitting(sPxyz, ePxyz, nmatch, fitted_xyz, R, org[i]);
-      org[i][4] = rms_fit;
-      mst2orien(orien[i], 0, R);
-      if (Gvars.VERBOSE) {
-        fprintf(stderr, "RMS %s %g\n", idmsg, rms_fit);
-        verify_Cb_coordinates(nmatch, ePxyz, fitted_xyz);
-      }
-    }
-  }
-
-  free_pdb(pnum, NULL, sAtomName, sResName, sChainID, sResSeq, sxyz, NULL);
-  free_dmatrix(ePxyz, 1, pnum, 1, 3);
-  free_dmatrix(sPxyz, 1, pnum, 1, 3);
-  free_dmatrix(fitted_xyz, 1, pnum, 1, 3);
-  free_dmatrix(R, 1, 3, 1, 3);
-}
-
-void verify_Cb_coordinates(long nmatch, double **ePxyz, double **fitted_xyz) {
-  char *fmt = "\t%9.3f%9.3f%9.3f\n";
-
-  if (nmatch == 4) {
-    fprintf(stderr, fmt, ePxyz[4][1], ePxyz[4][2], ePxyz[4][3]);
-    fprintf(stderr, fmt, fitted_xyz[4][1], fitted_xyz[4][2], fitted_xyz[4][3]);
-  }
-}
-
-void residue_chain_resnum(char chain_id, long res_seq, char *misc,
-                          char *idmsg) {
-  char iCode = misc[2];
-
-  sprintf(idmsg, "%c%ld%c", chain_id, res_seq, iCode);
-}
-
 void residue_strid(char chain_id, long res_seq, char *misc, char *rname,
                    char *idmsg) {
   char modelNum[10], iCode = misc[2], newName[BUF512];
@@ -7500,287 +6602,6 @@ void convert_resNameSpace(char *resName, char replacement, char *newName) {
   }
 }
 
-void get_planarFrame(char *aa, long pnum, char *planar_atoms[], char *BDIR,
-                     char *idmsg, long ib, long ie, char **AtomName,
-                     double **xyz, double *orien_i, double *org_i)
-/* see also function set_planarStr() in set_planar.c */
-{
-  char spdb[BUF512], sidmsg[BUF512], *sChainID, **sAtomName, **sResName;
-  long i, exp_katom, std_katom, nmatch = 0, snum, *sResSeq;
-  double rms_fit, **ePxyz, **fitted_xyz, **sPxyz, **sxyz, **R;
-
-  sprintf(spdb, "%s%s%s%s", BDIR, "snap_", aa, ".pdb");
-  sprintf(sidmsg, "in standard residue file %s", spdb);
-
-  sAtomName = cmatrix(1, NUM_RESIDUE_ATOMS, 0, 4);
-  sResName = cmatrix(1, NUM_RESIDUE_ATOMS, 0, 3);
-  sChainID = cvector(1, NUM_RESIDUE_ATOMS);
-  sResSeq = lvector(1, NUM_RESIDUE_ATOMS);
-  sxyz = dmatrix(1, NUM_RESIDUE_ATOMS, 1, 3);
-
-  snum = read_pdb(spdb, NULL, sAtomName, sResName, sChainID, sResSeq, sxyz,
-                  NULL, 1, "*");
-
-  ePxyz = dmatrix(1, pnum, 1, 3);
-  sPxyz = dmatrix(1, pnum, 1, 3);
-  fitted_xyz = dmatrix(1, pnum, 1, 3);
-  R = dmatrix(1, 3, 1, 3);
-
-  for (i = 1; i <= pnum; i++) {
-    exp_katom = find_1st_atom(planar_atoms[i], AtomName, ib, ie, idmsg);
-    std_katom = find_1st_atom(planar_atoms[i], sAtomName, 1, snum, sidmsg);
-    if (exp_katom && std_katom) {
-      ++nmatch;
-      cpxyz(xyz[exp_katom], ePxyz[nmatch]);
-      cpxyz(sxyz[std_katom], sPxyz[nmatch]);
-    }
-  }
-
-  if (nmatch >= 3) {
-    rms_fit = ls_fitting(sPxyz, ePxyz, nmatch, fitted_xyz, R, org_i);
-    org_i[4] = rms_fit;
-    mst2orien(orien_i, 0, R);
-    if (Gvars.VERBOSE)
-      fprintf(stderr, "%s ===> %g\n", idmsg, org_i[4]);
-  }
-
-  free_pdb(NUM_RESIDUE_ATOMS, NULL, sAtomName, sResName, sChainID, sResSeq,
-           sxyz, NULL);
-  free_dmatrix(ePxyz, 1, pnum, 1, 3);
-  free_dmatrix(sPxyz, 1, pnum, 1, 3);
-  free_dmatrix(fitted_xyz, 1, pnum, 1, 3);
-  free_dmatrix(R, 1, 3, 1, 3);
-}
-
-void get_argFrame(char *BDIR, char *idmsg, long ib, long ie, char **AtomName,
-                  double **xyz, double *orien_i, double *org_i) {
-  static char *planar_atoms[] = {"XXXX", " CD ", " NE ",
-                                 " CZ ", " NH1", " NH2"};
-  long pnum = sizeof planar_atoms / sizeof planar_atoms[0] - 1;
-
-  get_planarFrame("arg", pnum, planar_atoms, BDIR, idmsg, ib, ie, AtomName, xyz,
-                  orien_i, org_i);
-}
-
-void get_pheFrame(char *BDIR, char *idmsg, long ib, long ie, char **AtomName,
-                  double **xyz, double *orien_i, double *org_i) {
-  static char *planar_atoms[] = {"XXXX", " CB ", " CG ", " CD1",
-                                 " CD2", " CE1", " CE2", " CZ "};
-  long pnum = sizeof planar_atoms / sizeof planar_atoms[0] - 1;
-
-  get_planarFrame("phe", pnum, planar_atoms, BDIR, idmsg, ib, ie, AtomName, xyz,
-                  orien_i, org_i);
-}
-
-void get_tyrFrame(char *BDIR, char *idmsg, long ib, long ie, char **AtomName,
-                  double **xyz, double *orien_i, double *org_i) {
-  static char *planar_atoms[] = {"XXXX", " CB ", " CG ", " CD1", " CD2",
-                                 " CE1", " CE2", " CZ ", " OH "};
-  long pnum = sizeof planar_atoms / sizeof planar_atoms[0] - 1;
-
-  get_planarFrame("tyr", pnum, planar_atoms, BDIR, idmsg, ib, ie, AtomName, xyz,
-                  orien_i, org_i);
-}
-
-void get_trpFrame(char *BDIR, char *idmsg, long ib, long ie, char **AtomName,
-                  double **xyz, double *orien_i, double *org_i) {
-  static char *planar_atoms[] = {"XXXX", " CB ", " CG ", " CD1", " CD2", " NE1",
-                                 " CE2", " CE3", " CZ2", " CZ3", " CH2"};
-  long pnum = sizeof planar_atoms / sizeof planar_atoms[0] - 1;
-
-  get_planarFrame("trp", pnum, planar_atoms, BDIR, idmsg, ib, ie, AtomName, xyz,
-                  orien_i, org_i);
-}
-
-void get_hisFrame(char *BDIR, char *idmsg, long ib, long ie, char **AtomName,
-                  double **xyz, double *orien_i, double *org_i) {
-  static char *planar_atoms[] = {"XXXX", " CB ", " CG ", " ND1",
-                                 " CD2", " CE1", " NE2"};
-  long pnum = sizeof planar_atoms / sizeof planar_atoms[0] - 1;
-
-  get_planarFrame("his", pnum, planar_atoms, BDIR, idmsg, ib, ie, AtomName, xyz,
-                  orien_i, org_i);
-}
-
-void get_lysFrame(char *BDIR, char *idmsg, long ib, long ie, char **AtomName,
-                  double **xyz, double *orien_i, double *org_i) {
-  static char *planar_atoms[] = {"XXXX", " CD ", " CE ", " NZ "};
-  long pnum = sizeof planar_atoms / sizeof planar_atoms[0] - 1;
-
-  if (!Gvars.VERBOSE)
-    strcpy(idmsg, ""); /* no message of missing atoms for lysine */
-  get_planarFrame("lys", pnum, planar_atoms, BDIR, idmsg, ib, ie, AtomName, xyz,
-                  orien_i, org_i);
-}
-
-void get_asnFrame(char *BDIR, char *idmsg, long ib, long ie, char **AtomName,
-                  double **xyz, double *orien_i, double *org_i) {
-  static char *planar_atoms[] = {"XXXX", " CB ", " CG ", " OD1", " ND2"};
-  long pnum = sizeof planar_atoms / sizeof planar_atoms[0] - 1;
-
-  get_planarFrame("asn", pnum, planar_atoms, BDIR, idmsg, ib, ie, AtomName, xyz,
-                  orien_i, org_i);
-}
-
-void get_glnFrame(char *BDIR, char *idmsg, long ib, long ie, char **AtomName,
-                  double **xyz, double *orien_i, double *org_i) {
-  static char *planar_atoms[] = {"XXXX", " CG ", " CD ", " OE1", " NE2"};
-  long pnum = sizeof planar_atoms / sizeof planar_atoms[0] - 1;
-
-  get_planarFrame("gln", pnum, planar_atoms, BDIR, idmsg, ib, ie, AtomName, xyz,
-                  orien_i, org_i);
-}
-
-void get_aspFrame(char *BDIR, char *idmsg, long ib, long ie, char **AtomName,
-                  double **xyz, double *orien_i, double *org_i) {
-  static char *planar_atoms[] = {"XXXX", " CB ", " CG ", " OD1", " OD2"};
-  long pnum = sizeof planar_atoms / sizeof planar_atoms[0] - 1;
-
-  get_planarFrame("asp", pnum, planar_atoms, BDIR, idmsg, ib, ie, AtomName, xyz,
-                  orien_i, org_i);
-}
-
-void get_gluFrame(char *BDIR, char *idmsg, long ib, long ie, char **AtomName,
-                  double **xyz, double *orien_i, double *org_i) {
-  static char *planar_atoms[] = {"XXXX", " CG ", " CD ", " OE1", " OE2"};
-  long pnum = sizeof planar_atoms / sizeof planar_atoms[0] - 1;
-
-  get_planarFrame("glu", pnum, planar_atoms, BDIR, idmsg, ib, ie, AtomName, xyz,
-                  orien_i, org_i);
-}
-
-void get_planarAA_frames(long num_residue, long **seidx, char **AtomName,
-                         char **ResName, char *ChainID, long *ResSeq,
-                         char **Miscs, double **xyz, long *res_type,
-                         long *cidx) {
-  char idmsg[BUF512], BDIR[BUF512];
-  long i, ib, ie;
-  double **paa_orien, **paa_org;
-
-  get_BDIR(BDIR, SNAP_PEP_PDB);
-
-  paa_orien = dmatrix(1, num_residue, 1, 9);
-  paa_org = dmatrix(1, num_residue, 1, 4);
-
-  for (i = 1; i <= num_residue; i++) {
-    paa_org[i][4] = -1;    /* as a default indicator */
-    if (res_type[i] != -1) /* non-amino-acid */
-      continue;
-    ib = seidx[i][1];
-    ie = seidx[i][2];
-    get_idmsg(ResName[ib], ChainID[ib], ResSeq[ib], Miscs[ib][2], idmsg);
-    if (strcmp(ResName[ib], "ARG") == 0)
-      get_argFrame(BDIR, idmsg, ib, ie, AtomName, xyz, paa_orien[i],
-                   paa_org[i]);
-    else if (strcmp(ResName[ib], "PHE") == 0)
-      get_pheFrame(BDIR, idmsg, ib, ie, AtomName, xyz, paa_orien[i],
-                   paa_org[i]);
-    else if (strcmp(ResName[ib], "TYR") == 0)
-      get_tyrFrame(BDIR, idmsg, ib, ie, AtomName, xyz, paa_orien[i],
-                   paa_org[i]);
-    else if (strcmp(ResName[ib], "TRP") == 0)
-      get_trpFrame(BDIR, idmsg, ib, ie, AtomName, xyz, paa_orien[i],
-                   paa_org[i]);
-    else if (strcmp(ResName[ib], "HIS") == 0)
-      get_hisFrame(BDIR, idmsg, ib, ie, AtomName, xyz, paa_orien[i],
-                   paa_org[i]);
-    else if (strcmp(ResName[ib], "LYS") == 0)
-      get_lysFrame(BDIR, idmsg, ib, ie, AtomName, xyz, paa_orien[i],
-                   paa_org[i]);
-    else if (strcmp(ResName[ib], "ASN") == 0)
-      get_asnFrame(BDIR, idmsg, ib, ie, AtomName, xyz, paa_orien[i],
-                   paa_org[i]);
-    else if (strcmp(ResName[ib], "GLN") == 0)
-      get_glnFrame(BDIR, idmsg, ib, ie, AtomName, xyz, paa_orien[i],
-                   paa_org[i]);
-    else if (strcmp(ResName[ib], "ASP") == 0)
-      get_aspFrame(BDIR, idmsg, ib, ie, AtomName, xyz, paa_orien[i],
-                   paa_org[i]);
-    else if (strcmp(ResName[ib], "GLU") == 0)
-      get_gluFrame(BDIR, idmsg, ib, ie, AtomName, xyz, paa_orien[i],
-                   paa_org[i]);
-  }
-
-  planarAA_blks(num_residue, seidx, ResName, BDIR, cidx, paa_orien, paa_org,
-                ABLKALC_FILE);
-
-  free_dmatrix(paa_orien, 1, num_residue, 1, 9);
-  free_dmatrix(paa_org, 1, num_residue, 1, 4);
-}
-
-/* representing the planar moiety of AA as a rectangular block */
-void planarAA_blks(long num_residue, long **seidx, char **ResName, char *BDIR,
-                   long *cidx, double **paa_orien, double **paa_org,
-                   char *alcfile) {
-  char aa[4], filename[BUF512], **AtomName, **tAtomName;
-  double **txyz, **xyz;
-  long i, j, k, nbond, num, tnbond, tnum;
-  long ia = 0, ib = 0, num_paa = 0;
-  long *ibase, *tibase, **linkage, **tlinkage;
-
-  for (i = 1; i <= num_residue; i++) /* NB: paa_org[i][4] default to -1.0 */
-    if (dval_in_range(paa_org[i][4], 0.0, TRSP_RMS))
-      num_paa++;
-  if (!num_paa) {
-    fprintf(stderr, "no planar amino acids in this structure\n");
-    return;
-  }
-
-  sprintf(filename, "%s%s%s%s", BDIR, "snap_", "arg", ".alc");
-  get_alc_nums(filename, &num, &nbond);
-
-  AtomName = cmatrix(1, num, 0, 2);
-  xyz = dmatrix(1, num, 1, 3);
-  ibase = lvector(1, num); /* of no use here */
-  linkage = lmatrix(1, nbond, 1, 2);
-
-  tnum = num * num_paa; /* total # of vertices & linkages */
-  tnbond = nbond * num_paa;
-
-  tAtomName = cmatrix(1, tnum, 0, 2);
-  txyz = dmatrix(1, tnum, 1, 3);
-  tibase = lvector(1, tnum);
-  tlinkage = lmatrix(1, tnbond, 1, 2);
-
-  for (i = 1; i <= num_residue; i++) {
-    if (!dval_in_range(paa_org[i][4], 0.0, TRSP_RMS))
-      continue; /* not AA with planar moiety */
-    strcpy(aa, ResName[seidx[i][1]]);
-    lowerstr(aa);
-    sprintf(filename, "%s%s%s%s", BDIR, "snap_", aa, ".alc");
-    read_alc(filename, &num, &nbond, AtomName, xyz, ibase, linkage);
-
-    for (j = 1; j <= num; j++) { /* for current block vertices */
-      strcpy(tAtomName[ia + j], AtomName[j]);
-      tibase[ia + j] = cidx[i]; /* cidx is for [1 .. num_residue] */
-      align_block_xyz(paa_orien[i], paa_org[i], xyz[j], txyz[ia + j]);
-    }
-    for (j = 1; j <= nbond; j++)
-      for (k = 1; k <= 2; k++)
-        tlinkage[ib + j][k] = ia + linkage[j][k];
-    ia += num;
-    ib += nbond;
-  }
-  write_alc(tnum, tnbond, tAtomName, txyz, tibase, tlinkage, alcfile);
-
-  free_alc(num, nbond, AtomName, xyz, ibase, 1, linkage);
-  free_alc(tnum, tnbond, tAtomName, txyz, tibase, 1, tlinkage);
-}
-
-void print_resid(long num_residue, long **seidx, char **ResName, char *ChainID,
-                 long *ResSeq, char **Miscs, long *res_type) {
-  long i, ib;
-
-  if (!Gvars.VERBOSE)
-    return;
-
-  for (i = 1; i <= num_residue; i++) {
-    ib = seidx[i][1];
-    fprintf(stderr, "%5ld %2ld %c %s %4ld%c\n", i, res_type[i], ChainID[ib],
-            ResName[ib], ResSeq[ib], Miscs[ib][2]);
-  }
-}
-
 void snap_atype(char **AtomName, long num_residue, long **seidx, long *res_type,
                 long **atom_cidx) {
   char *BASE_ATOMS[] = {" C4 ", " N3 ", " C2 ", " N1 ", " C6 ", " C5 ",
@@ -7812,200 +6633,6 @@ void snap_atype(char **AtomName, long num_residue, long **seidx, long *res_type,
       }
     }
   }
-}
-
-long number_of_aa(long num_residue, long *res_type) {
-  long i, num = 0;
-
-  for (i = 1; i <= num_residue; i++)
-    if (res_type[i] == -1)
-      num++;
-
-  return num;
-}
-
-long number_of_nt(long num_residue, long *res_type) {
-  long i, num = 0;
-
-  for (i = 1; i <= num_residue; i++)
-    if (res_type[i] == 0 || res_type[i] == 1)
-      num++;
-
-  return num;
-}
-
-void get_snap_par(double **rot1, double *org1, double **rot2, double *org2,
-                  char *direction, double *trs_dist, double *rot_dist,
-                  double *pars, double *orgP, double **rotP) {
-  long i;
-  double temp[4], xorg[4];
-  double dsum = 0.0, **xmst;
-
-  xmst = dmatrix(1, 3, 1, 3);
-
-  strcpy(direction, "plus");
-  for (i = 1; i <= 3; i++) /* dot(z1, z2) */
-    dsum += rot1[i][3] * rot2[i][3];
-
-  if (dsum < 0.0) { /* reverse y- and z-axes of frame #2 */
-    reverse_y_z_columns(rot2);
-    strcpy(direction, "minus");
-  }
-
-  bpstep_par(rot1, org1, rot2, org2, pars, xmst, xorg);
-  sgl_helix(rot1, rot2, rot_dist, temp); /* rotation axis 'temp' not used */
-
-  ddxyz(org1, org2, temp); /* frame 1 as reference */
-  multi_vec_matrix(temp, 3, rot1, 3, 3, orgP);
-
-  *trs_dist = veclen(temp); /* same as veclen(orgP) */
-  if (orgP[3] < 0.0)        /* aa is BELOW the mean bp plane */
-    *trs_dist = -*trs_dist;
-
-  transpose_matrix(rot1, 3, 3, xmst);
-  multi_matrix(xmst, 3, 3, rot2, 3, 3, rotP);
-
-  free_dmatrix(xmst, 1, 3, 1, 3);
-}
-
-void write_snap_par(FILE *fp, char *direction, double dist, double rot_ang,
-                    double *pars, double *orgP, double **rotP) {
-  double ab_angle, x[4], o[4];
-  long i, j;
-
-  for (i = 1; i <= 3; i++) {
-    x[i] = rotP[i][1]; /* C-alpha ---> C-beta as the x-axis */
-    o[i] = -orgP[i];   /* C-alpha ---> bp origin */
-  }
-  ab_angle = magang(x, o);
-
-  fprintf(fp, "\t%s %10.3f %10.3f %10.3f\n", direction, dist, rot_ang,
-          ab_angle);
-  for (j = 1; j <= 6; j++)
-    fprintf(fp, "%10.3f", pars[j]);
-  fprintf(fp, "\n");
-
-  for (j = 1; j <= 3; j++)
-    fprintf(fp, "%10.3f", orgP[j]);
-  fprintf(fp, "\n");
-
-  for (i = 1; i <= 3; i++) {
-    for (j = 1; j <= 3; j++)
-      fprintf(fp, "%10.3f", rotP[j][i]);
-    fprintf(fp, "\n");
-  }
-}
-
-void write_atom_xyz(FILE *fp, char *fmt, double *xyz, double dft) {
-  long i;
-
-  for (i = 1; i <= 3; i++)
-    fprintf(fp, fmt, (xyz == NULL) ? dft : xyz[i]);
-  fprintf(fp, "\n");
-}
-
-long set2frame(long inum, long *ivec, long **seidx, double **xyz, double *morg,
-               double **mst, long *serial, double **xyz_pair) {
-  long i, j, k, num = 0;
-
-  for (i = 1; i <= inum; i++) {
-    k = ivec[i];
-    for (j = seidx[k][1]; j <= seidx[k][2]; j++) {
-      num++;
-      cpxyz(xyz[j], xyz_pair[num]);
-      serial[num] = j; /* index for extracting AtomName, ResName etc */
-    }
-  }
-  change_xyz(0, morg, mst, num, xyz_pair);
-
-  return num;
-}
-
-long set2frameCa(long inum, long *ivec, long **seidx, long *res_type,
-                 char **AtomName, double **xyz, double *morg, double **mst,
-                 long *serial, double **xyz_pair) {
-  long i, j, k, num = 0;
-
-  for (i = 1; i <= inum; i++) {
-    k = ivec[i];
-    if (res_type[k] != -1) {
-      for (j = seidx[k][1]; j <= seidx[k][2]; j++) {
-        num++;
-        cpxyz(xyz[j], xyz_pair[num]);
-        serial[num] = j; /* index for extracting AtomName, ResName etc */
-      }
-    } else { /* amino-acid, select only Ca atom */
-      for (j = seidx[k][1]; j <= seidx[k][2]; j++)
-        if (strcmp(AtomName[j], " CA ") == 0) {
-          num++;
-          cpxyz(xyz[j], xyz_pair[num]);
-          serial[num] = j;
-          break;
-        }
-    }
-  }
-  change_xyz(0, morg, mst, num, xyz_pair);
-
-  return num;
-}
-
-long get_nextModelNumber(char *pdbfile) {
-  char *p0;
-  long k, num = 0;
-  FILE *fp;
-
-  if (exist_file(pdbfile)) {
-    fp = open_file(pdbfile, "r");
-    while ((p0 = my_getline(fp)) != NULL) {
-      if (str_pmatch(p0, "MODEL ") && (sscanf(p0, "%*s %ld", &k) == 1))
-        num++;
-      if (num != k)
-        fprintf(stderr, "model #s not consecutive [%ld vs %ld]\n", num, k);
-      free(p0);
-    }
-    close_file(fp);
-  }
-
-  return num + 1; /* the new model number */
-}
-
-void output_naa_str(char *filename, char *fmode, char *idmsg, long num,
-                    long *serial, char **AtomName, char **ResName,
-                    char *ChainID, long *ResSeq, double **xyz_pair,
-                    char **Miscs, long out_org)
-/* output the superimposed structures of interacting nt and aa */
-{
-  char *p;
-  long i, k, num_str;
-  FILE *fp;
-
-  fp = open_file(filename, fmode);
-
-  if (!is_empty_string(idmsg)) {
-    num_str = get_nextModelNumber(filename);
-    fprintf(fp, "%6s    %4ld\n", "MODEL ", num_str);
-    fprintf(fp, "REMARK    Section #%4.4ld\n", num_str);
-    fprintf(fp, "REMARK    %s\n", idmsg);
-  }
-
-  for (i = 1; i <= num; i++) {
-    k = serial[i];
-    p = Miscs[k];
-    fprintf(fp, "%s%5ld %4s%c%3s %c%4ld%c   %8.3f%8.3f%8.3f%s\n",
-            (p[0] == 'A') ? "ATOM  " : "HETATM", i, AtomName[k], p[1],
-            ResName[k], ChainID[k], ResSeq[k], p[2], xyz_pair[i][1],
-            xyz_pair[i][2], xyz_pair[i][3], p + 3);
-  }
-
-  if (out_org)
-    fprintf(fp, "HETATM 9999 XX   ORG X 999       0.000   0.000   0.000\n");
-
-  if (!is_empty_string(idmsg))
-    fprintf(fp, "ENDMDL\n");
-  else
-    fprintf(fp, "END\n");
-
-  close_file(fp);
 }
 
 void cleanup_files(long renew, long cleanup) {
@@ -8069,26 +6696,6 @@ void cleanup_files(long renew, long cleanup) {
     fatal("done with cleaning up snap/poco files.\n");
 }
 
-/// @ brief - cmn_fncs.cpp
-
-using namespace std;
-
-long set_3letter_base_pdb(char *res_name, char *spdb) {
-  char str[BUF32];
-
-  strcpy(str, res_name);
-  upperstr(str);
-  cvtstr_c1toc2(str, ' ', '_');
-
-  sprintf(spdb, "Atomic_%s.pdb", str);
-  if (exist_file(spdb))
-    return true;
-
-  sprintf(spdb, "%sconfig/Atomic_%s.pdb", Gvars.X3DNA_HOMEDIR, str);
-
-  return exist_file(spdb);
-}
-
 void set_std_base_pdb(char *bdir, long irna, char bname, char *spdb) {
   char mb[BUF32], str[BUF1K];
 
@@ -8109,37 +6716,6 @@ void set_std_base_pdb(char *bdir, long irna, char bname, char *spdb) {
   strcpy(spdb, str);
 }
 
-void set_std_base_pdb00(char *bdir, long irna, char bname, char *spdb) {
-  if (isupper((int)bname))
-    sprintf(spdb, "%s%sAtomic_%c.pdb", bdir, irna ? "r" : "", bname);
-  else /* for modified bases */
-    sprintf(spdb, "%s%sAtomic.%c.pdb", bdir, irna ? "r" : "", bname);
-}
-
-void print_used_time(time_t time0) {
-  char str[BUF512];
-  double dtime;
-  long minute_secs = 60, hour_secs = 60 * 60, day_secs = 24 * 60 * 60;
-  long days, hours, minutes, seconds;
-
-  dtime = difftime(time(NULL), time0);
-  sprintf(str, "%.0f", dtime);
-  if (sscanf(str, "%ld", &seconds) != 1)
-    fatal("wrong time format\n");
-
-  days = seconds / day_secs;
-  seconds %= day_secs;
-
-  hours = seconds / hour_secs;
-  seconds %= hour_secs;
-
-  minutes = seconds / minute_secs;
-  seconds %= minute_secs;
-
-  fprintf(stderr, "\nTime used: %2.2ld:%2.2ld:%2.2ld:%2.2ld\n", days, hours,
-          minutes, seconds);
-}
-
 void parcat(char *str, double par, char *format, char *bstr) {
   char temp[BUF512];
 
@@ -8148,14 +6724,6 @@ void parcat(char *str, double par, char *format, char *bstr) {
     strcat(str, temp);
   } else
     strcat(str, bstr);
-}
-
-void print_bp_crit(miscPars *misc_pars, FILE *fp) {
-  fprintf(fp, "Base-pair criteria used: ");
-  fprintf(fp, "%8.2f %8.2f %8.2f %8.2f %8.2f %8.2f %8.2f [%s]\n",
-          misc_pars->hb_dist1, misc_pars->hb_dist2, misc_pars->max_dorg,
-          misc_pars->max_dv, misc_pars->max_plane_angle, misc_pars->min_dNN,
-          misc_pars->helix_break, misc_pars->hb_atoms);
 }
 
 /* endofline: check for and consume \r, \n, \r\n, or EOF */
@@ -8210,63 +6778,12 @@ char *my_getline(FILE *fp)
   return line;
 }
 
-/* strtok is GREEDY, meaning empty field will be ignored:
- * e.g. \t\t. This function is created to fix the problem.
- * Note that item[] is 1-indexed*/
-long csplit(char *str, char *item[], long itemsize, char sepc) {
-  char *p0, *p;
-  long nitem = 0;
-
-  if (str[0] == '\0')
-    return nitem;
-
-  p = str;
-  while (*p) { /* change '"' to ' ' */
-    if (*p == '"')
-      *p = ' ';
-    p++;
-  }
-
-  p0 = str;
-  while ((p = strchr(p0, sepc)) != NULL) {
-    *p = '\0';
-    item[++nitem] = trim(p0);
-    if (nitem >= itemsize)
-      return itemsize;
-    p0 = p + 1;
-  }
-  item[++nitem] = trim(p0);
-  return nitem;
-}
-
 /* trim leading and trailing white spaces */
 char *trim(char *a) {
   int c;
 
   while (isspace(c = *a))
     a++;
-  for (c = strlen(a) - 1; c >= 0; c--)
-    if (!isspace((int)a[c]))
-      break;
-  a[c + 1] = '\0';
-
-  return a;
-}
-
-/* trim leading white spaces */
-char *ltrim(char *a) {
-  int c;
-
-  while (isspace(c = *a))
-    a++;
-
-  return a;
-}
-
-/* trim trailing white spaces */
-char *rtrim(char *a) {
-  int c;
-
   for (c = strlen(a) - 1; c >= 0; c--)
     if (!isspace((int)a[c]))
       break;
@@ -8409,33 +6926,6 @@ void cehs_average(long inum_base, long *ivec, double **orien, double **org,
   free_dmatrix(bi, 1, 3, 1, 3);
 }
 
-/* Geometrical averaging (z-, x-, then y-axes): always used for > 2 bases */
-void geom_average(long inum_base, long *ivec, double **orien, double **org,
-                  double **mst, double *morg) {
-  long ap, i, ik, j;
-  double sx[4], sy[4], sz[4];
-
-  for (i = 1; i <= 3; i++)
-    morg[i] = sx[i] = sz[i] = 0.0; /* y-axis follows x- and z-axes */
-
-  for (i = 1; i <= inum_base; i++) { /* for each residue */
-    ik = ivec[i];
-    ap = dot(&orien[ik][6], &orien[ivec[1]][6]) < 0.0;
-    for (j = 1; j <= 3; j++) {
-      morg[j] += org[ik][j];
-      sx[j] += orien[ik][j]; /* x-axis */
-      sz[j] += (ap) ? -orien[ik][6 + j] : orien[ik][6 + j];
-    }
-  }
-  vec_norm(sz);
-  vec_orth(sx, sz); /* x-axis normalized */
-  cross(sz, sx, sy);
-
-  x_y_z_2_mtx(sx, sy, sz, mst);
-  for (i = 1; i <= 3; i++)
-    morg[i] /= inum_base;
-}
-
 /* Write a base-pair or a multiplet with reference to its middle-frame:
  * There are 2 methods to calculate the middle-frame with > 2 bases:
  * [1] Get the middle-frame between 1 & 2 (m1_2) in the usual way
@@ -8484,60 +6974,6 @@ void pair2mst(long inum_base, long *ivec, char **AtomName, char **ResName,
 
   free_dmatrix(mst, 1, 3, 1, 3);
   free_dmatrix(xyz_residue, 1, NUM_RESIDUE_ATOMS, 1, 3);
-}
-
-/* get the chi torsion angle for each base residue */
-void get_chi_angle(long num_residue, long *RY, char *bseq, long **seidx,
-                   double **xyz, char **AtomName, char **ResName, char *ChainID,
-                   long *ResSeq, char **Miscs, double *chi, long **idxCN) {
-  char idmsg[BUF512];
-  long i, ib, ie, idx[5], j;
-  double **xyz4;
-
-  xyz4 = dmatrix(1, 4, 1, 3);
-  for (i = 1; i <= num_residue; i++) {
-    if (RY[i] < 0)
-      continue; /* no base residue */
-    ib = seidx[i][1];
-    ie = seidx[i][2];
-    get_idmsg(ResName[ib], ChainID[ib], ResSeq[ib], Miscs[ib][2], idmsg);
-    idx[1] = find_1st_atom(" O4'", AtomName, ib, ie, idmsg);
-    idx[2] = find_1st_atom(" C1'", AtomName, ib, ie, idmsg);
-    if (RY[i] == 1) {
-      idx[3] = find_1st_atom(" N9 ", AtomName, ib, ie, idmsg);
-      idx[4] = find_1st_atom(" C4 ", AtomName, ib, ie, idmsg);
-    } else {
-      if (bseq[i] == 'P' || bseq[i] == 'p') {
-        idx[3] = find_1st_atom(" C5 ", AtomName, ib, ie, idmsg);
-        idx[4] = find_1st_atom(" C4 ", AtomName, ib, ie, idmsg);
-      } else {
-        idx[3] = find_1st_atom(" N1 ", AtomName, ib, ie, idmsg);
-        idx[4] = find_1st_atom(" C2 ", AtomName, ib, ie, idmsg);
-      }
-    }
-    if (idxCN != NULL) { /* get C1* and RN9/YN1 indices */
-      idxCN[i][1] = idx[2];
-      idxCN[i][2] = idx[3];
-    }
-    for (j = 1; j <= 4; j++) {
-      if (!idx[j])
-        break;
-      cpxyz(xyz[idx[j]], xyz4[j]);
-    }
-    chi[i] = (j > 4) ? torsion(xyz4) : EMPTY_NUMBER;
-  }
-  free_dmatrix(xyz4, 1, 4, 1, 3);
-}
-
-FILE *open_tmpfile(void) {
-  FILE *fp;
-
-  errno = 0;
-  fp = tmpfile();
-  if (fp == NULL)
-    fatal("open_tmpfile() failed: %s\n", strerror(errno));
-
-  return fp;
 }
 
 FILE *open_file(char *filename, char *filemode) {
@@ -8614,31 +7050,6 @@ void copy_file_pointer(FILE *fpi, FILE *fpo, char *msg) {
   }
 }
 
-/* copy file contents from src to dst */
-void cpcat_file(char *src, char *dst, char *method) {
-  FILE *fpi, *fpo;
-
-  if (!strcmp(src, dst)) {
-    fprintf(stderr, "same source/destination file name: <%s>\n", src);
-    return;
-  }
-
-  fpi = open_file(src, "rb");
-
-  if (strstr("catenation", method) || strstr("append", method)) {
-    fpo = open_file(dst, "ab");
-    copy_file_pointer(fpi, fpo, "concatenation");
-    close_file(fpo);
-
-  } else {
-    fpo = open_file(dst, "wb");
-    copy_file_pointer(fpi, fpo, "copy");
-    close_file(fpo);
-  }
-
-  close_file(fpi);
-}
-
 /* change to upper case, and return string length */
 long upperstr(char *a) {
   long nlen = 0;
@@ -8696,17 +7107,6 @@ void check_slash(char *BDIR) {
     BDIR[n] = '/';
     BDIR[n + 1] = '\0';
   }
-}
-
-/* delete '/' at the end of the str */
-void delete_end_slash(char *str) {
-  char *pchar;
-  long n;
-
-  pchar = strrchr(str, '/');
-  n = strlen(str);
-  if (pchar - str == n - 1)
-    str[n - 1] = '\0';
 }
 
 /* return a pointer 1-char following the last slash or to str w/o '/' */
@@ -9155,21 +7555,6 @@ void pdb_record(long ib, long ie, long *inum, long idx, char **AtomName,
   }
 }
 
-void write_pdb(long num, char **AtomName, char **ResName, char *ChainID,
-               long *ResSeq, double **xyz, char **Miscs, char *pdbfile) {
-  long inum = 0;
-  FILE *fp;
-
-  reset_xyz(num, xyz, "f8.3");
-
-  fp = open_file(pdbfile, "w");
-  fprintf(fp, "REMARK    %s\n", Gvars.X3DNA_VER);
-  pdb_record(1, num, &inum, 0, AtomName, ResName, ChainID, ResSeq, xyz, Miscs,
-             fp);
-  fprintf(fp, "END\n");
-  close_file(fp);
-}
-
 static void write_cif_header(FILE *fp) {
   fprintf(fp, "data_x3dna\n");
   fprintf(fp, "# mmCIF output file generated by 3DNA (xiangjun@x3dna.org)\n");
@@ -9202,58 +7587,6 @@ static void write_cif_header(FILE *fp) {
               "_atom_site.auth_atom_id\n"); /* atom name */
 
   fprintf(fp, "_atom_site.pdbx_PDB_model_num\n"); /* model number */
-}
-
-void write_mmcif(long num, char **AtomName, char **ResName, char *ChainID,
-                 long *ResSeq, double **xyz, char *pdbfile) {
-  char *p, my_asym[3];
-  long i;
-  FILE *fp;
-
-  fp = open_file(pdbfile, "w");
-
-  write_cif_header(fp);
-
-  for (i = 1; i <= num; i++) {
-    aname2asym(AtomName[i], my_asym, Gvars.NUM_SATOM, Gvars.ATOMLIST);
-    p = trim(my_asym);
-    fprintf(fp, "ATOM %ld %s \"%s\" .", i, p, trim(AtomName[i]));
-    fprintf(fp, " %s %c %ld ?", trim(ResName[i]), ChainID[i], ResSeq[i]);
-    fprintf(fp, " %.3f %.3f %.3f", xyz[i][1], xyz[i][2], xyz[i][3]);
-    fprintf(fp, " 1.0 0.0 ?"); /* occupancy, temperature factor, charge */
-
-    fprintf(fp, " %ld %s %c", ResSeq[i], trim(ResName[i]), ChainID[i]);
-    fprintf(fp, " \"%s\" 1\n", trim(AtomName[i]));
-  }
-
-  close_file(fp);
-}
-
-void write_pdbcnt(long num, char **AtomName, char **ResName, char *ChainID,
-                  long *ResSeq, double **xyz, long **connect, char *pdbfile) {
-  long i, inum = 0, j;
-  FILE *fp;
-
-  reset_xyz(num, xyz, "f8.3");
-
-  fp = open_file(pdbfile, "w");
-  fprintf(fp, "REMARK    %s\n", Gvars.X3DNA_VER);
-  pdb_record(1, num, &inum, 0, AtomName, ResName, ChainID, ResSeq, xyz, NULL,
-             fp);
-
-  for (i = 1; i <= num; i++)
-    if (connect[i][7]) {
-      fprintf(fp, "CONECT%5ld", i);
-      for (j = 1; j <= connect[i][7]; j++)
-        fprintf(fp, "%5ld", connect[i][j]);
-      /* March-2-2005: guanming.wang.adv04@alum.dartmouth.org */
-      for (j = 6 + 5 * (connect[i][7] + 1); j <= 70; j++)
-        fprintf(fp, " ");
-      fprintf(fp, "\n");
-    }
-  fprintf(fp, "END\n");
-
-  close_file(fp);
 }
 
 void move_position(double **d, long nr, long nc, double *mpos) {
@@ -9315,16 +7648,6 @@ static void set_U_C5M(char **AtomName, double **xyz, long ib, long ie) {
     strcpy(AtomName[C7], " C5M");
 }
 
-long frag_contain_metal(long ib, long ie, long *is_metal) {
-  long i;
-
-  for (i = ib; i <= ie; i++)
-    if (is_metal[i])
-      return true;
-
-  return false;
-}
-
 void atom_metal(long num_atoms, char **AtomName, long *is_metal) {
   static char *metals[] = {
       "LI", "BE", "NA", "MG", "AL", " K", "CA", "SC", "TI", " V", "CR", "MN",
@@ -9355,72 +7678,6 @@ void atom_metal(long num_atoms, char **AtomName, long *is_metal) {
     aname2asym(AtomName[i], atom_sym, Gvars.NUM_SATOM, Gvars.ATOMLIST);
     is_metal[i] = (num_strmatch(atom_sym, metals, 0, num_metal)) ? true : false;
   }
-}
-
-/* Assign residue type (taking into consideration of residues with
-   only P and CA atoms [pde0128]):
-   Nucleic acid purines: 1; pyrimidines: 0
-   Amino acids: -1
-   Ligand: -3 (at least 2 atoms in the residue & non-water, or a metal atom)
-   Water: -6
-   Others: -2 (1 atom in the residue & non-water) */
-void residue_wtype(long num_residue, long **seidx, char **ResName,
-                   char **AtomName, double **xyz, char **Miscs, long *res_type,
-                   long only_ntaa) {
-  static char *WATER[] = {WATER_LIST};
-  static char *SNA[] = {NT_LIST};
-  static char *SAA[] = {AA_LIST};
-  long i, ib, ie, id, k, num_wat, num_sna, num_saa;
-  long num_atoms, *is_metal;
-
-  num_wat = sizeof WATER / sizeof WATER[0] - 1;
-  num_sna = sizeof SNA / sizeof SNA[0] - 1;
-  num_saa = sizeof SAA / sizeof SAA[0] - 1;
-
-  num_atoms = seidx[num_residue][2];
-  is_metal = lvector(1, num_atoms);
-  atom_metal(num_atoms, AtomName, is_metal);
-
-  for (i = 1; i <= num_residue; i++) {
-    ib = seidx[i][1];
-    ie = seidx[i][2];
-    res_type[i] = residue_ident(AtomName, xyz, Miscs, ib, ie);
-
-    if (only_ntaa || res_type[i] != -2)
-      continue;
-
-    id = ie - ib + 1; /* # of atoms in this residue */
-    if ((id < 6 &&    /* 6-membered ring */
-         (num_strmatch(" P  ", AtomName, ib, ie) ||
-          num_strmatch(" C1'", AtomName, ib, ie))) ||
-        num_strmatch(ResName[ib], SNA, 0, num_sna)) {
-      res_type[i] = 6; /* only backbone atoms P or C1' */
-      continue;
-    }
-
-    k = find_1st_atom(" CA ", AtomName, ib, ie, "");
-    if ((id < 4 && k &&
-         Miscs[k][0] == 'A') || /* contains CA in an ATOM record */
-        num_strmatch(ResName[ib], SAA, 0, num_saa)) {
-      res_type[i] = -1;
-      continue;
-    }
-
-    if (num_strmatch(ResName[ib], WATER, 0, num_wat) ||
-        (id == 1 &&
-         (!strcmp(AtomName[ib], " O  ") || !strcmp(AtomName[ib], " OW ")))) {
-      res_type[i] = -6;
-      continue;
-    }
-
-    for (k = ib; k <= ie; k++)
-      if (Miscs[k][0] == 'A') /* ATOM record */
-        break;
-    if (k > ie && (id >= 2 || (id == 1 && is_metal[ib])))
-      res_type[i] = -3; /* ligand: HETATM at least 2 atoms or one metal atom */
-  }
-
-  free_lvector(is_metal, 1, num_atoms);
 }
 
 /* 2o8b_C30F has RMSD 0.24; normally < 0.1 */
@@ -9739,17 +7996,6 @@ void get_bpseq(long ds, long num_bp, long **pair_num, long **seidx,
         fatal("Non-base: %s\n", idmsg);
     }
   }
-}
-
-/* find the 1st matching index, or return NO_MATCH */
-long strmatch_idx(char *str, char **strmat, long nb, long ne) {
-  long i;
-
-  for (i = nb; i <= ne; i++)
-    if (!strcmp(str, strmat[i]))
-      return i;
-
-  return NO_MATCH;
 }
 
 /*  return number of matchs of str in strmat */
@@ -10295,60 +8541,6 @@ void dinverse(double **a, long n, double **y) {
   free_dvector(col, 1, n);
 }
 
-void rotx(double ang_deg, double **rotmat) {
-  double ang, c, s;
-
-  ang = deg2rad(ang_deg);
-  c = cos(ang);
-  s = sin(ang);
-
-  rotmat[1][1] = 1.0;
-  rotmat[1][2] = 0.0;
-  rotmat[1][3] = 0.0;
-  rotmat[2][1] = 0.0;
-  rotmat[2][2] = c;
-  rotmat[2][3] = -s;
-  rotmat[3][1] = 0.0;
-  rotmat[3][2] = s;
-  rotmat[3][3] = c;
-}
-
-void roty(double ang_deg, double **rotmat) {
-  double ang, c, s;
-
-  ang = deg2rad(ang_deg);
-  c = cos(ang);
-  s = sin(ang);
-
-  rotmat[1][1] = c;
-  rotmat[1][2] = 0.0;
-  rotmat[1][3] = s;
-  rotmat[2][1] = 0.0;
-  rotmat[2][2] = 1.0;
-  rotmat[2][3] = 0.0;
-  rotmat[3][1] = -s;
-  rotmat[3][2] = 0.0;
-  rotmat[3][3] = c;
-}
-
-void rotz(double ang_deg, double **rotmat) {
-  double ang, c, s;
-
-  ang = deg2rad(ang_deg);
-  c = cos(ang);
-  s = sin(ang);
-
-  rotmat[1][1] = c;
-  rotmat[1][2] = -s;
-  rotmat[1][3] = 0.0;
-  rotmat[2][1] = s;
-  rotmat[2][2] = c;
-  rotmat[2][3] = 0.0;
-  rotmat[3][1] = 0.0;
-  rotmat[3][2] = 0.0;
-  rotmat[3][3] = 1.0;
-}
-
 void get_alc_nums(char *alcname, long *num, long *nbond) {
   char str[BUF512];
   FILE *fp;
@@ -10454,60 +8646,6 @@ void free_alc(long num, long nbond, char **AtomName, double **xyz, long *ibase,
   free_dmatrix(xyz, 1, num, 1, 3);
   free_lvector(ibase, 1, num);
   free_lmatrix(linkage, 1, nbond, zero_1, 2);
-}
-
-/* add lines connecting consecutive origins to ALCHEMY file */
-void cnct_org(long num_bp, long ia, long ib, char **tAtomName, double **txyz,
-              long *tibase, long **tlinkage, double **org_xyz) {
-  long i, ik;
-
-  for (i = 1; i <= num_bp; i++) {
-    ik = ia + i;
-    strcpy(tAtomName[ik], "O");
-    cpxyz(org_xyz[i], txyz[ik]);
-    tibase[ik] = NON_WC_IDX; /* non-common base atoms */
-  }
-
-  for (i = 1; i < num_bp; i++) {
-    ik = ib + i;
-    tlinkage[ik][1] = ia + i;
-    tlinkage[ik][2] = ia + i + 1;
-  }
-}
-
-/* sort a double vector into ascending order & keep the index
-   use Shell's method as in NR in C book Ed. 2, pp.331-332
-   cf. lsort below */
-void dsort(long n, double *a, long *idx) {
-  double v;
-  long i, inc, iv, j;
-
-  inc = 1;
-  do {
-    inc *= 3;
-    inc++;
-  } while (inc <= n);
-
-  for (i = 1; i <= n; i++)
-    idx[i] = i;
-
-  do {
-    inc /= 3;
-    for (i = inc + 1; i <= n; i++) {
-      v = a[i];
-      iv = idx[i];
-      j = i;
-      while (a[j - inc] > v) {
-        a[j] = a[j - inc];
-        idx[j] = idx[j - inc];
-        j -= inc;
-        if (j <= inc)
-          break;
-      }
-      a[j] = v;
-      idx[j] = iv;
-    }
-  } while (inc > 1);
 }
 
 /* sort a long vector into ascending order & keep the index
@@ -13558,21 +11696,6 @@ static long isEMPTY_or_isNAN_or_isINF(char *str) {
     return false;
 }
 
-/* check if string "str" contains only valid numerical values */
-long is_numeric(char *str) {
-  char *endp;
-  double d;
-
-  errno = 0;
-  d = strtod(str, &endp);
-  UNUSED_PARAMETER(d);
-
-  if (*endp != '\0' || errno == ERANGE)
-    return 0L;
-  else
-    return 1L;
-}
-
 /* convert string "str" to a double value, with error checking */
 double cvt2double(char *str) {
   char *endp, *p = trim(str);
@@ -13669,28 +11792,6 @@ void get_strvalue(char *str, char *dst, long expand_tilde) {
     strcpy(dst, str + npos);
 }
 
-/* reverse string 'str' in place */
-void reverse_string(char *str) {
-  long i = 0, j = strlen(str) - 1;
-
-  while (i < j) {
-    cval_swap(&str[i], &str[j]);
-    i++;
-    j--;
-  }
-}
-
-/* convert all occurrences of any character in set1 to 'c2' in string 'str' */
-void cvtstr_set1toc2(char *str, char *set1, char c2) {
-  char *p = str;
-
-  while (*p) {
-    if (strchr(set1, *p))
-      *p = c2;
-    p++;
-  }
-}
-
 /* convert all occurrences of character 'c1' to 'c2' in string 'str' */
 void cvtstr_c1toc2(char *str, char c1, char c2) {
   char *p = str;
@@ -13723,14 +11824,6 @@ void skip_lines(long num, FILE *fp) {
   }
 }
 
-void check_havefile(char *filename, char *msg) {
-  if (filename == NULL || is_empty_string(filename))
-    fatal("File name not specified [%s]\n", msg);
-
-  if (!exist_file(filename))
-    fatal("Specified file <%s> does not exist [%s]\n", filename, msg);
-}
-
 void print_frame(FILE *fp, double *O, double **R) {
   fprintf(fp, "%10.4f %10.4f %10.4f  # origin\n", O[1], O[2], O[3]);
   fprintf(fp, "%10.4f %10.4f %10.4f  # x-axis\n", R[1][1], R[2][1], R[3][1]);
@@ -13744,8 +11837,6 @@ using namespace std;
 
 #define SIMPLE_BP_LONG_AXIS_RN9_YN1 2
 #define SIMPLE_STEP_HELICAL_PARS 4
-
-vector<int> g1;
 
 typedef struct {
   char torsion[BUF512];
@@ -14751,13 +12842,6 @@ void free_lmatrix(long **m, long nrl, long nrh, long ncl, long nch) {
 }
 
 /* ------------------------------------------------------------------ */
-double dval_sqr(double dval) {
-  if (dval == 0.0)
-    return 0.0;
-  else
-    return dval * dval;
-}
-
 void dval_swap(double *pa, double *pb) {
   double temp;
 
@@ -14786,12 +12870,7 @@ double dval_max(double a, double b) { return (a > b) ? a : b; }
 
 double dval_min(double a, double b) { return (a < b) ? a : b; }
 
-long lval_max(long a, long b) { return (a > b) ? a : b; }
-
 long lval_min(long a, long b) { return (a < b) ? a : b; }
-
-/* absolute difference between two doubles */
-double abs_dval_diff(double a, double b) { return fabs(a - b); }
 
 /* check if lval exists in s[ib] .. s[ie] */
 long lval_in_set(long lval, long ib, long ie, long *s) {
@@ -14963,14 +13042,6 @@ void init_cvector(char *cvec, long ib, long ie, char init_val) {
   cvec[ie] = '\0';
 }
 
-/* initialize a character vector cvec[ib..ie] with init_val, as a vector */
-void init_cvector_all(char *cvec, long ib, long ie, char init_val) {
-  long i;
-
-  for (i = ib; i <= ie; i++)
-    cvec[i] = init_val;
-}
-
 /* initialize a double vector dvec[ib..ie] with init_val */
 void init_dvector(double *dvec, long ib, long ie, double init_val) {
   long i;
@@ -14995,14 +13066,6 @@ void copy_dvector(double *d, double *s, long nl, long nh) {
     d[i] = s[i];
 }
 
-/* copy a long vector [nl .. nh], from s to d */
-void copy_lvector(long *d, long *s, long nl, long nh) {
-  long i;
-
-  for (i = nl; i <= nh; i++)
-    d[i] = s[i];
-}
-
 int dval_compare(const void *v1, const void *v2) {
   const double *p1, *p2;
 
@@ -15010,24 +13073,6 @@ int dval_compare(const void *v1, const void *v2) {
   p2 = (const double *)v2;
 
   return (*p1 > *p2) ? 1 : (*p1 < *p2) ? -1 : 0;
-}
-
-int lval_compare(const void *v1, const void *v2) {
-  const long *p1, *p2;
-
-  p1 = (const long *)v1;
-  p2 = (const long *)v2;
-
-  return (*p1 > *p2) ? 1 : (*p1 < *p2) ? -1 : 0;
-}
-
-int cstr_compare(const void *v1, const void *v2) {
-  const char **p1, **p2;
-
-  p1 = (const char **)v1;
-  p2 = (const char **)v2;
-
-  return strcmp(*p1, *p2);
 }
 
 /* negate each value of vector xyz1 */
@@ -15044,13 +13089,6 @@ double p1p2_dist(double *xyz1, double *xyz2) {
 
   ddxyz(xyz1, xyz2, dxyz);
   return veclen(dxyz);
-}
-
-void p1p2_ave(double *xyz1, double *xyz2, double *ave) {
-  long i;
-
-  for (i = 1; i <= 3; i++)
-    ave[i] = 0.5 * (xyz1[i] + xyz2[i]);
 }
 
 /* check if distance between xyz1 & xyz2 is within (dlow, dhigh) */
@@ -15192,14 +13230,6 @@ void copy_dmatrix(double **a, long nr, long nc, double **o) {
       o[i][j] = a[i][j];
 }
 
-void copy_lmatrix(long **a, long nr, long nc, long **o) {
-  long i, j;
-
-  for (i = 1; i <= nr; i++)
-    for (j = 1; j <= nc; j++)
-      o[i][j] = a[i][j];
-}
-
 void multi_matrix(double **a, long nra, long nca, double **b, long nrb,
                   long ncb, double **o) {
   long i, j, k;
@@ -15262,7 +13292,6 @@ void identity_matrix(double **d, long n) {
 }
 
 /// @brief - fncs_slre.cpp
-
 
 /*  Copyright (c) 2004-2012 Sergey Lyubka <valenok@gmail.com> */
 /*  All rights reserved */
@@ -15929,24 +13958,6 @@ static const char *capture(const struct cap *caps, int num_caps, va_list ap) {
   return err;
 }
 
-const char *slre_match(enum slre_option options, const char *re,
-                       const char *buf, int buf_len, ...) {
-  struct slre slre;
-  struct cap caps[20];
-  va_list ap;
-  const char *error_string = NULL;
-
-  slre.options = options;
-  if ((error_string = compile2(&slre, re)) == NULL &&
-      (error_string = match2(&slre, buf, buf_len, caps)) == NULL) {
-    va_start(ap, buf_len);
-    error_string = capture(caps + 1, slre.num_caps, ap);
-    va_end(ap);
-  }
-
-  return error_string;
-}
-
 int lux_match(enum slre_option options, const char *re, const char *buf) {
   struct slre slre;
   struct cap caps[32];
@@ -15957,11 +13968,6 @@ int lux_match(enum slre_option options, const char *re, const char *buf) {
          match2(&slre, buf, buf_len, caps) == NULL;
 }
 
-int lux_bcmatch(const char *buf, const char *re) {
-  return lux_match(SLRE_CASE_SENSITIVE, re, buf);
-}
-
 int lux_ncmatch(const char *buf, const char *re) {
   return lux_match(SLRE_CASE_INSENSITIVE, re, buf);
 }
-
