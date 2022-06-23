@@ -8,11 +8,8 @@
 
 #include <base/log.hpp>
 #include <base/types.hpp>
-#include <math/numerical.hpp>
 #include <math/vector_3.hpp>
 #include <util/find_pair.h>
-#include <util/x3dna.h>
-#include <util/x3dna_src.h>
 
 using namespace std;
 
@@ -23,7 +20,7 @@ PairFinder::PairFinder(string pdb) {
   sprintf(args.pdbfile, c);
   sprintf(args.outfile, "stdout");
 
-  X3dna::X3BPInfo *bp_info;
+  util::x3dna::X3dna::X3BPInfo *bp_info;
 }
 
 /* clean up files with fixed name */
@@ -59,7 +56,7 @@ std::string string_format(const std::string &format, Args... args) {
  * frame x-, y- and z-axis: row-wise or column-wise? Here adding more info to
  * make this point clear: it is ROW-wise. Keven (U. Penn); Oct 9, 2007 */
 void PairFinder::_write_fpmst(double *morg, double *morien, FILE *rframe,
-                              X3dna::X3BPInfo *bp_info) {
+                              util::x3dna::X3dna::X3BPInfo *bp_info) {
   int i, j;
   // frprintf(rframe, "%10.4f %10.4f %10.4f  # origin\n",
   //         morg[1], morg[2], morg[3]);
@@ -83,8 +80,8 @@ void PairFinder::_write_fpmst(double *morg, double *morien, FILE *rframe,
   auto r = math::Matrix3x3(rs[0].get_x(), rs[0].get_y(), rs[0].get_z(),
                            rs[1].get_x(), rs[1].get_y(), rs[1].get_z(),
                            rs[2].get_x(), rs[2].get_y(), rs[2].get_z());
-  auto res1 = X3dna::X3Residue{bp_info->res1_num, bp_info->res1_chain_id, ' '};
-  auto res2 = X3dna::X3Residue{bp_info->res2_num, bp_info->res2_chain_id, ' '};
+  auto res1 = util::x3dna::X3dna::X3Residue{bp_info->res1_num, bp_info->res1_chain_id, ' '};
+  auto res2 = util::x3dna::X3dna::X3Residue{bp_info->res2_num, bp_info->res2_chain_id, ' '};
 
   const double max_distance = 3.5;
 
@@ -97,7 +94,7 @@ void PairFinder::_write_fpmst(double *morg, double *morien, FILE *rframe,
 
     if (vector1.distance(vector2) <= max_distance &&
         vector3.distance(vector4) <= max_distance) {
-      auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cWUW};
+      auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r, util::x3dna::X3dnaBPType::cWUW};
       bps.push_back(bp);
     } else {
       LOG_INFO << "Removed baspair: " << res1.num << "|" << res2.num
@@ -114,7 +111,7 @@ void PairFinder::_write_fpmst(double *morg, double *morien, FILE *rframe,
 
     if (vector1.distance(vector2) <= max_distance &&
         vector3.distance(vector4) <= max_distance) {
-      auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cWUW};
+      auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r, util::x3dna::X3dnaBPType::cWUW};
       bps.push_back(bp);
     } else {
       LOG_INFO << "Removed baspair: " << res1.num << "|" << res2.num
@@ -134,7 +131,7 @@ void PairFinder::_write_fpmst(double *morg, double *morien, FILE *rframe,
     if (vector1.distance(vector2) <= max_distance &&
         vector3.distance(vector4) <= max_distance &&
         vector5.distance(vector6) <= max_distance) {
-      auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cWUW};
+      auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r, util::x3dna::X3dnaBPType::cWUW};
       bps.push_back(bp);
     } else {
       LOG_INFO << "Removed baspair: " << res1.num << "|" << res2.num
@@ -154,7 +151,7 @@ void PairFinder::_write_fpmst(double *morg, double *morien, FILE *rframe,
     if (vector1.distance(vector2) <= max_distance &&
         vector3.distance(vector4) <= max_distance &&
         vector5.distance(vector6) <= max_distance) {
-      auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cWUW};
+      auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r, util::x3dna::X3dnaBPType::cWUW};
       bps.push_back(bp);
     } else {
       LOG_INFO << "Removed baspair: " << res1.num << "|" << res2.num
@@ -170,7 +167,7 @@ void PairFinder::_write_fpmst(double *morg, double *morien, FILE *rframe,
 
     if (vector1.distance(vector2) <= max_distance &&
         vector3.distance(vector4) <= max_distance) {
-      auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cWUW};
+      auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r, util::x3dna::X3dnaBPType::cWUW};
       bps.push_back(bp);
     } else {
       LOG_INFO << "Removed baspair: " << res1.num << "|" << res2.num
@@ -187,7 +184,7 @@ void PairFinder::_write_fpmst(double *morg, double *morien, FILE *rframe,
 
     if (vector1.distance(vector2) <= max_distance &&
         vector3.distance(vector4) <= max_distance) {
-      auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cWUW};
+      auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r, util::x3dna::X3dnaBPType::cWUW};
       bps.push_back(bp);
     } else {
       LOG_INFO << "Removed baspair: " << res1.num << "|" << res2.num
@@ -196,7 +193,7 @@ void PairFinder::_write_fpmst(double *morg, double *morien, FILE *rframe,
     }
 
   } else {
-    auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cDDD};
+    auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r, util::x3dna::X3dnaBPType::cDDD};
     bps.push_back(bp);
   }
 }
@@ -1139,7 +1136,7 @@ void PairFinder::_write_bestpairs(long num_bp, long **base_pairs, long *bp_idx,
                            bseq[ib], nt_info[ia], nt_info[ib]);
     auto m = std::smatch();
     std::regex_search(s, m, r);
-    auto bp_info = new X3dna::X3BPInfo(m);
+    auto bp_info = new util::x3dna::X3dna::X3BPInfo(m);
     PairFinder::_write_fpmst(morg, morien, rframe, bp_info);
   }
 }
@@ -1724,7 +1721,7 @@ void PairFinder::_handle_str() {
   free_cmatrix(nt_info, 1, num_residue, 0, BUF32);
 }
 
-void PairFinder::find_pair(X3dna::X3Basepairs &basepairs) {
+void PairFinder::find_pair(x3dna::X3dna::X3Basepairs &basepairs) {
   time_t time0;
 
   time(&time0);

@@ -13,7 +13,7 @@
 
 #include "motif/motif_factory.h"
 #include "motif/pose.h"
-#include "util/x3dna.h"
+#include "util/x3dna/x3dna.h"
 
 namespace motif {
 

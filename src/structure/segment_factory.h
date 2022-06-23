@@ -12,7 +12,7 @@
 #include "structure/residue_type_set.h"
 #include "structure/segment.h"
 #include "structure/structure.h"
-#include <util/x3dna.h>
+#include <util/x3dna/x3dna.h>
 
 namespace structure {
 

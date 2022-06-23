@@ -1,8 +1,6 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wwritable-strings"
 
-#include "x3dna_src.h"
-
 /*  Copyright (c) 2004-2012 Sergey Lyubka <valenok@gmail.com> */
 /*  All rights reserved */
 

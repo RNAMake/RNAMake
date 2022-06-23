@@ -5,8 +5,7 @@
 #define __FIND_PAIR_H__
 
 #include <math/numerical.hpp>
-#include <util/x3dna_fncs.h>
-#include <util/x3dna.h>
+#include <util/x3dna/x3dna.h>
 
 namespace util {
 
@@ -15,14 +14,14 @@ class PairFinder {
 public:
   PairFinder(std::string pdb);
 
-  void find_pair(X3dna::X3Basepairs &basepairs);
+  void find_pair(util::x3dna::X3dna::X3Basepairs &basepairs);
 
   // private functions
 private:
   void _handle_str();
 
   void _write_fpmst(double *morg, double *morien, FILE *rframe,
-                    X3dna::X3BPInfo *bp_info);
+                    util::x3dna::X3dna::X3BPInfo *bp_info);
 
   void _write_bestpairs(long num_bp, long **base_pairs, long *bp_idx,
                         char *bseq, long **seidx, char **AtomName,
@@ -38,7 +37,7 @@ private:
 private:
   char **nt_info;
 
-  std::vector<X3dna::X3Basepair> bps;
+  std::vector<x3dna::X3dna::X3Basepair> bps;
 
   std::map<std::pair<int, std::string>, math::Vector3> atoms;
 

@@ -4,8 +4,7 @@
 
 #include "../common.hpp"
 #include <util/find_pair.h>
-#include <util/x3dna_src.h>
-#include <util/x3dna_fncs.h>
+#include <util/x3dna/x3dna.h>
 
 TEST_CASE("find pair unittests ") {
   SUBCASE("test trivial") {
@@ -15,7 +14,7 @@ TEST_CASE("find pair unittests ") {
     auto s = strdup(env.c_str());
     putenv(s);
     util::PairFinder pf("/Users/jyesselm/projects/RNAMake/unittests/unittest_resources/util/HELIX.IDEAL.pdb");
-    util::X3dna::X3Basepairs pairs;
+    util::x3dna::X3dna::X3Basepairs pairs;
     pf.find_pair(pairs);
     CHECK(pairs.size() == doctest::Approx(2));
   }

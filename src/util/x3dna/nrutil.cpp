@@ -1,9 +1,6 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wwritable-strings"
 
-#include <util/x3dna_src.h>
-#include <util/x3dna_fncs.h>
-
 /* standard error handler */
 void nrerror(char *error_text) {
   fprintf(stderr, "%s\n", error_text);
@@ -98,6 +95,7 @@ long *lvector_nr(long nl, long nh) {
 
 /* ------------------------------------------------------------------ */
 /* allocate a char matrix with subscript range m[nrl..nrh][ncl..nch] */
+
 char **cmatrix(long nrl, long nrh, long ncl, long nch) {
   char **m;
 

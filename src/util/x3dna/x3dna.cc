@@ -6,14 +6,16 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+/*
+
 #include <map>
 #include <set>
 
 // RNAMake Headers
 #include <math/matrix_3x3.hpp>
-#include <util/x3dna.h>
+#include <util/x3dna/x3dna.h>
 
-namespace util {
+namespace DNA {
 X3dna::X3dna()
     : rebuild_files_(true), generated_dssr_(false),
       generated_ref_frames_(false), no_ref_frames_(false) {
@@ -62,7 +64,7 @@ Strings X3dna::_split_over_white_space(String const &str) const {
   return non_white_space;
 }
 
-/*
+////
 X3dna::X3Basepairs X3dna::get_basepairs_json(String const &pdb_path) const {
 
   auto dssr_json = base::execute_command_json(
@@ -124,7 +126,7 @@ X3dna::X3Basepairs X3dna::get_basepairs_json(String const &pdb_path) const {
   }
   return basepairs;
 }
-*/
+////
 
 X3dna::X3Basepairs X3dna::get_basepairs(String const &pdb_path) const {
   auto basepairs = X3Basepairs();
@@ -613,7 +615,7 @@ X3dna::X3Motifs X3dna::_parse_dssr_helix_section(Strings const &section) {
 
   return motifs;
 }
-*/
+////
 
 struct X3Basepair {
   // X3Residue res1, res2;
@@ -624,18 +626,18 @@ struct X3Basepair {
 
 String X3dna::X3Basepair::to_string() const {
   auto ss = std::stringstream();
-  ss << util::get_str_from_x3dna_type(bp_type) << "|" << res1.num << "|"
+  ss << get_str_from_x3dna_type(bp_type) << "|" << res1.num << "|"
      << res2.num << "|" << d << "|" << math::Matrix3x3::matrix_to_str(r);
   return ss.str();
 }
 
-/*
+////
 void json_cleanup() {
   auto cleanup_cmd =
       String{base::x3dna_path()} + String{"/bin/x3dna-dssr --clean 2>"};
   std::system(cleanup_cmd.c_str());
 }
-*/
+////
 
 String compare_bps(X3dna::X3Basepairs &lhs, X3dna::X3Basepairs &rhs) {
   // first, we want to build the maps
@@ -720,3 +722,5 @@ String compare_bps(X3dna::X3Basepairs &lhs, X3dna::X3Basepairs &rhs) {
 }
 
 } // namespace util
+
+*/
