@@ -11,26 +11,22 @@
 
 #include <stdio.h>
 
-#include "eternabot/strategy.h"
+#include <eternabot/strategy.h>
 
 namespace eternabot {
-    
+
 class DirectionofGCPairsinMultiLoops : public Strategy {
 public:
-    DirectionofGCPairsinMultiLoops() {
-        mean_ = 85.2869664088;
-        stdev_ = 26.9535204308;
-    }
-    
-    ~DirectionofGCPairsinMultiLoops() {}
-    
-    float
-    score(FeaturesOP const & features) {
-        return 100;
-    }
-    
+  DirectionofGCPairsinMultiLoops() {
+    mean_ = 85.2869664088;
+    stdev_ = 26.9535204308;
+  }
+
+  ~DirectionofGCPairsinMultiLoops() {}
+
+  float score(FeaturesOP const &features) { return 100; }
 };
-    
-}
+
+} // namespace eternabot
 
 #endif /* defined(__RNAMake__direction_of_gc__) */

@@ -11,23 +11,15 @@
 
 #include <stdio.h>
 
-
-//RNAMake Headers
-#include "secondary_structure/rna_structure.h"
+// RNAMake Headers
 #include "secondary_structure/pose.h"
+#include "secondary_structure/rna_structure.h"
 
 namespace secondary_structure {
 
+String assign_end_id(RNAStructureOP const &, BasepairOP const &);
 
-String
-assign_end_id(
-    RNAStructureOP const &,
-    BasepairOP const &);
+void fill_basepairs_in_ss(PoseOP &);
 
-
-void
-fill_basepairs_in_ss(PoseOP &);
-    
-    
-}
+} // namespace secondary_structure
 #endif /* defined(__RNAMake__util__) */

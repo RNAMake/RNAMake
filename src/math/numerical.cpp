@@ -20,7 +20,7 @@ int are_floats_equal(double const a, double const b, double tol) {
   }
 }
 
-int are_xyzVector_equal(Vector3 const& vec, Vector3 const& correct_vec,
+int are_xyzVector_equal(Vector3 const &vec, Vector3 const &correct_vec,
                         float tol) {
   if (are_floats_equal(vec.get_x(), correct_vec.get_x(), tol) &&
       are_floats_equal(vec.get_y(), correct_vec.get_y(), tol) &&
@@ -31,7 +31,7 @@ int are_xyzVector_equal(Vector3 const& vec, Vector3 const& correct_vec,
   }
 }
 
-int are_points_equal(Vector3 const& p1, Vector3 const& p2, float tol) {
+int are_points_equal(Vector3 const &p1, Vector3 const &p2, float tol) {
   if (are_floats_equal(p1.get_x(), p2.get_x(), tol) &&
       are_floats_equal(p1.get_y(), p2.get_y(), tol) &&
       are_floats_equal(p1.get_z(), p2.get_z(), tol)) {
@@ -41,7 +41,7 @@ int are_points_equal(Vector3 const& p1, Vector3 const& p2, float tol) {
   }
 }
 
-int are_matrices_equal(Matrix3x3 const& m, Matrix3x3 const& mc) {
+int are_matrices_equal(Matrix3x3 const &m, Matrix3x3 const &mc) {
   if (!are_floats_equal(m.get_xx(), mc.get_xx()) ||
       !are_floats_equal(m.get_xy(), mc.get_xy()) ||
       !are_floats_equal(m.get_xz(), mc.get_xz()) ||
@@ -58,20 +58,20 @@ int are_matrices_equal(Matrix3x3 const& m, Matrix3x3 const& mc) {
 }
 
 template <>
-bool roughly_equal<double>(double const& v1, double const& v2,
+bool roughly_equal<double>(double const &v1, double const &v2,
                            double tolerance) {
   // TODO maybe add nan checking??
   return std::abs(v1 - v2) < tolerance;
 }
 
 template <>
-bool roughly_equal<float>(float const& v1, float const& v2, double tolerance) {
+bool roughly_equal<float>(float const &v1, float const &v2, double tolerance) {
   return std::abs(v1 - v2) < tolerance;
 }
 
 template <>
-bool roughly_equal<Matrix3x3>(Matrix3x3 const& m1, Matrix3x3 const& m2,
-                           double tolerance) {
+bool roughly_equal<Matrix3x3>(Matrix3x3 const &m1, Matrix3x3 const &m2,
+                              double tolerance) {
   return roughly_equal(m1.get_xx(), m2.get_xx(), tolerance) &&
          roughly_equal(m1.get_xy(), m2.get_xy(), tolerance) &&
          roughly_equal(m1.get_xz(), m2.get_xz(), tolerance) &&
@@ -84,11 +84,11 @@ bool roughly_equal<Matrix3x3>(Matrix3x3 const& m1, Matrix3x3 const& m2,
 }
 
 template <>
-bool roughly_equal<Vector3>(Vector3 const& v1, Vector3 const& v2,
-                           double tolerance) {
+bool roughly_equal<Vector3>(Vector3 const &v1, Vector3 const &v2,
+                            double tolerance) {
   return roughly_equal(v1.get_x(), v2.get_x(), tolerance) &&
          roughly_equal(v1.get_y(), v2.get_y(), tolerance) &&
          roughly_equal(v1.get_z(), v2.get_z(), tolerance);
 }
 
-}  // namespace math
+} // namespace math

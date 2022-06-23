@@ -9,97 +9,83 @@
 #ifndef __RNAMake__cartesian_product__
 #define __RNAMake__cartesian_product__
 
-#include <stdio.h>
 #include <iostream>
+#include <stdio.h>
 
-//RNAMake Headers
+// RNAMake Headers
 #include <base/types.hpp>
 
 namespace util {
 
-template<typename T>
-class CartesianProduct {
+template <typename T> class CartesianProduct {
 public:
-    typedef T Value;
-    typedef std::vector<Value> Values;
+  typedef T Value;
+  typedef std::vector<Value> Values;
 
 public:
-    CartesianProduct() :
-            setup_(false) {
+  CartesianProduct() : setup_(false) {}
 
+  CartesianProduct(std::vector<Values> const &values) : setup_(false) {
+    setup(values);
+  }
+
+  void setup(std::vector<Values> const &values) {
+    values_ = values;
+    indices_ = Ints(values_.size());
+    maxes_ = Ints(values_.size());
+    current_ = Values(values_.size());
+    end_ = 0;
+
+    int i = 0;
+    for (auto const &v : values_) {
+      maxes_[i] = (int)v.size();
+      i++;
+    }
+    setup_ = true;
+  }
+
+  inline int const end() { return end_; }
+
+  Values const &next() {
+    if (!setup_) {
+      throw std::runtime_error(
+          "CartesianProduct is not setup! must call setup() first");
     }
 
-    CartesianProduct(
-            std::vector<Values> const & values) :
-            setup_(false) {
-        setup(values);
+    int j = 0;
+    for (auto const &v : values_) {
+      current_[j] = v[indices_[j]];
+      j++;
     }
 
-    void
-    setup(
-            std::vector<Values> const & values) {
-        values_ = values;
-        indices_ = Ints(values_.size());
-        maxes_ = Ints(values_.size());
-        current_ = Values(values_.size());
-        end_ = 0;
+    int i = (int)indices_.size() - 1;
+    while (i > -1) {
+      indices_[i]++;
 
-        int i = 0;
-        for (auto const & v : values_) {
-            maxes_[i] = (int) v.size();
-            i++;
+      if (indices_[i] == maxes_[i]) {
+        if (i == 0) {
+          end_ = 1;
+          break;
         }
-        setup_ = true;
+        indices_[i] = 0;
+        i--;
+        continue;
+      }
 
+      break;
     }
-
-    inline
-    int const
-    end() { return end_; }
-
-    Values
-    const &
-    next() {
-        if (!setup_) {
-            throw std::runtime_error("CartesianProduct is not setup! must call setup() first");
-        }
-
-        int j = 0;
-        for (auto const & v : values_) {
-            current_[j] = v[indices_[j]];
-            j++;
-        }
-
-
-        int i = (int) indices_.size() - 1;
-        while (i > -1) {
-            indices_[i]++;
-
-            if (indices_[i] == maxes_[i]) {
-                if (i == 0) {
-                    end_ = 1;
-                    break;
-                }
-                indices_[i] = 0;
-                i--;
-                continue;
-            }
-
-            break;
-        }
-        return current_;
-    }
+    return current_;
+  }
 
 private:
-    Indexes indices_;
-    Indexes maxes_;
-    std::vector<Values> values_;
-    Values current_;
-    int end_;
-    bool setup_;
-
+  Indexes indices_;
+  Indexes maxes_;
+  std::vector<Values> values_;
+  Values current_;
+  int end_;
+  bool setup_;
 };
 
-}
+} // namespace util
 
 #endif /* defined(__RNAMake__cartesian_product__) */

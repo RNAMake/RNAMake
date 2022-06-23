@@ -23,9 +23,9 @@ void init_logging_with_file(LogLevel log_level) {
       .addAppender(&consoleAppender);
 }
 
-LogLevel log_level_from_str(const String & s) {
+LogLevel log_level_from_str(const String &s) {
   auto lower_str = s;
-  for (char& p : lower_str) {
+  for (char &p : lower_str) {
     p = std::towlower(p);
   }
 
@@ -54,4 +54,4 @@ LogLevel log_level_from_str(const String & s) {
   }
 }
 
-}  // namespace base
+} // namespace base

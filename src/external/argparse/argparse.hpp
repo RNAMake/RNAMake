@@ -90,7 +90,7 @@ template <> constexpr bool standard_unsigned_integer<unsigned long int> = true;
 template <>
 constexpr bool standard_unsigned_integer<unsigned long long int> = true;
 
-}
+} // namespace
 
 template <typename T>
 constexpr bool standard_integer =
@@ -197,7 +197,7 @@ template <> constexpr auto generic_strtod<float> = strtof;
 template <> constexpr auto generic_strtod<double> = strtod;
 template <> constexpr auto generic_strtod<long double> = strtold;
 
-}
+} // namespace
 
 template <class T> inline auto do_strtod(std::string const &s) -> T {
   if (isspace(static_cast<unsigned char>(s[0])) || s[0] == '+')
@@ -274,7 +274,7 @@ class Argument {
       -> std::ostream &;
 
   template <size_t N, size_t... I>
-  explicit Argument(std::string_view(&&a)[N], std::index_sequence<I...>)
+  explicit Argument(std::string_view (&&a)[N], std::index_sequence<I...>)
       : mIsOptional((is_optional(a[I]) || ...)), mIsRequired(false),
         mIsUsed(false) {
     ((void)mNames.emplace_back(a[I]), ...);
@@ -286,7 +286,7 @@ class Argument {
 
 public:
   template <size_t N>
-  explicit Argument(std::string_view(&&a)[N])
+  explicit Argument(std::string_view (&&a)[N])
       : Argument(std::move(a), std::make_index_sequence<N>{}) {}
 
   Argument &help(std::string aHelp) {
@@ -311,7 +311,7 @@ public:
   }
 
   template <class F, class... Args>
-  auto action(F &&aAction, Args &&... aBound)
+  auto action(F &&aAction, Args &&...aBound)
       -> std::enable_if_t<std::is_invocable_v<F, Args..., std::string const>,
                           Argument &> {
     using action_type = std::conditional_t<
@@ -750,11 +750,10 @@ private:
 
 class ArgumentParser {
 public:
-  explicit ArgumentParser(std::string aProgramName = {}, std::string aVersion = "1.0")
+  explicit ArgumentParser(std::string aProgramName = {},
+                          std::string aVersion = "1.0")
       : mProgramName(std::move(aProgramName)), mVersion(std::move(aVersion)) {
-    add_argument("-h", "--help")
-        .help("shows help message and exits")
-        .nargs(0);
+    add_argument("-h", "--help").help("shows help message and exits").nargs(0);
     add_argument("-v", "--version")
         .help("prints version information and exits")
         .nargs(0);
@@ -799,7 +798,7 @@ public:
   // Parameter packed add_parents method
   // Accepts a variadic number of ArgumentParser objects
   template <typename... Targs>
-  ArgumentParser &add_parents(const Targs &... Fargs) {
+  ArgumentParser &add_parents(const Targs &...Fargs) {
     for (const ArgumentParser &tParentParser : {std::ref(Fargs)...}) {
       for (auto &tArgument : tParentParser.mPositionalArguments) {
         auto it =
@@ -850,7 +849,8 @@ public:
    * @throws std::logic_error if the option has no value
    * @throws std::bad_any_cast if the option is not of type T
    */
-  template <typename T = std::string> T get(std::string_view aArgumentName) const {
+  template <typename T = std::string>
+  T get(std::string_view aArgumentName) const {
     return (*this)[aArgumentName].get<T>();
   }
 
@@ -889,7 +889,7 @@ public:
       }
       stream << "\n\n";
 
-      if(!parser.mDescription.empty())
+      if (!parser.mDescription.empty())
         stream << parser.mDescription << "\n\n";
 
       if (!parser.mPositionalArguments.empty())
@@ -909,7 +909,7 @@ public:
         stream << mOptionalArgument;
       }
 
-      if(!parser.mEpilog.empty())
+      if (!parser.mEpilog.empty())
         stream << parser.mEpilog << "\n\n";
     }
 
@@ -963,7 +963,7 @@ private:
           std::cout << *this;
           std::exit(0);
         }
-        // the second optional argument is --version 
+        // the second optional argument is --version
         else if (tArgument == std::next(mOptionalArguments.begin(), 1)) {
           std::cout << mVersion << "\n";
           std::exit(0);

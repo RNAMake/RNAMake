@@ -11,18 +11,16 @@
 
 namespace motif {
 
-MotifStateEnsembleOP
-MotifEnsemble::get_state() {
-    auto motif_states = MotifStateOPs();
-    auto energies = Reals();
+MotifStateEnsembleOP MotifEnsemble::get_state() {
+  auto motif_states = MotifStateOPs();
+  auto energies = Reals();
 
-    for (auto const & mem : members_) {
-        motif_states.push_back(mem->motif->get_state());
-        energies.push_back(mem->energy);
-    }
+  for (auto const &mem : members_) {
+    motif_states.push_back(mem->motif->get_state());
+    energies.push_back(mem->energy);
+  }
 
-    return std::make_shared<MotifStateEnsemble>(motif_states, energies);
-
+  return std::make_shared<MotifStateEnsemble>(motif_states, energies);
 }
 
-}
+} // namespace motif

@@ -7,8 +7,8 @@
 
 #include <stdexcept>
 
-#include <base/types.hpp>
 #include <base/log.hpp>
+#include <base/types.hpp>
 
 namespace base {
 
@@ -32,8 +32,7 @@ public:
   explicit MathException(const String &message) : Exception(message) {}
 };
 
-template<typename E>
-inline void log_and_throw(const String & msg) {
+template <typename E> inline void log_and_throw(const String &msg) {
   LOG_ERROR << msg;
   throw E(msg);
 }

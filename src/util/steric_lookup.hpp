@@ -13,138 +13,84 @@
 #include <stdio.h>
 
 #include "math/vector_3.hpp"
-#include "math/hashing.h"
+//#include "math/hashing.h"
+
+// TODO math::ThreeDHistogram and related must be fixed
 
 namespace util {
 
 class StericLookup {
 public:
-    StericLookup();
+  StericLookup();
 
-    StericLookup(
-            float,
-            float,
-            int);
+  StericLookup(float, float, int);
 
-    ~StericLookup() {}
+  ~StericLookup() {}
 
 public:
-    void
-    add_point(
-            math::Vector3 const &);
+  void add_point(math::Vector3 const &);
 
-    void
-    add_points(
-            math::Vector3s const &);
+  void add_points(math::Vector3s const &);
 
-    int
-    clash(
-            math::Point const &);
+  int clash(math::Vector3 const &);
 
-    int
-    clash(
-            math::Points const &);
+  int clash(math::Vector3s const &);
 
-    int
-    better_clash(
-            math::Point const &);
+  int better_clash(math::Vector3 const &);
 
-    int
-    total_clash(
-            math::Point const &);
+  int total_clash(math::Vector3 const &);
 
-    int
-    total_clash(
-            math::Points const &);
+  int total_clash(math::Vector3s const &);
 
 private:
-    void
-    _setup_additions();
+  void _setup_additions();
 
 private:
-    std::map<double, int> bhash_;
-    math::Points additions_, check_additions_;
-    math::Point rounded_;
-    math::Point p_;
-    float grid_size_;
-    float cutoff_;
-    int radius_;
-    double k_;
-
-
+  std::map<double, int> _bhash;
+  math::Vector3s _additions, _check_additions;
+  math::Vector3 _rounded;
+  math::Vector3 _p;
+  float _grid_size;
+  float _cutoff;
+  int _radius;
+  double _k;
 };
 
 class StericLookupNew {
 public:
-    StericLookupNew();
+  StericLookupNew();
 
 public:
-    void
-    add_point(
-            math::Point const &);
+  void add_point(math::Vector3 const &);
 
-    void
-    add_points(
-            math::Points const &);
+  void add_points(math::Vector3s const &);
 
-    bool
-    clash(
-            math::Point const &);
+  bool clash(math::Vector3 const &);
 
-    bool
-    clash(
-            math::Points const &);
+  bool clash(math::Vector3s const &);
 
 public:
-    void
-    to_pdb(
-            String const &);
+  void to_pdb(String const &);
 
-    int
-    size() {
-        return histo_.size(); }
+  int size() {
+    //    return _histo.size();
+  }
 
 private:
-    void
-    _setup_additions();
+  void _setup_additions();
 
 private:
-    float grid_size_;
-    float cutoff_;
-    int radius_;
-    math::Points additions_;
-    math::ThreeDHistogram histo_;
-    math::Point dummy_;
+  float _grid_size;
+  float _cutoff;
+  int _radius;
+  math::Vector3s _additions;
+  //  math::ThreeDHistogram _histo;
+  math::Vector3 _dummy;
 };
 
 typedef std::shared_ptr<StericLookup> StericLookupOP;
 typedef std::shared_ptr<StericLookupNew> StericLookupNewOP;
 
-}
+} // namespace util
 
 #endif /* steric_lookup_hpp */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -17,5 +17,5 @@ class MotifStateTree;
 
 typedef std::shared_ptr<MotifStateTree> MotifStateTreeOP;
 
-}
+} // namespace motif_data_structure
 #endif /* motif_state_tree_fwd_h */

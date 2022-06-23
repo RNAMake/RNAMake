@@ -10,25 +10,14 @@
 
 namespace secondary_structure {
 
-void
-get_res_types_from_sequence(
-        String const &,
-        ResTypes & /* return array */);
+void get_res_types_from_sequence(String const &, ResTypes & /* return array */);
 
-int
-find_res_types_in_pose(
-        PoseOP,
-        ResTypes const &);
+int find_res_types_in_pose(PoseOP, ResTypes const &);
 
-int
-find_gc_helix_stretches(
-        PoseOP,
-        int);
+int find_gc_helix_stretches(PoseOP, int);
 
-int
-find_longest_gc_helix_stretch(
-        PoseOP);
+int find_longest_gc_helix_stretch(PoseOP);
 
-}
+} // namespace secondary_structure
 
-#endif //RNAMAKE_NEW_SEQUENCE_TOOLS_H
+#endif // RNAMAKE_NEW_SEQUENCE_TOOLS_H

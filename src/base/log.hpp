@@ -13,10 +13,10 @@
 namespace plog {
 
 class CustomFormatter {
- public:
+public:
   static util::nstring header() { return util::nstring(); }
 
-  static util::nstring format(const Record& record) {
+  static util::nstring format(const Record &record) {
     tm t;
     util::localtime_s(&t, &record.getTime().time);
 
@@ -33,7 +33,7 @@ class CustomFormatter {
     return ss.str();
   }
 };
-}  // namespace plog
+} // namespace plog
 
 namespace base {
 
@@ -57,6 +57,6 @@ void init_logging(LogLevel log_level = LogLevel::INFO);
 
 void init_logging_with_file(LogLevel log_level = LogLevel::INFO);
 
-}  // namespace base
+} // namespace base
 
-#endif  // RNAMAKE_NEW_LOG_H
+#endif // RNAMAKE_NEW_LOG_H

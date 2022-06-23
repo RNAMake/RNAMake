@@ -9,56 +9,52 @@
 #ifndef __RNAMake__motif_state_aligner__
 #define __RNAMake__motif_state_aligner__
 
-#include <stdio.h>
 #include "motif/motif_state.h"
 #include "structure/basepair_state.h"
+#include <stdio.h>
 
 namespace motif {
 
 class MotifStateAligner {
 public:
-    MotifStateAligner() {}
+  MotifStateAligner() {}
 
-    ~MotifStateAligner() {}
+  ~MotifStateAligner() {}
 
 public:
-    inline
-    void
-    get_aligned_motif_state(
-            structure::BasepairStateOP const & ref_bp_state,
-            MotifStateOP & cur_state,
-            MotifStateOP const & org_state) {
+  inline void
+  get_aligned_motif_state(structure::BasepairStateOP const &ref_bp_state,
+                          MotifStateOP &cur_state,
+                          MotifStateOP const &org_state) {
 
-        ref_bp_state->get_transforming_r_and_t(*org_state->end_states()[0], bp_state_);
-        for (int i = 0; i < org_state->end_states().size(); i++) {
-            org_state->end_states()[i]->get_transformed_state(bp_state_, bp_state_final_);
-            cur_state->update_end_state(i, bp_state_final_);
-        }
-
-        t_beads_ = math::Vector3s(org_state->beads().size());
-        math::dot_vectors(bp_state_.r_T(), org_state->beads(), t_beads_);
-        for (int i = 0; i < t_beads_.size(); i++) { t_beads_[i] += bp_state_.d(); }
-        cur_state->beads(t_beads_);
+    ref_bp_state->get_transforming_r_and_t(*org_state->end_states()[0],
+                                           bp_state_);
+    for (int i = 0; i < org_state->end_states().size(); i++) {
+      org_state->end_states()[i]->get_transformed_state(bp_state_,
+                                                        bp_state_final_);
+      cur_state->update_end_state(i, bp_state_final_);
     }
 
-    inline
-    void
-    get_aligned_motif_state(
-            structure::BasepairStateOP ref_bp_state,
-            MotifStateOP state) {
-
-        ref_bp_state->get_transforming_r_and_t(*state->end_states()[0], bp_state_);
-        state->transform(bp_state_.r().get_transposed(), bp_state_.d());
+    t_beads_ = math::Vector3s(org_state->beads().size());
+    math::dot_vectors(bp_state_.r_T(), org_state->beads(), t_beads_);
+    for (int i = 0; i < t_beads_.size(); i++) {
+      t_beads_[i] += bp_state_.d();
     }
+    cur_state->beads(t_beads_);
+  }
 
+  inline void get_aligned_motif_state(structure::BasepairStateOP ref_bp_state,
+                                      MotifStateOP state) {
 
+    ref_bp_state->get_transforming_r_and_t(*state->end_states()[0], bp_state_);
+    state->transform(bp_state_.r().get_transposed(), bp_state_.d());
+  }
 
 private:
-    structure::BasepairState bp_state_, bp_state_final_;
-    math::Vector3s t_beads_;
-
+  structure::BasepairState bp_state_, bp_state_final_;
+  math::Vector3s t_beads_;
 };
 
-}
+} // namespace motif
 
 #endif /* defined(__RNAMake__motif_state_aligner__) */

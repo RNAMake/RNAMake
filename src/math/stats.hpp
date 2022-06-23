@@ -22,6 +22,6 @@ double pearson_coeff(std::vector<double> const &, std::vector<double> const &);
 double avg_unsigned_diff(std::vector<double> const &,
                          std::vector<double> const &);
 
-}  // namespace math
+} // namespace math
 
-#endif  // TEST_STATS_H
+#endif // TEST_STATS_H

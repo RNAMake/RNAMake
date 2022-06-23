@@ -7,34 +7,32 @@
 namespace motif_search {
 namespace path_finding {
 
+void Selector::connect(String const &name_i, String const &name_j) {
 
-void
-Selector::connect(
-        String const & name_i,
-        String const & name_j) {
-
-    int i = -1, j = -1;
-    for (auto const & n : graph_) {
-        if (n->data()->name == name_i) { i = n->index(); }
-        if (n->data()->name == name_j) { j = n->index(); }
+  int i = -1, j = -1;
+  for (auto const &n : graph_) {
+    if (n->data()->name == name_i) {
+      i = n->index();
     }
-
-    if (i == -1 || j == -1) {
-        throw SelectorException("could not connect nodes: " + name_i + " " + name_j);
+    if (n->data()->name == name_j) {
+      j = n->index();
     }
-    graph_.connect(i, j);
+  }
+
+  if (i == -1 || j == -1) {
+    throw SelectorException("could not connect nodes: " + name_i + " " +
+                            name_j);
+  }
+  graph_.connect(i, j);
 }
 
-
-SelectorOP
-default_selector() {
-    auto s = std::make_shared<RoundRobinSelector>();
-    //s->add("ideal_helices_min");
-    s->add("flex_helices");
-    s->add("unique_twoway");
-    return s;
+SelectorOP default_selector() {
+  auto s = std::make_shared<RoundRobinSelector>();
+  // s->add("ideal_helices_min");
+  s->add("flex_helices");
+  s->add("unique_twoway");
+  return s;
 }
 
-
-}
-}
+} // namespace path_finding
+} // namespace motif_search

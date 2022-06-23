@@ -12,130 +12,97 @@ namespace secondary_structure {
 
 class SequenceConstraint {
 public:
-    SequenceConstraint() {}
+  SequenceConstraint() {}
 
-    virtual
-    ~SequenceConstraint() {}
+  virtual ~SequenceConstraint() {}
 
-    virtual
-    SequenceConstraint *
-    clone() const = 0;
+  virtual SequenceConstraint *clone() const = 0;
 
 public:
-    virtual
-    bool
-    violates_constraint(
-            PoseOP p) {
-        if(violations(p) > 0) { return true; }
-        else                  { return false; }
+  virtual bool violates_constraint(PoseOP p) {
+    if (violations(p) > 0) {
+      return true;
+    } else {
+      return false;
     }
+  }
 
-    virtual
-    int
-    violations(
-            PoseOP) = 0;
+  virtual int violations(PoseOP) = 0;
 };
 
 class DisallowedSequence : public SequenceConstraint {
 public:
-    DisallowedSequence(
-            String const & disallowed_sequence) : SequenceConstraint() {
-        get_res_types_from_sequence(disallowed_sequence, disallowed_res_type_array_);
-    }
+  DisallowedSequence(String const &disallowed_sequence) : SequenceConstraint() {
+    get_res_types_from_sequence(disallowed_sequence,
+                                disallowed_res_type_array_);
+  }
 
-    SequenceConstraint *
-    clone() const { return new DisallowedSequence(*this); };
+  SequenceConstraint *clone() const { return new DisallowedSequence(*this); };
 
 public:
-    int
-    violations(
-            PoseOP p) {
-        return find_res_types_in_pose(p, disallowed_res_type_array_);
-    }
-
+  int violations(PoseOP p) {
+    return find_res_types_in_pose(p, disallowed_res_type_array_);
+  }
 
 private:
-    ResTypes disallowed_res_type_array_;
+  ResTypes disallowed_res_type_array_;
 };
 
 class GCHelixStretchLimit : public SequenceConstraint {
 public:
-    GCHelixStretchLimit(
-            int length) : SequenceConstraint() {
-        length_ = length;
-    }
+  GCHelixStretchLimit(int length) : SequenceConstraint() { length_ = length; }
 
-    SequenceConstraint *
-    clone() const { return new GCHelixStretchLimit(*this); };
+  SequenceConstraint *clone() const { return new GCHelixStretchLimit(*this); };
 
 public:
-    int
-    violations(
-            PoseOP p) {
-        return find_gc_helix_stretches(p, length_);
-    }
-
+  int violations(PoseOP p) { return find_gc_helix_stretches(p, length_); }
 
 private:
-    int length_;
+  int length_;
 };
 
 typedef std::shared_ptr<SequenceConstraint> SequenceConstraintOP;
-typedef std::vector<SequenceConstraintOP>   SequenceConstraintOPs;
+typedef std::vector<SequenceConstraintOP> SequenceConstraintOPs;
 
 class SequenceConstraints {
 public:
-    SequenceConstraints() {}
+  SequenceConstraints() {}
 
-    ~SequenceConstraints() {}
-
-public:
-
-    void
-    add_sequence_constraint(
-            SequenceConstraintOP seq_constraint) {
-        violations_.push_back(0);
-        seq_constraints_.push_back(SequenceConstraintOP(seq_constraint->clone()));
-    }
-
-    void
-    add_disallowed_sequence(
-            String const & seq) {
-        add_sequence_constraint(std::make_shared<DisallowedSequence>(seq));
-    }
-
-    void
-    add_gc_helix_stretch_limit(
-            int length) {
-        add_sequence_constraint(std::make_shared<GCHelixStretchLimit>(length));
-    }
-
+  ~SequenceConstraints() {}
 
 public:
-    Ints const &
-    violations(
-            PoseOP p) {
-        for(int i = 0; i < seq_constraints_.size(); i++) {
-            violations_[i] = seq_constraints_[i]->violations(p);
-        }
+  void add_sequence_constraint(SequenceConstraintOP seq_constraint) {
+    violations_.push_back(0);
+    seq_constraints_.push_back(SequenceConstraintOP(seq_constraint->clone()));
+  }
 
-        return violations_;
+  void add_disallowed_sequence(String const &seq) {
+    add_sequence_constraint(std::make_shared<DisallowedSequence>(seq));
+  }
+
+  void add_gc_helix_stretch_limit(int length) {
+    add_sequence_constraint(std::make_shared<GCHelixStretchLimit>(length));
+  }
+
+public:
+  Ints const &violations(PoseOP p) {
+    for (int i = 0; i < seq_constraints_.size(); i++) {
+      violations_[i] = seq_constraints_[i]->violations(p);
     }
 
-    size_t
-    num_constraints() {
-        return seq_constraints_.size();
-    }
+    return violations_;
+  }
+
+  size_t num_constraints() { return seq_constraints_.size(); }
 
 private:
-    Ints violations_;
-    SequenceConstraintOPs seq_constraints_;
+  Ints violations_;
+  SequenceConstraintOPs seq_constraints_;
 };
 
-}
+} // namespace secondary_structure
 
-
-#endif //RNAMAKE_NEW_SEQUENCE_CONSTRAINT_H
+#endif // RNAMAKE_NEW_SEQUENCE_CONSTRAINT_H
 
 /*
 auto disallowed_sequences = Strings{"AAAA", "CCCC", "GGGG", "UUUU"};
