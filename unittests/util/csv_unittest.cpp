@@ -6,14 +6,12 @@
 
 #include "../common.hpp"
 
-#include <base/settings.h>
+#include <base/paths.hpp>
 #include <util/csv.h>
 
 TEST_CASE( "Test csv parsing" ) {
-
   SUBCASE("test reading a csv") {
-    auto path =  base::unittest_resource_dir() + "/base/test.csv";
-
+    auto path =  base::path::unittest_resource_path() + "/base/test.csv";
     auto csv_reader = io::CSVReader<3>(path);
     String test1, test2, test3;
     int count = 0;

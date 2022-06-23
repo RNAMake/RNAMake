@@ -25,7 +25,7 @@ namespace primitives {
 class Residue {
 public:
   /**
-   * constructor for Residue class
+   * @brief constructor for Residue class
    * @param   name        residue name (A, G, C, T)
    * @param   num         residue num
    * @param   chain_id    what chain does this residue belong to ("A", "B")
