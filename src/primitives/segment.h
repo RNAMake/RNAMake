@@ -37,7 +37,7 @@ public:
   typedef std::vector<BPtype> Basepairs;
 
 public:
-  inline Index get_aligned_end_index() const { return aligned_end_index_; }
+  inline Index get_aligned_end_indx() const { return aligned_end_index_; }
 
   util::Uuid const &get_uuid() const { return uuid_; }
 

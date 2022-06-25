@@ -1,67 +1,310 @@
 //
-// Created by Joseph Yesselman on 2/15/17.
+// Created by Joe Yesselman on 6/25/22.
 //
 
-#ifndef PRIMITIVES_RNA_STRUCTURE_H
-#define PRIMITIVES_RNA_STRUCTURE_H
+#ifndef RNAMAKE_SRC_STRUCTURE_BASE_HPP_
+#define RNAMAKE_SRC_STRUCTURE_BASE_HPP_
 
-#include <map>
-#include <memory>
-#include <vector>
-
-#include "doctest.h"
 #include <base/string.hpp>
-#include <primitives/basepair.h>
-#include <primitives/structure.h>
 #include <util/uuid.h>
+#include <util/motif_type.h>
 
-/*
- * Exception for RNA Structure
- */
+namespace structure {
 
-class PoseException : public std::runtime_error {
+typedef size_t Cutpoint;
+typedef std::vector<Cutpoint> Cutpoints;
+
+class StructureException : public std::runtime_error {
 public:
   /**
-   * Standard constructor for RNAStructureException
-   * @param   message   Error message for rna structure
+   * Standard constructor for StructureException
+   * @param   message   Error message for structure
    */
-  PoseException(String const &message) : std::runtime_error(message) {}
+  explicit StructureException(String const &message)
+      : std::runtime_error(message) {}
 };
 
-namespace primitives {
+enum class BasepairType { WC, GU, NC };
 
-template <typename BPtype, typename Structuretype, typename Chaintype,
-          typename Restype>
-class Pose {
-public: // types
-  typedef std::vector<Restype> Residues;
-  typedef base::VectorContainerOP<Restype> ResiduesOP;
-  typedef std::vector<BPtype> Basepairs;
-  typedef base::VectorContainerOP<BPtype> BasepairsOP;
+class Basepair {
+public:
+  inline Basepair(const util::Uuid &res1_uuid, const util::Uuid &res2_uuid,
+                  const util::Uuid &uuid, const BasepairType &bp_type,
+                  String &name)
+      : _res1_uuid(res1_uuid), _res2_uuid(res2_uuid), _uuid(uuid),
+        _bp_type(bp_type), _name(std::move(name)) {}
+
+  inline Basepair(Basepair const &bp) = default;
+
+  virtual ~Basepair() = default;
 
 public:
-  Pose(Structuretype const &structure, std::vector<BPtype> const &basepairs,
-       Indexes const &end_indexes, base::SimpleStringCOPs const &end_ids,
-       base::SimpleStringCOP name)
+  inline bool operator==(Basepair const &other) const {
+    return _uuid == other._uuid;
+  }
+
+  inline bool operator!=(Basepair const &other) const {
+    return _uuid != other._uuid;
+  }
+
+public:
+  [[nodiscard]] util::Uuid const &get_partner(util::Uuid const &uuid) const {
+    if (uuid == _res1_uuid) {
+      return _res2_uuid;
+    } else {
+      return _res1_uuid;
+    }
+  }
+
+  [[nodiscard]] inline BasepairType const &get_bp_type() const {
+    return _bp_type;
+  }
+
+  [[nodiscard]] inline util::Uuid const &get_uuid() const { return _uuid; }
+
+  [[nodiscard]] inline const String &get_name() const { return _name; }
+
+  [[nodiscard]] inline util::Uuid const &get_res1_uuid() const {
+    return _res1_uuid;
+  }
+
+  [[nodiscard]] inline util::Uuid const &get_res2_uuid() const {
+    return _res2_uuid;
+  }
+
+private:
+  util::Uuid _uuid;
+  util::Uuid _res1_uuid;
+  util::Uuid _res2_uuid;
+  BasepairType _bp_type;
+  String _name;
+};
+
+template <typename Residue> class Chain {
+public:
+  typedef std::vector<Residue> Residues;
+
+public:
+  inline explicit Chain(Residues const &residues) : _residues(residues) {
+    if (_residues.empty()) {
+      throw StructureException("cannot initiate an empty chain");
+    }
+  }
+
+  ~Chain() = default;
+
+public: // iterator ///////////////////////////////////////////////////////////
+  typedef typename Residues::const_iterator const_iterator;
+
+  const_iterator begin() const noexcept { return _residues.begin(); }
+  const_iterator end() const noexcept { return _residues.end(); }
+
+public:
+  [[nodiscard]] inline size_t get_length() const {
+    return (int)_residues.size();
+  }
+
+  [[nodiscard]] inline const Residue &get_first() const { return _residues[0]; }
+
+  [[nodiscard]] inline const Residue &get_last() const {
+    return _residues.back();
+  }
+
+  [[nodiscard]] inline const Residue &get_residue(Index index) const {
+    return _residues[index];
+  }
+
+  inline int contain_res(const Residue &r) const {
+    for (auto const &res : _residues) {
+      if (res == r) {
+        return 1;
+      }
+    }
+    return 1;
+  }
+
+private:
+  Residues _residues;
+};
+
+template <typename Chaintype, typename Restype> class Structure {
+public:
+  typedef std::vector<Restype> Residues;
+  typedef std::vector<Chaintype> Chains;
+  typedef std::vector<Chaintype> ChainsOP;
+
+public:
+  inline Structure(Residues &res, Cutpoints &cut_points)
+      : _residues(std::move(res)), _cut_points(std::move(cut_points)) {}
+
+  ~Structure() = default;
+
+public: // res iterator
+  typedef typename Residues::const_iterator const_iterator;
+
+  const_iterator begin() const { return _residues.begin(); }
+  const_iterator end() const { return _residues.end(); }
+
+public: // get_residue interface
+  Restype const &get_residue(int num, char chain_id, char i_code) const {
+
+    for (auto const &r : _residues) {
+      if (num == r.get_num() && chain_id == r.get_chain_id() &&
+          i_code == r.get_i_code()) {
+        return r;
+      }
+    }
+
+    /*auto ss = std::stringstream();
+    ss << "cannot find residue with num: " << num << " chain id: " << chain_id
+       << " and i_code";
+    throw StructureException(ss.str());      */
+  }
+
+  // TODO Need to remove this function and only use char
+  Restype const &get_residue(int num, String chain_id, String i_code) const {
+
+    for (auto const &r : _residues) {
+      if (num == r.get_num() && chain_id[0] == r.get_chain_id() &&
+          i_code[0] == r.get_i_code()) {
+        return r;
+      }
+    }
+
+    /*auto ss = std::stringstream();
+    ss << "cannot find residue with num: " << num << " chain id: " << chain_id
+       << " and i_code";
+    throw StructureException(ss.str());   */
+  }
+
+  Restype const &get_residue(util::Uuid const &uuid) const {
+
+    for (auto const &r : _residues) {
+      if (r.get_uuid() == uuid) {
+        return r;
+      }
+    }
+
+    throw StructureException("cannot find residue by uuid");
+  }
+
+  Restype const &get_residue(Index index) const {
+
+    /*expects<StructureException>(
+        index < _residues.size(),
+        "cannot get residue " + std::to_string(index) + " only " +
+            std::to_string(_residues.size()) + " total residues");   */
+
+    return _residues[index];
+  }
+
+  int get_res_index(Restype const &res) const {
+    int i = -1;
+    for (auto const &r : _residues) {
+      i++;
+      if (r == res) {
+        return i;
+      }
+    }
+    throw StructureException("cannot find index for res: " +
+                             std::to_string(res.get_num()));
+  }
+
+public:
+  ChainsOP get_chains() const {
+    auto pos = 0;
+    auto res = Residues();
+    auto chains = std::vector<Chaintype>();
+    auto i = 0;
+    for (auto const &r : _residues) {
+      if (_cut_points[pos] == i) {
+        auto c = Chaintype(res);
+        chains.push_back(c);
+        res = Residues{Restype(r)};
+        pos += 1;
+      } else {
+        res.push_back(Restype(r));
+      }
+      i++;
+    }
+    if (res.size() > 0) {
+      chains.push_back(Chaintype(res));
+    }
+    return std::make_shared<Chains>(chains);
+  }
+
+  Cutpoints const &get_cutpoints() const { return _cut_points; }
+
+  size_t get_num_residues() const { return _residues.size(); }
+
+  size_t get_num_chains() const { return _cut_points.size(); }
+
+  String get_sequence() const {
+    auto i = -1;
+    auto seq = String("");
+    auto pos = 0;
+    for (auto const &r : _residues) {
+      i++;
+      if (_cut_points[pos] == i) {
+        seq += "&";
+        pos++;
+      }
+      seq += r.get_name();
+    }
+    return seq;
+  }
+
+  bool is_residue_start_of_chain(Restype const &r) const {
+    auto res_index = get_res_index(r);
+    if (res_index == 0) {
+      return true;
+    }
+    for (auto const c : _cut_points) {
+      if (res_index == c) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool is_residue_end_of_chain(Restype const &r) const {
+    auto res_index = get_res_index(r);
+    for (auto const c : _cut_points) {
+      if (res_index == c - 1) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+private:
+  Residues _residues;
+  Cutpoints _cut_points;
+};
+
+template <typename Basepair, typename Structure, typename Chain,
+          typename Residue>
+class Pose {
+public: // types
+  typedef std::vector<Residue> Residues;
+  typedef std::vector<Basepair> Basepairs;
+
+public:
+  Pose(Structure const &structure, std::vector<Basepair> const &basepairs,
+       Indexes const &end_indexes, Strings const &end_ids, String const &name)
       : structure_(structure), basepairs_(basepairs), end_indexes_(end_indexes),
         end_ids_(end_ids), name_(name) {
 
-    expects<PoseException>(
+    /*expects<StructureException>(
         end_ids_.size() == end_indexes_.size(),
         "Pose must have the same number of ends as end_ids has " +
             std::to_string(end_indexes_.size()) + " ends and " +
-            std::to_string(end_ids.size()) + "end ids");
+            std::to_string(end_ids.size()) + "end ids");   */
   }
-
-  Pose(Pose const &rs)
-      : structure_(rs.structure_), basepairs_(rs.basepairs_),
-        end_indexes_(rs.end_indexes_), end_ids_(rs.end_ids_), name_(rs.name_) {}
-
-  Pose(String const &s) { auto spl = base::string::split(s, "&"); }
 
 protected:
   // let dervived classes fill in members
-  Pose() : structure_(Structuretype(Residues(), Cutpoints())) {}
+  Pose() : structure_(Structure(Residues(), Cutpoints())) {}
 
 public: // iterators
   // residue iterator
@@ -71,7 +314,7 @@ public: // iterators
   const_iterator end() const { return structure_.end(); }
 
   // basepair iterator
-  typedef typename std::vector<BPtype>::const_iterator const_bp_iterator;
+  typedef typename std::vector<Basepair>::const_iterator const_bp_iterator;
 
   const_bp_iterator bps_begin() const { return basepairs_.begin(); }
   const_bp_iterator bps_end() const { return basepairs_.end(); }
@@ -85,15 +328,15 @@ public: // iterators
 public: // structure wrappers
   inline String get_sequence() { return structure_.get_sequence(); }
 
-  inline Restype const &get_residue(int num, char chain_id, char i_code) const {
+  inline Residue const &get_residue(int num, char chain_id, char i_code) const {
     return structure_.get_residue(num, chain_id, i_code);
   }
 
-  inline Restype const &get_residue(util::Uuid const &uuid) const {
+  inline Residue const &get_residue(util::Uuid const &uuid) const {
     return structure_.get_residue(uuid);
   }
 
-  inline Restype const &get_residue(Index index) const {
+  inline Residue const &get_residue(Index index) const {
     return structure_.get_residue(index);
   }
 
@@ -103,13 +346,13 @@ public: // structure wrappers
 
   inline size_t get_num_chains() const { return structure_.get_num_chains(); }
 
-  inline base::VectorContainerOP<Chaintype> get_chains() const {
-    return structure_.get_chains();
+  inline void get_chains() const {
+    // return structure_.get_chains();
   }
 
 public: // get basepairs interface
-  BasepairsOP get_basepairs(util::Uuid const &bp_uuid) const {
-    auto bps = std::vector<BPtype>();
+  /*BasepairsOP get_basepairs(util::Uuid const &bp_uuid) const {
+    auto bps = std::vector<Basepair>();
     for (auto const &bp : basepairs_) {
       if (bp.get_uuid() == bp_uuid) {
         bps.push_back(bp);
@@ -120,17 +363,18 @@ public: // get basepairs interface
     }
 
     if (bps.size() == 0) {
-      throw PoseException("could not find any basepairs with this uuid for "
-                          "residues or basepairs");
+      throw StructureException(
+          "could not find any basepairs with this uuid for "
+          "residues or basepairs");
     }
 
-    return std::make_shared<base::VectorContainer<BPtype>>(bps);
+    return std::make_shared<base::VectorContainer<Basepair>>(bps);
   }
 
   BasepairsOP get_basepairs(util::Uuid const &uuid1,
                             util::Uuid const &uuid2) const {
 
-    auto bps = std::vector<BPtype>();
+    auto bps = std::vector<Basepair>();
     for (auto const &bp : basepairs_) {
       if (bp.get_res1_uuid() == uuid1 && bp.get_res2_uuid() == uuid2) {
         bps.push_back(bp);
@@ -141,14 +385,15 @@ public: // get basepairs interface
     }
 
     if (bps.size() == 0) {
-      throw PoseException("could not find any basepairs with these two uuids");
+      throw StructureException("could not find any basepairs with these two
+  uuids");
     }
 
-    return std::make_shared<base::VectorContainer<BPtype>>(bps);
+    return std::make_shared<base::VectorContainer<Basepair>>(bps);
   }
 
   BasepairsOP get_basepairs(String const &name) const {
-    auto bps = std::vector<BPtype>();
+    auto bps = std::vector<Basepair>();
     for (auto const &bp : basepairs_) {
       if (name == bp.get_name()->get_str()) {
         bps.push_back(bp);
@@ -156,16 +401,16 @@ public: // get basepairs interface
     }
 
     if (bps.size() == 0) {
-      throw PoseException("could not find any basepairs with this name: " +
+      throw StructureException("could not find any basepairs with this name: " +
                           name);
     }
 
-    return std::make_shared<base::VectorContainer<BPtype>>(bps);
-  }
+    return std::make_shared<base::VectorContainer<Basepair>>(bps);
+  }  */
 
 public: // get basepair interface  (single basepair!)
-  BPtype const &get_basepair(util::Uuid const &bp_uuid) const {
-    auto bps = std::vector<BPtype const *>();
+  Basepair const &get_basepair(util::Uuid const &bp_uuid) const {
+    auto bps = std::vector<Basepair const *>();
     for (auto const &bp : basepairs_) {
       if (bp.get_uuid() == bp_uuid) {
         bps.push_back(&bp);
@@ -175,19 +420,19 @@ public: // get basepair interface  (single basepair!)
       }
     }
     if (bps.size() > 1) {
-      throw PoseException("got more than one basepair matching this uuid");
+      throw StructureException("got more than one basepair matching this uuid");
     }
     if (bps.size() == 1) {
       return *bps[0];
     } else {
-      throw PoseException("no basepairs matching this uuid");
+      throw StructureException("no basepairs matching this uuid");
     }
   }
 
-  BPtype const &get_basepair(util::Uuid const &uuid1,
-                             util::Uuid const &uuid2) const {
+  Basepair const &get_basepair(util::Uuid const &uuid1,
+                               util::Uuid const &uuid2) const {
 
-    auto bps = std::vector<BPtype const *>();
+    auto bps = std::vector<Basepair const *>();
     for (auto const &bp : basepairs_) {
       if (bp.get_res1_uuid() == uuid1 && bp.get_res2_uuid() == uuid2) {
         bps.push_back(&bp);
@@ -197,17 +442,19 @@ public: // get basepair interface  (single basepair!)
       }
     }
     if (bps.size() > 1) {
-      throw PoseException("got more than one basepair matching residue uuids");
+      throw StructureException(
+          "got more than one basepair matching residue uuids");
     }
     if (bps.size() == 1) {
       return *bps[0];
     } else {
-      throw PoseException("no basepair found matching residue uuids supplied");
+      throw StructureException(
+          "no basepair found matching residue uuids supplied");
     }
   }
 
-  BPtype const &get_basepair(String const &name) const {
-    auto bps = std::vector<BPtype const *>();
+  Basepair const &get_basepair(String const &name) const {
+    auto bps = std::vector<Basepair const *>();
     for (auto const &bp : basepairs_) {
       if (bp.get_name()->get_str() == name) {
         bps.push_back(&bp);
@@ -215,27 +462,28 @@ public: // get basepair interface  (single basepair!)
     }
 
     if (bps.size() > 1) {
-      throw PoseException("got more than one basepair matching this name: " +
-                          name);
+      throw StructureException(
+          "got more than one basepair matching this name: " + name);
     }
     if (bps.size() == 1) {
       return *bps[0];
     } else {
-      throw PoseException("no basepair found matching residue uuids supplied");
+      throw StructureException(
+          "no basepair found matching residue uuids supplied");
     }
   }
 
-  inline BPtype const &get_basepair(Index index) const {
-    expects<PoseException>(index < basepairs_.size(),
+  inline Basepair const &get_basepair(Index index) const {
+    /*expects<StructureException>(index < basepairs_.size(),
                            "cannot get basepair " + std::to_string(index) +
                                " only " + std::to_string(basepairs_.size()) +
-                               " total residues");
+                               " total residues");   */
     return basepairs_[index];
   }
 
 public: // get end interace
-  BPtype const &get_end(util::Uuid const &bp_uuid) const {
-    auto bps = std::vector<BPtype const *>();
+  Basepair const &get_end(util::Uuid const &bp_uuid) const {
+    auto bps = std::vector<Basepair const *>();
     for (auto const &ei : end_indexes_) {
       auto &bp = basepairs_[ei];
       if (bp.get_uuid() == bp_uuid) {
@@ -246,19 +494,19 @@ public: // get end interace
       }
     }
     if (bps.size() > 1) {
-      throw PoseException("got more than one basepair matching this uuid");
+      throw StructureException("got more than one basepair matching this uuid");
     }
     if (bps.size() == 1) {
       return *bps[0];
     } else {
-      throw PoseException("no end found matching basepair uuid supplied");
+      throw StructureException("no end found matching basepair uuid supplied");
     }
   }
 
-  BPtype const &get_end(util::Uuid const &uuid1,
-                        util::Uuid const &uuid2) const {
+  Basepair const &get_end(util::Uuid const &uuid1,
+                          util::Uuid const &uuid2) const {
 
-    auto bps = std::vector<BPtype const *>();
+    auto bps = std::vector<Basepair const *>();
     for (auto const &ei : end_indexes_) {
       auto &bp = basepairs_[ei];
       if (bp.get_res1_uuid() == uuid1 && bp.get_res2_uuid() == uuid2) {
@@ -269,37 +517,17 @@ public: // get end interace
       }
     }
     if (bps.size() > 1) {
-      throw PoseException("got more than one end matching residue uuids");
+      throw StructureException("got more than one end matching residue uuids");
     }
     if (bps.size() == 1) {
       return *bps[0];
     } else {
-      throw PoseException("no end found matching residue uuids supplied");
+      throw StructureException("no end found matching residue uuids supplied");
     }
   }
 
-  BPtype const &get_end(base::SimpleStringCOP name) const {
-    auto bps = std::vector<BPtype const *>();
-    for (auto const &ei : end_indexes_) {
-      auto &bp = basepairs_[ei];
-      if (bp.get_name() == name) {
-        bps.push_back(&bp);
-      }
-    }
-
-    if (bps.size() > 1) {
-      throw PoseException("got more than one basepair matching this name: " +
-                          name->get_str());
-    }
-    if (bps.size() == 1) {
-      return *bps[0];
-    } else {
-      throw PoseException("cannot find end with name: " + name->get_str());
-    }
-  }
-
-  BPtype const &get_end(String const &name) const {
-    auto bps = std::vector<BPtype const *>();
+  Basepair const &get_end(String const &name) const {
+    auto bps = std::vector<Basepair const *>();
     for (auto const &ei : end_indexes_) {
       auto &bp = basepairs_[ei];
       if (bp.get_name()->get_str() == name) {
@@ -308,22 +536,22 @@ public: // get end interace
     }
 
     if (bps.size() > 1) {
-      throw PoseException("got more than one basepair matching this name: " +
-                          name);
+      throw StructureException(
+          "got more than one basepair matching this name: " + name);
     }
     if (bps.size() == 1) {
       return *bps[0];
     } else {
-      throw PoseException("cannot find end with name: " + name);
+      throw StructureException("cannot find end with name: " + name);
     }
   }
 
-  inline BPtype const &get_end(Index index) const {
+  inline Basepair const &get_end(Index index) const {
 
-    expects<PoseException>(index < end_indexes_.size(),
-                           "trying to get end: " + std::to_string(index) +
-                               " there are only " +
-                               std::to_string(end_indexes_.size()));
+    /*expects<StructureException>(index < end_indexes_.size(),
+                                "trying to get end: " + std::to_string(index) +
+                                    " there are only " +
+                                    std::to_string(end_indexes_.size()));    */
 
     std::cout << index << " " << basepairs_.size() << " " << end_indexes_.size()
               << std::endl;
@@ -340,53 +568,33 @@ public:
 
 public: // get end by end id
   // avoid confliction with getting by name ... not pretty
-  BPtype const &get_end_by_id(String const &nend_id) const {
-    auto bps = std::vector<BPtype const *>();
+  Basepair const &get_end_by_id(String const &nend_id) const {
+    auto bps = std::vector<Basepair const *>();
     int i = -1;
     for (auto const &end_id : end_ids_) {
       i++;
-      if (end_id->get_str() == nend_id) {
+      if (end_id == nend_id) {
         bps.push_back(&basepairs_[end_indexes_[i]]);
       }
     }
 
     if (bps.size() > 1) {
-      throw PoseException("got more than one basepair matching this end_id: " +
-                          nend_id);
+      throw StructureException(
+          "got more than one basepair matching this end_id: " + nend_id);
     }
     if (bps.size() == 1) {
       return *bps[0];
     } else {
-      throw PoseException("cannot find end with end_id: " + nend_id);
-    }
-  }
-
-  BPtype const &get_end_by_id(base::SimpleStringCOP nend_id) const {
-    auto bps = std::vector<BPtype const *>();
-    int i = -1;
-    for (auto const &end_id : end_ids_) {
-      i++;
-      if (nend_id == end_id) {
-        bps.push_back(&basepairs_[end_indexes_[i]]);
-      }
-    }
-
-    if (bps.size() > 1) {
-      throw PoseException("got more than one basepair matching this end_id: " +
-                          nend_id->get_str());
-    }
-    if (bps.size() == 1) {
-      return *bps[0];
-    } else {
-      throw PoseException("cannot find end with end_id: " + nend_id->get_str());
+      throw StructureException("cannot find end with end_id: " + nend_id);
     }
   }
 
 public: // other getters
-  base::SimpleStringCOP get_end_id(Index index) const {
+  /*base::SimpleStringCOP get_end_id(Index index) const {
     if (index >= end_ids_.size()) {
-      throw PoseException("trying to get end_id: " + std::to_string(index) +
-                          " there are only " + std::to_string(end_ids_.size()));
+      throw StructureException(
+          "trying to get end_id: " + std::to_string(index) +
+          " there are only " + std::to_string(end_ids_.size()));
     }
     return end_ids_[index];
   }
@@ -401,13 +609,13 @@ public: // other getters
       }
       i++;
     }
-    throw PoseException("cannot find end with name: " + name->get_str());
-  }
+    throw StructureException("cannot find end with name: " + name->get_str());
+  } */
 
   int get_end_index(String const &str) const {
     int i = 0;
     for (auto const &ei : end_ids_) {
-      if (ei->get_str() == str) {
+      if (ei == str) {
         return i;
       }
       if (get_end(i).get_name()->get_str() == str) {
@@ -415,33 +623,103 @@ public: // other getters
       }
       i++;
     }
-    throw PoseException("cannot find end with str: " + str);
+    throw StructureException("cannot find end with str: " + str);
   }
 
-  ResiduesOP get_bp_res(BPtype const &bp) const {
-    auto res = std::vector<Restype>();
+  /*ResiduesOP get_bp_res(Basepair const &bp) const {
+    auto res = std::vector<Residue>();
     res.push_back(get_residue(bp.get_res1_uuid()));
     res.push_back(get_residue(bp.get_res2_uuid()));
-    return std::make_shared<base::VectorContainer<Restype>>(res);
-  }
+    return std::make_shared<base::VectorContainer<Residue>>(res);
+  } */
 
   size_t get_num_basepairs() const { return basepairs_.size(); }
 
   size_t get_num_ends() const { return end_indexes_.size(); }
 
-  base::SimpleStringCOP get_name() { return name_; }
+  //base::SimpleStringCOP get_name() { return name_; }
 
-  String get_name_str() const { return name_->get_str(); }
-
-protected:
-  Structuretype structure_;
-  std::vector<BPtype> basepairs_;
+private:
+  Structure structure_;
+  std::vector<Basepair> basepairs_;
   Indexes end_indexes_;
-  base::SimpleStringCOP name_;
-  mutable base::SimpleStringCOPs end_ids_;
+  String name_;
+  mutable Strings end_ids_;
 };
 
-template <typename BPtype, typename Structuretype>
+template <typename BPtype, typename Structuretype, typename Chaintype,
+          typename Restype>
+class Segment : public Pose<BPtype, Structuretype, Chaintype, Restype> {
+private:
+  typedef Pose<BPtype, Structuretype, Chaintype, Restype> BaseClass;
+  typedef std::vector<Restype> Residues;
+
+public:
+  inline Segment(Structuretype const &structure,
+                 std::vector<BPtype> const &basepairs,
+                 Indexes const &end_indexes,
+                 String const &end_ids,
+                 String  name, util::MotifType segment_type,
+                 Index aligned_end_index, util::Uuid const &uuid)
+      : BaseClass(structure, basepairs, end_indexes, end_ids, name),
+        segment_type_(segment_type), aligned_end_index_(aligned_end_index) {}
+
+  // TODO Change back to private
+public:
+  // let dervived classes fill in members
+  Segment() : BaseClass() {}
+
+  typedef std::vector<BPtype> Basepairs;
+
+public:
+  inline Index get_aligned_end_indx() const { return aligned_end_index_; }
+
+  util::Uuid const &get_uuid() const { return uuid_; }
+
+  util::MotifType get_segment_type() const { return segment_type_; }
+
+protected:
+  util::MotifType segment_type_;
+  Index aligned_end_index_;
+  util::Uuid uuid_;
+};
+
+
+template <typename Restype>
+String generate_bp_name(Restype const &res1, Restype const &res2) {
+
+  auto res1_name = String("");
+  auto res2_name = String("");
+
+  if (res1.get_i_code() == ' ') {
+    res1_name = res1.get_chain_id() + std::to_string(res1.get_num());
+  } else {
+    res1_name = res1.get_chain_id() + std::to_string(res1.get_num()) +
+                res1.get_i_code();
+  }
+
+  if (res2.get_i_code() == ' ') {
+    res2_name = res2.get_chain_id() + std::to_string(res2.get_num());
+  } else {
+    res2_name = res2.get_chain_id() + std::to_string(res2.get_num()) +
+                res2.get_i_code();
+  }
+
+  if (res1.get_chain_id() < res2.get_chain_id()) {
+    return res1_name + "-" + res2_name;
+  }
+  if (res2.get_chain_id() < res1.get_chain_id()) {
+    return res2_name + "-" + res1_name;
+  }
+
+  if (res1.get_num() < res2.get_num()) {
+    return res1_name + "-" + res2_name;
+  } else {
+    return res2_name + "-" + res1_name;
+  }
+}
+
+/*template <typename BPtype, typename Structuretype>
 base::VectorContainerOP<Index>
 get_end_indexes_from_basepairs(Structuretype const &s,
                                std::vector<BPtype> const &bps) {
@@ -480,7 +758,7 @@ get_end_indexes_from_basepairs(Structuretype const &s,
   }
 
   return std::make_shared<base::VectorContainer<Index>>(end_indexes);
-}
+}     */
 
 template <typename BPtype, typename Restype>
 BPtype const *get_res_wc_or_gu_basepair(std::vector<BPtype> const &basepairs,
@@ -645,7 +923,8 @@ String generate_end_id(Structuretype const &s, std::vector<BPtype> const &bps,
       } else if (e == '.') {
         ss_id += "U";
       } else {
-        throw PoseException("unexpected symbol in dot bracket notation: " +
+        throw StructureException("unexpected symbol in dot bracket notation:"
+                                  " " +
                             std::to_string(e));
       }
     }
@@ -793,6 +1072,5 @@ String generate_secondary_structure(Structuretype const &s,
 
 String get_dot_bracket_from_end_id(String const &);
 
-} // namespace primitives
-
-#endif // PRIMITIVES_RNA_STRUCTURE_H
+} // namespace structure
+#endif // RNAMAKE_SRC_STRUCTURE_BASE_HPP_

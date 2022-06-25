@@ -7,10 +7,11 @@
 #include <primitives/basepair.h>
 #include <primitives/chain.h>
 #include <primitives/residue.h>
+#include <primitives/structure.h>
 
 // try trival implementations ///////////////////////////////////////////////
 
-class Residue : public primitives::Residue {
+class Residue {
 public:
   inline Residue(char name, int num, char chain_id, char i_code,
                  const util::Uuid &uuid)
@@ -35,33 +36,15 @@ public:
   }
 
 public: // getters
-  /**
-   * getter the chain_id, i.e. "A", "B", the id of the chain this residue
-   * belongs to
-   */
   [[nodiscard]] inline char get_chain_id() const { return _chain_id; }
 
-  /**
-   * getter for the name of the residue, i.e. "A", "G" etc
-   */
   [[nodiscard]] inline char get_name() const { return _name; }
 
-  /**
-   * getter for the residue num
-   */
   [[nodiscard]] inline int get_num() const { return _num; }
 
-  /**
-   * getter for the residue insertion code
-   */
   [[nodiscard]] inline char get_i_code() const { return _i_code; }
 
-  /**
-   * getter for residue unique indentifier
-   */
-  [[nodiscard]] inline util::Uuid const &get_uuid() const override {
-    return _uuid;
-  }
+  [[nodiscard]] inline util::Uuid const &get_uuid() const { return _uuid; }
 
 private:
   char _name;
@@ -71,7 +54,7 @@ private:
   util::Uuid _uuid;
 };
 
-class Basepair : public primitives::Basepair {
+class Basepair {
 public:
   inline Basepair(const util::Uuid &res1_uuid, const util::Uuid &res2_uuid,
                   const util::Uuid &uuid,
@@ -93,8 +76,7 @@ public:
   }
 
 public:
-  [[nodiscard]] util::Uuid const &
-  get_partner(util::Uuid const &uuid) const override {
+  [[nodiscard]] util::Uuid const &get_partner(util::Uuid const &uuid) const {
     if (uuid == _res1_uuid) {
       return _res2_uuid;
     } else {
@@ -102,22 +84,19 @@ public:
     }
   }
 
-  [[nodiscard]] inline primitives::BasepairType const &
-  get_bp_type() const override {
+  [[nodiscard]] inline primitives::BasepairType const &get_bp_type() const {
     return _bp_type;
   }
 
-  [[nodiscard]] inline util::Uuid const &get_uuid() const override {
-    return _uuid;
-  }
+  [[nodiscard]] inline util::Uuid const &get_uuid() const { return _uuid; }
 
-  [[nodiscard]] inline const String &get_name() const override { return _name; }
+  [[nodiscard]] inline const String &get_name() const { return _name; }
 
-  [[nodiscard]] inline util::Uuid const &get_res1_uuid() const override {
+  [[nodiscard]] inline util::Uuid const &get_res1_uuid() const {
     return _res1_uuid;
   }
 
-  [[nodiscard]] inline util::Uuid const &get_res2_uuid() const override {
+  [[nodiscard]] inline util::Uuid const &get_res2_uuid() const {
     return _res2_uuid;
   }
 
@@ -129,6 +108,7 @@ private:
   String _name;
 };
 
+typedef primitives::Chain<Residue> Chain;
 
 TEST_CASE("brief test of primitive functionility") {
   SUBCASE("test residue") {
@@ -144,7 +124,8 @@ TEST_CASE("brief test of primitive functionility") {
     SUBCASE("test default construction") {
       String name = "A1-A2";
       Basepair bp1 = {util::generate_uuid(), util::generate_uuid(),
-                      util::generate_uuid(), primitives::BasepairType::WC, name};
+                      util::generate_uuid(), primitives::BasepairType::WC,
+                      name};
       CHECK(bp1.get_name() == "A1-A2");
     }
     SUBCASE("test name construction") {
@@ -159,4 +140,15 @@ TEST_CASE("brief test of primitive functionility") {
     Residue r2 = {'A', 2, 'A', ' ', util::generate_uuid()};
     Chain<Residue> c({r1, r2});
   }*/
+  SUBCASE("test structure") {
+    typedef primitives::Structure<Chain, Residue> Structure;
+    Residue r1 = {'A', 1, 'A', ' ', util::generate_uuid()};
+    util::Uuid uuid = r1.get_uuid();
+    Residue r2 = {'A', 2, 'A', ' ', util::generate_uuid()};
+    std::vector<Residue> res = {r1, r2};;
+    Cutpoints c = {};
+    Structure s = {res, c};
+    auto const & r = s.get_residue(uuid);
+
+  }
 }
