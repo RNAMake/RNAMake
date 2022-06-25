@@ -88,9 +88,9 @@ private:
 
   ResidueOP _setup_ref_residue(String const &);
 
-  ResidueOP _setup_residue(String const &, Atoms const &, ResidueTypeCOP) const;
-
   math::Matrix3x3 _get_res_ref_frame(ResidueCOP) const;
+
+  ResidueOP _setup_residue(String const &, Atoms const &, ResidueTypeCOP) const;
 
   math::Matrix3x3 _get_res_ref_frame_from_atoms(std::vector<Atom const *> const &,
                                              ResidueTypeCOP) const;

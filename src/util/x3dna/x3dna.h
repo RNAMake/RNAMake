@@ -33,6 +33,7 @@
 #include <math/matrix_3x3.hpp>
 #include <math/numerical.hpp>
 #include <math/vector_3.hpp>
+#include <util/io/pdb_parser.hpp>
 
 namespace util::x3dna {
 
@@ -334,8 +335,7 @@ struct triplet {
 #define NR_END 1 /* for NRC related functions */
 #define FREE_ARG char *
 
-#define NO_MATCH -1L
-#define DUMMY -1L
+#define DUMMY (-1L)
 
 #define BUF32 32
 #define BUF512 512
@@ -347,10 +347,9 @@ struct triplet {
 
 /* ********* SLRE: http://code.google.com/p/slre/ */
 enum slre_option { SLRE_CASE_SENSITIVE = 0, SLRE_CASE_INSENSITIVE = 1 };
-enum slre_capture { SLRE_STRING, SLRE_INT, SLRE_FLOAT };
 
 
-typedef struct {
+struct miscPars{
   long min_base_hb;
   double hb_lower;
   double hb_dist1;
@@ -377,16 +376,10 @@ typedef struct {
   long water_idx[BUF512];
 
   double o3p_dist;
-} miscPars;
+};
 
-typedef struct {
-  double origin[3];
-  double x_axis[3];
-  double y_axis[3];
-  double z_axis[3];
-} base_pair;
 
-typedef struct {
+struct struct_Gvars {
   long DEBUG;
   long VERBOSE;
   long NUM_ELE;
@@ -424,7 +417,7 @@ typedef struct {
   long label_RC8_YC6;
 
   miscPars misc_pars;
-} struct_Gvars;
+};
 
 /* global variables declaration */
 extern struct_Gvars Gvars;
@@ -441,67 +434,34 @@ extern struct_Gvars Gvars;
 #define XBIG_CUTOFF 1.0e+16
 #define MFACTOR 10000.0
 #define NMISC 34    /* number of characters of miscellaneous items */
-#define NATOMCOL 11 /* number of atom with defined colors */
-#define NBASECOL 7  /* number of base with defined colors */
 
-#define PS_DFTSIZE 500   /* 500 points PS default size */
-#define PS_BOUND 10      /* boundary offset */
-#define FIG_DFTSIZE 8333 /* 8333 units XFIG default size */
 #define FIG_BOUND 166    /* boundary offset: 10/72*1200 */
 
 #define PAR_FILE "misc_3dna.par" /* miscellaneous parameters */
 #define BASE_FILE "baselist.dat" /* 3-letter to 1-letter base residue */
 #define ATOM_FILE "atomlist.dat" /* 2-letter to atomic symbol */
-#define HELP3DNA "help3dna.dat"  /* help file for 3DNA */
 
 #define REF_FILE "ref_frames.dat" /* reference frames */
-#define MREF_FILE                                                              \
-  "mref_frames.dat" /* multiplet reference frames in <find_pair> */
-#define POC_FILE                                                               \
-  "poc_haxis.r3d"                  /* P, O4' and C1' atom radius in r3d format \
-                                    */
-#define MUL_FILE "multiplets.pdb"  /* multiplets */
-#define ALLP_FILE "allpairs.pdb"   /* all base-pairs */
 #define BESTP_FILE "bestpairs.pdb" /* best base-pairs */
-#define STACK_FILE "stacking.pdb"  /* for stacking diagram */
-#define HSTACK_FILE                                                            \
-  "hstacking.pdb" /* for stacking w.r.t. to middle helical frame */
-#define HLXREG_FILE "hel_regions.pdb" /* helical regions in <find_pair> */
 #define BPORDER_FILE "bp_order.dat"   /* base-pair ordering in <find_pair> */
-#define COLCHN_FILE "col_chains.scr"  /* color chains in <find_pair> */
-#define COLHLX_FILE "col_helices.scr" /* color helices in <find_pair> */
-#define AUX_FILE "auxiliary.par"      /* auxiliary parameters in <analyze> */
-#define BPSTEP_FILE "bp_step.par" /* base-pair step parameters in <analyze> */
-#define HLXSTEP_FILE                                                           \
-  "bp_helical.par"                   /* helical step parameters in <analyze>   \
-                                      */
 #define SEVEN_FILE "cf_7methods.par" /* compare seven methods in <analyze> */
-#define HB_FILE                                                                \
-  "hbonds_info.dat" /* H-bonding information <r3d_atom/stack2img> */
-#define LKG_FILE "bonds_lkg.dat"    /* bond linkage, as in HB_FILE */
-#define TMP_FILE "tmp_file"    /* temporary multiplets input file <find_pair> */
-#define MULBP_FILE "mulbp.inp" /* multiplets input file <find_pair> */
 
 #define BOND_UPPER_LIMIT 2.5          /* for function torsion */
 #define HTWIST0 0.05                  /* minimum helical twist */
 #define BOND_FACTOR 1.15              /* bond distance criterion */
 #define NBOND_FNUM 2.0                /* estimated # of bond from # of atoms */
-#define NON_WC_IDX 6                  /* non-Watson-Crick base index */
 #define NUM_RESIDUE_ATOMS BUF512      /* max. no. of atoms in a residue */
 #define EMPTY_NUMBER (-9999.99)
-#define EMPTY_CRITERION (-9999)
 #define NELE 12              /* 12 elements */
 #define O3P_UPPER 2.5        /* upper limit for O3-P connection */
 #define RTNNUM 37            /* number of returned values from check_pair */
 #define PSTNUM 29            /* number of parameters kept in pair_stat */
 #define OLCRT 1.2            /* criterion for overlaps */
-#define MBASES 50            /* maximum bases per unit */
 #define END_STACK_XANG 125.0 /* find_pair; bdl070 (105 deg) */
 
 #define RA_LIST                                                                \
   " C4 ", " N3 ", " C2 ", " N1 ", " C6 ", " C5 ", " N7 ", " C8 ", " N9 "
 #define WC_LIST "XX", "AT", "AU", "TA", "UA", "GC", "IC", "CG", "CI"
-#define CX_LIST "ACGITUX"
 #define CB_LIST "ACGITU"
 #define NT_LIST                                                                \
   "  A", "  C", "  G", "  I", "  T", "  U", "ADE", "CYT", "GUA", "INO", "THY", \
@@ -509,17 +469,10 @@ extern struct_Gvars Gvars;
 
 #define WATER_LIST "H2O", "HHO", "OHH", "HOH", "OH2", "SOL", "WAT", "TIP"
 
-#define AA_LIST                                                                \
-  "ALA", "VAL", "PHE", "PRO", "MET", "ILE", "LEU", /* hydrophobic */           \
-      "ASP", "GLU", "LYS", "ARG",                  /* charged */               \
-      "SER", "THR", "TYR", "HIS", "CYS", "ASN", "GLN", "TRP", /* polar */      \
-      "GLY"                                                   /* smallest */
-
 #define OVERLAP 0.01
 
 /* personal_begin */
 /* for snap */
-#define DNA_BASE "ACGT"
 #define SNAP_OPTS "snap_options"
 #define WITH_BASE 1 /* base or side-chain */
 #define WITH_BKBN 2 /* backbone */
@@ -534,63 +487,15 @@ void populate_nt_info(long num_residue, long **seidx, char **ResName,
                       char *ChainID, long *ResSeq, char **Miscs, char *bseq,
                       char **nt_info);
 
-void populate_nt_list(long num_residue, long **seidx, long *RY, char *bseq,
-                      char **AtomName, double **xyz, long **nt_list);
-
 long **read_input(char *inpfile, char *pdbfile, char *outfile, long *ds,
                   long *num_bp, long *ip, long *hetatm);
 
 void print_header(long ds, long num_bp, long num, char *pdbfile, FILE *fp);
 
-void output_Borg_P_C1_C4(long num_residue, double **org, double **xyz,
-                         long **nt_list, char **nt_info);
-
-void atom_list(long ds, long num_bp, long **pair_num, long **seidx, long *RY,
-               char **bp_seq, char **AtomName, char **ResName, char *ChainID,
-               long *ResSeq, char **Miscs, long **phos, long **c6_c8,
-               long **sugar, long **chi);
-
-void get_nt_torsion(long num_residue, double **org, double **xyz,
-                    long **nt_list, double **nt_torsion);
-
-void get_ss_Zp_Dp(long num_residue, double **org, double **orien, double **xyz,
-                  long **nt_list, double **ss_Zp_Dp);
-
-void output_nt_torsion(long num_residue, char **nt_info, long **nt_list,
-                       double **nt_torsion, double **ss_Zp_Dp, FILE *fp);
-
-void get_nt_bb_torsion(double **nt_bb_torsion, long num_residue, long **seidx,
-                       long *RY, char **AtomName, char **ResName, char *ChainID,
-                       long *ResSeq, char **Miscs, double **xyz);
-
-void backbone_torsion(long ds, long num_bp, long **pair_num, char **bp_seq,
-                      long **sugar, long **chi, double **xyz,
-                      double **nt_bb_torsion, FILE *fp);
-
-void p_c1_dist(long ds, long num_bp, char **bp_seq, long **phos, long **chi,
-               double **xyz, long *bphlx, FILE *fp);
-
-void lambda_d3(long num_bp, char **bp_seq, long **chi, long **c6_c8,
-               double **xyz, FILE *fp);
-
-void print_axyz(long num_bp, char **bp_seq, long **aidx, char *aname,
-                double **xyz);
-
-void groove_width(long parallel, long num_bp, char **bp_seq, long **phos,
-                  double **xyz, long *bphlx, FILE *fp);
-
 void check_wc_wobble_pair(long *bpid, char *bp, double shear, double stretch,
                           double opening);
 
-void set_chain_nmarkers019_to_symbols(long num, long *nmarkers, char *cmarkers);
-
 void get_bp_3char_symbols(long bp_type, char zdir, char *bp_sym);
-
-void ref_frames(long ds, long num_bp, long **pair_num, char **bp_seq,
-                long **seidx, long *RY, char **AtomName, char **ResName,
-                char *ChainID, long *ResSeq, char **Miscs, double **xyz,
-                FILE *fp, double **orien, double **org, long *WC_info,
-                long *str_type, long irna, long **o3p_brk);
 
 void bpstep_par(double **rot1, double *org1, double **rot2, double *org2,
                 double *pars, double **mst_orien, double *mst_org);
@@ -603,34 +508,6 @@ void print_par(char **bp_seq, long num_bp, long ich, long ishel, double **param,
 
 void output_ave_std(long num, double **parcln, int dnum, char *fmt, FILE *fp);
 
-void prt_stepstr(char **step_str, long num_step, long *bphlx, long ishel,
-                 double **param, FILE *fp);
-
-void prt_step_par(char **bp_seq, long num_bp, long *bphlx, long ishel,
-                  double **param, FILE *fp);
-
-void bz_check(double **r1, double *o1, double **r2, double *o2, long bz,
-              long *bz_junction, long *z_step);
-
-void get_mtwist(long nbpm1, long *bphlx, long *WC_info, double **twist_rise,
-                double *twist_p, double *twist_n);
-
-void get_parameters(long ds, long num_bp, char **bp_seq, double **orien,
-                    double **org, long *WC_info, FILE *fp, double **twist_rise,
-                    double *mst_orien, double *mst_org, double *mst_orienH,
-                    double *mst_orgH, long *bphlx, long istart, long istep,
-                    long bz, long *str_type, long **pair_num, char **nt_info);
-
-void parvec2mtx(double *parvec, long num, double **parmtx);
-
-void print_ss_rebuild_pars(double **pars, long num_bp, char *str, char **bp_seq,
-                           FILE *fp);
-
-void print_ds_rebuild_pars(double **bp_par, double **step_par, long num_bp,
-                           char *str, char **bp_seq, FILE *fp);
-
-void print_ref(char **bp_seq, long num_item, long ich, double *org,
-               double *orien, FILE *fp);
 
 void write_mst(long ds, long num_bp, long **pair_num, char **bp_seq,
                double *mst_orien, double *mst_org, long **seidx,
@@ -638,53 +515,8 @@ void write_mst(long ds, long num_bp, long **pair_num, char **bp_seq,
                double **xyz, char **Miscs, long **htm_water,
                double **twist_rise, char *strfile);
 
-void print_xyzP(long parallel, long nbpm1, char **bp_seq, long **phos,
-                double *mst_orien, double *mst_org, double **xyz, FILE *fp,
-                char *title_str, double **aveP, long p_offset);
-
-void print_PP(long parallel, double **twist_rise, long num_bp, char **bp_seq,
-              long **phos, double *mst_orien, double *mst_org,
-              double *mst_orienH, double *mst_orgH, double **xyz, long *WC_info,
-              long *bphlx, long abi, long **chi, FILE *fp);
-
-void str_classify(double twist_p, double twist_n, long str_type, long parallel,
-                  long num_bp, FILE *fp);
-
-double a_hlxdist(long idx, double **xyz, double *hlx_axis, double *hlx_pos);
-
-void print_radius(char **bp_seq, long nbpm1, long ich, double **p_radius,
-                  double **o4_radius, double **c1_radius, long *bphlx,
-                  FILE *fp);
-
-void helix_radius(long ds, long num_bp, char **bp_seq, double **orien,
-                  double **org, long **phos, long **chi, double **xyz,
-                  long *bphlx, FILE *fp);
-
-void print_shlx(char **bp_seq, long nbpm1, long ich, double *shlx_orien,
-                double *shlx_org, FILE *fp);
-
-void get_helix_axis(long ds, long num_bp, char **bp_seq, double **orien,
-                    double **org, long *bphlx, FILE *fp);
-
-void get_axis(long nvec, long **idx, long num, double **xyz, long nb, long *C1b,
-              long *C1e, double *std_rise, double *hrise, double *haxis,
-              double *hstart, double *hend);
-
-void print_poc_r3d(double *rave, double *hstart, double *hend);
-
-void global_analysis(long ds, long num_bp, long num, char **bp_seq, long **chi,
-                     long **phos, double **xyz, FILE *fp);
-
-void base_overlap(long ds, long num_bp, long num, long num_residue,
-                  long **pair_num, long *bRY, char **bp_seq, long **seidx,
-                  char **AtomName, double **xyz, long *idx, double **orien,
-                  double **org, FILE *fp);
-
 long ratom_xyz(long *ratom_list, long only_ring, double **xyz, double *oave,
                double **oxyz);
-
-void get_zoave(long istep, long ds, double **orien, double **org, double *oave,
-               double *zave);
 
 void get_bp_zoave(long ia, long ib, double **orien, double **org, double *oave,
                   double *zave);
@@ -697,79 +529,17 @@ void get_cntatom(long *ringlist, long **connect, long *idx);
 double get_oarea(long r1, long r2, long **ring_atom, double *oave, double *zave,
                  double **xyz, long only_ring);
 
-void cehs_bppar(double **rot1, double *org1, double **rot2, double *org2,
-                double *pars, double **mst_orien, double *mst_org);
-
-
-void out_cehs(long num_bp, char **bp_seq, long *bphlx, double **orien,
-              double **org, FILE *fp);
-
-void compdna(double **rot1, double *org1, double **rot2, double *org2,
-             double *pars, double **mst_orien, double *mst_org);
-
-void out_compdna(long num_bp, char **bp_seq, long *bphlx, double **orien,
-                 double **org, FILE *fp);
-
-void my_curves(double **rot1, double *org1, double **rot2, double *org2,
-               double *pars);
-
-void curves_mbt(long ibp, double **orien, double **org, double **cvr,
-                double *cvo);
-
-void out_curves(long num_bp, char **bp_seq, long *bphlx, double **orien,
-                double **org, FILE *fp);
-
-void freehelix(double **rot1, double *org1, double **rot2, double *org2,
-               double *pars, double **mst_orien, double *mst_org);
-
-void out_freehelix(long num_bp, char **bp_seq, long *bphlx, double **orien,
-                   double **org, FILE *fp);
-
-void sgl_helix(double **rot1, double **rot2, double *rot_ang, double *rot_hlx);
-
-void ngeom(double **rot1, double *org1, double **rot2, double *org2,
-           double *pars, double **mst_orien, double *mst_org);
-
-void out_ngeom(long num_bp, char **bp_seq, long *bphlx, double **orien,
-               double **org, FILE *fp);
-
-void nuparm(double **rot1, double *org1, double **rot2, double *org2,
-            double *pars, double **mst_orien, double *mst_org, double *hpars,
-            long get_hpar);
-
-void out_nuparm(long num_bp, char **bp_seq, long *bphlx, double **orien,
-                double **org, FILE *fp);
-
-void rna(double **rot1, double *org1, double *pvt1, double **rot2, double *org2,
-         double *pvt2, double *pars, double **mst_orien, double *mst_org);
-
-void pvt_dxdy(double **rot1, double *org1, double *pvt1, double *pars,
-              double **mst_orien, double *mst_org);
-
-void out_rna(long ds, long num_bp, char **bp_seq, long *bphlx, double **orien,
-             double **org, FILE *fp);
-
-void other_pars(long num_bp, char **bp_seq, long *bphlx, double **orien,
-                double **org);
-
 int case_strcmp(const char *s1, const char *s2);
 
 int case_strncmp(const char *s1, const char *s2, long n);
 
-char *case_strstr(const char *haystack, const char *needle);
-
 char *case_strchr(const char *s, int c);
-
-long is_empty_string(const char *str);
 
 long is_equal_string(const char *str1, const char *str2);
 
 long is_skip_line(char *line);
 
 void bname_ext(char *src, char *ext, char *dst);
-
-double get_point2line_perp_distance(double *pnt, double *line_p1,
-                                    double *line_p2);
 
 void get_tag_string_pair(char *prefix, char *tag, char *btag, char *etag);
 
@@ -783,9 +553,6 @@ void get_xml_tag_double(FILE *fpxml, char *prefix, char *line, char *tag,
                         double *dval);
 
 long tag_match(char *prefix, char *line, char *tag);
-
-
-long set_switch_default_true(char *option);
 
 void base_frame(long num_residue, char *bseq, long **seidx, long *res_type,
                 char **AtomName, char **ResName, char *ChainID, long *ResSeq,
@@ -804,9 +571,7 @@ void reverse_y_z_columns(double **R);
 
 void set_my_globals(char *pgname);
 
-void clear_my_globals(void);
-
-long check_global_options(char *option);
+void clear_my_globals();
 
 void residue_strid(char chain_id, long res_seq, char *misc, char *rname,
                    char *idmsg);
@@ -820,8 +585,6 @@ void cleanup_files(long renew, long cleanup);
 
 void set_std_base_pdb(char *bdir, long irna, char bname, char *spdb);
 
-void parcat(char *str, double par, char *format, char *bstr);
-
 char *my_getline(FILE *fp);
 
 char *trim(char *a);
@@ -832,12 +595,6 @@ long item_list(char *str, char *item[], long itemsize, char *sep_chars);
 
 void refs_right_left(long bnum, double **orien, double **org, double **r1,
                      double *o1, double **r2, double *o2);
-
-void refs_i_j(long b1, long b2, double *bp_orien, double *bp_org, double **r1,
-              double *o1, double **r2, double *o2);
-
-void ref_frame_i(long bnum, double *bp_orien, double *bp_org, double **r,
-                 double *o);
 
 void mst2orien(double *orien_vec, long ioffset, double **mst);
 
@@ -865,38 +622,26 @@ void remove_file(char *filename);
 
 void rename_file(char *src, char *dst);
 
-void copy_file_pointer(FILE *fpi, FILE *fpo, char *msg);
-
 long upperstr(char *a);
 
 long lowerstr(char *a);
-
-char *my_strdup(const char *src);
 
 void print_sep(FILE *fp, char x, long n);
 
 void check_slash(char *BDIR);
 
-long lround(double d);
-
 void del_extension(char *fullname, char *okname);
-
-void bname_noext(char *src, char *dst);
 
 void fatal(char *fmt, ...);
 
-void print_pdb_title(char *pdbfile, char *chain_list, FILE *fp);
+long number_of_atoms(const String &, const miscPars &);
 
-long number_of_atoms(char *pdbfile, long hetatm, char *ALT_LIST);
-
-long read_pdb(char *pdbfile, long *AtomSNum, char **AtomName, char **ResName,
+long read_pdb(String pdbfile, long *AtomSNum, char **AtomName, char **ResName,
               char *ChainID, long *ResSeq, double **xyz, char **Miscs,
               long hetatm, char *ALT_LIST);
 
 void free_pdb(long num, long *AtomSNum, char **AtomName, char **ResName,
               char *ChainID, long *ResSeq, double **xyz, char **Miscs);
-
-void reset_xyz(long num, double **xyz, char *fmt);
 
 void deduce_misc(char **Miscs, char **AtomName, long i, char *str);
 
@@ -914,8 +659,6 @@ void move_position(double **d, long nr, long nc, double *mpos);
 long **residue_idx(long num, long *ResSeq, char **Miscs, char *ChainID,
                    char **ResName, long *num_residue);
 
-void atom_metal(long num_atoms, char **AtomName, long *is_metal);
-
 long residue_ident(char **AtomName, double **xyz, char **Miscs, long ib,
                    long ie);
 
@@ -931,19 +674,11 @@ void get_seq(long num_residue, long **seidx, char **AtomName, char **ResName,
              char *ChainID, long *ResSeq, char **Miscs, double **xyz,
              char *bseq, long *RY);
 
-void get_bpseq(long ds, long num_bp, long **pair_num, long **seidx,
-               char **AtomName, char **ResName, char *ChainID, long *ResSeq,
-               char **Miscs, double **xyz, char **bp_seq, long *RY);
-
 long num_strmatch(char *str, char **strmat, long nb, long ne);
 
 void get_idmsg(char *rname, char cid, long snum, char icode, char *idmsg);
 
 long find_1st_atom(char *str, char **strmat, long nb, long ne, char *idmsg);
-
-double torsion(double **d);
-
-double torsion2(double **d);
 
 void get_BDIR(char *BDIR, char *filename);
 
@@ -954,9 +689,6 @@ void cov_matrix(double **a, double **b, long nr, long nc, double **cmtx);
 
 double ls_fitting(double **sxyz, double **exyz, long n, double **fitted_xyz,
                   double **R, double *orgi);
-
-void ls_plane(double **bxyz, long n, double *pnormal, double *ppos,
-              double *odist, double *adist);
 
 void arb_rotation(double *va, double ang_deg, double **rot_mtx);
 
@@ -977,37 +709,9 @@ void dlubksb(double **a, long n, long *indx, double *b);
 
 void dinverse(double **a, long n, double **y);
 
-void get_alc_nums(char *alcname, long *num, long *nbond);
-
-void read_alc(char *alcname, long *num, long *nbond, char **AtomName,
-              double **xyz, long *ibase, long **linkage);
-
-void write_alc(long num, long nbond, char **AtomName, double **xyz, long *ibase,
-               long **linkage, char *alcfile);
-
-void free_alc(long num, long nbond, char **AtomName, double **xyz, long *ibase,
-              long zero_1, long **linkage);
-
 void lsort(long n, long *a, long *idx);
 
 void lreverse(long ia, long n, long *lvec);
-
-void fig_title(FILE *fp);
-
-void ps_title_cmds(FILE *fp, char *imgfile, long *bbox);
-
-void get_fig_xy(long num, double **xyz, long nO, double **oxyz, long *urxy,
-                long frame_box, FILE *fp);
-
-void get_pxy(double *xy1, double *xy2, double r, double *px, double *py);
-
-void alc2fig(long nobj, long *idx, long *depth, long **allobj, double **blkxyz,
-             double **oxyz, long *ibase, long faces[][5], long *opts, FILE *fp);
-
-void get_ps_xy(char *imgfile, long *urxy, long frame_box, FILE *fp);
-
-void alc2ps(long nobj, long *idx, long **allobj, double **blkxyz, double **oxyz,
-            long *ibase, long faces[][5], long *opts, FILE *fp);
 
 void bring_atoms(long ib, long ie, long ra_num, char **AtomName, long *nmatch,
                  long *batom);
@@ -1015,148 +719,29 @@ void bring_atoms(long ib, long ie, long ra_num, char **AtomName, long *nmatch,
 void all_bring_atoms(long num_residue, long *RY, long **seidx, char **AtomName,
                      long *num_ring, long **ring_atom);
 
-void base_idx(long num, char *bseq, long *ibase, long single);
-
-long basepair_idx(char *bpi);
-
-void plane_xyz(long num, double **xyz, double *ppos, double *nml,
-               double **nxyz);
-
-void prj2plane(long num, long ra_num, char **AtomName, double **xyz, double z0,
-               double **nxyz);
-
-void adjust_xy(long num, double **xyz, long nO, double **oxyz,
-               double scale_factor, long default_size, long *urxy);
-
-void get_depth(long nobj, long *zval, long *depth);
-
-void raster3d_header(long num, double **xyz, double scale_factor,
-                     long no_header, long frame_box, FILE *fp);
-
-void get_r3dpars(double **base_col, double *hb_col, double *width3,
-                 double **atom_col, char *label_style);
-
-void r3d_rod(long itype, double *xyz1, double *xyz2, double rad, double *rgbv,
-             FILE *fp);
-
-void r3d_dash(double *xyz1, double *xyz2, double hb_width, double *hb_col,
-              FILE *fp);
-
-void r3d_sphere(double *xyz1, double rad, double *rgbv, FILE *fp);
-
-void cpk_model(long num, long *idx, double **xyz, double ballrad,
-               double **colrgb, FILE *fp);
-
-void r3d_tripln(long itype, double *xyz1, double *xyz2, double *xyz3,
-                double *rgbv, FILE *fp);
-
-void r3d_block_edge(double *rgbv, long ioffset8, double **blkxyz, double w1,
-                    FILE *fp);
-
-void base_label(double **rxyz, char *label_style, double *rgbv, char *bname_num,
-                FILE *fp);
-
-void fill_base_ring(long num_residue, long num_ring, long **ring_atom,
-                    double **xyz, long *ibase, char *bseq, double **base_col,
-                    char *label_style, long label_ring, long *ResSeq, FILE *fp);
-
-void process_alc(char *alcfile, char *imgfile, double scale_factor, long *opts);
-
-void alc_3images(long *opts, long nobj, long num_blk, long num_blk8,
-                 long nO_lkg, long nO, double **oxyz, double **blkxyz,
-                 long *blkibase, long **linkage, double scale_factor,
-                 char *imgfile);
-
-void get_alc_objs(long num_blk, double **blkxyz, long nO, double **oxyz,
-                  long nO_lkg, long **linkage, long faces[][5], long **allobj);
-
-void get_fig_pars(double *dot_sep, long *dlcol, long *dwidth, long *bp1width,
-                  long *bp2width, long **bc_idx, double *msat, double *Msat,
-                  long *o_sides, long *line_width, long *join_style,
-                  long *cap_style, long *mfcol);
-
-void frame_xyz(long side_view, double *morg, double **mst, long num,
-               double **xyz);
-
 void change_xyz(long side_view, double *morg, double **mst, long num,
                 double **xyz);
 
 void get_side_view(long ib, long ie, double **xyz);
 
-void get_CNidx(long ds, long num_bp, long **chi, long **idx, long *nvec,
-               long *C1b, long *C1e);
-
-void add_3axes(long *num, char **AtomName, long *ibase, double **xyz,
-               long *nbond, long **linkage, long side_view, double axis_len);
-
-char *get_sequence(char *Wbase, long *num_bp);
-
-char **single2double(long nbp, char *bseq, char *Wbase, char *Cbase);
-
 long is_valid_base(char c, char *valid_bases);
 
-long repeat_num(void);
-
-char *read_sequence(char *seqfile, char *valid_bases, long *nbp);
+long repeat_num();
 
 char *read_repeat(char *crepeat, long fixed, char *valid_bases, long *nbp);
-
-void combine_pstnd2(long num_bp, char **bp_seq, long **s2idx, long *tnum,
-                    char **tAtomName, char **tResName, char *tChainID,
-                    long *tResSeq, double **txyz, char **tAtomName2,
-                    double **txyz2);
-
-void reverse_stnd2(long num_bp, char **bp_seq, long **s2idx, long *tnum,
-                   char **tAtomName, char **tResName, char *tChainID,
-                   long *tResSeq, double **txyz, char **tAtomName2,
-                   double **txyz2, long basep);
 
 void pair_checking(long ip, long ds, long num_residue, char *pdbfile,
                    long *num_bp, long **pair_num);
 
-void double_print_msg(char *msg, FILE *fp);
-
-void drct_checking(long ds, long num_bp, long **pair_num, long **seidx,
-                   char **AtomName, double **xyz, long *parallel, long *bbexist,
-                   long **o3p_brk, FILE *fp);
-
-void residue_idstr(char chain_id, long res_seq, char *rname, char *idmsg);
-
 void base_str(char chain_id, long res_seq, char *misc, char *rname, char bcode,
               long stnd, char *idmsg);
-
-void write_lkglist(long nbond, long **linkage, char **AtomName, char **ResName,
-                   char *ChainID, long *ResSeq, char **Miscs);
-
-void hbond_info(long **pair_num, char *bseq, long **seidx, long *idx,
-                char **AtomName, char **ResName, char *ChainID, long *ResSeq,
-                char **Miscs, double **xyz, long *RY, long *num_hbond,
-                long **hb_linkage);
-
-void hbond_pdb(long num, long num_residue, char *bseq, long **seidx, long *idx,
-               long *RY, char **AtomName, char **ResName, char *ChainID,
-               long *ResSeq, char **Miscs, double **xyz, long *num_hbond,
-               long **hb_linkage, long pwise);
-
-void hbond_list(long i, long j, char **AtomName, char **ResName, char *ChainID,
-                long *ResSeq, double **xyz, char **Miscs, char *bseq,
-                long **seidx, long *idx, long **hb_linkage, miscPars *misc_pars,
-                long **num_list, long *num_hbond, long ilayer, FILE *fph);
 
 void hb_numlist(long i, long j, char basei, char basej, long **seidx, long *idx,
                 char **AtomName, double **xyz, miscPars *misc_pars,
                 long *num_hb, long **num_list);
 
-void hb_information(long num_bp, long **pair_num, char **bp_seq, long **seidx,
-                    long *idx, char **AtomName, double **xyz, long *WC_info,
-                    FILE *fp);
-
 long good_hbatoms(miscPars *misc_pars, char *atom1, char *atom2, long idx1,
                   long idx2);
-
-void read_lkginfo(char *lkgfile, long num, long *nbond, long **linkage);
-
-void read_hbinfo(char *hbfile, long num, long *num_hbond, long **hb_linkage);
 
 void update_hb_idx(long idx, double *dtmp, long *ddidx, double *hb_dist,
                    long cur_idx);
@@ -1204,11 +789,6 @@ void identify_htw(long num_residue, long **seidx, long *RY, char **AtomName,
 long attached_residues(long inum_base, long *ivec, long *ivec2, long **seidx,
                        double **xyz, long **htm_water, miscPars *misc_pars);
 
-void print_pairinfo(long i, long j, char basei, char basej, double *rtn_val,
-                    double *chi, miscPars *misc_pars, long **seidx, long *idx,
-                    char **AtomName, double **xyz, char *bseq, long detailed,
-                    FILE *fp);
-
 void check_pair(long i, long j, char *bseq, long **seidx, double **xyz,
                 double **NC1xyz, double **orien, double **org, long *idx,
                 char **AtomName, miscPars *misc_pars, double *rtn_val,
@@ -1223,14 +803,6 @@ void base_info(long num_residue, char *bseq, long **seidx, long *RY,
                char **AtomName, char **ResName, char *ChainID, long *ResSeq,
                char **Miscs, double **xyz, double **orien, double **org,
                double **NC1xyz, double **o3_p);
-
-void help3dna_usage(char *program_name);
-
-void help3dna(char *program_name);
-
-void delH_pdbfile(char *inpfile, char *outfile);
-
-void contact_msg(long prt_msg);
 
 long str_pmatch(char *str, char *sstr);
 
@@ -1248,19 +820,9 @@ double get_dvalue(char *str, double vmin, double vmax);
 
 void get_strvalue(char *str, char *dst, long expand_tilde);
 
-void cvtstr_c1toc2(char *str, char c1, char c2);
-
 double z1_z2_angle_in_0_to_90(double *z1, double *z2);
 
-void do_nothing(void);
-
-void skip_lines(long num, FILE *fp);
-
 void print_frame(FILE *fp, double *O, double **R);
-
-int lux_match(enum slre_option options, const char *re, const char *buf);
-
-int lux_ncmatch(const char *buf, const char *re);
 
 void nrerror(char *error_text);
 
@@ -1309,10 +871,6 @@ void dval_swap(double *pa, double *pb);
 
 void lval_swap(long *pa, long *pb);
 
-void cval_swap(char *pa, char *pb);
-
-double dval_max(double a, double b);
-
 double dval_min(double a, double b);
 
 long lval_min(long a, long b);
@@ -1323,21 +881,9 @@ long dval_in_range(double dval, double dlow, double dhigh);
 
 long lval_in_range(long lval, long llow, long lhigh);
 
-void max_dmatrix(double **d, long nr, long nc, double *maxdm);
-
-void min_dmatrix(double **d, long nr, long nc, double *mindm);
-
 void ave_dmatrix(double **d, long nr, long nc, double *avedm);
 
 void std_dmatrix(double **d, long nr, long nc, double *stddm);
-
-double max_dvector(double *d, long nl, long nh);
-
-double min_dvector(double *d, long nl, long nh);
-
-double ave_dvector(double *d, long n);
-
-double std_dvector(double *d, long n);
 
 void init_cmatrix(char **cmtx, long nrl, long nrh, long ncl, long nch,
                   char init_val);
@@ -1354,11 +900,8 @@ void init_dvector(double *dvec, long ib, long ie, double init_val);
 
 void init_lvector(long *lvec, long ib, long ie, long init_val);
 
-void copy_dvector(double *d, double *s, long nl, long nh);
-
 int dval_compare(const void *v1, const void *v2);
 
-void negate_xyz(double *xyz1);
 
 double p1p2_dist(double *xyz1, double *xyz2);
 
@@ -1396,12 +939,6 @@ void copy_dmatrix(double **a, long nr, long nc, double **o);
 
 void multi_matrix(double **a, long nra, long nca, double **b, long nrb,
                   long ncb, double **o);
-
-void multi_vec_matrix(double *a, long n, double **b, long nr, long nc,
-                      double *o);
-
-void multi_vec_Tmatrix(double *a, long n, double **b, long nr, long nc,
-                       double *o);
 
 void transpose_matrix(double **a, long nr, long nc, double **o);
 

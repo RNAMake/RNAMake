@@ -7,13 +7,12 @@
 #include <math/numerical.hpp>
 #include <util/x3dna/x3dna.h>
 
-
 namespace util {
 
 class PairFinder {
 
 public:
-  PairFinder(std::string pdb);
+  explicit PairFinder(std::string pdb);
 
   void find_pair(util::x3dna::X3dna::X3Basepairs &basepairs);
 
@@ -38,25 +37,22 @@ private:
 private:
   char **nt_info;
 
-  std::vector<x3dna::X3dna::X3Basepair> bps;
+  std::vector<x3dna::X3dna::X3Basepair> _bps;
 
   std::map<std::pair<int, std::string>, math::Vector3> _atoms;
 
-  math::Vector3s vectors;
-
   struct Args {
-    char pdbfile[BUF512];
+    String pdbfile;
     char outfile[BUF512];
     long ds = 2;
-    long curves = false;
-    long curves_plus = false;
     long divide = false;
     long hetatm = true;
     long pairs = false;
     long detailed = false;
     long waters = false;
-    long hjb = false;
   };
+
+  math::Vector3s vectors;
 
   Args _args = Args();
 };
