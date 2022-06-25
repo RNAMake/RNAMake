@@ -20,7 +20,7 @@ public:
    * Standard constructor for ChainException
    * @param   message   Error message for chain
    */
-  ChainException(String const &message) : std::runtime_error(message) {}
+  ChainException(const String &message) : std::runtime_error(message) {}
 };
 
 namespace primitives {
@@ -30,44 +30,33 @@ public:
   typedef std::vector<Restype> Residues;
 
 public:
-  inline Chain(Residues const &residues) : residues_(residues) {
-
-    expects<ChainException>(residues.size() > 0,
-                            "chains must have at least one residue!");
-  }
-
-  inline Chain(String const &s) {
-    residues_ = Residues();
-    Strings spl = base::split_str_by_delimiter(s, ";");
-    for (auto const &r_str : spl) {
-      if (r_str.length() < 3) {
-        continue;
-      }
-      residues_.push_back(Restype(r_str));
+  inline Chain(Residues const &residues) : _residues(residues) {
+    if(_residues.empty()) {
+      throw ChainException("cannot initiate an empty chain");
     }
   }
 
   virtual ~Chain() {}
 
-public: // iterator
+public: // iterator ///////////////////////////////////////////////////////////
   typedef typename Residues::const_iterator const_iterator;
 
-  const_iterator begin() const noexcept { return residues_.begin(); }
-  const_iterator end() const noexcept { return residues_.end(); }
+  const_iterator begin() const noexcept { return _residues.begin(); }
+  const_iterator end() const noexcept { return _residues.end(); }
 
 public:
-  inline size_t get_length() const { return (int)residues_.size(); }
+  inline size_t get_length() const { return (int)_residues.size(); }
 
-  inline Restype const &get_first() const { return residues_[0]; }
+  inline const Restype &get_first() const { return _residues[0]; }
 
-  inline Restype const &get_last() const { return residues_.back(); }
+  inline const Restype &get_last() const { return _residues.back(); }
 
-  inline Restype const &get_residue(Index index) const {
-    return residues_[index];
+  inline const Restype &get_residue(Index index) const {
+    return _residues[index];
   }
 
-  inline int contain_res(Restype const &r) const {
-    for (auto const &res : residues_) {
+  inline int contain_res(const Restype &r) const {
+    for (auto const &res : _residues) {
       if (res == r) {
         return 1;
       }
@@ -79,11 +68,8 @@ protected:
   Chain() {}
 
 protected:
-  Residues residues_;
+  Residues _residues;
 };
-
-typedef Chain<PrimitiveResidue> PrimitiveChain;
-typedef std::vector<PrimitiveChain> PrimitiveChains;
 
 } // namespace primitives
 

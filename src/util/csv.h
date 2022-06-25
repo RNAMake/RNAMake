@@ -51,7 +51,7 @@
 #include <istream>
 #include <memory>
 
-namespace io {
+namespace util {
 ////////////////////////////////////////////////////////////////////////////
 //                                 LineReader                             //
 ////////////////////////////////////////////////////////////////////////////
@@ -825,7 +825,7 @@ void parse_line(char *line, char **sorted_col,
                 const std::vector<int> &col_order) {
   for (int i : col_order) {
     if (line == nullptr) {
-      throw ::io::error::too_few_columns();
+      throw ::util::error::too_few_columns();
     }
     char *col_begin, *col_end;
     chop_next_column<quote_policy>(line, col_begin, col_end);
@@ -838,7 +838,7 @@ void parse_line(char *line, char **sorted_col,
     }
   }
   if (line != nullptr) {
-    throw ::io::error::too_many_columns();
+    throw ::util::error::too_many_columns();
   }
 }
 
@@ -871,7 +871,7 @@ void parse_header_line(char *line, std::vector<int> &col_order,
       }
     }
     if (col_begin) {
-      if (ignore_policy & ::io::ignore_extra_column) {
+      if (ignore_policy & ::util::ignore_extra_column) {
         col_order.push_back(-1);
       } else {
         error::extra_column_in_header err;
@@ -880,7 +880,7 @@ void parse_header_line(char *line, std::vector<int> &col_order,
       }
     }
   }
-  if (!(ignore_policy & ::io::ignore_missing_column)) {
+  if (!(ignore_policy & ::util::ignore_missing_column)) {
     for (unsigned i = 0; i < column_count; ++i) {
       if (!found[i]) {
         error::missing_column_in_header err;
@@ -1185,7 +1185,7 @@ private:
     if (row[r]) {
       try {
         try {
-          ::io::detail::parse<overflow_policy>(row[r], t);
+          ::util::detail::parse<overflow_policy>(row[r], t);
         } catch (error::with_column_content &err) {
           err.set_column_content(row[r]);
           throw;
