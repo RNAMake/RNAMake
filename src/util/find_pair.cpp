@@ -15,28 +15,11 @@ using namespace std;
 
 namespace util {
 PairFinder::PairFinder(string pdb) {
-  char *c = &pdb[0];
+  _args.pdbfile = pdb;
 
-  sprintf(_args.pdbfile, c);
   sprintf(_args.outfile, "stdout");
 
   util::x3dna::X3dna::X3BPInfo *bp_info;
-}
-
-/* clean up files with fixed name */
-
-static void clean_files(void) {
-  remove_file(MUL_FILE);
-  remove_file(ALLP_FILE);
-  remove_file(BPORDER_FILE);
-  remove_file(BESTP_FILE);
-  remove_file(REF_FILE);
-  remove_file(MREF_FILE);
-  remove_file(HLXREG_FILE);
-  remove_file(COLCHN_FILE);
-  remove_file(COLHLX_FILE);
-  remove_file(MULBP_FILE);
-  remove_file(TMP_FILE);
 }
 
 template <typename... Args>
@@ -98,7 +81,7 @@ void PairFinder::_write_fpmst(double *morg, double *morien, FILE *rframe,
         vector3.distance(vector4) <= max_distance) {
       auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r,
                                                util::x3dna::X3dnaBPType::cWUW};
-      bps.push_back(bp);
+      _bps.push_back(bp);
     } else {
       LOG_INFO << "Removed baspair: " << res1.num << "|" << res2.num
                << ", because the bond exceeded the max length of: "
@@ -116,7 +99,7 @@ void PairFinder::_write_fpmst(double *morg, double *morien, FILE *rframe,
         vector3.distance(vector4) <= max_distance) {
       auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r,
                                                util::x3dna::X3dnaBPType::cWUW};
-      bps.push_back(bp);
+      _bps.push_back(bp);
     } else {
       LOG_INFO << "Removed baspair: " << res1.num << "|" << res2.num
                << ", because the bond exceeded the max length of: "
@@ -137,7 +120,7 @@ void PairFinder::_write_fpmst(double *morg, double *morien, FILE *rframe,
         vector5.distance(vector6) <= max_distance) {
       auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r,
                                                util::x3dna::X3dnaBPType::cWUW};
-      bps.push_back(bp);
+      _bps.push_back(bp);
     } else {
       LOG_INFO << "Removed baspair: " << res1.num << "|" << res2.num
                << ", because the bond exceeded the max length of: "
@@ -158,7 +141,7 @@ void PairFinder::_write_fpmst(double *morg, double *morien, FILE *rframe,
         vector5.distance(vector6) <= max_distance) {
       auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r,
                                                util::x3dna::X3dnaBPType::cWUW};
-      bps.push_back(bp);
+      _bps.push_back(bp);
     } else {
       LOG_INFO << "Removed baspair: " << res1.num << "|" << res2.num
                << ", because the bond exceeded the max length of: "
@@ -175,7 +158,7 @@ void PairFinder::_write_fpmst(double *morg, double *morien, FILE *rframe,
         vector3.distance(vector4) <= max_distance) {
       auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r,
                                                util::x3dna::X3dnaBPType::cWUW};
-      bps.push_back(bp);
+      _bps.push_back(bp);
     } else {
       LOG_INFO << "Removed baspair: " << res1.num << "|" << res2.num
                << ", because the bond exceeded the max length of: "
@@ -193,7 +176,7 @@ void PairFinder::_write_fpmst(double *morg, double *morien, FILE *rframe,
         vector3.distance(vector4) <= max_distance) {
       auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r,
                                                util::x3dna::X3dnaBPType::cWUW};
-      bps.push_back(bp);
+      _bps.push_back(bp);
     } else {
       LOG_INFO << "Removed baspair: " << res1.num << "|" << res2.num
                << ", because the bond exceeded the max length of: "
@@ -203,10 +186,9 @@ void PairFinder::_write_fpmst(double *morg, double *morien, FILE *rframe,
   } else {
     auto bp = util::x3dna::X3dna::X3Basepair{res1, res2, d, r,
                                              util::x3dna::X3dnaBPType::cDDD};
-    bps.push_back(bp);
+    _bps.push_back(bp);
   }
 }
-
 
 /* find the best-paired residue id#
  * pair_stat[PSTNUM]:
@@ -242,7 +224,7 @@ static void best_pair(long i, long num_residue, long *RY, long **seidx,
 /* check if 2 bps co-planar based on simple geometry criterion */
 static long bp_coplanar(long i, double d, double d2, double *txyz,
                         double *txyz2, long n, long *ddidx, double **bp_xyz) {
-  double *dp = NULL; /* use pointer for efficiency */
+  double *dp = nullptr; /* use pointer for efficiency */
   long j = 0, co_planar = 0;
 
   if (fabs(d) < OLCRT) {
@@ -893,10 +875,6 @@ static void five2three(long num_bp, long *num_helix, long **helix_idx,
       // frprintf(tfp, " %2ld [%ld-%ld]\n", rev_s1, m, n);
     }
 
-    /* one more round checking for WC geometry steps: 09-23-2002
-     * works for Luger pol_end1.pdb & pol_end2.pdb, and bdl070.pdb */
-    // frprintf(tfp, "\n              ===> 2nd around checking or WC geometry
-    // steps\n");
     for (j = helix_idx[i][1]; j < helix_idx[i][2]; j++) {
       m = bp_idx[j];
       n = bp_idx[j + 1];
@@ -925,11 +903,6 @@ static void five2three(long num_bp, long *num_helix, long **helix_idx,
       }
     }
 
-    // frprintf(tfp, "\n%4ld [%c%c%c]:", helix_idx[i][3], helix_idx[i][5] ? 'b'
-    // : '-', helix_idx[i][6] ? 'p' : '-', helix_idx[i][7] ? '?' : '-'); for (j
-    // = 1; j <= 6; j++)
-    //     frprintf(tfp, "%6ld", direction[j]);
-    // frprintf(tfp, "\n           ");
     k = 0;
     for (j = helix_idx[i][1]; j <= helix_idx[i][2]; j++) {
       m = bp_idx[j];
@@ -941,46 +914,6 @@ static void five2three(long num_bp, long *num_helix, long **helix_idx,
   }
 
   free_lvector(swapped, 1, num_bp);
-}
-
-/* check if a helical region is in left-handed Z-form */
-static void check_zdna(long *num_helix, long **helix_idx, long *bp_idx,
-                       double **bp_xyz, long **base_pairs, FILE *tfp) {
-  double txyz[4];
-  long i, j, m, n, nweird = 0, nrev, mixed_rl = 0;
-
-  // frprintf(tfp, "\nZ-DNA helical region if any\n");
-  for (i = 1; i <= *num_helix; i++) {
-    if (helix_idx[i][5] || helix_idx[i][6] || helix_idx[i][7] ||
-        helix_idx[i][3] <= 1) {
-      nweird++;
-      continue; /* break/parallel/weird/only one pair */
-    }
-    nrev = 0;
-    for (j = helix_idx[i][1]; j <= helix_idx[i][2]; j++) {
-      m = bp_idx[j];
-      if (helix_idx[i][3] == 1)
-        continue;
-      if (j < helix_idx[i][2]) {
-        n = bp_idx[j + 1];
-        ddxyz(bp_xyz[m], bp_xyz[n], txyz);
-      }
-      /* with base 1 normal & WC-geometry */
-      if (dot(txyz, &bp_xyz[m][9]) < 0.0 && base_pairs[m][3] > 0)
-        nrev++;
-      else
-        break;
-    }
-    if (nrev == helix_idx[i][3]) {
-      helix_idx[i][4] = 1;
-      mixed_rl++;
-      // frprintf(tfp, "Helix #%4.4ld (%4ld) is a Z-DNA\n", i, helix_idx[i][3]);
-    }
-  }
-
-  // if (!nweird && mixed_rl && mixed_rl != *num_helix)
-  //     frprintf(stderr, "This structure has right-/left-handed helical
-  //     regions\n");
 }
 
 /* Kth base-pair classification: WC, WC-geometry, Anti-parallel */
@@ -1011,8 +944,6 @@ static void re_ordering(long num_bp, long **base_pairs, long *bp_idx,
   FILE *tfp;
 
   tfp = open_file(BPORDER_FILE, "w");
-  // print_bp_crit(misc_pars, tfp);
-  // frprintf(tfp, "Base-pair information BEFORE re-ordering\n");
   for (i = 1; i <= num_bp; i++) {
     set_wc3(base_pairs[i], wc);
     i_order = base_pairs[i][1];
@@ -1021,12 +952,6 @@ static void re_ordering(long num_bp, long **base_pairs, long *bp_idx,
     base_str(ChainID[j], ResSeq[j], Miscs[j], ResName[j], bseq[i_order], 1, b1);
     j = seidx[j_order][1];
     base_str(ChainID[j], ResSeq[j], Miscs[j], ResName[j], bseq[j_order], 2, b2);
-    // frprintf(tfp, "%5ld: %5ld %5ld %s-%s-%s", i, i_order, j_order, b1, wc,
-    // b2); for (j = 4; j <= 8; j++) /* d, dv, angle, dNN */
-    //     // frprintf(tfp, " %6.2f", base_pairs[i][j] / MFACTOR);
-    // for (j = 9; j <= 11; j++) /* bp origin */
-    //     frprintf(tfp, " %8.2f", base_pairs[i][j] / MFACTOR);
-    // frprintf(tfp, "\n");
   }
 
   /* bp origin, base I/II xyz-axes copied from columns 9-29 of base_pairs
@@ -1048,22 +973,10 @@ static void re_ordering(long num_bp, long **base_pairs, long *bp_idx,
   five2three(num_bp, num_helix, helix_idx, bp_idx, bp_xyz, base_pairs, o3_p,
              tfp);
 
-  check_zdna(num_helix, helix_idx, bp_idx, bp_xyz, base_pairs, tfp);
-
   close_file(tfp);
   free_dmatrix(bp_xyz, 1, num_bp, 1, 21);
   free_lmatrix(bp_order, 1, num_bp, 1, 3);
   free_lmatrix(end_list, 1, num_bp, 1, 3);
-}
-
-/* print out a summary of helix information: Z-DNA, break, parallel, weird? */
-static void helix_info(long **helix_idx, long idx, FILE *fp) {
-  // frprintf(fp, "%s%s%s%s\n", (helix_idx[idx][4]) ? "  ***Z-DNA***" : "",
-  //         (helix_idx[idx][5]) ? "  ***broken O3'[i] to P[i+1] linkage***"
-  //                             : "",
-  //         (helix_idx[idx][6]) ? "  ***parallel***" : "",
-  //         (helix_idx[idx][7]) ? "  ***intra-chain direction reverse***" :
-  //         "");
 }
 
 /* write out a PDB file containing all best pairs oriented with mean base-pair
@@ -1084,8 +997,6 @@ void PairFinder::_write_bestpairs(long num_bp, long **base_pairs, long *bp_idx,
   mfp = open_file(BESTP_FILE, "w");
   rframe = open_file(REF_FILE, "w");
 
-  // frprintf(rframe, "%5ld base-pairs\n", num_bp);
-
   for (i = 1; i <= num_bp; i++) {
     k = bp_idx[i];
     ia = base_pairs[k][1];
@@ -1096,17 +1007,10 @@ void PairFinder::_write_bestpairs(long num_bp, long **base_pairs, long *bp_idx,
     base_str(ChainID[j], ResSeq[j], Miscs[j], ResName[j], bseq[ib], 2, b2);
     set_wc3(base_pairs[k], wc);
     sprintf(idmsg, "%s-%s-%s", b1, wc, b2);
-    // frprintf(mfp, "%6s    %4ld\n", "MODEL ", i);
-    // frprintf(mfp, "REMARK    Section #%4.4ld %s\n", i, idmsg);
-    // frprintf(mfp, "REMARK    %s\n", Gvars.X3DNA_VER);
     ivec[1] = ia;
     ivec[2] = ib;
     pair2mst(inum_base, ivec, AtomName, ResName, ChainID, ResSeq, Miscs, xyz,
              orien, org, seidx, morien, morg, htm_water, misc_pars, mfp);
-    // frprintf(mfp, "ENDMDL\n");
-
-    // frprintf(rframe, "... %5ld %c%c%c   # %s - %s\n", i, bseq[ia], wc[2],
-    // bseq[ib], nt_info[ia], nt_info[ib]);
     auto r = std::regex(
         "#\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)\\s+"
         "\\-\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)");
@@ -1117,66 +1021,6 @@ void PairFinder::_write_bestpairs(long num_bp, long **base_pairs, long *bp_idx,
     auto bp_info = new util::x3dna::X3dna::X3BPInfo(m);
     PairFinder::_write_fpmst(morg, morien, rframe, bp_info);
   }
-}
-
-/* write out helical regions in a multiple structure PDB file */
-static void write_helix(long num_helix, long **helix_idx, long *bp_idx,
-                        long **seidx, char **AtomName, char **ResName,
-                        char *ChainID, long *ResSeq, char **Miscs, double **xyz,
-                        long **base_pairs, long **htm_water,
-                        miscPars *misc_pars) {
-  long i, inum, j, k, m, n, tnum_res, num_residue;
-  long *ivec, *ivect;
-  FILE *mfp;
-
-  num_residue = htm_water[2][0];
-  ivec = lvector(1, num_residue);
-  ivect = lvector(1, num_residue);
-  mfp = open_file(HLXREG_FILE, "w");
-  for (i = 1; i <= num_helix; i++) {
-    inum = 0;
-    // frprintf(mfp, "%6s    %4ld\n", "MODEL ", i);
-    // frprintf(mfp, "REMARK    Section #%4.4ld %ld base-pairs", i,
-    // helix_idx[i][3]);
-    helix_info(helix_idx, i, mfp);
-    // frprintf(mfp, "REMARK    %s\n", Gvars.X3DNA_VER);
-    k = 0; /* residue index in the helical region */
-    for (n = 1; n <= 2; n++) {
-      /* two strands */
-      for (j = helix_idx[i][1]; j <= helix_idx[i][2]; j++) {
-        if (n == 2 && !helix_idx[i][6]) /* anti-parallel */
-          m = base_pairs[bp_idx[helix_idx[i][2] - j + helix_idx[i][1]]][n];
-        else
-          m = base_pairs[bp_idx[j]][n];
-        k++;
-        ivec[k] = m;
-      }
-    }
-    tnum_res =
-        attached_residues(k, ivec, ivect, seidx, xyz, htm_water, misc_pars);
-    for (j = 1; j <= tnum_res; j++) {
-      m = ivect[j];
-      pdb_record(seidx[m][1], seidx[m][2], &inum, 0, AtomName, ResName, ChainID,
-                 ResSeq, xyz, Miscs, mfp);
-    }
-    // frprintf(mfp, "ENDMDL\n");
-  }
-
-  close_file(mfp);
-  free_lvector(ivec, 1, num_residue);
-  free_lvector(ivect, 1, num_residue);
-}
-
-/* for non-base-pairs found in structure "pdbfile" */
-static void no_basepairs(char *pdbfile, char *outfile, char *parfile) {
-  FILE *fp;
-  // // frprintf(stderr, "no base-pairs found for this structure\n");
-  fp = open_file(outfile, "w");
-  // frprintf(fp, "%s\n", pdbfile);
-  // frprintf(fp, "%s.out\n", parfile);
-  // frprintf(fp, "    2         # duplex\n");
-  // frprintf(fp, "    0         # number of base-pairs\n");
-  close_file(fp);
 }
 
 /* get the best pair listing */
@@ -1222,267 +1066,6 @@ static long find_bestpair(long nout, long **base_pairs, long num_residue,
   return num_bp;
 }
 
-/* RasMol script for coloring the structure by chains or helical regions */
-static void col_helices(long num_helix, long **helix_idx, long *bp_idx,
-                        long **base_pairs, long **seidx, char *pdbfile,
-                        char *ChainID, long *ResSeq) {
-  static char *col_code[9] = {"violet", "red",     "green",  "blue",  "yellow",
-                              "cyan",   "magenta", "orange", "purple"};
-  long i, ia, ib, ic, j, k;
-  FILE *fpc, *fph;
-
-  //        fpc = open_file(COLCHN_FILE, "w");
-
-  // frprintf(fpc, "zap\nload nmrpdb hel_regions.pdb\n");
-  // frprintf(fpc, "# load %s\n", pdbfile);
-  // frprintf(fpc, "# restrict not (protein or water)\n");
-  // frprintf(fpc, "\n");
-
-  //        fph = open_file(COLHLX_FILE, "w");
-  // frprintf(fph, "zap\nload nmrpdb hel_regions.pdb\n");
-  // frprintf(fph, "# load %s\n", pdbfile);
-  // frprintf(fph, "# restrict not (protein or water)\n");
-  // frprintf(fph, "\n");
-
-  for (i = 1; i <= num_helix; i++) {
-    ic = i % 9; /* color code */
-    // frprintf(fph, "\n#------Helix #%ld, color: %s------\n", i, col_code[ic]);
-    for (j = helix_idx[i][1]; j <= helix_idx[i][2]; j++) {
-      k = bp_idx[j];
-      ia = seidx[base_pairs[k][1]][1];
-      ib = seidx[base_pairs[k][2]][1];
-      // frprintf(fpc, "select %ld:%c\n", ResSeq[ia], ChainID[ia]);
-      // frprintf(fpc, "color %s\n", col_code[1]); /* strand I */
-      // frprintf(fpc, "select %ld:%c\n", ResSeq[ib], ChainID[ib]);
-      // frprintf(fpc, "color %s\n", col_code[2]); /* strand II */
-      // frprintf(fph, "select %ld:%c, %ld:%c\n", ResSeq[ia], ChainID[ia],
-      //         ResSeq[ib], ChainID[ib]);
-      // frprintf(fph, "color %s\n", col_code[ic]);
-    }
-  }
-
-  // frprintf(fpc, "\nselect all\n");
-  //        close_file(fpc);
-  // frprintf(fph, "\nselect all\n");
-  //        close_file(fph);
-}
-
-static void set_nmarkers(long idx, long ib, long ie, long *helix_marker,
-                         long **helix_idx, long *num_helix, long *num_1bp,
-                         long *nmarkers) {
-  long i, k;
-
-  *num_helix = 0;
-  *num_1bp = 0;
-
-  for (i = ib; i <= ie; i++) {
-    k = i - ib + 1; /* 1-index */
-
-    if (helix_marker[i]) {
-      /* change of helix regions */
-      (*num_helix)++;
-      if ((!idx && helix_idx[*num_helix][3] == 1) ||
-          (idx && helix_idx[idx][3] == 1)) {
-        (*num_1bp)++;
-        nmarkers[k] = 1;
-      } else if (i != ie)
-        nmarkers[k] = 9;
-    }
-  }
-}
-
-/* print out base-pairing information in a format suitable for analyze/cehs */
-static void x3dna_input(long idx, long start_num, long end_num, long nbp,
-                        char *pdbfile, char *outfile, char *parfile,
-                        long hetatm, long *bp_idx, long *helix_marker,
-                        long **helix_idx, long **base_pairs, long **seidx,
-                        char **ResName, char *ChainID, long *ResSeq,
-                        char **Miscs, char *bseq, miscPars *misc_pars,
-                        long detailed) {
-  char b1[BUF512], b2[BUF512], wc[4], *cmarkers;
-  char outfile_new[BUF512], parfile_new[BUF512];
-  double x[4];
-  long i, i_order, j, j_order, k, m, *nmarkers;
-  long num_bp, num_helix, num_1bp, num_nwc = 0;
-  FILE *fp;
-
-  if (idx) {
-    /* structure taken as helical regions */
-    sprintf(outfile_new, "%s_%4.4ld", outfile, idx);
-    sprintf(parfile_new, "%s_%4.4ld", parfile, idx);
-  } else {
-    /* structure taken as a whole */
-    sprintf(outfile_new, outfile);
-    sprintf(parfile_new, parfile);
-  }
-
-  fp = open_file(outfile_new, "w");
-
-  // frprintf(fp, "%s\n", pdbfile);
-  // frprintf(fp, "%s.out\n", parfile_new);
-  // frprintf(fp, "    2         # duplex\n");
-  // frprintf(fp, "%5ld         # number of base-pairs\n", nbp);
-  // frprintf(fp, "    1 %5ld    # explicit bp numbering/hetero atoms\n",
-  // hetatm);
-
-  num_bp = end_num - start_num + 1;
-  cmarkers = cvector(1, num_bp);
-  nmarkers = lvector(1, num_bp);
-  set_nmarkers(idx, start_num, end_num, helix_marker, helix_idx, &num_helix,
-               &num_1bp, nmarkers);
-  set_chain_nmarkers019_to_symbols(num_bp, nmarkers, cmarkers);
-
-  for (i = start_num; i <= end_num; i++) {
-    k = bp_idx[i];
-    i_order = base_pairs[k][1];
-    j_order = base_pairs[k][2];
-    if (base_pairs[k][3] != 2)
-      num_nwc++;
-    set_wc3(base_pairs[k], wc);
-    j = seidx[i_order][1];
-    base_str(ChainID[j], ResSeq[j], Miscs[j], ResName[j], bseq[i_order], 1, b1);
-    j = seidx[j_order][1];
-    base_str(ChainID[j], ResSeq[j], Miscs[j], ResName[j], bseq[j_order], 2, b2);
-
-    m = i - start_num + 1;
-    // frprintf(fp, "%5ld %5ld %3ld #%5ld %c %s-%s-%s", i_order, j_order,
-    // nmarkers[m], m,
-    //         cmarkers[m], b1, wc, b2);
-
-    for (j = 4; j <= 8; j++)
-      // frprintf(fp, " %6.2f", base_pairs[k][j] / MFACTOR);
-      if (detailed) {
-        /* print out origin + x-axis */
-        for (j = 9; j <= 11; j++)
-          // frprintf(fp, " %8.2f", base_pairs[k][j] / MFACTOR);
-          for (j = 1; j <= 3; j++)
-            x[j] = (base_pairs[k][j + 11] + (base_pairs[k][j + 20])) / MFACTOR;
-        vec_norm(x);
-        // for (j = 1; j <= 3; j++)
-        //     frprintf(fp, " %8.2f", x[j]);
-      }
-    // frprintf(fp, "\n");
-  }
-
-  // frprintf(fp, "##### ");
-  // print_bp_crit(misc_pars, fp);
-  // frprintf(fp, "##### %ld non-Watson-Crick base-pair%s", num_nwc, (num_nwc ==
-  // 1) ? "" : "s");
-  (num_helix == 1) ? strcpy(b1, "x") : strcpy(b1, "ces");
-  // frprintf(fp, ", and %ld heli%s", num_helix, b1);
-  // frprintf(fp, " (%ld isolated bp%s)\n", num_1bp, (num_1bp == 1) ? "" : "s");
-
-  if (!idx) {
-    /* structure taken as a whole */
-    for (i = 1; i <= num_helix; i++) {
-      // if (helix_idx[i][3] == 1)
-      //     // frprintf(fp, "##### Helix #%ld (%ld): %ld", i, helix_idx[i][3],
-      //     helix_idx[i][1]);
-      // else
-      //     // frprintf(fp, "##### Helix #%ld (%ld): %ld - %ld", i,
-      //             helix_idx[i][3], helix_idx[i][1], helix_idx[i][2]);
-      helix_info(helix_idx, i, fp);
-    }
-  } else {
-    /* for each helical region */
-    // if (nbp == 1)
-    //     // frprintf(fp, "##### Helix #1 (%ld): %ld", nbp, nbp);
-    // else
-    //     // frprintf(fp, "##### Helix #1 (%ld): 1 - %ld", nbp, nbp);
-    helix_info(helix_idx, idx, fp);
-  }
-
-  close_file(fp);
-  free_cvector(cmarkers, 1, DUMMY);
-  free_lvector(nmarkers, 1, DUMMY);
-}
-
-/* print out base-pairing information in a format suitable for Curves */
-static void curves_input(long idx, long start_num, long end_num, long nbp,
-                         char *pdbfile, char *outfile, char *parfile,
-                         long *bp_idx, long **base_pairs, long zdna,
-                         long parallel) {
-  char outfile_new[BUF512], parfile_new[BUF512];
-  long i, j;
-  FILE *fp;
-
-  if (idx) {
-    /* structure taken as helical regions */
-    sprintf(outfile_new, "%s_%4.4ld", outfile, idx);
-    sprintf(parfile_new, "%s_%4.4ld", parfile, idx);
-  } else {
-    /* structure taken as a whole */
-    strcpy(outfile_new, outfile);
-    strcpy(parfile_new, parfile);
-  }
-  fp = open_file(outfile_new, "w");
-  // frprintf(fp, "&inp file=%s, comb=.t., fit=.t., grv=.t., %s\n"
-  //             "     lis=%s, pdb=%s_grp, &end\n",
-  //         pdbfile,
-  //         zdna ? "dinu=.t.," : "", parfile_new, parfile_new);
-  // frprintf(fp, "2 %ld %ld 0 0\n", nbp, (parallel) ? nbp : -nbp);
-  // for (i = 1; i <= 2; i++) {
-  //     for (j = start_num; j <= end_num; j++)
-  //         frprintf(fp, " %ld", base_pairs[bp_idx[j]][i]);
-  //     frprintf(fp, "\n");
-  // }
-  // frprintf(fp, "0.0 0.0 0.0 %.1f\n", zdna ? 180.0 : 0.0);
-  close_file(fp);
-}
-
-/* print out base-pairing information in a format suitable for Curves+ */
-static void curves_plus_input(long idx, long start_num, long end_num, long nbp,
-                              char *pdbfile, char *outfile, char *parfile,
-                              long *bp_idx, long **base_pairs, long zdna,
-                              long parallel) {
-  char outfile_new[BUF512], parfile_new[BUF512];
-  char *p, str[BUF512];
-  char *cmnfiles[] = {".cda", ".lis", "_X.pdb", "_b.pdb"};
-  long num = sizeof cmnfiles / sizeof cmnfiles[0];
-  long i, j;
-  FILE *fp;
-
-  UNUSED_PARAMETER(nbp); /* not used, but kept here for consistency */
-
-  if (idx) {
-    /* structure taken as helical regions */
-    sprintf(outfile_new, "%s_%4.4ld", outfile, idx);
-    sprintf(parfile_new, "%s_%4.4ld", parfile, idx);
-  } else {
-    /* structure taken as a whole */
-    strcpy(outfile_new, outfile);
-    strcpy(parfile_new, parfile);
-  }
-
-  for (i = 0; i < num; i++) {
-    sprintf(str, "%s%s", parfile_new, cmnfiles[i]);
-    remove_file(str);
-  }
-
-  p = getenv("CURVES_PLUS_STDLIB");
-  if (p) {
-    strcpy(str, p);
-    check_slash(str); /* add slash at the end */
-  } else
-    strcpy(str, "./");
-
-  fp = open_file(outfile_new, "w");
-  // frprintf(fp, "&inp file=%s,\n", pdbfile);
-  // frprintf(fp, "     lis=%s,\n", parfile_new);
-  // frprintf(fp, "     fit=.t.,\n");
-  // frprintf(fp, "     lib=%sstandard,\n", str);
-  // frprintf(fp, "     isym=%d,\n", zdna ? 2 : 1);
-  // frprintf(fp, "&end\n");
-
-  // frprintf(fp, "2 %d %d 0 0\n", 1, (parallel) ? 1 : -1);
-  // for (i = 1; i <= 2; i++) {
-  //     for (j = start_num; j <= end_num; j++)
-  //         frprintf(fp, " %ld", base_pairs[bp_idx[j]][i]);
-  //     frprintf(fp, "\n");
-  // }
-  close_file(fp);
-}
-
 void PairFinder::_duplex(long num, long num_residue, char *bseq, long **seidx,
                          long *RY, char **AtomName, char **ResName,
                          char *ChainID, long *ResSeq, char **Miscs,
@@ -1499,7 +1082,7 @@ void PairFinder::_duplex(long num, long num_residue, char *bseq, long **seidx,
   o3_p = dmatrix(1, num_residue, 1, 8);   /* O3'/P atomic coordinates */
 
   idx = lvector(1, num);
-  atom_idx(num, AtomName, NULL, idx);
+  atom_idx(num, AtomName, nullptr, idx);
 
   htm_water = lmatrix(1, 4, 0, num); /* HETATM and water index */
   init_htm_water(_args.waters, num, num_residue, idx, htm_water);
@@ -1525,9 +1108,8 @@ void PairFinder::_duplex(long num, long num_residue, char *bseq, long **seidx,
   num_bp =
       find_bestpair(nout, base_pairs, num_residue, bseq, seidx, RY, AtomName,
                     xyz, idx, orien, org, NC1xyz, ring_atom, misc_pars);
+  // TODO do something here
   if (!num_bp) {
-    no_basepairs(_args.pdbfile, _args.outfile, parfile);
-    goto NO_BASE_PAIR; /* to clean up */
   }
 
   bp_idx = lvector(1, num_bp);
@@ -1538,32 +1120,6 @@ void PairFinder::_duplex(long num, long num_residue, char *bseq, long **seidx,
   PairFinder::_write_bestpairs(num_bp, base_pairs, bp_idx, bseq, seidx,
                                AtomName, ResName, ChainID, ResSeq, Miscs, xyz,
                                orien, org, htm_water, misc_pars);
-  write_helix(num_helix, helix_idx, bp_idx, seidx, AtomName, ResName, ChainID,
-              ResSeq, Miscs, xyz, base_pairs, htm_water, misc_pars);
-
-  if (_args.curves) { /* generate Curves input file */
-  } else {
-    /* 3DNA/CEHS input file */
-
-    col_helices(num_helix, helix_idx, bp_idx, base_pairs, seidx, _args.pdbfile,
-                ChainID, ResSeq);
-
-    if (_args.divide && num_helix > 1)
-      for (i = 1; i <= num_helix; i++) {
-
-        x3dna_input(i, helix_idx[i][1], helix_idx[i][2], helix_idx[i][3],
-                    _args.pdbfile, _args.outfile, parfile, _args.hetatm, bp_idx,
-                    helix_marker, helix_idx, base_pairs, seidx, ResName,
-                    ChainID, ResSeq, Miscs, bseq, misc_pars, _args.detailed);
-      }
-
-    else /* overall */
-
-      x3dna_input(0, 1, num_bp, num_bp, _args.pdbfile, _args.outfile, parfile,
-                  _args.hetatm, bp_idx, helix_marker, helix_idx, base_pairs,
-                  seidx, ResName, ChainID, ResSeq, Miscs, bseq, misc_pars,
-                  _args.detailed);
-  }
   free_lvector(bp_idx, 1, num_bp);
   free_lvector(helix_marker, 1, num_bp);
   free_lmatrix(helix_idx, 1, num_bp, 1, 7);
@@ -1572,91 +1128,21 @@ NO_BASE_PAIR:
   free_lmatrix(base_pairs, 1, num_residue, 1, nout_p1);
 }
 
-static long read_mapping_table(char *cvt_table, char n1[][5], char n2[][5]) {
-  char t1[BUF512], t2[BUF512], *p0, *line;
-  long num = 0;
-  FILE *fp;
-
-  fp = open_file(cvt_table, "r");
-
-  while ((p0 = my_getline(fp)) != NULL) {
-    line = trim(p0); /* keep the original value of p0 */
-    if (line[0] == '#' || line[0] == '\0') {
-      free(p0);
-      continue; /* skip empty and commented lines */
-    }
-
-    upperstr(line);
-    if (sscanf(line, "%s %s", t1, t2) != 2 || strlen(t1) != 4 ||
-        strlen(t2) != 4) {
-      // frprintf(stderr, "invalid line: <%s>\n", p0);
-      free(p0);
-      continue;
-    }
-
-    cvtstr_c1toc2(t1, '_', ' ');
-    cvtstr_c1toc2(t2, '_', ' ');
-    num++;
-    strcpy(n1[num], t1);
-    strcpy(n2[num], t2);
-
-    free(p0);
-  }
-
-  close_file(fp);
-
-  return num; /* 1-indexed, actual number */
-}
-
-static void write_atom_coordinates(FILE *fp, long *serial, long idx,
-                                   char **AtomName, char **ResName,
-                                   char *ChainID, long *ResSeq, char **Miscs,
-                                   double **xyz) {
-  char str[BUF512];
-
-  (*serial)++;
-  deduce_misc(Miscs, AtomName, idx, str);
-  // frprintf(fp, "%s%5ld %4s%c%3s %c%4ld%c   %8.3f%8.3f%8.3f%s\n",
-  //         (str[0] == 'A') ? "ATOM  " : "HETATM", *serial, AtomName[idx],
-  //         str[1], ResName[idx], ChainID[idx], ResSeq[idx], str[2],
-  //         xyz[idx][1], xyz[idx][2], xyz[idx][3], str + 3);
-}
-
-static char get_standard_one_letter_nt(char *rname) {
-  if (is_equal_string(rname, "  A") || is_equal_string(rname, " DA") ||
-      is_equal_string(rname, "ADE"))
-    return 'A';
-  if (is_equal_string(rname, "  C") || is_equal_string(rname, " DC") ||
-      is_equal_string(rname, "CYT"))
-    return 'C';
-  if (is_equal_string(rname, "  G") || is_equal_string(rname, " DG") ||
-      is_equal_string(rname, "GUA"))
-    return 'G';
-  if (is_equal_string(rname, "  T") || is_equal_string(rname, " DT") ||
-      is_equal_string(rname, "THY"))
-    return 'T';
-  if (is_equal_string(rname, "  U") || is_equal_string(rname, " DU") ||
-      is_equal_string(rname, "URA"))
-    return 'U';
-  fatal("unrecognized residue name: '%s'\n", rname);
-  return 'X';
-}
-
 void PairFinder::_handle_str() {
   char parfile[BUF512], *ChainID, *bseq, **AtomName, **ResName, **Miscs;
   double **xyz;
   long num, num_residue, *ResSeq, *RY, **seidx;
 
-  del_extension(_args.pdbfile, parfile);
+  // del_extension(_args.pdbfile, parfile);
   /* read in the PDB file */
-  num = number_of_atoms(_args.pdbfile, _args.hetatm, Gvars.misc_pars.alt_list);
+  num = number_of_atoms(_args.pdbfile, Gvars.misc_pars);
   AtomName = cmatrix(1, num, 0, 4);
   ResName = cmatrix(1, num, 0, 3);
   ChainID = cvector(1, num);
   ResSeq = lvector(1, num);
   xyz = dmatrix(1, num, 1, 3);
   Miscs = cmatrix(1, num, 0, NMISC);
-  read_pdb(_args.pdbfile, NULL, AtomName, ResName, ChainID, ResSeq, xyz, Miscs,
+  read_pdb(_args.pdbfile, nullptr, AtomName, ResName, ChainID, ResSeq, xyz, Miscs,
            _args.hetatm, Gvars.misc_pars.alt_list);
 
   /* get the numbering information of each residue */
@@ -1674,7 +1160,7 @@ void PairFinder::_handle_str() {
 
   PairFinder::_duplex(num, num_residue, bseq, seidx, RY, AtomName, ResName,
                       ChainID, ResSeq, Miscs, xyz, parfile, &Gvars.misc_pars);
-  free_pdb(num, NULL, AtomName, ResName, ChainID, ResSeq, xyz, Miscs);
+  free_pdb(num, nullptr, AtomName, ResName, ChainID, ResSeq, xyz, Miscs);
   free_lmatrix(seidx, 1, num_residue, 1, 2);
   free_cvector(bseq, 1, num_residue);
   free_lvector(RY, 1, num_residue);
@@ -1731,8 +1217,7 @@ void PairFinder::find_pair(x3dna::X3dna::X3Basepairs &basepairs) {
 
   clear_my_globals();
 
-  clean_files();
-  basepairs = bps;
+  basepairs = _bps;
 }
 
 } // namespace util
