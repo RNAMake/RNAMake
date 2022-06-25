@@ -211,7 +211,7 @@ protected:
 protected:
   AlignerType aligner_;
   // lots of mutatables to allow lazy updates
-  mutable data_structure::FixedEdgeDirectedGraph<SegmentType> graph_;
+  mutable data_structure::graph::FixedEdgeDirectedGraph<SegmentType> graph_;
   mutable bool needs_update_;
   mutable int first_update_;
 };
