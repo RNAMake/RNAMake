@@ -31,57 +31,18 @@ enum class BasepairType { WC, GU, NC };
 
 class Basepair {
 public:
-  inline Basepair(const util::Uuid &res1_uuid, const util::Uuid &res2_uuid,
-                  const util::Uuid &uuid, const BasepairType &bp_type,
-                  String &name)
-      : _res1_uuid(res1_uuid), _res2_uuid(res2_uuid), _uuid(uuid),
-        _bp_type(bp_type), _name(std::move(name)) {}
+  [[nodiscard]] virtual const util::Uuid &
+  get_partner(util::Uuid const &) const = 0;
 
-  inline Basepair(Basepair const &bp) = default;
+  [[nodiscard]] virtual inline const BasepairType &get_bp_type() const = 0;
 
-  virtual ~Basepair() = default;
+  [[nodiscard]] virtual inline util::Uuid const &get_uuid() const = 0;
 
-protected:
-  Basepair() {}
+  [[nodiscard]] virtual inline const String &get_name() const = 0;
 
-public:
-  /**
-   * equal operator checks whether the unique indentifier is the same
-   * @param other another basepair to check if its the same
-   */
-  inline bool operator==(Basepair const &other) const {
-    return _uuid == other._uuid;
-  }
+  [[nodiscard]] virtual inline util::Uuid const &get_res1_uuid() const = 0;
 
-  inline bool operator!=(Basepair const &other) const {
-    return _uuid != other._uuid;
-  }
-
-public:
-  [[nodiscard]] util::Uuid const &get_partner(util::Uuid const &) const;
-
-  [[nodiscard]] inline BasepairType const &get_bp_type() const {
-    return _bp_type;
-  }
-
-  [[nodiscard]] inline util::Uuid const &get_uuid() const { return _uuid; }
-
-  [[nodiscard]] inline const String & get_name() const { return _name; }
-
-  [[nodiscard]] inline util::Uuid const &get_res1_uuid() const {
-    return _res1_uuid;
-  }
-
-  [[nodiscard]] inline util::Uuid const &get_res2_uuid() const {
-    return _res2_uuid;
-  }
-
-protected:
-  util::Uuid _uuid;
-  util::Uuid _res1_uuid;
-  util::Uuid _res2_uuid;
-  BasepairType _bp_type;
-  String _name;
+  [[nodiscard]] virtual inline util::Uuid const &get_res2_uuid() const = 0;
 };
 
 template <typename Restype>

@@ -376,12 +376,12 @@ private:
   //
   //          // if these atoms do not exist cannot build res ref frame
   ////          if(atoms[ res_type->get_atom_index("C1'")] == nullptr) { return
-  ///false; } /          if (res_type->get_short_name() == 'A' ||
-  ///res_type->get_short_name() == 'G') { /              if(atoms[
-  ///res_type->get_atom_index("N9")] == nullptr) { return false; } /          }
+  /// false; } /          if (res_type->get_short_name() == 'A' ||
+  /// res_type->get_short_name() == 'G') { /              if(atoms[
+  /// res_type->get_atom_index("N9")] == nullptr) { return false; } /          }
   ////          else {
   ////              if(atoms[ res_type->get_atom_index("N1")] == nullptr) {
-  ///return false; } /          }
+  /// return false; } /          }
   //            bool found_C1 = false;
   //          for (Atom const &atom : atoms) {
   //              if(atom.get_name() == "C1'") {
@@ -552,7 +552,7 @@ inline bool residue_steric_clash(Residue const &r1, Residue const &r2) {
 //          // not a valid atom for this residue
 //          if(! res_type->is_valid_atom_name(a.get_name())) {
 ////                  LOGW <<  a.get_name() + " does not belong to residue " +
-///res_type->get_name() + ": IGNORING!";
+/// res_type->get_name() + ": IGNORING!";
 //              continue;
 //          }
 //          auto index = res_type->get_atom_index(a.get_name());
@@ -570,7 +570,7 @@ inline bool residue_steric_clash(Residue const &r1, Residue const &r2) {
 //          if (missing_phosphate) {
 //              if (!_replace_missing_phosphate_backbone(atom_ptrs, res_type)) {
 ////                      LOGW << "tried to fill in missing phosphate backbone
-///for residue " + spl[0] + " " + spl[1];
+/// for residue " + spl[0] + " " + spl[1];
 //              }
 //          }
 //      }

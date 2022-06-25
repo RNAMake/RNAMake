@@ -21,17 +21,18 @@ public:
   StructureException(String const &message) : std::runtime_error(message) {}
 };
 
+typedef size_t Cutpoint;
+typedef std::vector<Cutpoint> Cutpoints;
+
 namespace primitives {
 
 template <typename Chaintype, typename Restype> class Structure {
 public:
   typedef std::vector<Restype> Residues;
-  typedef base::VectorContainer<Chaintype> Chains;
-  typedef base::VectorContainerOP<Chaintype> ChainsOP;
+  typedef std::vector<Chaintype> Chains;
+  typedef std::vector<Chaintype> ChainsOP;
 
 public:
-  // TODO ask joe aboutt empty consturctors for the structure
-  // Make it take empty residues and Cutpoints
 
   inline Structure() = default;
 

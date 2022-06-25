@@ -5,7 +5,7 @@
 #ifndef RNAMAKE_NEW_SEGMENT_H
 #define RNAMAKE_NEW_SEGMENT_H
 
-#include "util/segment_type.h"
+#include "util/motif_type.h"
 #include <primitives/pose.h>
 
 namespace primitives {
