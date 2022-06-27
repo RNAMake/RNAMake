@@ -16,7 +16,7 @@ Connection::get_partner(const ConnectionPoint &cp) const {
   } else {
     String msg = "cannot call partner if not a node in this connection";
     base::log_and_throw<GraphException>(msg);
-    return cp1; // stop warning 
+    return cp1; // stop warning
   }
 }
 

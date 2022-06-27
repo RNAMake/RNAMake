@@ -28,9 +28,7 @@ public: // iteration //////////////////////////////////////////////////////////
   const_iterator end() const noexcept { return iter_list_.end(); }
 
 public: // operators //////////////////////////////////////////////////////////
-  Data & operator[](Index ni) {
-    return get_node_data(ni);
-  }
+  Data &operator[](Index ni) { return get_node_data(ni); }
 
 public: // transversal ////////////////////////////////////////////////////////
   void setup_transversal(Index start_n) {
@@ -47,14 +45,14 @@ public: // node and connection management  ////////////////////////////////////
   }
 
   inline void add_connection(const ConnectionPoint &nie1,
-                       const ConnectionPoint &nie2) {
+                             const ConnectionPoint &nie2) {
     return adjacency_list_.add_connection(nie1, nie2);
   }
 
   inline void remove_node(Index ni) { return adjacency_list_.remove_node(ni); }
 
   inline void remove_connection(const ConnectionPoint &nie1,
-                          const ConnectionPoint &nie2) {
+                                const ConnectionPoint &nie2) {
     return adjacency_list_.remove_connection(nie1, nie2);
   }
 
@@ -97,7 +95,7 @@ public:
   }
 
 public: // setters ////////////////////////////////////////////////////////////
-  inline void set_node_data(Index ni, Data & d) {
+  inline void set_node_data(Index ni, Data &d) {
     adjacency_list_.set_node_data(ni, d);
   }
 
@@ -107,13 +105,13 @@ protected:
 };
 
 template <typename Data, typename Edge>
-using _UndirectedGraph =
-    _Graph<Data, AdjacencyList<Data, Edge>,
-           IterList<Data, AdjacencyList<Data, Edge>>>;
+using _UndirectedGraph = _Graph<Data, AdjacencyList<Data, Edge>,
+                                IterList<Data, AdjacencyList<Data, Edge>>>;
 
 template <typename Data, typename Edge>
-using _DirectedGraph = _Graph<Data, DirectedAdjacencyList<Data, Edge>,
-    DirectedIterList<Data, DirectedAdjacencyList<Data, Edge>>>;
+using _DirectedGraph =
+    _Graph<Data, DirectedAdjacencyList<Data, Edge>,
+           DirectedIterList<Data, DirectedAdjacencyList<Data, Edge>>>;
 
 template <typename DataType, typename EdgeType>
 class UndirectedGraph : public _UndirectedGraph<DataType, EdgeType> {

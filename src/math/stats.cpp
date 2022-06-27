@@ -8,6 +8,7 @@
 
 namespace math {
 
+/// @brief - returns the sum of a set of numbers in a vector
 double sum(std::vector<double> const &a) {
   double s = 0;
   for (int i = 0; i < a.size(); i++) {
@@ -16,6 +17,7 @@ double sum(std::vector<double> const &a) {
   return s;
 }
 
+/// @brief - squares each element in a vector and returns the sum of those
 double sqsum(std::vector<double> const &a) {
   double s = 0;
   for (int i = 0; i < a.size(); i++) {
@@ -24,13 +26,16 @@ double sqsum(std::vector<double> const &a) {
   return s;
 }
 
+/// @brief - returns the standard deviation of the sum of a set of numbers in a vector
 double stdev(std::vector<double> const &nums) {
   double N = nums.size();
   return pow(sqsum(nums) / N - pow(sum(nums) / N, 2), 0.5);
 }
 
+/// @brief - returns the mean of a set of numbers in a vector
 double mean(std::vector<double> const &a) { return sum(a) / a.size(); }
 
+/// @brief - returns the pearson coefficient of a set of numbers in a vector
 double pearson_coeff(std::vector<double> const &x,
                      std::vector<double> const &y) {
   double sum = 0;
@@ -45,6 +50,7 @@ double pearson_coeff(std::vector<double> const &x,
   // return sum((X - mean(X))*(Y - mean(Y))) / (X.size()*stdev(X)* stdev(Y));
 }
 
+/// @brief - finds the absolute value of the difference between two data sets and adds them together
 double avg_unsigned_diff(std::vector<double> const &x,
                          std::vector<double> const &y) {
   double diff = 0;

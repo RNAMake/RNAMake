@@ -14,7 +14,7 @@
 
 namespace base::string {
 
-// @brief splits string with a delimiter
+/// @brief splits string with a delimiter
 // Known issue with escaped characters, will not work properly.
 Strings split(String s, const String &delimiter) {
   String token;
@@ -35,7 +35,7 @@ Strings split(String s, const String &delimiter) {
   return tokens;
 }
 
-// @brief joins a vector of strings with a delimiter
+/// @brief joins a vector of strings with a delimiter
 String join(const Strings &strs, const String &delimiter) {
   String return_s;
   int i = 0;
@@ -49,7 +49,7 @@ String join(const Strings &strs, const String &delimiter) {
   return return_s;
 }
 
-// @brief Trims whitespace from the left end of the provided String
+/// @brief Trims whitespace from the left end of the provided String
 String left_trim(String s) {
   s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
             return !std::isspace(ch);
@@ -57,7 +57,7 @@ String left_trim(String s) {
   return s;
 }
 
-// @brief Trims whitespace from the right end of the provided String
+/// @brief Trims whitespace from the right end of the provided String
 String right_trim(String s) {
   s.erase(std::find_if(s.rbegin(), s.rend(),
                        [](unsigned char ch) { return !std::isspace(ch); })
@@ -66,7 +66,7 @@ String right_trim(String s) {
   return s;
 }
 
-// @brief Trims whitespace from both ends of the provided String
+/// @brief Trims whitespace from both ends of the provided String
 String trim(String s) {
   s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
             return !std::isspace(ch);
@@ -78,7 +78,7 @@ String trim(String s) {
   return s;
 }
 
-// @brief adds quotes to around the string. string -> 'string'
+/// @brief adds quotes to around the string. string -> 'string'
 String quoted(const String &s) { return String("'") + s + String("'"); }
 
 } // namespace base::string
