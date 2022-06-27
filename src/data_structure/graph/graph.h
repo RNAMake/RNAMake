@@ -77,11 +77,9 @@ public:
     return node;
   }
 
-  inline void increase_level() { level_ += 1; }
-
-  inline void decrease_level() {
-    level_ -= 1;
-    assert(level_ > -1 && "level has to be positive");
+  inline void add_connection(const ConnectionPoint &nie1,
+                             const ConnectionPoint &nie2) {
+    return adjacency_list_.add_connection(nie1, nie2);
   }
 
 public: // getters

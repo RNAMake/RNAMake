@@ -106,6 +106,13 @@ public:
     return *this;
   }
 
+  /// @brief Matrix3x3 printout <<
+  friend inline std::ostream &operator<<(std::ostream &stream,
+                                         const Matrix3x3 &v) {
+    stream << v.get_str();
+    return stream;
+  }
+
 public: // Assignment: scalar
   /// @brief = Value
   inline Matrix3x3 &operator=(double const &t) {

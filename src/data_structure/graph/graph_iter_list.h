@@ -5,8 +5,10 @@
 #ifndef RNAMAKE_NEW_GRAPH_ITER_LIST_H
 #define RNAMAKE_NEW_GRAPH_ITER_LIST_H
 
+// standard headers
 #include <queue>
 
+// RNAMake headers
 #include <base/types.hpp>
 #include <data_structure/graph/graph_adjacency_list.h>
 #include <data_structure/graph/graph_base.h>
@@ -150,7 +152,7 @@ public:
 
 protected:
   virtual void _get_neighbors(Index ni, AdjacencyList &adj_list,
-                             std::vector<Index> &neighbors) {
+                              std::vector<Index> &neighbors) {
     neighbors.resize(0);
     auto &connections = adj_list.get_node_connections(ni);
     for (auto const &c : connections) {
@@ -166,7 +168,7 @@ protected:
   }
 
   virtual void _get_neighbors_path(VisitedNodeOP vn, AdjacencyList &adj_list,
-                                  std::vector<Index> &neighbors) {
+                                   std::vector<Index> &neighbors) {
     neighbors.resize(0);
     auto &connections = adj_list.get_node_connections(vn->index);
     for (auto const &c : connections) {
@@ -185,7 +187,6 @@ protected:
   std::queue<Index> _open = {};
   std::map<Index, int> _seen = {};
 };
-
 
 template <typename Data, typename AdjacencyList>
 class DirectedIterList : public IterList<Data, AdjacencyList> {
@@ -275,7 +276,7 @@ public:
 
 protected:
   virtual void _get_neighbors(Index ni, AdjacencyList &adj_list,
-                             std::vector<Index> &neighbors) {
+                              std::vector<Index> &neighbors) {
     neighbors.resize(0);
     auto &connections = adj_list.get_node_connections(ni);
     for (auto const &c : connections) {
@@ -283,8 +284,7 @@ protected:
         continue;
       }
       auto pi = c->get_partner_index(ni);
-      if (adj_list.has_parent(pi) &&
-          adj_list.get_parent_index(pi) == ni) {
+      if (adj_list.has_parent(pi) && adj_list.get_parent_index(pi) == ni) {
         if (this->_seen.find(c->get_partner_index(ni)) != this->_seen.end()) {
           continue;
         }
@@ -295,7 +295,7 @@ protected:
   }
 
   virtual void _get_neighbors_path(VisitedNodeOP vn, AdjacencyList &adj_list,
-                                  std::vector<Index> &neighbors) {
+                                   std::vector<Index> &neighbors) {
     neighbors.resize(0);
     auto &connections = adj_list.get_node_connections(vn->index);
     for (auto const &c : connections) {
