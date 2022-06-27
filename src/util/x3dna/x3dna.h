@@ -479,8 +479,6 @@ extern struct_Gvars Gvars;
 
 /* personal_end */
 
-#endif /* _X3DNA_H */
-
 /// @brief - x3dna_fnc.h
 
 void populate_nt_info(long num_residue, long **seidx, char **ResName,
@@ -946,3 +944,5 @@ void identity_matrix(double **d, long n);
 
 void xhelfunc(double *param, double **orien, double **mst, double *pos,
               double *mpos);
+
+#endif /* _X3DNA_H */

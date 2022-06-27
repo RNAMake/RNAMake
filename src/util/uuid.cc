@@ -7,7 +7,5 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include <iostream>
-#include <stdio.h>
 
 // RNAMake Headers

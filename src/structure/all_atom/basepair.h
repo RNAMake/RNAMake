@@ -9,7 +9,6 @@
 #include <math/matrix_3x3.hpp>
 #include <math/vector_3.hpp>
 #include <structure/base.hpp>
-#include <util/uuid.h>
 #include <util/x3dna/x3dna.h>
 
 namespace structure::all_atom {
@@ -18,13 +17,12 @@ class Basepair {
 public:
   inline Basepair(const util::Uuid &res1_uuid, util::Uuid const &res2_uuid,
                   const util::Uuid &uuid, structure::BasepairType bp_type,
-                  util::x3dna::X3dnaBPType x3dna_type, const String &name,
-                  const math::Vector3 &center,
-                  const math::Vector3s &c1_prime_coords,
+                  util::x3dna::X3dnaBPType x3dna_type, String &name,
+                  const math::Vector3 &center, math::Vector3s &c1_prime_coords,
                   const math::Matrix3x3 &ref_frame)
       : _res1_uuid(res1_uuid), _res2_uuid(res2_uuid), _uuid(uuid),
-        _bp_type(bp_type), _x3dna_type(x3dna_type), _name(name),
-        _center(center), _c1_prime_coords(c1_prime_coords),
+        _bp_type(bp_type), _x3dna_type(x3dna_type), _name(std::move(name)),
+        _center(center), _c1_prime_coords(std::move(c1_prime_coords)),
         _ref_frame(ref_frame) {}
 
   Basepair(const Basepair &bp) = default;
