@@ -80,6 +80,8 @@ public:
   typedef std::vector<Chaintype> ChainsOP;
 
 public:
+  inline Structure() : _residues(Residues()), _cut_points(Cutpoints()) {}
+
   inline Structure(Residues &res, Cutpoints &cut_points)
       : _residues(std::move(res)), _cut_points(std::move(cut_points)) {}
 
@@ -92,7 +94,9 @@ public: // res iterator
   const_iterator end() const { return _residues.end(); }
 
 public: // get_residue interface
-  Restype const &get_residue(int num, char chain_id, char i_code) const {
+  // TODO Need to remove this function and only use char
+  Restype const &get_residue(int num, const String &chain_id,
+                             char i_code) const {
 
     for (auto const &r : _residues) {
       if (num == r.get_num() && chain_id == r.get_chain_id() &&
@@ -100,22 +104,7 @@ public: // get_residue interface
         return r;
       }
     }
-
-    /*auto ss = std::stringstream();
-    ss << "cannot find residue with num: " << num << " chain id: " << chain_id
-       << " and i_code";
-    throw StructureException(ss.str());      */
-  }
-
-  // TODO Need to remove this function and only use char
-  Restype const &get_residue(int num, String chain_id, String i_code) const {
-
-    for (auto const &r : _residues) {
-      if (num == r.get_num() && chain_id[0] == r.get_chain_id() &&
-          i_code[0] == r.get_i_code()) {
-        return r;
-      }
-    }
+    throw StructureException("cannot find residue!");
 
     /*auto ss = std::stringstream();
     ss << "cannot find residue with num: " << num << " chain id: " << chain_id
@@ -236,70 +225,69 @@ public: // types
   typedef std::vector<Basepair> Basepairs;
 
 public:
-  Pose(Structure const &structure, std::vector<Basepair> const &basepairs,
-       Indexes const &end_indexes, Strings const &end_ids, String const &name)
-      : structure_(structure), basepairs_(basepairs), end_indexes_(end_indexes),
-        end_ids_(end_ids), name_(name) {
+  Pose(Structure &structure, Structure &proteins, Structure &small_molecules,
+       Basepairs &basepairs, Indexes &end_indexes, Strings &end_ids,
+       String &name)
+      : _structure(std::move(structure)), _proteins(std::move(proteins)),
+        _small_molecules(std::move(small_molecules)),
+        _basepairs(std::move(basepairs)), _end_indexes(end_indexes),
+        _end_ids(end_ids), _name(name) {
 
     /*expects<StructureException>(
-        end_ids_.size() == end_indexes_.size(),
+        _end_ids.size() == _end_indexes.size(),
         "Pose must have the same number of ends as end_ids has " +
-            std::to_string(end_indexes_.size()) + " ends and " +
+            std::to_string(_end_indexes.size()) + " ends and " +
             std::to_string(end_ids.size()) + "end ids");   */
   }
-
-protected:
-  // let dervived classes fill in members
-  Pose() : structure_(Structure(Residues(), Cutpoints())) {}
 
 public: // iterators
   // residue iterator
   typedef typename Residues::const_iterator const_iterator;
 
-  const_iterator begin() const { return structure_.begin(); }
-  const_iterator end() const { return structure_.end(); }
+  const_iterator begin() const { return _structure.begin(); }
+  const_iterator end() const { return _structure.end(); }
 
   // basepair iterator
   typedef typename std::vector<Basepair>::const_iterator const_bp_iterator;
 
-  const_bp_iterator bps_begin() const { return basepairs_.begin(); }
-  const_bp_iterator bps_end() const { return basepairs_.end(); }
+  const_bp_iterator bps_begin() const { return _basepairs.begin(); }
+  const_bp_iterator bps_end() const { return _basepairs.end(); }
 
   // end iterator
   Indexes::const_iterator end_indexes_begin() const {
-    return end_indexes_.begin();
+    return _end_indexes.begin();
   }
-  Indexes::const_iterator end_indexes_end() const { return end_indexes_.end(); }
+  Indexes::const_iterator end_indexes_end() const { return _end_indexes.end(); }
 
 public: // structure wrappers
-  inline String get_sequence() { return structure_.get_sequence(); }
+  inline String get_sequence() { return _structure.get_sequence(); }
 
   inline Residue const &get_residue(int num, char chain_id, char i_code) const {
-    return structure_.get_residue(num, chain_id, i_code);
+    return _structure.get_residue(num, chain_id, i_code);
   }
 
   inline Residue const &get_residue(util::Uuid const &uuid) const {
-    return structure_.get_residue(uuid);
+    return _structure.get_residue(uuid);
   }
 
   inline Residue const &get_residue(Index index) const {
-    return structure_.get_residue(index);
+    return _structure.get_residue(index);
   }
 
   inline size_t get_num_residues() const {
-    return structure_.get_num_residues();
+    return _structure.get_num_residues();
   }
 
-  inline size_t get_num_chains() const { return structure_.get_num_chains(); }
+  inline size_t get_num_chains() const { return _structure.get_num_chains(); }
 
   inline void get_chains() const {
-    // return structure_.get_chains();
+    // return _structure.get_chains();
   }
 
 public: // get basepairs interface
   /*BasepairsOP get_basepairs(util::Uuid const &bp_uuid) const {
     auto bps = std::vector<Basepair>();
-    for (auto const &bp : basepairs_) {
+    for (auto const &bp : _basepairs) {
       if (bp.get_uuid() == bp_uuid) {
         bps.push_back(bp);
       }
@@ -321,7 +309,7 @@ public: // get basepairs interface
                             util::Uuid const &uuid2) const {
 
     auto bps = std::vector<Basepair>();
-    for (auto const &bp : basepairs_) {
+    for (auto const &bp : _basepairs) {
       if (bp.get_res1_uuid() == uuid1 && bp.get_res2_uuid() == uuid2) {
         bps.push_back(bp);
       }
@@ -340,7 +328,7 @@ public: // get basepairs interface
 
   BasepairsOP get_basepairs(String const &name) const {
     auto bps = std::vector<Basepair>();
-    for (auto const &bp : basepairs_) {
+    for (auto const &bp : _basepairs) {
       if (name == bp.get_name()->get_str()) {
         bps.push_back(bp);
       }
@@ -357,7 +345,7 @@ public: // get basepairs interface
 public: // get basepair interface  (single basepair!)
   Basepair const &get_basepair(util::Uuid const &bp_uuid) const {
     auto bps = std::vector<Basepair const *>();
-    for (auto const &bp : basepairs_) {
+    for (auto const &bp : _basepairs) {
       if (bp.get_uuid() == bp_uuid) {
         bps.push_back(&bp);
       }
@@ -379,7 +367,7 @@ public: // get basepair interface  (single basepair!)
                                util::Uuid const &uuid2) const {
 
     auto bps = std::vector<Basepair const *>();
-    for (auto const &bp : basepairs_) {
+    for (auto const &bp : _basepairs) {
       if (bp.get_res1_uuid() == uuid1 && bp.get_res2_uuid() == uuid2) {
         bps.push_back(&bp);
       }
@@ -401,7 +389,7 @@ public: // get basepair interface  (single basepair!)
 
   Basepair const &get_basepair(String const &name) const {
     auto bps = std::vector<Basepair const *>();
-    for (auto const &bp : basepairs_) {
+    for (auto const &bp : _basepairs) {
       if (bp.get_name()->get_str() == name) {
         bps.push_back(&bp);
       }
@@ -420,18 +408,18 @@ public: // get basepair interface  (single basepair!)
   }
 
   inline Basepair const &get_basepair(Index index) const {
-    /*expects<StructureException>(index < basepairs_.size(),
+    /*expects<StructureException>(index < _basepairs.size(),
                            "cannot get basepair " + std::to_string(index) +
-                               " only " + std::to_string(basepairs_.size()) +
+                               " only " + std::to_string(_basepairs.size()) +
                                " total residues");   */
-    return basepairs_[index];
+    return _basepairs[index];
   }
 
 public: // get end interace
   Basepair const &get_end(util::Uuid const &bp_uuid) const {
     auto bps = std::vector<Basepair const *>();
-    for (auto const &ei : end_indexes_) {
-      auto &bp = basepairs_[ei];
+    for (auto const &ei : _end_indexes) {
+      auto &bp = _basepairs[ei];
       if (bp.get_uuid() == bp_uuid) {
         bps.push_back(&bp);
       }
@@ -453,8 +441,8 @@ public: // get end interace
                           util::Uuid const &uuid2) const {
 
     auto bps = std::vector<Basepair const *>();
-    for (auto const &ei : end_indexes_) {
-      auto &bp = basepairs_[ei];
+    for (auto const &ei : _end_indexes) {
+      auto &bp = _basepairs[ei];
       if (bp.get_res1_uuid() == uuid1 && bp.get_res2_uuid() == uuid2) {
         bps.push_back(&bp);
       }
@@ -474,8 +462,8 @@ public: // get end interace
 
   Basepair const &get_end(String const &name) const {
     auto bps = std::vector<Basepair const *>();
-    for (auto const &ei : end_indexes_) {
-      auto &bp = basepairs_[ei];
+    for (auto const &ei : _end_indexes) {
+      auto &bp = _basepairs[ei];
       if (bp.get_name()->get_str() == name) {
         bps.push_back(&bp);
       }
@@ -494,17 +482,17 @@ public: // get end interace
 
   inline Basepair const &get_end(Index index) const {
 
-    /*expects<StructureException>(index < end_indexes_.size(),
+    /*expects<StructureException>(index < _end_indexes.size(),
                                 "trying to get end: " + std::to_string(index) +
                                     " there are only " +
-                                    std::to_string(end_indexes_.size()));    */
+                                    std::to_string(_end_indexes.size()));    */
 
-    std::cout << index << " " << basepairs_.size() << " " << end_indexes_.size()
+    std::cout << index << " " << _basepairs.size() << " " << _end_indexes.size()
               << std::endl;
-    std::cout << end_indexes_[index] << std::endl;
-    std::cout << basepairs_[end_indexes_[index]].get_name_str() << std::endl;
+    std::cout << _end_indexes[index] << std::endl;
+    std::cout << _basepairs[_end_indexes[index]].get_name_str() << std::endl;
 
-    return basepairs_[end_indexes_[index]];
+    return _basepairs[_end_indexes[index]];
   }
 
 public:
@@ -517,10 +505,10 @@ public: // get end by end id
   Basepair const &get_end_by_id(String const &nend_id) const {
     auto bps = std::vector<Basepair const *>();
     int i = -1;
-    for (auto const &end_id : end_ids_) {
+    for (auto const &end_id : _end_ids) {
       i++;
       if (end_id == nend_id) {
-        bps.push_back(&basepairs_[end_indexes_[i]]);
+        bps.push_back(&_basepairs[_end_indexes[i]]);
       }
     }
 
@@ -537,19 +525,19 @@ public: // get end by end id
 
 public: // other getters
   /*base::SimpleStringCOP get_end_id(Index index) const {
-    if (index >= end_ids_.size()) {
+    if (index >= _end_ids.size()) {
       throw StructureException(
           "trying to get end_id: " + std::to_string(index) +
-          " there are only " + std::to_string(end_ids_.size()));
+          " there are only " + std::to_string(_end_ids.size()));
     }
-    return end_ids_[index];
+    return _end_ids[index];
   }
 
   int get_end_index(base::SimpleStringCOP name) const {
     auto &bp = get_end(name);
     int i = 0;
-    for (auto const &ei : end_indexes_) {
-      auto &end = basepairs_[ei];
+    for (auto const &ei : _end_indexes) {
+      auto &end = _basepairs[ei];
       if (bp == end) {
         return i;
       }
@@ -560,7 +548,7 @@ public: // other getters
 
   int get_end_index(String const &str) const {
     int i = 0;
-    for (auto const &ei : end_ids_) {
+    for (auto const &ei : _end_ids) {
       if (ei == str) {
         return i;
       }
@@ -579,59 +567,57 @@ public: // other getters
     return std::make_shared<base::VectorContainer<Residue>>(res);
   } */
 
-  size_t get_num_basepairs() const { return basepairs_.size(); }
+  size_t get_num_basepairs() const { return _basepairs.size(); }
 
-  size_t get_num_ends() const { return end_indexes_.size(); }
+  size_t get_num_ends() const { return _end_indexes.size(); }
 
-  // base::SimpleStringCOP get_name() { return name_; }
-
-private:
-  Structure structure_;
-  Structure _proteins;
-  Structure _small_molecules;
-  std::vector<Basepair> basepairs_;
-  Indexes end_indexes_;
-  String name_;
-  String _dot_bracket;
-  mutable Strings end_ids_;
-};
-
-template <typename BPtype, typename Structuretype, typename Chaintype,
-          typename Restype>
-class Segment : public Pose<BPtype, Structuretype, Chaintype, Restype> {
-private:
-  typedef Pose<BPtype, Structuretype, Chaintype, Restype> BaseClass;
-  typedef std::vector<Restype> Residues;
-
-public:
-  inline Segment(Structuretype const &structure,
-                 std::vector<BPtype> const &basepairs,
-                 Indexes const &end_indexes, String const &end_ids,
-                 const String &name, const Structuretype &proteins,
-                 const Structuretype &small_molecules,
-                 util::MotifType segment_type, Index aligned_end_index,
-                 util::Uuid const &uuid)
-      : BaseClass(structure, basepairs, end_indexes, end_ids, name),
-        segment_type_(segment_type), aligned_end_index_(aligned_end_index) {}
-
-  // TODO Change back to private
-public:
-  // let dervived classes fill in members
-  Segment() : BaseClass() {}
-
-  typedef std::vector<BPtype> Basepairs;
-
-public:
-  inline Index get_aligned_end_indx() const { return aligned_end_index_; }
-
-  util::Uuid const &get_uuid() const { return uuid_; }
-
-  util::MotifType get_segment_type() const { return segment_type_; }
+  // base::SimpleStringCOP get_name() { return _name; }
 
 protected:
-  util::MotifType segment_type_;
-  Index aligned_end_index_;
-  util::Uuid uuid_;
+  Structure _structure;
+  Structure _proteins;
+  Structure _small_molecules;
+  Basepairs _basepairs;
+  Indexes _end_indexes;
+  String _name;
+  String _dot_bracket;
+  mutable Strings _end_ids;
+};
+
+template <typename Basepair, typename Structure, typename Chain,
+          typename Residue>
+class Segment : public Pose<Basepair, Structure, Chain, Residue> {
+private:
+  typedef Pose<Basepair, Structure, Chain, Residue> BaseClass;
+  typedef std::vector<Residue> Residues;
+  typedef std::vector<Basepair> Basepairs;
+
+public:
+  inline Segment(Structure &structure, Structure &proteins,
+                 Structure &small_molecules, Basepairs &basepairs,
+                 Indexes &end_indexes, Strings &end_ids, String &name,
+                 util::MotifType segment_type, Index aligned_end_index,
+                 util::Uuid const &uuid)
+      : BaseClass(structure, proteins, small_molecules, basepairs, end_indexes,
+                  end_ids, name),
+        _segment_type(segment_type), _aligned_end_index(aligned_end_index),
+        _uuid(uuid) {}
+
+public:
+  [[nodiscard]] inline Index get_aligned_end_indx() const {
+    return _aligned_end_index;
+  }
+
+  [[nodiscard]] util::Uuid const &get_uuid() const { return _uuid; }
+
+  [[nodiscard]] util::MotifType get_segment_type() const {
+    return _segment_type;
+  }
+
+private:
+  util::MotifType _segment_type;
+  Index _aligned_end_index;
+  util::Uuid _uuid;
 };
 
 template <typename Restype>
@@ -668,10 +654,10 @@ String generate_bp_name(Restype const &res1, Restype const &res2) {
   }
 }
 
-/*template <typename BPtype, typename Structuretype>
+/*template <typename Basepair, typename Structure>
 base::VectorContainerOP<Index>
-get_end_indexes_from_basepairs(Structuretype const &s,
-                               std::vector<BPtype> const &bps) {
+get_end_indexes_from_basepairs(Structure const &s,
+                               std::vector<Basepair> const &bps) {
   auto start_chain_end_uuids = std::vector<util::Uuid>();
   auto end_chain_end_uuids = std::vector<util::Uuid>();
 

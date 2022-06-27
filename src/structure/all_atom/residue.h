@@ -34,45 +34,29 @@ public:
    */
   Residue(char name, int num, String &chain_id, char i_code, Atoms &atoms,
           const util::Uuid &uuid)
-      : _atoms(std::move(atoms)) {
+      : _name(name), _num(num), _chain_id(std::move(chain_id)), _i_code(i_code),
+        _atoms(std::move(atoms)), _uuid(uuid) {
     //_build_beads();
-  }
-
-  Residue(String const &s) {
-    auto spl = base::string::split(s, ",");
-    //_res_type = rts.get_residue_type(spl[0]);
-    _name = spl[1][0];
-    _num = std::stoi(spl[2]);
-    _chain_id = spl[3];
-    _i_code = spl[4][0];
-    //_uuid = util::Uuid();
-    _atoms = Atoms();
-    int i = 5;
-    while (i < spl.size()) {
-      if (spl[i].size() <= 1) {
-        i++;
-        continue;
-      }
-      _atoms.push_back(Atom(spl[i]));
-      i++;
-    }
-    _build_beads();
   }
 
   ~Residue() = default;
 
-public: // iterator stuff
+public: // iterator ////////////////////////////////////////////////////////////
   typedef Atoms::const_iterator const_iterator;
 
-  const_iterator begin() const noexcept { return _atoms.begin(); }
+  [[nodiscard]] const_iterator begin() const noexcept { return _atoms.begin(); }
 
-  const_iterator end() const noexcept { return _atoms.end(); }
+  [[nodiscard]] const_iterator end() const noexcept { return _atoms.end(); }
 
   typedef util::Beads::const_iterator bead_const_iterator;
 
-  bead_const_iterator bead_begin() const noexcept { return _beads.begin(); }
+  [[nodiscard]] bead_const_iterator bead_begin() const noexcept {
+    return _beads.begin();
+  }
 
-  bead_const_iterator bead_end() const noexcept { return _beads.end(); }
+  [[nodiscard]] bead_const_iterator bead_end() const noexcept {
+    return _beads.end();
+  }
 
 public:
   inline bool operator==(Residue const &r) const { return is_equal(r); }
@@ -86,7 +70,7 @@ public:
     } */
     return stream;
   }
-
+  // TODO I think this can be externalized
   inline int connected_to(Residue const &res, float cutoff = 5.0) const {
     String o3 = "O3'", p = "P";
 
@@ -131,19 +115,18 @@ public:
     return true;
   }
 
-public: // getters
-  /**
-   * get atom object by its name
-   * @param   name   name of atom
-   *
-   * examples:
-   * @code
-   *  auto a = r->get_atom("C1'");
-   *  std::cout << a->coords() << std::endl;
-   *  //OUTPUT -23.806 -50.289  86.732
-   * @endcode
-   */
-  inline const Atom &get_atom(String const &name) const {
+public: // getters ////////////////////////////////////////////////////////////
+  [[nodiscard]] char get_name() const { return _name; }
+
+  [[nodiscard]] int get_num() const { return _num; }
+
+  [[nodiscard]] const String &get_chain_id() const { return _chain_id; }
+
+  [[nodiscard]] char get_i_code() const { return _i_code; }
+
+  [[nodiscard]] const util::Uuid get_uuid() const { return _uuid; }
+
+  [[nodiscard]] inline const Atom &get_atom(String const &name) const {
     for (auto const &a : _atoms) {
       if (a.get_name() == name) {
         return a;
@@ -153,13 +136,17 @@ public: // getters
                              " does not exist in this residue");
   }
 
-  inline const Atom  &get_atom(Index index) const { return _atoms[index]; }
+  [[nodiscard]] inline const Atom &get_atom(Index index) const {
+    return _atoms[index];
+  }
 
-  inline math::Vector3 const &get_coords(String const &name) const {
+  [[nodiscard]] inline const math::Vector3 &
+  get_coords(String const &name) const {
     return get_atom(name).get_coords();
   }
 
-  inline const util::Bead &get_bead(util::BeadType bead_type) const {
+  [[nodiscard]] inline const util::Bead &
+  get_bead(util::BeadType bead_type) const {
     for (auto const &b : _beads) {
       if (b.get_type() == bead_type) {
         return b;
@@ -170,17 +157,11 @@ public: // getters
     return _beads[0];
   }
 
-  // TODO Temporary get rid of these setters
+  [[nodiscard]] inline math::Vector3 get_center() const {
+    return center(_atoms);
+  }
 
-  // template <typename T> inline void set_chain_id(T &id) { _chain_id = id; }
-
-  // inline void set_num(int &num) { _num = num; }
-
-  // inline void set_uuid(util::Uuid const &id) { _uuid = id; }
-  
-  inline math::Vector3 get_center() const { return center(_atoms); }
-
-  inline size_t get_num_atoms() const { return _atoms.size(); }
+  [[nodiscard]] inline size_t get_num_atoms() const { return _atoms.size(); }
 
   // inline String const &get_res_name() const { return _res_type.get_name(); }
 
@@ -189,8 +170,7 @@ public: // getters
 
   String get_str() const;
 
-  //      json::JSON
-  //      get_json() const;
+
 
   /**
    * wrapper for to_pdb_str(int &, int, String const &) when one does not care
@@ -265,9 +245,6 @@ public: // non const
 
   // inline void new_uuid() { _uuid = util::Uuid(); }
 
-public: // getters ////////////////////////////////////////////////////////////
-  [[nodiscard]] char get_name() const { return _name; }
-
 
 private:
   void _build_beads();
@@ -275,7 +252,6 @@ private:
   void _build_beads_RNA();
 
   // TODO Need to remove this function later
-
 
 private:
   char _name;
@@ -299,8 +275,6 @@ typedef std::shared_ptr<Residue const> ResidueCOP;
 /**
  * Typedef of a vector of shared pointer vectors, only used this.
  */
-typedef std::vector<ResidueOP> ResidueOPs;
-
 inline bool residue_steric_clash_RNA(Residue const &r1, Residue const &r2) {
   for (auto it1 = r1.bead_begin(); it1 != r1.bead_end(); it1++) {
     if (it1->get_type() == util::BeadType::PHOS) {
