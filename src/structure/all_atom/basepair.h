@@ -18,9 +18,14 @@ class Basepair {
 public:
   inline Basepair(const util::Uuid &res1_uuid, util::Uuid const &res2_uuid,
                   const util::Uuid &uuid, structure::BasepairType bp_type,
-                  const String &name, util::x3dna::X3dnaBPType x3dna_type,
-                  const math::Matrix3x3 &ref_frame, const math::Vector3 &center,
-                  const math::Vector3s &c1_prime_coords) {}
+                  util::x3dna::X3dnaBPType x3dna_type, const String &name,
+                  const math::Vector3 &center,
+                  const math::Vector3s &c1_prime_coords,
+                  const math::Matrix3x3 &ref_frame)
+      : _res1_uuid(res1_uuid), _res2_uuid(res2_uuid), _uuid(uuid),
+        _bp_type(bp_type), _x3dna_type(x3dna_type), _name(name),
+        _center(center), _c1_prime_coords(c1_prime_coords),
+        _ref_frame(ref_frame) {}
 
   Basepair(const Basepair &bp) = default;
 
@@ -111,7 +116,6 @@ public:
   } */
 
 public: // getters
-
 public:
   [[nodiscard]] util::Uuid const &get_partner(util::Uuid const &uuid) const {
     if (uuid == _res1_uuid) {
@@ -137,19 +141,23 @@ public:
     return _res2_uuid;
   }
 
-  inline const math::Matrix3x3 &get_ref_frame() const { return _ref_frame; }
+  [[nodiscard]] inline const math::Matrix3x3 &get_ref_frame() const {
+    return _ref_frame;
+  }
 
-  inline const math::Vector3 &get_center() const { return _center; }
+  [[nodiscard]] inline const math::Vector3 &get_center() const {
+    return _center;
+  }
 
-  inline const math::Vector3s &get_c1_prime_coords() const {
+  [[nodiscard]] inline const math::Vector3s &get_c1_prime_coords() const {
     return _c1_prime_coords;
   }
 
-  inline const math::Vector3 &get_res1_c1_prime_coord() const {
+  [[nodiscard]] inline const math::Vector3 &get_res1_c1_prime_coord() const {
     return _c1_prime_coords[0];
   }
 
-  inline const math::Vector3 &get_res2_c1_prime_coord() const {
+  [[nodiscard]] inline const math::Vector3 &get_res2_c1_prime_coord() const {
     return _c1_prime_coords[1];
   }
 
@@ -158,11 +166,11 @@ private:
   util::Uuid _res1_uuid;
   util::Uuid _res2_uuid;
   BasepairType _bp_type;
+  util::x3dna::X3dnaBPType _x3dna_type;
   String _name;
   math::Vector3 _center;
   math::Vector3s _c1_prime_coords;
   math::Matrix3x3 _ref_frame;
-  util::x3dna::X3dnaBPType _x3dna_type;
 };
 
 typedef std::shared_ptr<Basepair> BasepairOP;

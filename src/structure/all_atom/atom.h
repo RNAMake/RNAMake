@@ -108,7 +108,7 @@ public:
 
 public: // accessors
   /**
-   * Accessor for name_
+   * Accessor for _name
    */
   inline const String &get_name() const { return _name; }
 
