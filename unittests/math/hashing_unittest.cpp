@@ -10,7 +10,6 @@
 #include "math/matrix_3x3.hpp"
 
 TEST_CASE("Test hashing of 6D coords") {
-
   SUBCASE("test binner from rosetta example") {
     auto lower = math::Vector3(12.5, 16.25, 4.25);
     auto upper = math::Vector3(15.5, 20, 8.5);
@@ -40,7 +39,6 @@ TEST_CASE("Test hashing of 6D coords") {
       CHECK(bin[i] == bin_2[i]);
     }
   }
-
   SUBCASE("test binner wrapping") {
     auto lower = math::Vector3(-5.0, -5.0, -5.0);
     auto upper = math::Vector3(5.0, 5.0, 5.0);
@@ -114,7 +112,6 @@ TEST_CASE("Test hashing of 6D coords") {
     // auto histo_3 = math::SixDHistogram(lines2,
     // math::SixDHistogramStrType::BINARY);
   }
-
   SUBCASE("test two histograms in one file") {
     math::Real6 pA;
     pA[0] = -4.25;
@@ -135,7 +132,6 @@ TEST_CASE("Test hashing of 6D coords") {
     CHECK(histo.contains(pA));
     CHECK(histo_2.contains(pA));
   }
-
   SUBCASE("test read tecto bin file") {
     auto path =
         base::base_dir() + "//unittests/unittest_resources/math/test_tecto.bin";
@@ -145,7 +141,6 @@ TEST_CASE("Test hashing of 6D coords") {
 
     auto histo = math::SixDHistogram(in);
   }
-
   /*SUBCASE("test histo on tecto data") {
       auto in = std::ifstream();
       in.open("test.out");
@@ -171,7 +166,6 @@ TEST_CASE("Test hashing of 6D coords") {
 
       histo.to_text_file("test_histo.csv");
   }*/
-
   SUBCASE("test on tecto data") {
     auto path =
         base::base_dir() + "//unittests/unittest_resources/math/test.out";
@@ -192,7 +186,7 @@ TEST_CASE("Test hashing of 6D coords") {
 
     auto values = math::Real6();
     auto bb =
-        math::BoundingBox(math::Point(-10, -10, -10), math::Point(10, 10, 10));
+        math::BoundingBox(math::Vector3(-10, -10, -10), math::Vector3(10, 10, 10));
     auto bin_widths = math::Real6{0.25, 0.25, 0.25, 5, 5, 5};
     auto binner = math::SixDCoordinateBinner(bb, bin_widths);
 
@@ -209,7 +203,7 @@ TEST_CASE("Test hashing of 6D coords") {
       if (line.length() < 5) {
         break;
       }
-      auto spl = base::split_str_by_delimiter(line, ",");
+      auto spl = base::string::split(line, ",");
 
       for (int j = 0; j < 6; j++) {
         values[j] = std::stod(spl[j]);
@@ -295,10 +289,9 @@ TEST_CASE("Test hashing of 6D coords") {
     }
     CHECK(count == count_2);
   }
-
   SUBCASE("test 3d binner from rosetta example") {
-    auto lower = math::Point(12.5, 16.25, 4.25);
-    auto upper = math::Point(15.5, 20, 8.5);
+    auto lower = math::Vector3(12.5, 16.25, 4.25);
+    auto upper = math::Vector3(15.5, 20, 8.5);
     auto bb = math::BoundingBox(lower, upper);
 
     math::Real3 binwidths;
@@ -306,7 +299,7 @@ TEST_CASE("Test hashing of 6D coords") {
 
     auto binner = math::ThreeDCoordinateBinner(bb, binwidths);
 
-    auto pA = math::Point(13.6, 19.4, 5.3);
+    auto pA = math::Vector3(13.6, 19.4, 5.3);
 
     auto bin = binner.bin3(pA);
     auto bin_center = binner.bin_center_point(bin);
@@ -318,10 +311,9 @@ TEST_CASE("Test hashing of 6D coords") {
       CHECK(bin[i] == bin_2[i]);
     }
   }
-
   SUBCASE("test 3d histogram") {
-    auto bb = math::BoundingBox(math::Point(-100, -100, -100),
-                                math::Point(100, 100, 100));
+    auto bb = math::BoundingBox(math::Vector3(-100, -100, -100),
+                                math::Vector3(100, 100, 100));
     auto bin_widths = math::Real3{0.5, 0.5, 0.5};
     auto histo = math::ThreeDHistogram(bb, bin_widths);
 
@@ -329,9 +321,9 @@ TEST_CASE("Test hashing of 6D coords") {
     std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
     std::uniform_real_distribution<> dis(-100.0, 100.0);
 
-    auto points = math::Points();
+    auto points = math::Vector3s();
     for (int i = 0; i < 100; i++) {
-      auto p = math::Point(dis(gen), dis(gen), dis(gen));
+      auto p = math::Vector3(dis(gen), dis(gen), dis(gen));
       histo.add(p);
       points.push_back(p);
     }
