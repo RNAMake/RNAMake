@@ -13,7 +13,7 @@
 
 namespace structure::all_atom {
 
-math::Vector3 center(Atoms const &atoms) {
+math::Vector3 center_of_atoms(const Atoms &atoms) {
   auto center = math::Vector3();
   for (auto const &a : atoms) {
     center += a.get_coords();
@@ -22,13 +22,13 @@ math::Vector3 center(Atoms const &atoms) {
 }
 
 void Residue::_build_beads() {
-  /*if (_res_type.get_set_type() == SetType::RNA) {
+  if (_rtype == ResidueType::RNA) {
     _build_beads_RNA();
-  } else if (_res_type.get_set_type() == SetType::PROTEIN) {
+  } else if (_rtype == ResidueType::PROTEIN) {
     _beads.push_back(util::Bead(get_coords("CA"), util::BeadType::CALPHA));
   } else {
     _beads.push_back(util::Bead(get_center(), util::BeadType::MCENTER));
-  }*/
+  }
 }
 
 void Residue::_build_beads_RNA() {
@@ -36,34 +36,30 @@ void Residue::_build_beads_RNA() {
   int i = -1;
   for (auto const &a : _atoms) {
     i++;
-    if (i < 3) {
+    if (a.get_name() == "P" || a.get_name() == "OP1" || a.get_name() == "OP2") {
       phos_atoms.push_back(&a);
-    } else if (i < 12) {
+    } else if (a.get_name().find('\'') != -1) {
       sugar_atoms.push_back(&a);
     } else {
       base_atoms.push_back(&a);
     }
   }
-
   auto get_center = [&](std::vector<Atom const *> const &atom_ptrs) {
     auto center = math::Vector3();
     for (auto a : atom_ptrs) {
       center = center + a->get_coords();
     }
     center = center / float(atom_ptrs.size());
-    // std::cout << atom_ptrs.size() << std::endl;
-
     return center;
   };
-
-  if (phos_atoms.size() > 0) {
+  if (!phos_atoms.empty()) {
     _beads.push_back(util::Bead(get_center(phos_atoms), util::BeadType::PHOS));
   }
-  if (sugar_atoms.size() > 0) {
+  if (!sugar_atoms.empty()) {
     _beads.push_back(
         util::Bead(get_center(sugar_atoms), util::BeadType::SUGAR));
   }
-  if (base_atoms.size() > 0) {
+  if (!base_atoms.empty()) {
     _beads.push_back(util::Bead(get_center(base_atoms), util::BeadType::BASE));
   }
 }
@@ -77,22 +73,6 @@ String Residue::get_str() const {
     ss << a.get_str() + ",";
   }
   return ss.str();
-}
-
-String Residue::get_pdb_str(int &acount, int rnum, char chain_id) const {
-  auto s = String();
-  /*
-  for (auto const &a : _atoms) {
-    char buffer[200];
-    std::sprintf(buffer,
-                 "%-6s%5d %-4s%1s%-4c%1c%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f     "
-                 " %4s%2s\n",
-                 "ATOM", acount, a.get_str().c_str(), "", _name, chain_id, rnum,
-                 "", a.get_x(), a.get_y(), a.get_z(), 1.00, 0.00, "", "");
-    s += String(buffer);
-    acount++;
-  }           */
-  return s;
 }
 
 String Residue::get_bead_pdb_str(int &acount, int rnum, char chain_id) const {
@@ -120,11 +100,13 @@ String Residue::get_bead_pdb_str(int &acount, int rnum, char chain_id) const {
   return s;
 }
 
+
+/*
 void Residue::write_pdb(String const fname) {
   std::ofstream out;
   out.open(fname.c_str());
   out << get_pdb_str(1) << std::endl;
   out.close();
-}
+} */
 
 } // namespace structure::all_atom

@@ -24,4 +24,4 @@ Uuid uuid_from_str(const String &str) { return sole::rebuild(str); }
 
 } // namespace util
 
-#endif
+#endif //RNAMake_uuid_h
