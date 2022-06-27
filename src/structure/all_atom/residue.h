@@ -9,58 +9,18 @@
 #ifndef __RNAMake__structure_residue__
 #define __RNAMake__structure_residue__
 
-#include <stdio.h>
+#include <cstdio>
 
 // RNAMake Headers
 #include <base/types.hpp>
-#include <doctest.h>
-#include <structure/atom.h>
-#include <structure/residue_type.h>
-#include <structure/residue_type_set.h>
+#include <structure/all_atom/atom.h>
+#include <structure/base.hpp>
 #include <util/bead.h>
-#include <util/uuid.h>
 
 namespace structure::all_atom {
 
 math::Vector3 center(Atoms const &);
 
-/**
- * Store residue information from pdb file, stores all Atom objects that
- * belong to residue. Implementation is designed to be extremely lightweight.
- *
- * To get an example instance of Residue please include:\n
- * #include "instances/structure_instances.hpp"
- *
- * Example of Common Usage:
- *
- * @code
- *  //grabbing example instance
- *  #include "instances/structure_instances.hpp"
- *  auto r = instances::residue();
- *  //simply getting name of residue, etc: A,G,C or U
- *  std::cout << r->name() << std::endl; //OUTPUT: "G"
- *
- *  //getting a specific atom from residue
- *  auto a = r->gFet_atom("C1'");
- *  std::cout << a->coords() << std::endl; //OUTPUT: "-23.806 -50.289  86.732"
- *
- *  auto beads = r->get_beads();
- *  std::cout << beads[0]->btype() << " " << beads[0]->center() << std::endl;
- *  //OUTPUT: "1 24.027 -48.5001111111 86.368"
- *
- *  //get PDB formatted String (can also write to file with
- * r->to_pdb("test.pdb") ) std::cout << r->to_pdb_str() << std::endl; //OUTPUT
- * --> ATOM      1 O5'  G   A 103     -26.469 -47.756  84.669  1.00  0.00 ATOM
- * 2 C5'  G   A 103     -25.050 -47.579  84.775  1.00  0.00 ATOM      3 C4'  G
- * A 103     -24.521 -48.156  86.068  1.00  0.00F ATOM      4 O4'  G   A 103
- * -24.861 -49.568  86.118  1.00  0.00 ATOM      5 C3'  G   A 103     -23.009
- * -48.119  86.281  1.00  0.00 ATOM      6 O3'  G   A 103     -22.548
- * -46.872  86.808  1.00  0.00
- *  .
- *  .
- *  .
- * @endcode
- */
 class Residue {
 public:
   /**
@@ -72,36 +32,20 @@ public:
    * @param   rtype   residue type, dictates residue topology and information
    *
    */
-  Residue(char name, int num, char chain_id, char i_code,
-          ResidueTypeCOP res_type, Atoms &atoms, util::Uuid const &uuid)
-      : primitives::Residue(name, num, chain_id, i_code, uuid),
-        _res_type(res_type), _atoms(std::move(atoms)) {
-    _build_beads();
+  Residue(char name, int num, String &chain_id, char i_code, Atoms &atoms,
+          const util::Uuid &uuid)
+      : _atoms(std::move(atoms)) {
+    //_build_beads();
   }
 
-  /**
-   * Copy constructor
-   * @param   r   Residue object copying from
-   */
-  Residue(Residue const &r)
-      : primitives::Residue(r._name, r._num, r._chain_id, r._i_code, r._uuid),
-        _res_type(r._res_type), _atoms(r._atoms), _beads(r._beads) {}
-
-  /**
-   * Construction from String, used in reading data from files
-   * @param   s   string generated from to_str()
-   * @see to_str()
-   */
-  Residue(String const &s, structure::ResidueTypeSet const &rts)
-      : primitives::Residue() {
-
+  Residue(String const &s) {
     auto spl = base::string::split(s, ",");
-    _res_type = rts.get_residue_type(spl[0]);
+    //_res_type = rts.get_residue_type(spl[0]);
     _name = spl[1][0];
     _num = std::stoi(spl[2]);
-    _chain_id = spl[3][0];
+    _chain_id = spl[3];
     _i_code = spl[4][0];
-    _uuid = util::Uuid();
+    //_uuid = util::Uuid();
     _atoms = Atoms();
     int i = 5;
     while (i < spl.size()) {
@@ -112,14 +56,10 @@ public:
       _atoms.push_back(Atom(spl[i]));
       i++;
     }
-    //          _replace_missing_phosphate_backbone(_atoms, rts);
     _build_beads();
   }
 
-  /**
-   * Empty deconstructor
-   */
-  ~Residue() {}
+  ~Residue() = default;
 
 public: // iterator stuff
   typedef Atoms::const_iterator const_iterator;
@@ -140,10 +80,10 @@ public:
   inline bool operator!=(Residue const &r) const { return !is_equal(r); }
 
   friend std::ostream &operator<<(std::ostream &stream, Residue const &r) {
-    stream << r._num << r._chain_id;
+    /*stream << r._num << r._chain_id;
     if (r._i_code != ' ') {
       stream << "(" << r._i_code << ")";
-    }
+    } */
     return stream;
   }
 
@@ -168,7 +108,7 @@ public:
 
 public:
   inline bool is_equal(Residue const &r, bool check_uuid = true) const {
-    if (check_uuid && _uuid != r._uuid) {
+    /*if (check_uuid && _uuid != r._uuid) {
       return false;
     }
     if (_name != r._name) {
@@ -187,7 +127,7 @@ public:
       if (_atoms[i] != r._atoms[i]) {
         return false;
       }
-    }
+    }  */
     return true;
   }
 
@@ -203,75 +143,50 @@ public: // getters
    *  //OUTPUT -23.806 -50.289  86.732
    * @endcode
    */
-  inline Atom const &get_atom(String const &name) const {
-    int index = _res_type->get_atom_index(name);
-    if (index == -1) {
-      throw ResidueException("atom name: " + name +
-                             " does not exist in this residue");
+  inline const Atom &get_atom(String const &name) const {
+    for (auto const &a : _atoms) {
+      if (a.get_name() == name) {
+        return a;
+      }
     }
-    return _atoms[index];
+    throw StructureException("atom name: " + name +
+                             " does not exist in this residue");
   }
 
-  inline Atom const &get_atom(Index index) const { return _atoms[index]; }
+  inline const Atom  &get_atom(Index index) const { return _atoms[index]; }
 
   inline math::Vector3 const &get_coords(String const &name) const {
     return get_atom(name).get_coords();
   }
 
-  inline util::Bead const &get_bead(util::BeadType bead_type) const {
+  inline const util::Bead &get_bead(util::BeadType bead_type) const {
     for (auto const &b : _beads) {
       if (b.get_type() == bead_type) {
         return b;
       }
     }
-    throw ResidueException("bead type: " + std::to_string((int)bead_type) +
-                           " does not exist in this residue");
+    // throw ResidueException("bead type: " + std::to_string((int)bead_type) +
+    //                        " does not exist in this residue");
+    return _beads[0];
   }
 
   // TODO Temporary get rid of these setters
 
-  template <typename T> inline void set_chain_id(T &id) { _chain_id = id; }
+  // template <typename T> inline void set_chain_id(T &id) { _chain_id = id; }
 
-  inline void set_num(int &num) { _num = num; }
+  // inline void set_num(int &num) { _num = num; }
 
-  inline void set_uuid(util::Uuid const &id) { _uuid = id; }
-
-  // TODO need to remove this function
-  inline AtomOPs get_atoms() {
-    AtomOPs atom_ptrs;
-    for (auto const &a : _atoms) {
-      AtomOP atom_ptr = std::make_shared<Atom>(a);
-      atom_ptrs.push_back(atom_ptr);
-    }
-    return atom_ptrs;
-  }
-
+  // inline void set_uuid(util::Uuid const &id) { _uuid = id; }
+  
   inline math::Vector3 get_center() const { return center(_atoms); }
 
   inline size_t get_num_atoms() const { return _atoms.size(); }
 
-  inline String const &get_res_name() const { return _res_type->get_name(); }
+  // inline String const &get_res_name() const { return _res_type.get_name(); }
 
-  inline SetType get_res_set_type() const { return _res_type->get_set_type(); }
+  // inline SetType get_res_set_type() const { return _res_type.get_set_type();
+  // }
 
-  /**
-   * stringifes residue object
-   * @code
-   *  #include "instances/structure_instances.hpp"
-   *  auto r = instances::residue();
-   *  std::cout << r->to_str() << std::endl;
-   *  //OUTPUT
-   *  GUA,G,103,A,,N,N,N,O5' -26.469 -47.756 84.669,C5' -25.05
-   * -47.579 84.775,C4' -24.521 -48.156 86.068,O4' -24.861 -49.568 86.118,C3'
-   * -23.009 -48.119 86.281,O3' -22.548 -46.872 86.808,C1' -23.806
-   * -50.289 86.732,C2' -22.812 -49.259 87.269,O2' -23.167 -48.903 88.592,N1
-   * -19.538 -52.485 85.025,C2 -19.717 -51.643 86.097,N2 -18.624
-   * -51.354 86.809,N3 -20.884 -51.124 86.445,C4 -21.881 -51.521 85.623,C5
-   * -21.811 -52.356 84.527,C6 -20.546 -52.91 84.164,O6 -20.273
-   * -53.677 83.228,N7 -23.063 -52.513 83.947,C8 -23.858 -51.786 84.686,N9
-   * -23.21 -51.159 85.722,
-   * @endcode
-   */
   String get_str() const;
 
   //      json::JSON
@@ -282,9 +197,10 @@ public: // getters
    *about renumbering atoms and residue
    **/
   inline String get_pdb_str(int acount) const {
-    auto num = _num;
-    auto chain_id = _chain_id;
-    return get_pdb_str(acount, num, chain_id);
+    // auto num = _num;
+    // auto chain_id = _chain_id;
+    // return get_pdb_str(acount, num, chain_id);
+    return String("");
   }
 
   /**
@@ -319,7 +235,7 @@ public: // getters
   void write_pdb(String const);
 
 public: // non const
-  inline void move(math::Vector3 const &p) {
+  /*inline void move(math::Vector3 const &p) {
     for (auto &a : _atoms) {
       a.move(p);
     }
@@ -341,21 +257,17 @@ public: // non const
   inline void transform(math::Matrix3x3 const &r, math::Vector3 const &t) {
     auto dummy = math::Vector3();
     transform(r, t, dummy);
-  }
+  }               */
 
   inline void remove_beads() { _beads = util::Beads(); }
 
   inline void build_beads() { _build_beads(); }
 
-  inline void new_uuid() { _uuid = util::Uuid(); }
+  // inline void new_uuid() { _uuid = util::Uuid(); }
 
-public: // getters
-        /**
-         * getter for the one letter residue type
-         */
-        /*inline
-        String
-        short_name() const { return res_type_->short_name(); }*/
+public: // getters ////////////////////////////////////////////////////////////
+  [[nodiscard]] char get_name() const { return _name; }
+
 
 private:
   void _build_beads();
@@ -364,124 +276,16 @@ private:
 
   // TODO Need to remove this function later
 
-  std::map<String, std::shared_ptr<Residue>> _ref_residues;
 
-  //      bool
-  //      _replace_missing_phosphate_backbone(
-  //              std::vector<Atom> &atoms,
-  //              ResidueTypeCOP res_type) const {
-  //
-  //          auto ref_res = _ref_residues.at(res_type->get_name());
-  //
-  //          // if these atoms do not exist cannot build res ref frame
-  ////          if(atoms[ res_type->get_atom_index("C1'")] == nullptr) { return
-  /// false; } /          if (res_type->get_short_name() == 'A' ||
-  /// res_type->get_short_name() == 'G') { /              if(atoms[
-  /// res_type->get_atom_index("N9")] == nullptr) { return false; } /          }
-  ////          else {
-  ////              if(atoms[ res_type->get_atom_index("N1")] == nullptr) {
-  /// return false; } /          }
-  //            bool found_C1 = false;
-  //          for (Atom const &atom : atoms) {
-  //              if(atom.get_name() == "C1'") {
-  //                  found_C1 = true;
-  //              }
-  //          }
-  //
-  //          auto ref_frame_1 = _get_res_ref_frame_from_atoms(atoms, res_type);
-  //          auto ref_frame_2 = _get_res_ref_frame(ref_res);
-  //          auto rot = dot(ref_frame_1.transpose(), ref_frame_2);
-  //          auto r_t = rot.transpose();
-  //          auto t = -ref_res->get_center();
-  //          auto c4p_atom = atoms[res_type->get_atom_index("C4'")];
-  //          if (c4p_atom == nullptr) { return false; }
-  //
-  //          ref_res->transform(r_t, t);
-  //          ref_res->move(c4p_atom.get_coords() - ref_res->get_coords("C4'"));
-  //
-  //          for (int i = 0; i < 5; i++) {
-  //              atoms[i] = new Atom(ref_res->get_atom(i).get_name(),
-  //                                  ref_res->get_atom(i).get_coords());
-  //          }
-  //          return true;
-  //      }
-  //
-  //      math::Matrix
-  //      _get_res_ref_frame(std::shared_ptr<Residue const> r) const {
-  //          auto vec1 = math::Point();
-  //          auto vec2 = math::Point();
-  //          if (r->get_name() == 'A' || r->get_name() == 'G') {
-  //              vec1 = (r->get_coords("N9") -
-  //              r->get_coords("C1'")).normalize(); vec2 = (r->get_coords("N9")
-  //              - r->get_bead(util::BeadType::BASE).get_center()).normalize();
-  //          } else {
-  //              vec1 = (r->get_coords("N1") -
-  //              r->get_coords("C1'")).normalize(); vec2 = (r->get_coords("N1")
-  //              - r->get_bead(util::BeadType::BASE).get_center()).normalize();
-  //          }
-  //          auto cross = vec1.cross(vec2);
-  //          auto m = math::Matrix(
-  //                  vec1.get_x(), vec1.get_y(), vec1.get_z(),
-  //                  vec2.get_x(), vec2.get_y(), vec2.get_z(),
-  //                  cross.get_x(), cross.get_y(), cross.get_z());
-  //          m.unitarize();
-  //          return m;
-  //      }
-  //
-  //      math::Matrix
-  //      _get_res_ref_frame_from_atoms(
-  //              std::vector<Atom> const &atoms,
-  //              ResidueTypeCOP res_type) const {
-  //
-  //          auto vec1 = math::Point();
-  //          auto vec2 = math::Point();
-  //          auto base_center = math::Point();
-  //          int count = 0;
-  //          for (int i = 12; i < res_type->get_num_atoms(); i++) {
-  //              if (atoms[i] == nullptr) { continue; }
-  //              base_center += atoms[i].get_coords();
-  //              count += 1;
-  //          }
-  //          base_center /= float(count);
-  //          auto c1p_atom = atoms[res_type->get_atom_index("C1'")];
-  //
-  //          if (res_type->get_short_name() == 'A' ||
-  //          res_type->get_short_name() == 'G') {
-  //              auto n9_atom = atoms[res_type->get_atom_index("N9")];
-  //              vec1 = (n9_atom.get_coords() -
-  //              c1p_atom.get_coords()).normalize(); vec2 =
-  //              (n9_atom.get_coords() - base_center).normalize();
-  //          } else {
-  //              auto n1_atom = atoms[res_type->get_atom_index("N1")];
-  //              vec1 = (n1_atom.get_coords() -
-  //              c1p_atom.get_coords()).normalize(); vec2 =
-  //              (n1_atom.get_coords() - base_center).normalize();
-  //          }
-  //
-  //          auto cross = vec1.cross(vec2);
-  //          auto m = math::Matrix(
-  //                  vec1.get_x(), vec1.get_y(), vec1.get_z(),
-  //                  vec2.get_x(), vec2.get_y(), vec2.get_z(),
-  //                  cross.get_x(), cross.get_y(), cross.get_z());
-  //          m.unitarize();
-  //          return m;
-  //      }
-
-  // TODO Change it to private
-public:
-  /**
-   * residue type object which explains what atoms in belong in this residue.
-   */
-  ResidueTypeCOP _res_type;
-
-  /**
-   * vector of the atom objects that belong to this residue
-   */
+private:
+  char _name;
+  int _num;
+  String _chain_id;
+  char _i_code;
+  util::Uuid _uuid;
+  /// @brief vector of the atom objects that belong to this residue
   Atoms _atoms;
-
-  /**
-   * vector of bead objects for sterics
-   */
+  /// @brief vector of bead objects for sterics
   util::Beads _beads;
 };
 
@@ -533,7 +337,6 @@ inline bool residue_steric_clash(Residue const &r1, Residue const &r2) {
       }
     }
   }
-
   return false;
 }
 
@@ -573,6 +376,6 @@ inline bool residue_steric_clash(Residue const &r1, Residue const &r2) {
 //              }
 //          }
 //      }
-} // namespace structure
+} // namespace structure::all_atom
 
 #endif /* defined(__RNAMake__structure_residue__) */

@@ -9,10 +9,10 @@
 #ifndef __RNAMake__residue_type_set__
 #define __RNAMake__residue_type_set__
 
-#include <stdio.h>
-#include <structure/residue_type.h>
+#include <cstdio>
+#include <structure/all_atom/residue_type.h>
 
-namespace structure {
+namespace structure::all_atom {
 
 class ResidueTypeSet {
 public:
@@ -20,7 +20,7 @@ public:
 
   ~ResidueTypeSet() {}
 
-  ResidueTypeCOP get_residue_type(String const &) const;
+  const ResidueType &get_residue_type(String const &) const;
 
   bool contains_residue_type(String const &) const;
 
@@ -34,12 +34,9 @@ private:
   Strings _get_extra_resnames_for_specific_res(String const &);
 
 private:
-  ResidueTypeOPs residue_types_;
+  std::vector<ResidueType> _residue_types = {};
 };
 
-typedef std::shared_ptr<ResidueTypeSet> ResidueTypeSetOP;
-typedef std::shared_ptr<ResidueTypeSet const> ResidueTypeSetCOP;
-
-} // namespace structure
+} // namespace structure::all_atom
 
 #endif /* defined(__RNAMake__residue_type_set__) */

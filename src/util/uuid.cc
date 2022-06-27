@@ -11,18 +11,3 @@
 #include <stdio.h>
 
 // RNAMake Headers
-#include "util/uuid.h"
-
-namespace util {
-
-Uuid::Uuid() {
-  int length = 10;
-  id_ = rand() % length;
-  uint64_t digit = 10;
-  for (int i = 1; i < 15; i++) {
-    int pos = rand() % length;
-    id_ += (digit * i) * pos;
-    digit *= 10;
-  }
-}
-} // namespace util

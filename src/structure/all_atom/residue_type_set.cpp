@@ -11,37 +11,32 @@
 #include <fstream>
 
 // RNAMake Headers
-#include <structure/residue_type_set.h>
-#include <util/string_util.h>
-//#include <base/settings.h>
+#include <base/paths.hpp>
+#include <base/string.hpp>
+#include <structure/all_atom/residue_type_set.h>
 
-namespace structure {
+namespace structure::all_atom {
 
-ResidueTypeSet::ResidueTypeSet() : residue_types_(ResidueTypeOPs()) {
-  auto base_path = base::resources_path() + "/residue_types/";
-
+ResidueTypeSet::ResidueTypeSet() {
+  auto base_path = base::path::resources_path() + "/residue_types/";
   _read_rtypes_from_dir(base_path + "RNA/", SetType::RNA);
   _read_rtypes_from_dir(base_path + "PROTEIN/", SetType::PROTEIN);
 }
 
 void ResidueTypeSet::_read_rtypes_from_dir(String const &path,
                                            SetType const &set_type) {
-
   DIR *pDIR;
   struct dirent *entry;
   pDIR = opendir(path.c_str());
-  while ((entry = readdir(pDIR)) != NULL) {
+  while ((entry = readdir(pDIR)) != nullptr) {
     auto fname = String(entry->d_name);
     if (fname.length() < 4) {
       continue;
     }
-
     auto name = _get_rtype_name(path + fname);
     auto atom_map = _get_atom_map_from_file(path + fname);
     auto alt_names = _get_extra_resnames_for_specific_res(name);
-    auto rtype =
-        std::make_shared<ResidueType>(name, atom_map, set_type, alt_names);
-    residue_types_.push_back(rtype);
+    _residue_types.emplace_back(name, atom_map, set_type, alt_names);
   }
   closedir(pDIR);
   delete entry;
@@ -71,22 +66,21 @@ StringIntMap ResidueTypeSet::_get_atom_map_from_file(String const &fname) {
   return atom_map;
 }
 
-ResidueTypeCOP ResidueTypeSet::get_residue_type(String const &resname) const {
-
+const ResidueType &
+ResidueTypeSet::get_residue_type(String const &resname) const {
   std::string res = "blank";
-
-  for (auto restype : residue_types_) {
+  for (auto const &restype : _residue_types) {
     if (resname[0] == ':') {
       // TODO remove these string manipulation, string should be passed as
       // expected.
-      res = replace_char(resname, ':', ' ');
-      res.erase(0, 1);
-      if (restype->is_valid_residue_name(res)) {
+      // res = replace_char(resname, ':', ' ');
+      // res.erase(0, 1);
+      if (restype.is_valid_residue_name(res)) {
         return restype;
       }
     } else {
       res = resname;
-      if (restype->is_valid_residue_name(resname)) {
+      if (restype.is_valid_residue_name(resname)) {
         return restype;
       }
     }
@@ -97,8 +91,8 @@ ResidueTypeCOP ResidueTypeSet::get_residue_type(String const &resname) const {
 
 bool ResidueTypeSet::contains_residue_type(String const &resname) const {
 
-  for (auto const &restype : residue_types_) {
-    if (restype->is_valid_residue_name(resname)) {
+  for (auto const &restype : _residue_types) {
+    if (restype.is_valid_residue_name(resname)) {
       return true;
     }
   }
@@ -122,4 +116,4 @@ ResidueTypeSet::_get_extra_resnames_for_specific_res(String const &res_name) {
   return alt_names;
 }
 
-} // namespace structure
+} // namespace structure::all_atom

@@ -5,6 +5,7 @@
 #ifndef RNAMAKE_NEW_BEAD_H
 #define RNAMAKE_NEW_BEAD_H
 
+#include <base/string.hpp>
 #include <math/matrix_3x3.hpp>
 #include <math/vector_3.hpp>
 
@@ -55,8 +56,8 @@ public:
       : center_(center), bead_type_(bead_type) {}
 
   inline Bead(String const &s) {
-    auto spl = base::split_str_by_delimiter(s, ",");
-    center_ = math::Vector3(spl[0]);
+    auto spl = base::string::split(s, ",");
+    center_ = math::vector_from_str(spl[0]);
     bead_type_ = BeadType(std::stoi(spl[1]));
   }
 
@@ -75,13 +76,13 @@ public:
 
   inline void transform(math::Matrix3x3 const &r, math::Vector3 const &t,
                         math::Vector3 &dummy) {
-    math::dot_vector(r, center_, dummy);
+    //math::dot_vector(r, center_, dummy);
     center_ = dummy + t;
   }
 
   inline void transform(math::Matrix3x3 const &r, math::Vector3 const &t) {
-    auto dummy = math::dot_vector(r, center_);
-    center_ = dummy + t;
+    //auto dummy = math::dot_vector(r, center_);
+    //center_ = dummy + t;
   }
 
 public: // getters

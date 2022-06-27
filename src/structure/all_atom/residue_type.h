@@ -9,13 +9,13 @@
 #ifndef __RNAMake__residue_type__
 #define __RNAMake__residue_type__
 
-#include <stdio.h>
-#include <vector>
+#include <cstdio>
 
 // RNAMake Headers
 //#include <base/assertions.h>
 #include <base/types.hpp>
-#include <structure/atom.h>
+
+namespace structure::all_atom {
 
 /*
  * Exception for residue type
@@ -35,7 +35,7 @@ class ResidueType {
 public:
   ResidueType(String const &, StringIntMap const &, SetType, Strings const &);
 
-  ~ResidueType() {}
+  ~ResidueType() = default;
 
 public:
   bool is_valid_atom_name(String const &) const;
@@ -70,4 +70,5 @@ typedef std::vector<ResidueTypeOP> ResidueTypeOPs;
 ResidueTypeCOP get_new_residue_type(String const &res_name,
                                     Strings const &atom_names);
 
+} // namespace structure::all_atom
 #endif /* defined(__RNAMake__residue_type__) */
