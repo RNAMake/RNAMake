@@ -7,12 +7,7 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include <stdio.h>
 #include <iostream>
+#include <stdio.h>
 
-//RNAMake Headers
-#include "util/uuid.h"
-
-namespace util {
-
-}
+// RNAMake Headers

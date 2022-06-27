@@ -6,13 +6,12 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include <fstream>
 #include <sstream>
 
 // RNAMake Headers
-#include <structure/residue.h>
+#include <structure/all_atom/residue.h>
 
-namespace structure {
+namespace structure::all_atom {
 
 math::Vector3 center(Atoms const &atoms) {
   auto center = math::Vector3();
@@ -22,22 +21,14 @@ math::Vector3 center(Atoms const &atoms) {
   return center / float(atoms.size());
 }
 
-math::Vector3 center(AtomOPs const &atoms) {
-  auto center = math::Vector3();
-  for (auto const &a : atoms) {
-    center += a->get_coords();
-  }
-  return center / float(atoms.size());
-}
-
 void Residue::_build_beads() {
-  if (_res_type->get_set_type() == SetType::RNA) {
+  /*if (_res_type.get_set_type() == SetType::RNA) {
     _build_beads_RNA();
-  } else if (_res_type->get_set_type() == SetType::PROTEIN) {
+  } else if (_res_type.get_set_type() == SetType::PROTEIN) {
     _beads.push_back(util::Bead(get_coords("CA"), util::BeadType::CALPHA));
   } else {
     _beads.push_back(util::Bead(get_center(), util::BeadType::MCENTER));
-  }
+  }*/
 }
 
 void Residue::_build_beads_RNA() {
@@ -79,30 +70,18 @@ void Residue::_build_beads_RNA() {
 
 String Residue::get_str() const {
   std::stringstream ss;
-  ss << _res_type->get_name() << "," << _name << "," << _num << "," << _chain_id
-     << "," << _i_code << ",";
+  // ss << _res_type->get_name() << "," << _name << "," << _num << "," <<
+  //     _chain_id
+  //    << "," << _i_code << ",";
   for (auto const &a : _atoms) {
     ss << a.get_str() + ",";
   }
   return ss.str();
 }
 
-//    json::JSON
-//    Residue::get_json() const {
-//        auto atom_array = json::Array();
-//        for (auto const &a : atoms_) { atom_array.append(a.get_json()); }
-//        return json::JSON{
-//                "res_type", res_type_->get_name(),
-//                "name", name_,
-//                "num", num_,
-//                "chain_id", chain_id_,
-//                "i_code", i_code_,
-//                "atoms", atom_array};
-//    }
-
 String Residue::get_pdb_str(int &acount, int rnum, char chain_id) const {
-
   auto s = String();
+  /*
   for (auto const &a : _atoms) {
     char buffer[200];
     std::sprintf(buffer,
@@ -112,7 +91,7 @@ String Residue::get_pdb_str(int &acount, int rnum, char chain_id) const {
                  "", a.get_x(), a.get_y(), a.get_z(), 1.00, 0.00, "", "");
     s += String(buffer);
     acount++;
-  }
+  }           */
   return s;
 }
 
@@ -129,12 +108,13 @@ String Residue::get_bead_pdb_str(int &acount, int rnum, char chain_id) const {
     } else if (b.get_type() == util::BeadType::PHOS) {
       bead_name = "P";
     }
+    /*
     std::sprintf(buffer,
                  "%-6s%5d %-4s%1s%-4c%1c%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f     "
                  " %4s%2s\n",
                  "ATOM", acount, bead_name.c_str(), "", _name, chain_id, rnum,
                  "", c.get_x(), c.get_y(), c.get_z(), 1.00, 0.00, "", "");
-    s += String(buffer);
+    s += String(buffer); */
     acount++;
   }
   return s;
@@ -147,4 +127,4 @@ void Residue::write_pdb(String const fname) {
   out.close();
 }
 
-} // namespace structure
+} // namespace structure::all_atom

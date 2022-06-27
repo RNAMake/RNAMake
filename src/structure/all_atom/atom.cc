@@ -7,37 +7,13 @@
 //
 
 // RNAMake Headers
-#include "atom.h"
-#include "math/numerical.h"
-#include "math/xyz_vector.h"
+#include <structure/all_atom/atom.h>
+#include <math/vector_3.hpp>
 
-String structure::Atom::get_str() const {
-  return _name + " " + math::vector_to_str(_coords);
-}
-//
-// json::JSON
-// Atom::get_json() const {
-//    return json::Array(name_->get_str(), coords_.get_json());
-//}
+namespace structure::all_atom {
 
-String structure::Atom::to_pdb_str(int acount) const {
-
-  char buffer[200];
-  std::sprintf(
-      buffer,
-      "ATOM %6d  P   C   A   1 %11.3f%8.3f%8.3f  1.00 62.18           P\n",
-      acount, _coords[0], _coords[1], _coords[2]);
-  return String(buffer);
+String Atom::get_str() const {
+  return _name + " " + _coords.get_str();
 }
 
-// String
-// structure::Atom::get_pdb_str(
-//         int acount) const {
-//
-//     char buffer[200];
-//     std::sprintf(buffer, "ATOM %6d  P   C   A   1
-//     %11.3f%8.3f%8.3f  1.00 62.18           P\n",
-//                  acount, coords_.get_x(), coords_.get_y(), coords_.get_z());
-//     return String(buffer);
-//
-// }
+}

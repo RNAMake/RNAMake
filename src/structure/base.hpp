@@ -6,8 +6,8 @@
 #define RNAMAKE_SRC_STRUCTURE_BASE_HPP_
 
 #include <base/string.hpp>
-#include <util/uuid.h>
 #include <util/motif_type.h>
+#include <util/uuid.h>
 
 namespace structure {
 
@@ -25,60 +25,6 @@ public:
 };
 
 enum class BasepairType { WC, GU, NC };
-
-class Basepair {
-public:
-  inline Basepair(const util::Uuid &res1_uuid, const util::Uuid &res2_uuid,
-                  const util::Uuid &uuid, const BasepairType &bp_type,
-                  String &name)
-      : _res1_uuid(res1_uuid), _res2_uuid(res2_uuid), _uuid(uuid),
-        _bp_type(bp_type), _name(std::move(name)) {}
-
-  inline Basepair(Basepair const &bp) = default;
-
-  virtual ~Basepair() = default;
-
-public:
-  inline bool operator==(Basepair const &other) const {
-    return _uuid == other._uuid;
-  }
-
-  inline bool operator!=(Basepair const &other) const {
-    return _uuid != other._uuid;
-  }
-
-public:
-  [[nodiscard]] util::Uuid const &get_partner(util::Uuid const &uuid) const {
-    if (uuid == _res1_uuid) {
-      return _res2_uuid;
-    } else {
-      return _res1_uuid;
-    }
-  }
-
-  [[nodiscard]] inline BasepairType const &get_bp_type() const {
-    return _bp_type;
-  }
-
-  [[nodiscard]] inline util::Uuid const &get_uuid() const { return _uuid; }
-
-  [[nodiscard]] inline const String &get_name() const { return _name; }
-
-  [[nodiscard]] inline util::Uuid const &get_res1_uuid() const {
-    return _res1_uuid;
-  }
-
-  [[nodiscard]] inline util::Uuid const &get_res2_uuid() const {
-    return _res2_uuid;
-  }
-
-private:
-  util::Uuid _uuid;
-  util::Uuid _res1_uuid;
-  util::Uuid _res2_uuid;
-  BasepairType _bp_type;
-  String _name;
-};
 
 template <typename Residue> class Chain {
 public:
@@ -637,13 +583,16 @@ public: // other getters
 
   size_t get_num_ends() const { return end_indexes_.size(); }
 
-  //base::SimpleStringCOP get_name() { return name_; }
+  // base::SimpleStringCOP get_name() { return name_; }
 
 private:
   Structure structure_;
+  Structure _proteins;
+  Structure _small_molecules;
   std::vector<Basepair> basepairs_;
   Indexes end_indexes_;
   String name_;
+  String _dot_bracket;
   mutable Strings end_ids_;
 };
 
@@ -657,10 +606,11 @@ private:
 public:
   inline Segment(Structuretype const &structure,
                  std::vector<BPtype> const &basepairs,
-                 Indexes const &end_indexes,
-                 String const &end_ids,
-                 String  name, util::MotifType segment_type,
-                 Index aligned_end_index, util::Uuid const &uuid)
+                 Indexes const &end_indexes, String const &end_ids,
+                 const String &name, const Structuretype &proteins,
+                 const Structuretype &small_molecules,
+                 util::MotifType segment_type, Index aligned_end_index,
+                 util::Uuid const &uuid)
       : BaseClass(structure, basepairs, end_indexes, end_ids, name),
         segment_type_(segment_type), aligned_end_index_(aligned_end_index) {}
 
@@ -683,7 +633,6 @@ protected:
   Index aligned_end_index_;
   util::Uuid uuid_;
 };
-
 
 template <typename Restype>
 String generate_bp_name(Restype const &res1, Restype const &res2) {
@@ -924,8 +873,8 @@ String generate_end_id(Structuretype const &s, std::vector<BPtype> const &bps,
         ss_id += "U";
       } else {
         throw StructureException("unexpected symbol in dot bracket notation:"
-                                  " " +
-                            std::to_string(e));
+                                 " " +
+                                 std::to_string(e));
       }
     }
     if (i != ss_chains.size() - 1) {

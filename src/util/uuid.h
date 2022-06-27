@@ -12,20 +12,16 @@
 #include <fstream>
 #include <iostream>
 
-//RNAMake Headers
-#include <external/sole/sole.hpp>
+// RNAMake Headers
 #include <base/types.hpp>
+#include <external/sole/sole.hpp>
 
 namespace util {
-  typedef sole::uuid Uuid;
-  Uuid generate_uuid() {
-    return sole::uuid0();
-  }
+typedef sole::uuid Uuid;
+Uuid generate_uuid() { return sole::uuid0(); }
 
-  Uuid uuid_from_str(const String & str) {
-    return sole::rebuild(str);
-  }
+Uuid uuid_from_str(const String &str) { return sole::rebuild(str); }
 
-}
+} // namespace util
 
 #endif
