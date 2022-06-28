@@ -26,6 +26,8 @@ public:
 
 enum class BasepairType { WC, GU, NC };
 
+enum class ResidueType { RNA, PROTEIN, OTHER };
+
 template <typename Residue> class Chain {
 public:
   typedef std::vector<Residue> Residues;

@@ -21,8 +21,6 @@ namespace structure::all_atom {
 
 math::Vector3 center_of_atoms(const Atoms &);
 
-enum class ResidueType { RNA, PROTEIN, OTHER };
-
 class Residue {
 public: // construction ///////////////////////////////////////////////////////
   Residue(char name, int num, String &chain_id, char i_code, Atoms &atoms,
