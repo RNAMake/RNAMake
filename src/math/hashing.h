@@ -25,7 +25,12 @@ public: // construct/destruct
   inline _BoundingBox(PointPosition const &pp) : _lower(pp), _upper(pp) {}
 
   inline _BoundingBox(PointPosition const &lower, PointPosition const &upper)
-      : _lower(lower), _upper(upper) {}
+      : _lower(lower), _upper(upper) {
+    if (lower == upper) {
+      String msg = "Boundaries are the same! Try different bounds.";
+      base::log_and_throw<base::MathException>(msg);
+    }
+  }
 
   /// @brief copy constructor
   inline _BoundingBox(_BoundingBox const &bb)
@@ -199,9 +204,12 @@ public:
   Real6 bin_center_point(Bin6D const &bin) const {
     Real6 center;
 
-    center[0] = _bounding_box.lower().get_x() + bin[0] * _bin_widths[0] + _halfbin_widths[0];
-    center[1] = _bounding_box.lower().get_y() + bin[1] * _bin_widths[1] + _halfbin_widths[1];
-    center[2] = _bounding_box.lower().get_z() + bin[2] * _bin_widths[2] + _halfbin_widths[2];
+    center[0] = _bounding_box.lower().get_x() + bin[0] * _bin_widths[0] +
+                _halfbin_widths[0];
+    center[1] = _bounding_box.lower().get_y() + bin[1] * _bin_widths[1] +
+                _halfbin_widths[1];
+    center[2] = _bounding_box.lower().get_z() + bin[2] * _bin_widths[2] +
+                _halfbin_widths[2];
     center[3] = bin[3] * _bin_widths[3] + _halfbin_widths[3];
     center[4] = bin[4] * _bin_widths[4] + _halfbin_widths[4];
     center[5] = bin[5] * _bin_widths[5] + _halfbin_widths[5];
