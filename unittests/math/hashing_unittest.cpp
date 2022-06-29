@@ -6,9 +6,9 @@
 
 #include "../common.hpp"
 
+#include "base/paths.hpp"
 #include "math/hashing.h"
 #include "math/matrix_3x3.hpp"
-#include "base/paths.hpp"
 
 TEST_CASE("Test hashing of 6D coords") {
   SUBCASE("test binner from rosetta example") {
@@ -125,8 +125,7 @@ TEST_CASE("Test hashing of 6D coords") {
     pA[4] = 12.2;
     pA[5] = 2;
 
-    auto path =
-        base::path::unittest_resource_path() + "math/test_2.bin";
+    auto path = base::path::unittest_resource_path() + "math/test_2.bin";
     std::ifstream in;
     in.open(path, std::ios::binary);
 
@@ -138,8 +137,7 @@ TEST_CASE("Test hashing of 6D coords") {
   }
 
   SUBCASE("test read tecto bin file") {
-    auto path =
-        base::path::unittest_resource_path() + "math/test_tecto.bin";
+    auto path = base::path::unittest_resource_path() + "math/test_tecto.bin";
 
     std::ifstream in;
     in.open(path, std::ios::binary);
@@ -174,8 +172,7 @@ TEST_CASE("Test hashing of 6D coords") {
   }*/
 
   SUBCASE("test on tecto data") {
-    auto path =
-        base::path::unittest_resource_path() + "math/test.out";
+    auto path = base::path::unittest_resource_path() + "math/test.out";
 
     auto in = std::ifstream();
     in.open(path);
@@ -192,8 +189,8 @@ TEST_CASE("Test hashing of 6D coords") {
         math::Real2{5, 300},    math::Real2{45, 330},   math::Real2{170, 195}};
 
     auto values = math::Real6();
-    auto bb =
-        math::BoundingBox(math::Vector3(-10, -10, -10), math::Vector3(10, 10, 10));
+    auto bb = math::BoundingBox(math::Vector3(-10, -10, -10),
+                                math::Vector3(10, 10, 10));
     auto bin_widths = math::Real6{0.25, 0.25, 0.25, 5, 5, 5};
     auto binner = math::SixDCoordinateBinner(bb, bin_widths);
 
@@ -319,7 +316,6 @@ TEST_CASE("Test hashing of 6D coords") {
       CHECK(bin[i] == bin_2[i]);
     }
   }
-
   SUBCASE("test 3d histogram") {
     auto bb = math::BoundingBox(math::Vector3(-100, -100, -100),
                                 math::Vector3(100, 100, 100));
@@ -340,5 +336,9 @@ TEST_CASE("Test hashing of 6D coords") {
     for (auto const &p : points) {
       CHECK(histo.contains(p));
     }
+  }
+  SUBCASE("test BoundingBox with zero width") {
+    // should throw an error
+    REQUIRE_THROWS_AS(math::BoundingBox(math::Vector3(1, 1, 1), math::Vector3(1, 1, 1)), base::MathException);
   }
 }
