@@ -8,6 +8,7 @@
 
 #include "math/hashing.h"
 #include "math/matrix_3x3.hpp"
+#include "base/paths.hpp"
 
 TEST_CASE("Test hashing of 6D coords") {
   SUBCASE("test binner from rosetta example") {
@@ -39,6 +40,7 @@ TEST_CASE("Test hashing of 6D coords") {
       CHECK(bin[i] == bin_2[i]);
     }
   }
+
   SUBCASE("test binner wrapping") {
     auto lower = math::Vector3(-5.0, -5.0, -5.0);
     auto upper = math::Vector3(5.0, 5.0, 5.0);
@@ -89,7 +91,8 @@ TEST_CASE("Test hashing of 6D coords") {
     histo.add(pA);
     histo.to_text_file("test.csv");
 
-    auto lines = base::get_lines_from_file("test.csv");
+    Strings lines = {};
+    base::path::get_lines_from_file("test.csv", lines);
     auto histo_2 = math::SixDHistogram(lines, math::SixDHistogramStrType::TEXT);
     CHECK(histo_2.contains(pA));
 
@@ -112,6 +115,7 @@ TEST_CASE("Test hashing of 6D coords") {
     // auto histo_3 = math::SixDHistogram(lines2,
     // math::SixDHistogramStrType::BINARY);
   }
+
   SUBCASE("test two histograms in one file") {
     math::Real6 pA;
     pA[0] = -4.25;
@@ -122,7 +126,7 @@ TEST_CASE("Test hashing of 6D coords") {
     pA[5] = 2;
 
     auto path =
-        base::base_dir() + "//unittests/unittest_resources/math/test_2.bin";
+        base::path::unittest_resource_path() + "math/test_2.bin";
     std::ifstream in;
     in.open(path, std::ios::binary);
 
@@ -132,15 +136,17 @@ TEST_CASE("Test hashing of 6D coords") {
     CHECK(histo.contains(pA));
     CHECK(histo_2.contains(pA));
   }
+
   SUBCASE("test read tecto bin file") {
     auto path =
-        base::base_dir() + "//unittests/unittest_resources/math/test_tecto.bin";
+        base::path::unittest_resource_path() + "math/test_tecto.bin";
 
     std::ifstream in;
     in.open(path, std::ios::binary);
 
     auto histo = math::SixDHistogram(in);
   }
+
   /*SUBCASE("test histo on tecto data") {
       auto in = std::ifstream();
       in.open("test.out");
@@ -166,9 +172,10 @@ TEST_CASE("Test hashing of 6D coords") {
 
       histo.to_text_file("test_histo.csv");
   }*/
+
   SUBCASE("test on tecto data") {
     auto path =
-        base::base_dir() + "//unittests/unittest_resources/math/test.out";
+        base::path::unittest_resource_path() + "math/test.out";
 
     auto in = std::ifstream();
     in.open(path);
@@ -289,6 +296,7 @@ TEST_CASE("Test hashing of 6D coords") {
     }
     CHECK(count == count_2);
   }
+
   SUBCASE("test 3d binner from rosetta example") {
     auto lower = math::Vector3(12.5, 16.25, 4.25);
     auto upper = math::Vector3(15.5, 20, 8.5);
@@ -311,6 +319,7 @@ TEST_CASE("Test hashing of 6D coords") {
       CHECK(bin[i] == bin_2[i]);
     }
   }
+
   SUBCASE("test 3d histogram") {
     auto bb = math::BoundingBox(math::Vector3(-100, -100, -100),
                                 math::Vector3(100, 100, 100));
