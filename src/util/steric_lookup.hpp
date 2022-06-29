@@ -12,10 +12,8 @@
 #include <map>
 #include <stdio.h>
 
+#include "math/hashing.h"
 #include "math/vector_3.hpp"
-//#include "math/hashing.h"
-
-// TODO math::ThreeDHistogram and related must be fixed
 
 namespace util {
 
@@ -73,7 +71,7 @@ public:
   void to_pdb(String const &);
 
   int size() {
-    //    return _histo.size();
+    return _histo.size();
   }
 
 private:
@@ -84,7 +82,7 @@ private:
   float _cutoff;
   int _radius;
   math::Vector3s _additions;
-  //  math::ThreeDHistogram _histo;
+  math::ThreeDHistogram _histo;
   math::Vector3 _dummy;
 };
 

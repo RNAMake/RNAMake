@@ -6,37 +6,38 @@
 //  Copyright © 2016 Joseph Yesselman. All rights reserved.
 //
 
+#include <iomanip> // std::setprecision
 #include <math.h>
 
 #include "util/steric_lookup.hpp"
-#include <iomanip> // std::setprecision
+#include <math/hashing.h>
 #include <math/matrix_3x3.hpp>
 #include <math/vector_3.hpp>
 
 namespace util {
 
 StericLookup::StericLookup()
-    : bhash_(std::map<double, int>()), grid_size_(0.5), cutoff_(2.65),
-      radius_(6), additions_(math::Vector3s()) {
-  check_additions_ = math::Vector3s();
+    : _bhash(std::map<double, int>()), _grid_size(0.5), _cutoff(2.65),
+      _radius(6), _additions(math::Vector3s()) {
+  _check_additions = math::Vector3s();
   _setup_additions();
 }
 
 StericLookup::StericLookup(float grid_size, float cutoff, int radius)
-    : bhash_(std::map<double, int>()), grid_size_(grid_size), cutoff_(cutoff),
-      radius_(6), additions_(math::Vector3s()) {
-  check_additions_ = math::Vector3s();
+    : _bhash(std::map<double, int>()), _grid_size(grid_size), _cutoff(cutoff),
+      _radius(6), _additions(math::Vector3s()) {
+  _check_additions = math::Vector3s();
   _setup_additions();
 }
 
 void StericLookup::_setup_additions() {
   auto add = Reals();
-  for (int i = 1; i < radius_; i++) {
-    add.push_back(float(-i * grid_size_));
+  for (int i = 1; i < _radius; i++) {
+    add.push_back(float(-i * _grid_size));
   }
   add.push_back(0);
-  for (int i = 1; i < radius_; i++) {
-    add.push_back(float(i * grid_size_));
+  for (int i = 1; i < _radius; i++) {
+    add.push_back(float(i * _grid_size));
   }
 
   float dist = 0;
@@ -47,8 +48,8 @@ void StericLookup::_setup_additions() {
       for (auto const &z : add) {
         p = math::Vector3(x, y, z);
         dist = p.distance(origin);
-        if (dist < cutoff_) {
-          additions_.push_back(p);
+        if (dist < _cutoff) {
+          _additions.push_back(p);
         }
       }
     }
@@ -56,22 +57,22 @@ void StericLookup::_setup_additions() {
 }
 
 void StericLookup::add_point(math::Vector3 const &p) {
-  rounded_.set_x(round(p.get_x() / grid_size_) * grid_size_);
-  rounded_.set_y(round(p.get_y() / grid_size_) * grid_size_);
-  rounded_.set_z(round(p.get_z() / grid_size_) * grid_size_);
+  _rounded.set_x(round(p.get_x() / _grid_size) * _grid_size);
+  _rounded.set_y(round(p.get_y() / _grid_size) * _grid_size);
+  _rounded.set_z(round(p.get_z() / _grid_size) * _grid_size);
 
   auto gp = math::Vector3();
   double k;
 
-  for (auto const &add : additions_) {
-    gp = rounded_ + add;
+  for (auto const &add : _additions) {
+    gp = _rounded + add;
     k = double(gp.get_x() * 0.001) + (double)(gp.get_y()) * 0.000000001 +
         double(gp.get_z() * 100000);
 
-    if (bhash_.find(k) != bhash_.end()) {
-      bhash_[k] += 1;
+    if (_bhash.find(k) != _bhash.end()) {
+      _bhash[k] += 1;
     } else {
-      bhash_[k] = 1;
+      _bhash[k] = 1;
     }
   }
 }
@@ -83,15 +84,15 @@ void StericLookup::add_points(math::Vector3s const &points) {
 }
 
 int StericLookup::clash(math::Vector3 const &p) {
-  rounded_.set_x(round(p.get_x() / grid_size_) * grid_size_);
-  rounded_.set_y(round(p.get_y() / grid_size_) * grid_size_);
-  rounded_.set_z(round(p.get_z() / grid_size_) * grid_size_);
+  _rounded.set_x(round(p.get_x() / _grid_size) * _grid_size);
+  _rounded.set_y(round(p.get_y() / _grid_size) * _grid_size);
+  _rounded.set_z(round(p.get_z() / _grid_size) * _grid_size);
 
-  double k = double(rounded_.get_x() * 0.001) +
-             (double)(rounded_.get_y()) * 0.000000001 +
-             double(rounded_.get_z() * 100000);
+  double k = double(_rounded.get_x() * 0.001) +
+             (double)(_rounded.get_y()) * 0.000000001 +
+             double(_rounded.get_z() * 100000);
 
-  if (bhash_.find(k) != bhash_.end()) {
+  if (_bhash.find(k) != _bhash.end()) {
     return 1;
   } else {
     return 0;
@@ -111,23 +112,23 @@ int StericLookup::clash(math::Vector3s const &points) {
 }
 
 int StericLookup::better_clash(math::Vector3 const &p) {
-  rounded_.set_x(round(p.get_x() / grid_size_) * grid_size_);
-  rounded_.set_y(round(p.get_y() / grid_size_) * grid_size_);
-  rounded_.set_z(round(p.get_z() / grid_size_) * grid_size_);
+  _rounded.set_x(round(p.get_x() / _grid_size) * _grid_size);
+  _rounded.set_y(round(p.get_y() / _grid_size) * _grid_size);
+  _rounded.set_z(round(p.get_z() / _grid_size) * _grid_size);
 
-  k_ = rounded_.get_x() * 18397 + rounded_.get_y() * 20483 +
-       rounded_.get_z() * 29303;
+  _k = _rounded.get_x() * 18397 + _rounded.get_y() * 20483 +
+       _rounded.get_z() * 29303;
 
-  if (bhash_.find(k_) == bhash_.end()) {
+  if (_bhash.find(_k) == _bhash.end()) {
     return 0;
   }
 
   int i = 0;
 
-  for (auto const &c_p : check_additions_) {
-    p_ = rounded_ + c_p;
-    k_ = p_.get_x() * 18397 + p_.get_y() * 20483 + p_.get_z() * 29303;
-    if (bhash_.find(k_) != bhash_.end()) {
+  for (auto const &c_p : _check_additions) {
+    _p = _rounded + c_p;
+    _k = _p.get_x() * 18397 + _p.get_y() * 20483 + _p.get_z() * 29303;
+    if (_bhash.find(_k) != _bhash.end()) {
       i++;
     }
   }
@@ -139,16 +140,16 @@ int StericLookup::better_clash(math::Vector3 const &p) {
 }
 
 int StericLookup::total_clash(math::Vector3 const &p) {
-  rounded_.set_x(round(p.get_x() / grid_size_) * grid_size_);
-  rounded_.set_y(round(p.get_y() / grid_size_) * grid_size_);
-  rounded_.set_z(round(p.get_z() / grid_size_) * grid_size_);
+  _rounded.set_x(round(p.get_x() / _grid_size) * _grid_size);
+  _rounded.set_y(round(p.get_y() / _grid_size) * _grid_size);
+  _rounded.set_z(round(p.get_z() / _grid_size) * _grid_size);
 
-  double k = double(rounded_.get_x() * 0.001) +
-             (double)(rounded_.get_y()) * 0.000000001 +
-             double(rounded_.get_z() * 100000);
+  double k = double(_rounded.get_x() * 0.001) +
+             (double)(_rounded.get_y()) * 0.000000001 +
+             double(_rounded.get_z() * 100000);
 
-  if (bhash_.find(k) != bhash_.end()) {
-    return bhash_[k];
+  if (_bhash.find(k) != _bhash.end()) {
+    return _bhash[k];
   } else {
     return 0;
   }
@@ -173,22 +174,22 @@ StericLookupNew::StericLookupNew() {
   // auto bb = math::BoundingBox(math::Point(-10, -10, -10), math::Point(10, 10,
   // 10));
   auto bin_widths = math::Real3{0.25, 0.25, 0.25};
-  histo_ = math::ThreeDHistogram(bb, bin_widths);
-  grid_size_ = 0.25;
-  cutoff_ = 2.70;
-  radius_ = 12;
-  additions_ = math::Vector3s();
+  _histo = math::ThreeDHistogram(bb, bin_widths);
+  _grid_size = 0.25;
+  _cutoff = 2.70;
+  _radius = 12;
+  _additions = math::Vector3s();
   _setup_additions();
 }
 
 void StericLookupNew::_setup_additions() {
   auto add = Reals();
-  for (int i = 1; i < radius_; i++) {
-    add.push_back(float(-i * grid_size_));
+  for (int i = 1; i < _radius; i++) {
+    add.push_back(float(-i * _grid_size));
   }
   add.push_back(0);
-  for (int i = 1; i < radius_; i++) {
-    add.push_back(float(i * grid_size_));
+  for (int i = 1; i < _radius; i++) {
+    add.push_back(float(i * _grid_size));
   }
 
   float dist = 0;
@@ -199,8 +200,8 @@ void StericLookupNew::_setup_additions() {
       for (auto const &z : add) {
         p = math::Vector3(x, y, z);
         dist = p.distance(origin);
-        if (dist < cutoff_) {
-          additions_.push_back(p);
+        if (dist < _cutoff) {
+          _additions.push_back(p);
         }
       }
     }
@@ -208,9 +209,9 @@ void StericLookupNew::_setup_additions() {
 }
 
 void StericLookupNew::add_point(math::Vector3 const &p) {
-  for (auto const &add : additions_) {
-    dummy_ = p + add;
-    histo_.add(dummy_);
+  for (auto const &add : _additions) {
+    _dummy = p + add;
+    _histo.add(_dummy);
   }
 }
 
@@ -221,7 +222,7 @@ void StericLookupNew::add_points(math::Vector3s const &points) {
 }
 
 bool StericLookupNew::clash(math::Vector3 const &p) {
-  return histo_.contains(p);
+  return _histo.contains(p);
 }
 
 bool StericLookupNew::clash(math::Vector3s const &points) {
@@ -237,6 +238,6 @@ bool StericLookupNew::clash(math::Vector3s const &points) {
 }
 
 void StericLookupNew::to_pdb(String const &pdb_name) {
-  histo_.write_histo_to_pdb(pdb_name);
+  _histo.write_histo_to_pdb(pdb_name);
 }
 } // namespace util
