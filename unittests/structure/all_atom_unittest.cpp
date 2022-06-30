@@ -38,7 +38,7 @@ TEST_CASE("test all atom") {
     Residues res;
     res.emplace_back(get_residue_from_str(lines[0]));
     res.emplace_back(get_residue_from_str(lines[1]));
-    structure::Cutpoints cutpoints;
+    structure::base::Cutpoints cutpoints;
     Structure s(res, cutpoints);
   }
   SUBCASE("test basepair") {}
@@ -59,18 +59,16 @@ TEST_CASE("test all atom") {
     Segment seg2 = seg;
     auto const &ref_bp = seg2.get_aligned_end();
     math::RotandTrans rt = {};
-    //std::cout << seg.get_end(1).get_ref_frame().get_flip_orientation()
-    //                 .get_str() << std::endl;
-    math::rotation_between_frames(seg.get_end(1).get_ref_frame(),
-                                  seg2.get_end(0).get_ref_frame(), rt.rotation);
-    std::cout << rt.rotation.get_str() << std::endl;  
-    /*seg2.transform(rt);
+    // std::cout << seg.get_end(1).get_ref_frame().get_flip_orientation()
+    //                  .get_str() << std::endl;
+    math::rotation_between_frames(seg.get_end_ref_frame(1),
+                                  seg2.get_end_ref_frame(0), rt.rotation);
+    seg2.transform(rt);
     seg2.move(seg.get_end(1).get_center() - ref_bp.get_center());
-    math::rotation_between_frames(seg.get_end(1).get_ref_frame()
-                                      .get_flip_orientation(),
-                                  seg2.get_end(0).get_ref_frame(), rt.rotation);
-    //std::cout << rt.rotation.get_str() << std::endl;
+    Real diff = math::difference_between_frames(seg.get_end_ref_frame(1),
+                                                seg2.get_end_ref_frame(0));
+    std::cout << diff*180.0 / PI << std::endl;
     write_segment_to_pdb("test.pdb", seg);
-    write_segment_to_pdb("test2.pdb", seg2); */
+    write_segment_to_pdb("test2.pdb", seg2);
   }
 }

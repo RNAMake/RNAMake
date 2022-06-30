@@ -196,6 +196,9 @@ TEST_CASE("test rotation math ") {
     }
   }
   SUBCASE("test difference between two rotation matrices") {
-    // TODO be implemented
+    math::Matrix3x3 m1 = math::Matrix3x3::identity();
+    math::Matrix3x3 m2 = math::Matrix3x3::identity();
+    Real diff = math::difference_between_frames(m1, m2);
+    CHECK(diff == doctest::Approx(0));
   }
 }

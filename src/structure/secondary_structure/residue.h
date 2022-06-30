@@ -19,14 +19,15 @@
 #include <base/string.hpp>
 #include <base/types.hpp>
 #include <math/rotation.hpp>
-#include <structure/base.hpp>
+#include <structure/base/base.hpp>
 
 namespace structure::secondary_structure {
 
 class Residue {
 public:
   inline Residue(char name, char structure_code, int num, String &chain_id,
-                 char const &i_code, util::Uuid const &uuid, ResidueType rtype)
+                 char const &i_code, util::Uuid const &uuid,
+                 structure::base::ResidueType rtype)
       : _name(name), _structure_code(structure_code), _num(num),
         _chain_id(chain_id), _i_code(i_code), _uuid(uuid), _rtype(rtype) {
     _res_code = _assign_res_code(_name);
@@ -87,7 +88,7 @@ public: // setters
 
 private:
   int _assign_res_code(char name) {
-    if (_rtype != ResidueType::RNA) {
+    if (_rtype != structure::base::ResidueType::RNA) {
       return 99;
     }
     if (name == 'A') {
@@ -103,7 +104,7 @@ private:
     } else if (name == 'N') {
       return -1;
     } else {
-      throw StructureException(
+      throw structure::base::StructureException(
           "in sstruct::Residue encountered a unknown name: " +
           std::string(1, name));
     }
@@ -121,7 +122,7 @@ private:
   String _chain_id;
   char _i_code;
   util::Uuid _uuid;
-  ResidueType _rtype;
+  structure::base::ResidueType _rtype;
   char _structure_code;
   int _res_code;
 };

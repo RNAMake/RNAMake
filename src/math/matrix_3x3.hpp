@@ -256,6 +256,10 @@ public:
     _zy = a._yz;
   }
 
+  inline Real get_trace() {
+    return _xx + _yy + _zz;
+  }
+
   ///@brief - multiplies a matrix and vector and spits out the value in a
   /// different object
   inline Vector3 dot(const Vector3 &v) const {

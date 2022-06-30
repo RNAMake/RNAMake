@@ -5,6 +5,7 @@
 #ifndef RNAMAKE_SRC_MATH_ROTATION_HPP_
 #define RNAMAKE_SRC_MATH_ROTATION_HPP_
 
+#include <math.h>
 #include <math/matrix_3x3.hpp>
 
 namespace math {
@@ -24,9 +25,11 @@ inline void rotation_between_frames(const Matrix3x3 &m1, const Matrix3x3 &m2,
   rot.unitarize();
 }
 
-// TODO be implemented
-Real difference_between_frames(const Matrix3x3 &m1, const Matrix3x3 &m2) {
-  return 0.0f;
+/// http://www.boris-belousov.net/2016/12/01/quat-dist/
+Real difference_between_frames(const Matrix3x3 &p, const Matrix3x3 &q) {
+  Matrix3x3 r = p * q.get_transposed();
+  Real tr = r.get_trace();
+  return acos((tr - 1)/2);
 }
 
 struct RotandTrans {
