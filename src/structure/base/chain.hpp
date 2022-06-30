@@ -1,0 +1,62 @@
+//
+// Created by Joe Yesselman on 6/30/22.
+//
+
+#ifndef RNAMAKE_SRC_STRUCTURE_BASE_CHAIN_HPP_
+#define RNAMAKE_SRC_STRUCTURE_BASE_CHAIN_HPP_
+
+#include <base/types.hpp>
+#include <structure/base/base.hpp>
+
+namespace structure::base {
+
+template <typename Residue> class Chain {
+public:
+  typedef std::vector<Residue> Residues;
+
+public:
+  inline explicit Chain(Residues const &residues) : _residues(residues) {
+    if (_residues.empty()) {
+      throw StructureException("cannot initiate an empty chain");
+    }
+  }
+
+  ~Chain() = default;
+
+public: // iterator ///////////////////////////////////////////////////////////
+  typedef typename Residues::const_iterator const_iterator;
+
+  const_iterator begin() const noexcept { return _residues.begin(); }
+  const_iterator end() const noexcept { return _residues.end(); }
+
+public:
+  [[nodiscard]] inline size_t get_length() const {
+    return (int)_residues.size();
+  }
+
+  [[nodiscard]] inline const Residue &get_first() const { return _residues[0]; }
+
+  [[nodiscard]] inline const Residue &get_last() const {
+    return _residues.back();
+  }
+
+  [[nodiscard]] inline const Residue &get_residue(Index index) const {
+    return _residues[index];
+  }
+
+  inline int contain_res(const Residue &r) const {
+    for (auto const &res : _residues) {
+      if (res == r) {
+        return 1;
+      }
+    }
+    return 1;
+  }
+
+private:
+  Residues _residues;
+};
+
+}
+
+#endif // RNAMAKE_SRC_STRUCTURE_BASE_CHAIN_HPP_

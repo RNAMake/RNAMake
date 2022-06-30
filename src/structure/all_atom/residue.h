@@ -14,7 +14,7 @@
 // RNAMake Headers
 #include <base/types.hpp>
 #include <structure/all_atom/atom.h>
-#include <structure/base.hpp>
+#include <structure/base/base.hpp>
 #include <util/bead.h>
 
 namespace structure::all_atom {
@@ -30,7 +30,7 @@ math::Vector3 center_of_atoms(const Atoms &atoms) {
 class Residue {
 public: // construction ///////////////////////////////////////////////////////
   Residue(char name, int num, String &chain_id, char i_code, Atoms &atoms,
-          const util::Uuid &uuid, ResidueType rtype)
+          const util::Uuid &uuid, structure::base::ResidueType rtype)
       : _name(name), _num(num), _chain_id(std::move(chain_id)), _i_code(i_code),
         _atoms(std::move(atoms)), _uuid(uuid), _rtype(rtype) {
     _build_beads();
@@ -107,7 +107,9 @@ public: // getters ////////////////////////////////////////////////////////////
 
   [[nodiscard]] util::Uuid get_uuid() const { return _uuid; }
 
-  [[nodiscard]] ResidueType get_rtype() const { return _rtype; }
+  [[nodiscard]] structure::base::ResidueType get_rtype() const {
+    return _rtype;
+  }
 
   [[nodiscard]] inline const util::Beads &get_beads() const { return _beads; }
 
@@ -117,7 +119,7 @@ public: // getters ////////////////////////////////////////////////////////////
         return a;
       }
     }
-    throw StructureException("atom name: " + name +
+    throw structure::base::StructureException("atom name: " + name +
                              " does not exist in this residue");
   }
 
@@ -203,9 +205,9 @@ public: // non const
 
 private:
   void _build_beads() {
-    if (_rtype == ResidueType::RNA) {
+    if (_rtype == structure::base::ResidueType::RNA) {
       _build_beads_RNA();
-    } else if (_rtype == ResidueType::PROTEIN) {
+    } else if (_rtype == structure::base::ResidueType::PROTEIN) {
       _beads.push_back(util::Bead(get_coords("CA"), util::BeadType::CALPHA));
     } else {
       _beads.push_back(util::Bead(get_center(), util::BeadType::MCENTER));
@@ -260,7 +262,7 @@ public:
       a.transform(rt);
     }
   }
-  
+
 private:
   char _name;
   int _num;
@@ -269,7 +271,7 @@ private:
   util::Uuid _uuid;
   /// @brief vector of the atom objects that belong to this residue
   Atoms _atoms;
-  ResidueType _rtype;
+  structure::base::ResidueType _rtype;
   /// @brief vector of bead objects for sterics
   util::Beads _beads = {};
 };
@@ -281,7 +283,7 @@ typedef std::vector<Residue> Residues;
 
 // TODO do not return RNA as type always!
 Residue get_residue_from_str(const String &s) {
-  Strings spl = base::string::split(s, ",");
+  Strings spl = ::base::string::split(s, ",");
   int a = 0;
   char name = spl[1][0];
   int num = std::stoi(spl[2]);
@@ -297,20 +299,19 @@ Residue get_residue_from_str(const String &s) {
     }
     try {
       atoms.push_back(Atom(spl[i]));
-    }
-    catch(...) {
+    } catch (...) {
       std::cout << "FAILED!" << std::endl;
       std::cout << i << " " << spl[i] << std::endl;
-      for(int j = 5; j < spl.size(); j++) {
+      for (int j = 5; j < spl.size(); j++) {
         std::cout << spl[j].length() << " ";
       }
       std::cout << std::endl;
       exit(0);
-
     }
     i++;
   }
-  return {name, num, chain_id, i_code, atoms, uuid, ResidueType::RNA};
+  return {name, num, chain_id, i_code, atoms, uuid,
+          structure::base::ResidueType::RNA};
 }
 
 inline bool residue_steric_clash_RNA(Residue const &r1, Residue const &r2) {

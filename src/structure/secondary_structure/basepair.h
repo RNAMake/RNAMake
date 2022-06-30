@@ -6,14 +6,15 @@
 #define RNAMAKE_NEW_BASEPAIR_H
 
 #include <base/string.hpp>
-#include <structure/base.hpp>
+#include <structure/base/base.hpp>
 
 namespace structure::secondary_structure {
 
 class Basepair {
 public:
   inline Basepair(const util::Uuid &res1_uuid, const util::Uuid &res2_uuid,
-                  const util::Uuid &uuid, const BasepairType bp_type)
+                  const util::Uuid &uuid,
+                  const structure::base::BasepairType bp_type)
       : _res1_uuid(res1_uuid), _res2_uuid(res2_uuid), _uuid(uuid),
         _bp_type(bp_type) {}
 
@@ -72,7 +73,8 @@ public: // getters ////////////////////////////////////////////////////////////
   }
 
 public: // trivial getters ///////////////////////////////////////////////////
-  [[nodiscard]] inline BasepairType const &get_bp_type() const {
+  [[nodiscard]] inline structure::base::BasepairType const &
+  get_bp_type() const {
     return _bp_type;
   }
 
@@ -90,7 +92,7 @@ private:
   util::Uuid _uuid;
   util::Uuid _res1_uuid;
   util::Uuid _res2_uuid;
-  BasepairType _bp_type;
+  structure::base::BasepairType _bp_type;
 };
 
 typedef std::vector<Basepair> Basepairs;

@@ -7,12 +7,12 @@
 
 namespace structure::all_atom {
 
-structure::BasepairType
+structure::base::BasepairType
 generate_bp_type(Residue const &res1, Residue const &res2,
                  util::x3dna::X3dnaBPType x3dna_bp_type) {
 
   if (x3dna_bp_type != util::x3dna::X3dnaBPType::cWUW) {
-    return structure::BasepairType::NC;
+    return structure::base::BasepairType::NC;
   }
 
   auto bp_str = String();
@@ -21,11 +21,11 @@ generate_bp_type(Residue const &res1, Residue const &res2,
 
   auto wc_names = Strings{"GC", "CG", "AU", "UA"};
   if (std::find(wc_names.begin(), wc_names.end(), bp_str) != wc_names.end()) {
-    return structure::BasepairType::WC;
+    return structure::base::BasepairType::WC;
   } else if (bp_str == "GU" || bp_str == "UG") {
-    return structure::BasepairType::GU;
+    return structure::base::BasepairType::GU;
   } else {
-    return structure::BasepairType::NC;
+    return structure::base::BasepairType::NC;
   };
 }
 

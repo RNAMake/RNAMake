@@ -15,9 +15,10 @@ public:
       : _name(name), _coords(coords) {}
 
   inline Atom(String const &s) {
-    auto spl = base::string::split(s, " ");
-    if(spl.size() != 4) {
-      throw base::InputException("tried to initialize atom with string: " + s);
+    auto spl = ::base::string::split(s, " ");
+    if (spl.size() != 4) {
+      throw ::base::InputException("tried to initialize atom with string: " +
+                                   s);
     }
     _name = spl[0];
     _coords =
@@ -44,11 +45,9 @@ public:
   inline bool operator!=(Atom const &a) const { return !(*this == a); }
 
 public: // non const methods //////////////////////////////////////////////////
-  inline void move(const math::Vector3 & p) {
-    _coords = _coords + p;
-  }
+  inline void move(const math::Vector3 &p) { _coords = _coords + p; }
 
-  inline void transform(const math::RotandTrans & rt) {
+  inline void transform(const math::RotandTrans &rt) {
     _coords = rt.rotation.dot(_coords) + rt.translation;
   }
 
