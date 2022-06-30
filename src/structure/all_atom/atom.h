@@ -4,53 +4,24 @@
 #include <cstdio>
 
 // RNAMake Headers
+#include <base/exception.hpp>
 #include <base/types.hpp>
-#include <math/matrix_3x3.hpp>
-//#include <math/vector_3.hpp>
+#include <math/rotation.hpp>
 
-/**
- * Stores atomic information from pdb file, design is to be extremely
- * lightweight only storing the atom name and coordinates.
- *
- * Example Usage:
- *
- * @code
- *  // creation
- *  auto a = Atom("P", Point(0, 1, 2));
- *
- *  //copy
- *  auto a2 = Atom(a);
- * @endcode
- */
 namespace structure::all_atom {
 class Atom {
 public:
-  /**
-   * Standard constructor for Atom object.
-   * @param   name    name of atom
-   * @param   coords  3d coordinates of atom's position
-   */
   inline Atom(String const &name, math::Vector3 const &coords)
       : _name(name), _coords(coords) {}
 
-  /**
-   * Construction from String, used in reading data from files
-   * @param   s   string generated from to_str()
-   * @see to_str()
-   *
-   * Example Usage:
-   * @code
-   *  auto a = Atom("P", Point(0, 1, 2));
-   *  auto s = a.to_str();
-   *  auto a2 = Atom(s);
-   * @endcode
-   */
   inline Atom(String const &s) {
-
     auto spl = base::string::split(s, " ");
+    if(spl.size() != 4) {
+      throw base::InputException("tried to initialize atom with string: " + s);
+    }
     _name = spl[0];
     _coords =
-        math::Vector3(std::stof(spl[1]), std::stof(spl[2]), std::stof(spl[3]));
+        math::Vector3(std::stod(spl[1]), std::stod(spl[2]), std::stod(spl[3]));
   }
 
   /**
@@ -64,76 +35,41 @@ public:
     if (_name != a._name) {
       return false;
     }
-    //if (!math::are_points_equal(_coords, a._coords)) {
-    //  return false;
-    //}
+    // if (!math::are_points_equal(_coords, a._coords)) {
+    //   return false;
+    // }
     return true;
   }
 
   inline bool operator!=(Atom const &a) const { return !(*this == a); }
 
-public:
-  /**
-   * Strigifies atom object
-   * @code
-   *  auto a = Atom("P", Point(0, 1, 2));
-   *  std::cout << a.to_str() << std::endl;
-   *  //EXPECTED OUTPUT
-   *  "H1 0.0 1.0 2.0"
-   * @endcode
-   */
-  String get_str() const;
+public: // non const methods //////////////////////////////////////////////////
+  inline void move(const math::Vector3 & p) {
+    _coords = _coords + p;
+  }
 
-  /**
-   * Strigifies atom into PDB format
-   * @param   acount  the number of the atom, default=1
-   *
-   * @code
-   *  auto a = Atom("P", Point(0, 1, 2));
-   *  std::cout << a.to_pdb_str() << std::endl;
-   *  //EXPECTED OUTPUT
-   *  "ATOM      1  P   C   A   1       1.000   2.000   3.000  1.00 62.18 P
-   * @endcode
-   */
-  String to_pdb_str(int) const;
+  inline void transform(const math::RotandTrans & rt) {
+    _coords = rt.rotation.dot(_coords) + rt.translation;
+  }
 
-  /**
-   * @param p xyz coords to move atom by
-   *
-   * @code
-   * @endcode
-   */
+public: // trival getters /////////////////////////////////////////////////////
+  [[nodiscard]] inline const String &get_name() const { return _name; }
 
-  inline void rename(const String &name) { _name = name; }
+  [[nodiscard]] inline const math::Vector3 &get_coords() const {
+    return _coords;
+  }
 
-public: // accessors
-  /**
-   * Accessor for _name
-   */
-  inline const String &get_name() const { return _name; }
+public: // coord getters //////////////////////////////////////////////////////
+  [[nodiscard]] inline double get_x() const { return _coords.get_x(); }
 
-  /**
-   * Accessor for coords_
-   */
-  inline const math::Vector3 &get_coords() const { return _coords; }
+  [[nodiscard]] inline double get_y() const { return _coords.get_y(); }
 
-  inline const double get_x() { return _coords.get_x(); }
-
-  inline const double get_y() { return _coords.get_y(); }
-
-  inline const double get_z() { return _coords.get_z(); }
+  [[nodiscard]] inline double get_z() const { return _coords.get_z(); }
 
 private:
-  /**
-   * private variable of name of atom
-   */
-  // TODO Figure out a way to stop string copying
   String _name;
 
-  /**
-   * private variable of 3D coordinates of atom
-   */
-  math::Vector3 _coords;
+  math::Vector3 _coords{};
 };
 
 // TODO Need to remove these pointers

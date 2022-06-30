@@ -6,6 +6,7 @@
 #define RNAMAKE_SRC_STRUCTURE_BASE_HPP_
 
 #include <base/string.hpp>
+#include <math/rotation.hpp>
 #include <util/motif_type.h>
 #include <util/uuid.h>
 
@@ -75,11 +76,11 @@ private:
   Residues _residues;
 };
 
-template <typename Chaintype, typename Restype> class Structure {
+template <typename Chain, typename Residue> class Structure {
 public:
-  typedef std::vector<Restype> Residues;
-  typedef std::vector<Chaintype> Chains;
-  typedef std::vector<Chaintype> ChainsOP;
+  typedef std::vector<Residue> Residues;
+  typedef std::vector<Chain> Chains;
+  typedef std::vector<Chain> ChainsOP;
 
 public:
   inline Structure() : _residues(Residues()), _cut_points(Cutpoints()) {}
@@ -97,9 +98,8 @@ public: // res iterator
 
 public: // get_residue interface
   // TODO Need to remove this function and only use char
-  Restype const &get_residue(int num, const String &chain_id,
+  Residue const &get_residue(int num, const String &chain_id,
                              char i_code) const {
-
     for (auto const &r : _residues) {
       if (num == r.get_num() && chain_id == r.get_chain_id() &&
           i_code == r.get_i_code()) {
@@ -114,19 +114,16 @@ public: // get_residue interface
     throw StructureException(ss.str());   */
   }
 
-  Restype const &get_residue(util::Uuid const &uuid) const {
-
+  Residue const &get_residue(util::Uuid const &uuid) const {
     for (auto const &r : _residues) {
       if (r.get_uuid() == uuid) {
         return r;
       }
     }
-
     throw StructureException("cannot find residue by uuid");
   }
 
-  Restype const &get_residue(Index index) const {
-
+  Residue const &get_residue(Index index) const {
     /*expects<StructureException>(
         index < _residues.size(),
         "cannot get residue " + std::to_string(index) + " only " +
@@ -135,7 +132,7 @@ public: // get_residue interface
     return _residues[index];
   }
 
-  int get_res_index(Restype const &res) const {
+  int get_res_index(Residue const &res) const {
     int i = -1;
     for (auto const &r : _residues) {
       i++;
@@ -151,32 +148,32 @@ public:
   ChainsOP get_chains() const {
     auto pos = 0;
     auto res = Residues();
-    auto chains = std::vector<Chaintype>();
+    auto chains = std::vector<Chain>();
     auto i = 0;
     for (auto const &r : _residues) {
       if (_cut_points[pos] == i) {
-        auto c = Chaintype(res);
+        auto c = Chain(res);
         chains.push_back(c);
-        res = Residues{Restype(r)};
+        res = Residues{Residue(r)};
         pos += 1;
       } else {
-        res.push_back(Restype(r));
+        res.push_back(Residue(r));
       }
       i++;
     }
     if (res.size() > 0) {
-      chains.push_back(Chaintype(res));
+      chains.push_back(Chain(res));
     }
     return std::make_shared<Chains>(chains);
   }
 
-  Cutpoints const &get_cutpoints() const { return _cut_points; }
+  [[nodiscard]] const Cutpoints &get_cutpoints() const { return _cut_points; }
 
-  size_t get_num_residues() const { return _residues.size(); }
+  [[nodiscard]] size_t get_num_residues() const { return _residues.size(); }
 
-  size_t get_num_chains() const { return _cut_points.size(); }
+  [[nodiscard]] size_t get_num_chains() const { return _cut_points.size(); }
 
-  String get_sequence() const {
+  [[nodiscard]] String get_sequence() const {
     auto i = -1;
     auto seq = String("");
     auto pos = 0;
@@ -191,7 +188,7 @@ public:
     return seq;
   }
 
-  bool is_residue_start_of_chain(Restype const &r) const {
+  bool is_residue_start_of_chain(Residue const &r) const {
     auto res_index = get_res_index(r);
     if (res_index == 0) {
       return true;
@@ -204,7 +201,7 @@ public:
     return false;
   }
 
-  bool is_residue_end_of_chain(Restype const &r) const {
+  bool is_residue_end_of_chain(Residue const &r) const {
     auto res_index = get_res_index(r);
     for (auto const c : _cut_points) {
       if (res_index == c - 1) {
@@ -212,6 +209,19 @@ public:
       }
     }
     return false;
+  }
+
+public:
+  void move(const math::Vector3 &p) {
+    for(auto & r : _residues) {
+      r.move(p);
+    }
+  }
+
+  void transform(const math::RotandTrans & rt) {
+    for(auto & r : _residues) {
+      r.transform(rt);
+    }
   }
 
 private:
@@ -222,18 +232,18 @@ private:
 template <typename Basepair, typename Structure, typename Chain,
           typename Residue>
 class Pose {
-public: // types
+public: // types //////////////////////////////////////////////////////////////
   typedef std::vector<Residue> Residues;
   typedef std::vector<Basepair> Basepairs;
 
 public:
   Pose(Structure &structure, Structure &proteins, Structure &small_molecules,
        Basepairs &basepairs, Indexes &end_indexes, Strings &end_ids,
-       String &name)
+       String &name, String &dot_bracket)
       : _structure(std::move(structure)), _proteins(std::move(proteins)),
         _small_molecules(std::move(small_molecules)),
         _basepairs(std::move(basepairs)), _end_indexes(end_indexes),
-        _end_ids(end_ids), _name(name) {
+        _end_ids(end_ids), _name(name), _dot_bracket(std::move(dot_bracket)) {
 
     /*expects<StructureException>(
         _end_ids.size() == _end_indexes.size(),
@@ -242,7 +252,7 @@ public:
             std::to_string(end_ids.size()) + "end ids");   */
   }
 
-public: // iterators
+public: // iterators //////////////////////////////////////////////////////////
   // residue iterator
   typedef typename Residues::const_iterator const_iterator;
 
@@ -282,8 +292,20 @@ public: // structure wrappers
 
   inline size_t get_num_chains() const { return _structure.get_num_chains(); }
 
+  inline const Cutpoints &get_cutpoints() const {
+    return _structure.get_cutpoints();
+  };
+
   inline void get_chains() const {
     // return _structure.get_chains();
+  }
+
+  inline bool is_residue_start_of_chain(const Residue &r) const {
+    return _structure.is_residue_start_of_chain(r);
+  }
+
+  inline bool is_residue_end_of_chain(const Residue &r) const {
+    return _structure.is_residue_end_of_chain(r);
   }
 
 public: // get basepairs interface
@@ -489,11 +511,12 @@ public: // get end interace
                                     " there are only " +
                                     std::to_string(_end_indexes.size()));    */
 
-    std::cout << index << " " << _basepairs.size() << " " << _end_indexes.size()
+   /* std::cout << index << " " << _basepairs.size() << " " << _end_indexes
+                                                                   .size()
               << std::endl;
     std::cout << _end_indexes[index] << std::endl;
     std::cout << _basepairs[_end_indexes[index]].get_name_str() << std::endl;
-
+     */
     return _basepairs[_end_indexes[index]];
   }
 
@@ -525,29 +548,16 @@ public: // get end by end id
     }
   }
 
+public: // trivial getters ////////////////////////////////////////////////////
+  inline const String &get_dot_bracket() const { return _dot_bracket; }
+
+  inline const Indexes &get_end_indexes() const { return _end_indexes; }
+
+  inline const Strings &get_end_ids() const { return _end_ids; }
+
+  inline const String &get_name() const { return _name; }
+
 public: // other getters
-  /*base::SimpleStringCOP get_end_id(Index index) const {
-    if (index >= _end_ids.size()) {
-      throw StructureException(
-          "trying to get end_id: " + std::to_string(index) +
-          " there are only " + std::to_string(_end_ids.size()));
-    }
-    return _end_ids[index];
-  }
-
-  int get_end_index(base::SimpleStringCOP name) const {
-    auto &bp = get_end(name);
-    int i = 0;
-    for (auto const &ei : _end_indexes) {
-      auto &end = _basepairs[ei];
-      if (bp == end) {
-        return i;
-      }
-      i++;
-    }
-    throw StructureException("cannot find end with name: " + name->get_str());
-  } */
-
   int get_end_index(String const &str) const {
     int i = 0;
     for (auto const &ei : _end_ids) {
@@ -573,7 +583,21 @@ public: // other getters
 
   size_t get_num_ends() const { return _end_indexes.size(); }
 
-  // base::SimpleStringCOP get_name() { return _name; }
+public:
+  void move(const math::Vector3 &p) {
+    _structure.move(p);
+    for(auto & bp : _basepairs) {
+      bp.move(p);
+    }
+  }
+
+  void transform(const math::RotandTrans & rt) {
+    _structure.transform(rt);
+    for(auto & bp : _basepairs) {
+      bp.transform(rt);
+    }
+  }
+
 
 protected:
   Structure _structure;
@@ -598,22 +622,26 @@ public:
   inline Segment(Structure &structure, Structure &proteins,
                  Structure &small_molecules, Basepairs &basepairs,
                  Indexes &end_indexes, Strings &end_ids, String &name,
-                 util::MotifType segment_type, Index aligned_end_index,
-                 util::Uuid const &uuid)
+                 String &dot_bracket, util::MotifType segment_type,
+                 Index aligned_end_index, util::Uuid const &uuid)
       : BaseClass(structure, proteins, small_molecules, basepairs, end_indexes,
-                  end_ids, name),
+                  end_ids, name, dot_bracket),
         _segment_type(segment_type), _aligned_end_index(aligned_end_index),
         _uuid(uuid) {}
 
-public:
-  [[nodiscard]] inline Index get_aligned_end_indx() const {
+public: // trival getters ////////////////////////////////////////////////////
+  [[nodiscard]] inline Index get_aligned_end_index() const {
     return _aligned_end_index;
   }
 
-  [[nodiscard]] util::Uuid const &get_uuid() const { return _uuid; }
+  [[nodiscard]] inline util::Uuid const &get_uuid() const { return _uuid; }
 
-  [[nodiscard]] util::MotifType get_segment_type() const {
+  [[nodiscard]] inline util::MotifType get_segment_type() const {
     return _segment_type;
+  }
+
+  [[nodiscard]] inline const Basepair &get_aligned_end() const {
+    return this->_basepairs[this->_end_indexes[_aligned_end_index]];
   }
 
 private:

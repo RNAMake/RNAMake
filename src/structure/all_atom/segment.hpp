@@ -5,8 +5,12 @@
 #ifndef RNAMAKE_SRC_STRUCTURE_ALL_ATOM_SEGMENT_HPP_
 #define RNAMAKE_SRC_STRUCTURE_ALL_ATOM_SEGMENT_HPP_
 
+#include <fstream>
+
 #include <structure/all_atom/basepair.h>
 #include <structure/all_atom/residue.h>
+#include <structure/secondary_structure/segment.hpp>
+#include <structure/state/segment.hpp>
 
 namespace structure::all_atom {
 // typedefs to bring base into all_atom namespace
@@ -31,8 +35,9 @@ Segment get_segment_from_str(const String &str) {
       res.emplace_back(get_residue_from_str(res_str));
       i += 1;
     }
-    cutpoints.push_back(i);
+    cutpoints.push_back(res.size());
   }
+  cutpoints.pop_back();
   Structure s(res, cutpoints);
   Strings basepair_strs = base::string::split(spl[6], "@");
   Basepairs bps;
@@ -82,10 +87,102 @@ Segment get_segment_from_str(const String &str) {
   dot_bracket.pop_back();
   Structure proteins, small_molecules;
   // Pose p = {s, proteins, small_molecules, bps, end_indexes, end_ids, name};
+  return {s,
+          proteins,
+          small_molecules,
+          bps,
+          end_indexes,
+          end_ids,
+          name,
+          dot_bracket,
+          mtype,
+          aligned_end,
+          util::generate_uuid()};
+}
+
+secondary_structure::Segment get_secondary_structure(const Segment &seg) {
+  String dot_bracket = seg.get_dot_bracket();
+  secondary_structure::Residues res;
+  int i = 0;
+  for (auto const &r : seg) {
+    String chain_id = r.get_chain_id();
+    res.push_back({r.get_name(), dot_bracket[i], r.get_num(), chain_id,
+                   r.get_i_code(), r.get_uuid(), r.get_rtype()});
+    i += 1;
+    if (seg.is_residue_end_of_chain(r)) {
+      i += 1;
+    }
+  }
+  Cutpoints cuts = seg.get_cutpoints();
+  secondary_structure::Structure s(res, cuts);
+  secondary_structure::Basepairs bps;
+  std::for_each(seg.bps_begin(), seg.bps_end(), [&bps](const Basepair &bp) {
+    bps.push_back({bp.get_res1_uuid(), bp.get_res2_uuid(), bp.get_uuid(),
+                   bp.get_bp_type()});
+  });
+  secondary_structure::Structure proteins, small_molecules;
+  Indexes end_indexes = seg.get_end_indexes();
+  Strings end_ids = seg.get_end_ids();
+  util::MotifType mtype = seg.get_segment_type();
+  Index aligned_end = seg.get_aligned_end_index();
+  String name = seg.get_name();
   return {
-      s,       proteins, small_molecules, bps,         end_indexes,
-      end_ids, name,     mtype,           aligned_end, util::generate_uuid()
-  };
+      s,    proteins,    small_molecules, bps,         end_indexes,   end_ids,
+      name, dot_bracket, mtype,           aligned_end, seg.get_uuid()};
+}
+
+state::Segment get_state(const Segment &seg) {
+  state::Residues res;
+  util::Beads beads;
+  for (auto const &r : seg) {
+    beads = r.get_beads();
+    state::Residue s_r(beads);
+    res.emplace_back(s_r);
+  }
+  Cutpoints cuts = seg.get_cutpoints();
+  state::Structure s(res, cuts);
+  state::Basepairs bps;
+  std::for_each(seg.bps_begin(), seg.bps_end(), [&bps](const Basepair &bp) {
+    String name = bp.get_name();
+    math::Vector3 center = bp.get_center();
+    math::Vector3s c1_prime_coords = bp.get_c1_prime_coords();
+    math::Matrix3x3 ref_frame = bp.get_ref_frame();
+    bps.push_back({name, center, c1_prime_coords, ref_frame});
+  });
+  state::Structure proteins, small_molecules;
+  String dot_bracket = seg.get_dot_bracket();
+  Indexes end_indexes = seg.get_end_indexes();
+  Strings end_ids = seg.get_end_ids();
+  util::MotifType mtype = seg.get_segment_type();
+  Index aligned_end = seg.get_aligned_end_index();
+  String name = seg.get_name();
+  return {
+      s,    proteins,    small_molecules, bps,         end_indexes,   end_ids,
+      name, dot_bracket, mtype,           aligned_end, seg.get_uuid()};
+}
+
+void write_segment_to_pdb(const String &fname, const Segment &seg) {
+  std::ofstream out;
+  out.open(fname);
+  int acount = 1;
+  int rnum = 1;
+  char chain_id = 'A';
+  for (auto const &r : seg) {
+    for (auto const &a : r) {
+      char buffer[200];
+      math::Vector3 c = a.get_coords();
+      std::sprintf(
+          buffer,
+          "%-6s%5d %-4s%1s%-4c%1c%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f     "
+          " %4s%2s\n",
+          "ATOM", acount, a.get_name().c_str(), "", r.get_name(), chain_id,
+          rnum, "", c.get_x(), c.get_y(), c.get_z(), 1.00, 0.00, "", "");
+      out << buffer;
+      acount += 1;
+    }
+    rnum += 1;
+  }
+  out.close();
 }
 
 } // namespace structure::all_atom

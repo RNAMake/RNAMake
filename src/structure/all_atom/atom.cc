@@ -12,8 +12,5 @@
 
 namespace structure::all_atom {
 
-String Atom::get_str() const {
-  return _name + " " + _coords.get_str();
-}
 
 }

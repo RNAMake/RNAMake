@@ -16,7 +16,8 @@ namespace base::string {
 
 // @brief splits string with a delimiter
 // Known issue with escaped characters, will not work properly.
-Strings split(String s, const String &delimiter) {
+Strings split(const String & org_s, const String &delimiter) {
+  String s = org_s;
   String token;
   Strings tokens;
   size_t pos;
@@ -33,6 +34,18 @@ Strings split(String s, const String &delimiter) {
     tokens.emplace_back();
   }
   return tokens;
+}
+
+Strings tokenize(std::string const &str, const char delim) {
+  Strings out;
+  size_t start;
+  size_t end = 0;
+
+  while ((start = str.find_first_not_of(delim, end)) != std::string::npos) {
+    end = str.find(delim, start);
+    out.push_back(str.substr(start, end - start));
+  }
+  return out;
 }
 
 // @brief joins a vector of strings with a delimiter
