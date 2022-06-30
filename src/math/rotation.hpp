@@ -29,6 +29,11 @@ Real difference_between_frames(const Matrix3x3 &m1, const Matrix3x3 &m2) {
   return 0.0f;
 }
 
+struct RotandTrans {
+  Matrix3x3 rotation;
+  Vector3 translation;
+};
+
 } // namespace math
 
 #endif // RNAMAKE_SRC_MATH_ROTATION_HPP_

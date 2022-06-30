@@ -113,8 +113,22 @@ public:
     return str;
   } */
 
+public: // non const methods //////////////////////////////////////////////////
+  void move(const math::Vector3 &p) {
+    _center = _center + p;
+    _c1_prime_coords[0] = _c1_prime_coords[0] + p;
+    _c1_prime_coords[1] = _c1_prime_coords[1] + p;
+  }
+
+  void transform(const math::RotandTrans &rt) {
+    _center = rt.rotation.dot(_center) + rt.translation;
+    _c1_prime_coords[0] = rt.rotation.dot(_c1_prime_coords[0]) + rt.translation;
+    _c1_prime_coords[1] = rt.rotation.dot(_c1_prime_coords[1]) + rt.translation;
+    _ref_frame = _ref_frame * rt.rotation.get_transposed();
+    _ref_frame.unitarize();
+  }
+
 public: // getters
-public:
   [[nodiscard]] util::Uuid const &get_partner(util::Uuid const &uuid) const {
     if (uuid == _res1_uuid) {
       return _res2_uuid;

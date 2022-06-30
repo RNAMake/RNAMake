@@ -11,6 +11,7 @@
 // RNAMake Headers
 #include <base/exception.hpp>
 #include <base/types.hpp>
+#include <base/string.hpp>
 
 namespace base::path {
 
@@ -67,14 +68,9 @@ void get_lines_from_file(const String &fname, Strings &lines) {
   String line;
   std::ifstream input;
   input.open(fname);
-  while (input.good()) {
-    getline(input, line);
-    lines.push_back(line);
-  }
-  lines.pop_back();
-  if (lines.empty()) {
-    LOG_WARNING << "there are no lines in " << fname;
-  }
+  std::stringstream buffer;
+  buffer << input.rdbuf();
+  lines = base::string::split(buffer.str(), "\n");
   input.close();
 }
 

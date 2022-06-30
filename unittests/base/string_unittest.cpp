@@ -4,6 +4,7 @@
 
 #include "../common.hpp"
 
+#include <base/paths.hpp>
 #include <base/string.hpp>
 #include <base/types.hpp>
 
@@ -113,10 +114,9 @@ TEST_CASE("test string functions") {
       CHECK(base::string::quoted(initial) == target);
     }
     SUBCASE("empty string") {
-      const String target ="\'\'";
+      const String target = "\'\'";
       String initial;
       CHECK(base::string::quoted(initial) == target);
     }
   }
-
 }

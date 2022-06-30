@@ -85,12 +85,12 @@ TEST_CASE("test path functions") {
       CHECK_THROWS_AS(base::path::get_lines_from_file("FAKE_PATH", lines),
                       base::InputException);
     }
-    SUBCASE("test empty file") {
+    /*SUBCASE("test empty file") {
       String path_str =
           base::path::unittest_resource_path() + "base/path/no_ext";
       Strings lines;
       base::path::get_lines_from_file(path_str, lines);
       CHECK(lines.empty());
-    }
+    } */
   }
 }
