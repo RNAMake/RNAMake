@@ -124,6 +124,13 @@ TEST_CASE("Test Steric Lookup for quick Sterics ") {
       auto point_2 = math::Vector3(1, 1, 1);
       auto point_3 = math::Vector3(1, 1, 1);
       auto point_set_1 = math::Vector3s{point_1, point_2, point_3};
+      auto steric_lookup_test = util::StericLookupNew();
+      steric_lookup_test.add_points(point_set_1);
+      steric_lookup_test.to_pdb("test_clashes.pdb");
+
+      bool do_points_clash = steric_lookup_test.clash(point_set_1);
+      CHECK(do_points_clash == true);
+
 
     }
     SUBCASE("test clash between completely different points") {
