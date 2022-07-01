@@ -6,7 +6,6 @@
 //  Copyright © 2016 Joseph Yesselman. All rights reserved.
 //
 
-#include <iomanip> // std::setprecision
 #include <math.h>
 
 #include "util/steric_lookup.hpp"
@@ -16,6 +15,10 @@
 
 namespace util {
 
+// constructors
+
+/// @brief - creates a map of a certain grid size
+// this is a constructor
 StericLookup::StericLookup()
     : _bhash(std::map<double, int>()), _grid_size(0.5), _cutoff(2.65),
       _radius(6), _additions(math::Vector3s()) {
@@ -23,15 +26,19 @@ StericLookup::StericLookup()
   _setup_additions();
 }
 
+/// @brief - sets up a grid of unit size grid_size, total grid size cutoff, and
+/// buffer radius radius
+/// note: this is a constructor
 StericLookup::StericLookup(float grid_size, float cutoff, int radius)
     : _bhash(std::map<double, int>()), _grid_size(grid_size), _cutoff(cutoff),
-      _radius(6), _additions(math::Vector3s()) {
+      _radius(radius), _additions(math::Vector3s()) {
   _check_additions = math::Vector3s();
   _setup_additions();
 }
 
+/// @brief -
 void StericLookup::_setup_additions() {
-  auto add = Reals();
+  auto add = Reals(); // initializes a vector of real numbers
   for (int i = 1; i < _radius; i++) {
     add.push_back(float(-i * _grid_size));
   }
@@ -56,6 +63,7 @@ void StericLookup::_setup_additions() {
   }
 }
 
+/// @brief - adds a point in space for an atom
 void StericLookup::add_point(math::Vector3 const &p) {
   _rounded.set_x(round(p.get_x() / _grid_size) * _grid_size);
   _rounded.set_y(round(p.get_y() / _grid_size) * _grid_size);
@@ -77,13 +85,17 @@ void StericLookup::add_point(math::Vector3 const &p) {
   }
 }
 
+/// @brief - adds points for atoms from an array of (position) vectors
 void StericLookup::add_points(math::Vector3s const &points) {
   for (auto const &p : points) {
     add_point(p);
   }
 }
 
-int StericLookup::clash(math::Vector3 const &p) {
+/// @brief - checks if a given point clashes with/has an overlapping radius with
+/// other points
+// TODO write a unittest
+bool StericLookup::clash(math::Vector3 const &p) {
   _rounded.set_x(round(p.get_x() / _grid_size) * _grid_size);
   _rounded.set_y(round(p.get_y() / _grid_size) * _grid_size);
   _rounded.set_z(round(p.get_z() / _grid_size) * _grid_size);
@@ -93,12 +105,15 @@ int StericLookup::clash(math::Vector3 const &p) {
              double(_rounded.get_z() * 100000);
 
   if (_bhash.find(k) != _bhash.end()) {
-    return 1;
+    return true;
   } else {
-    return 0;
+    return false;
   }
 }
 
+/// @brief - checks if a list of given points clashes with/has an overlapping
+/// radius with other points
+// TODO write a unittest
 int StericLookup::clash(math::Vector3s const &points) {
   int is_clash = 0;
   for (auto const &p : points) {
@@ -107,10 +122,9 @@ int StericLookup::clash(math::Vector3s const &points) {
       return is_clash;
     }
   }
-
   return 0;
 }
-
+/// @brief -
 int StericLookup::better_clash(math::Vector3 const &p) {
   _rounded.set_x(round(p.get_x() / _grid_size) * _grid_size);
   _rounded.set_y(round(p.get_y() / _grid_size) * _grid_size);
@@ -139,6 +153,8 @@ int StericLookup::better_clash(math::Vector3 const &p) {
   return 0;
 }
 
+/// @brief - counts the number of clashes in a lookup consisting of a single vector
+// TODO write a unittest
 int StericLookup::total_clash(math::Vector3 const &p) {
   _rounded.set_x(round(p.get_x() / _grid_size) * _grid_size);
   _rounded.set_y(round(p.get_y() / _grid_size) * _grid_size);
@@ -155,6 +171,8 @@ int StericLookup::total_clash(math::Vector3 const &p) {
   }
 }
 
+/// @brief - counts the number of clashes in a lookup consititing of an array of vectors
+// TODO write a unittest
 int StericLookup::total_clash(math::Vector3s const &points) {
   int clash_count = 0;
   for (auto const &p : points) {

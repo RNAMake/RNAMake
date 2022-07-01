@@ -12,8 +12,8 @@
 #include <map>
 #include <stdio.h>
 
-#include "math/hashing.h"
-#include "math/vector_3.hpp"
+#include <math/hashing.h>
+#include <math/vector_3.hpp>
 
 namespace util {
 
@@ -30,7 +30,7 @@ public:
 
   void add_points(math::Vector3s const &);
 
-  int clash(math::Vector3 const &);
+  bool clash(math::Vector3 const &);
 
   int clash(math::Vector3s const &);
 
@@ -70,9 +70,7 @@ public:
 public:
   void to_pdb(String const &);
 
-  int size() {
-    return _histo.size();
-  }
+  int size() { return _histo.size(); }
 
 private:
   void _setup_additions();
