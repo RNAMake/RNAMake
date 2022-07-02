@@ -9,18 +9,29 @@
 
 using namespace structure::all_atom;
 TEST_CASE("test all atom") {
-  /*SUBCASE("test string conversion consistency") {
-    for(int i =0 ; i < 1; i++) {
-      String path = base::path::unittest_resource_path() +
-                    "residue/test_str_to_residue.dat";
-      auto lines = Strings();
-      base::path::get_lines_from_file(path, lines);
-      Residue r = get_residue_from_str(lines[0]);
-      math::Vector3 v = {rand(), rand(), rand()};
-      r.move(v);
+  String path = base::path::unittest_resource_path() +
+                "residue/test_str_to_residue.dat";
+  auto lines = Strings();
+  base::path::get_lines_from_file(path, lines);
+  Residue r = get_residue_from_str(lines[0]);
+  SUBCASE("test trival") {
+    CHECK(r.get_name() == 'G');
+    CHECK(r.get_num() == 103);
+    CHECK(r.get_chain_id() == "A");
+    std::cout << r.get_chain_id() << std::endl;
+  }
+  SUBCASE("test getting atoms") {
+    int i = 0;
+    for(auto const & a : r) {
+      i += 1;
     }
-  } */
-  SUBCASE("test string conversion consistency from seg str") {
+    CHECK(i == 20);
+    CHECK(r.get_atom("O5'").get_name() == "O5'");
+    CHECK_NOTHROW(r.get_coords("O5'"));
+
+  }
+
+  /*SUBCASE("test string conversion consistency from seg str") {
     for(int a = 0; a < 1000; a++) {
       String path = base::path::resources_path() + "motifs/base.motif";
       auto lines = Strings();
@@ -40,6 +51,6 @@ TEST_CASE("test all atom") {
       math::Vector3 v = {rand(), rand(), rand()};
       res[0].move(v);
     }
-  }
+  } */
 
 }

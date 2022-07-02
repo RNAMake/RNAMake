@@ -47,8 +47,8 @@ public:
 public: // non const methods //////////////////////////////////////////////////
   inline void move(const math::Vector3 &p) { _coords = _coords + p; }
 
-  inline void transform(const math::RotandTrans &rt) {
-    _coords = rt.rotation.dot(_coords) + rt.translation;
+  inline void rotate(const math::Matrix3x3 &rot) {
+    _coords = rot.dot(_coords);
   }
 
 public: // trival getters /////////////////////////////////////////////////////

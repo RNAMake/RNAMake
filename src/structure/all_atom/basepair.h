@@ -67,11 +67,11 @@ public: // non const methods //////////////////////////////////////////////////
     _c1_prime_coords[1] = _c1_prime_coords[1] + p;
   }
 
-  void transform(const math::RotandTrans &rt) {
-    _center = rt.rotation.dot(_center) + rt.translation;
-    _c1_prime_coords[0] = rt.rotation.dot(_c1_prime_coords[0]) + rt.translation;
-    _c1_prime_coords[1] = rt.rotation.dot(_c1_prime_coords[1]) + rt.translation;
-    _ref_frame = _ref_frame * rt.rotation.get_transposed();
+  void rotate(const math::Matrix3x3 & rot) {
+    _center = rot.dot(_center);
+    _c1_prime_coords[0] = rot.dot(_c1_prime_coords[0]);
+    _c1_prime_coords[1] = rot.dot(_c1_prime_coords[1]);
+    _ref_frame = _ref_frame * rot.get_transposed();
     _ref_frame.unitarize();
   }
 

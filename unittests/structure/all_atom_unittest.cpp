@@ -57,18 +57,33 @@ TEST_CASE("test all atom") {
     base::path::get_lines_from_file(path, lines);
     Segment seg = get_segment_from_str(lines[0]);
     Segment seg2 = seg;
-    auto const &ref_bp = seg2.get_aligned_end();
-    math::RotandTrans rt = {};
+    math::Matrix3x3 rot;
     // std::cout << seg.get_end(1).get_ref_frame().get_flip_orientation()
     //                  .get_str() << std::endl;
     math::rotation_between_frames(seg.get_end_ref_frame(1),
-                                  seg2.get_end_ref_frame(0), rt.rotation);
-    seg2.transform(rt);
-    seg2.move(seg.get_end(1).get_center() - ref_bp.get_center());
+                                  seg2.get_end_ref_frame(0), rot);
+    seg2.rotate(rot);
+    seg2.move(seg.get_end_center(1) - seg2.get_end_center(0));
     Real diff = math::difference_between_frames(seg.get_end_ref_frame(1),
                                                 seg2.get_end_ref_frame(0));
-    std::cout << diff*180.0 / PI << std::endl;
-    write_segment_to_pdb("test.pdb", seg);
-    write_segment_to_pdb("test2.pdb", seg2);
+    //std::cout << diff*180.0 / PI << std::endl;
+    //write_segment_to_pdb("test.pdb", seg);
+    //write_segment_to_pdb("test2.pdb", seg2);
+  }
+  SUBCASE("test alignment chain") {
+    String path = base::path::resources_path() + "motifs/base.motif";
+    auto lines = Strings();
+    base::path::get_lines_from_file(path, lines);
+    std::vector<Segment> segs;
+    segs.emplace_back(get_segment_from_str(lines[0]));
+    for(int i = 0; i < 10; i++) {
+      Segment new_seg = segs.back();
+      align_segment(segs.back(), new_seg, 1);
+      segs.emplace_back(new_seg);
+    }
+    for(int i =0 ; i < segs.size(); i++) {
+      write_segment_to_pdb("test."+std::to_string(i)+".pdb", segs[i]);
+    }
+    
   }
 }
