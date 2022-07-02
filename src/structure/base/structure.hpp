@@ -151,9 +151,9 @@ public:
     }
   }
 
-  void transform(const math::RotandTrans &rt) {
+  void rotate(const math::Matrix3x3 & rot) {
     for (auto &r : _residues) {
-      r.transform(rt);
+      r.rotate(rot);
     }
   }
 

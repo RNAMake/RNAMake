@@ -36,7 +36,7 @@ public:
    * Standard constructor for BeadException
    * @param   message   Error message for bead
    */
-  BeadException(String const &message) : std::runtime_error(message) {}
+  explicit BeadException(String const &message) : std::runtime_error(message) {}
 };
 
 /**
@@ -52,60 +52,45 @@ public:
    * @param   btype   type of bead (PHOS, SUGAR or BASE)
    * @param   center  the average 3D position of all atoms represented by bead
    */
-  inline Bead(math::Vector3 const &center, BeadType const bead_type)
-      : center_(center), bead_type_(bead_type) {}
+  inline Bead(const math::Vector3 &center, const BeadType bead_type)
+      : _center(center), _bead_type(bead_type) {}
 
-  inline Bead(String const &s) {
+  inline Bead(const String &s) {
     auto spl = base::string::split(s, ",");
-    center_ = math::vector_from_str(spl[0]);
-    bead_type_ = BeadType(std::stoi(spl[1]));
+    _center = math::vector_from_str(spl[0]);
+    _bead_type = BeadType(std::stoi(spl[1]));
   }
 
-  /**
-   * Copy constructor
-   * @param   b   Bead object copying from
-   */
-  inline Bead(Bead const &b) : center_(b.center_), bead_type_(b.bead_type_) {}
+  inline Bead(const Bead &b) = default;
+
+  ~Bead() = default;
 
 public:
-  inline double distance(Bead const &b) const {
-    return b.center_.distance(center_);
+  [[nodiscard]] inline double distance(const Bead &b) const {
+    return b._center.distance(_center);
   }
 
-  inline void move(math::Vector3 const &p) { center_ = center_ + p; }
+  inline void move(const math::Vector3 &p) { _center = _center + p; }
 
-  inline void transform(math::Matrix3x3 const &r, math::Vector3 const &t,
-                        math::Vector3 &dummy) {
-    //math::dot_vector(r, center_, dummy);
-    center_ = dummy + t;
-  }
-
-  inline void transform(math::Matrix3x3 const &r, math::Vector3 const &t) {
-    //auto dummy = math::dot_vector(r, center_);
-    //center_ = dummy + t;
-  }
+  inline void rotate(const math::Matrix3x3 &rot) { _center = rot.dot(_center); }
 
 public: // getters
-  /**
-   * Accessor for center_
-   */
-  inline math::Vector3 const &get_center() const { return center_; }
+  [[nodiscard]] inline const math::Vector3 &get_center() const {
+    return _center;
+  }
 
-  /**
-   * Accessor for btype_
-   */
-  inline BeadType get_type() const { return bead_type_; }
+  [[nodiscard]] inline BeadType get_type() const { return _bead_type; }
 
-  String get_str() const {
-    return center_.get_str() + "," + std::to_string((int)bead_type_);
+  [[nodiscard]] String get_str() const {
+    return _center.get_str() + "," + std::to_string((int)_bead_type);
   }
 
   String get_type_name() {
-    if (bead_type_ == BeadType::PHOS) {
+    if (_bead_type == BeadType::PHOS) {
       return "PHOSPHATE";
-    } else if (bead_type_ == BeadType::SUGAR) {
+    } else if (_bead_type == BeadType::SUGAR) {
       return "SUGAR";
-    } else if (bead_type_ == BeadType::BASE) {
+    } else if (_bead_type == BeadType::BASE) {
       return "BASE";
     } else {
       throw BeadException("unknown bead type");
@@ -113,16 +98,9 @@ public: // getters
   }
 
 private:
-  /**
-   * private variable for the 3D coordinates of the center of atoms the bead
-   * represents
-   */
-  math::Vector3 center_;
+  math::Vector3 _center;
 
-  /**
-   * private variable of the type of the bead PHOS, SUGAR or BASE)
-   */
-  BeadType bead_type_;
+  BeadType _bead_type;
 };
 
 typedef std::vector<Bead> Beads;

@@ -7,10 +7,9 @@
 
 #include <fstream>
 
-
-#include <structure/base/segment.hpp>
 #include <structure/all_atom/basepair.h>
 #include <structure/all_atom/residue.h>
+#include <structure/base/segment.hpp>
 #include <structure/secondary_structure/segment.hpp>
 #include <structure/state/segment.hpp>
 
@@ -185,6 +184,14 @@ void write_segment_to_pdb(const String &fname, const Segment &seg) {
     rnum += 1;
   }
   out.close();
+}
+
+void align_segment(const Segment &ref, Segment &seg, Index end_index) {
+  math::Matrix3x3 rot = math::rotation_between_frames(
+      ref.get_end_ref_frame(end_index), seg.get_end_ref_frame(0));
+  seg.rotate(rot);
+  seg.move(ref.get_end_center(end_index) - seg.get_end_center(0));
+
 }
 
 } // namespace structure::all_atom

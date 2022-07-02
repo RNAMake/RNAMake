@@ -301,8 +301,12 @@ public: // get end interace
   }
 
 public: // only available to ends with ref frames?
-  inline const math::Matrix3x3 &get_end_ref_frame(Index end_index) {
+  inline const math::Matrix3x3 &get_end_ref_frame(Index end_index) const {
     return get_end(end_index).get_ref_frame();
+  }
+
+  inline const math::Vector3 &get_end_center(Index end_index) const {
+    return get_end(end_index).get_center();
   }
 
 public:
@@ -376,10 +380,10 @@ public:
     }
   }
 
-  void transform(const math::RotandTrans &rt) {
-    _structure.transform(rt);
+  void rotate(const math::Matrix3x3 rot) {
+    _structure.rotate(rot);
     for (auto &bp : _basepairs) {
-      bp.transform(rt);
+      bp.rotate(rot);
     }
   }
 
