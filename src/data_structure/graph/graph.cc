@@ -4,7 +4,4 @@
 
 #include <data_structure/graph/graph.h>
 
-namespace data_structure::graph {
-
-
-}
+namespace data_structure::graph {}

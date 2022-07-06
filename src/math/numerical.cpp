@@ -12,6 +12,7 @@
 
 namespace math {
 
+/// @brief - checks if two float values are equal
 int are_floats_equal(double const a, double const b, double tol) {
   if (std::abs(a - b) < tol) {
     return 1;
@@ -20,7 +21,8 @@ int are_floats_equal(double const a, double const b, double tol) {
   }
 }
 
-int are_xyzVector_equal(Vector3 const &vec, Vector3 const &correct_vec,
+/// @brief - checks if two vectors are equal
+int are_vector3_equal(Vector3 const &vec, Vector3 const &correct_vec,
                         float tol) {
   if (are_floats_equal(vec.get_x(), correct_vec.get_x(), tol) &&
       are_floats_equal(vec.get_y(), correct_vec.get_y(), tol) &&
@@ -31,6 +33,7 @@ int are_xyzVector_equal(Vector3 const &vec, Vector3 const &correct_vec,
   }
 }
 
+/// @brief - checks if two points are equal
 int are_points_equal(Vector3 const &p1, Vector3 const &p2, float tol) {
   if (are_floats_equal(p1.get_x(), p2.get_x(), tol) &&
       are_floats_equal(p1.get_y(), p2.get_y(), tol) &&
@@ -41,6 +44,7 @@ int are_points_equal(Vector3 const &p1, Vector3 const &p2, float tol) {
   }
 }
 
+/// @brief - checks if two matrices are equal
 int are_matrices_equal(Matrix3x3 const &m, Matrix3x3 const &mc) {
   if (!are_floats_equal(m.get_xx(), mc.get_xx()) ||
       !are_floats_equal(m.get_xy(), mc.get_xy()) ||
@@ -57,6 +61,7 @@ int are_matrices_equal(Matrix3x3 const &m, Matrix3x3 const &mc) {
   return 1;
 }
 
+/// @brief - checks if two double numbers are within the tolerance of each other
 template <>
 bool roughly_equal<double>(double const &v1, double const &v2,
                            double tolerance) {
@@ -64,11 +69,13 @@ bool roughly_equal<double>(double const &v1, double const &v2,
   return std::abs(v1 - v2) < tolerance;
 }
 
+/// @brief - checks if two float numbers are within the tolerance of each other
 template <>
 bool roughly_equal<float>(float const &v1, float const &v2, double tolerance) {
   return std::abs(v1 - v2) < tolerance;
 }
 
+/// @brief - checks if two matrices are within the tolerance of each other
 template <>
 bool roughly_equal<Matrix3x3>(Matrix3x3 const &m1, Matrix3x3 const &m2,
                               double tolerance) {
@@ -83,6 +90,7 @@ bool roughly_equal<Matrix3x3>(Matrix3x3 const &m1, Matrix3x3 const &m2,
          roughly_equal(m1.get_zz(), m2.get_zz(), tolerance);
 }
 
+/// @brief - checks if two vectors are within the tolerance of each other
 template <>
 bool roughly_equal<Vector3>(Vector3 const &v1, Vector3 const &v2,
                             double tolerance) {
