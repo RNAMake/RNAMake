@@ -17,6 +17,7 @@
 
 namespace util {
 
+/*
 class StericLookup {
 public:
   StericLookup();
@@ -32,7 +33,7 @@ public:
 
   bool clash(math::Vector3 const &);
 
-  int clash(math::Vector3s const &);
+  bool clash(math::Vector3s const &);
 
   int better_clash(math::Vector3 const &);
 
@@ -53,6 +54,7 @@ private:
   int _radius;
   double _k;
 };
+*/
 
 class StericLookupNew {
 public:
@@ -84,7 +86,7 @@ private:
   math::Vector3 _dummy;
 };
 
-typedef std::shared_ptr<StericLookup> StericLookupOP;
+// typedef std::shared_ptr<StericLookup> StericLookupOP;
 typedef std::shared_ptr<StericLookupNew> StericLookupNewOP;
 
 } // namespace util

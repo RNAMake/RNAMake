@@ -16,7 +16,7 @@
 namespace util {
 
 // constructors
-
+/*
 /// @brief - creates a map of a certain grid size
 // this is a constructor
 StericLookup::StericLookup()
@@ -94,7 +94,6 @@ void StericLookup::add_points(math::Vector3s const &points) {
 
 /// @brief - checks if a given point clashes with/has an overlapping radius with
 /// other points
-// TODO write a unittest
 bool StericLookup::clash(math::Vector3 const &p) {
   _rounded.set_x(round(p.get_x() / _grid_size) * _grid_size);
   _rounded.set_y(round(p.get_y() / _grid_size) * _grid_size);
@@ -114,8 +113,8 @@ bool StericLookup::clash(math::Vector3 const &p) {
 /// @brief - checks if a list of given points clashes with/has an overlapping
 /// radius with other points
 // TODO write a unittest
-int StericLookup::clash(math::Vector3s const &points) {
-  int is_clash = 0;
+bool StericLookup::clash(math::Vector3s const &points) {
+  bool is_clash = false;
   for (auto const &p : points) {
     is_clash = clash(p);
     if (is_clash) {
@@ -153,8 +152,8 @@ int StericLookup::better_clash(math::Vector3 const &p) {
   return 0;
 }
 
-/// @brief - counts the number of clashes in a lookup consisting of a single vector
-// TODO write a unittest
+/// @brief - counts the number of clashes in a lookup consisting of a single
+/// vector
 int StericLookup::total_clash(math::Vector3 const &p) {
   _rounded.set_x(round(p.get_x() / _grid_size) * _grid_size);
   _rounded.set_y(round(p.get_y() / _grid_size) * _grid_size);
@@ -171,8 +170,8 @@ int StericLookup::total_clash(math::Vector3 const &p) {
   }
 }
 
-/// @brief - counts the number of clashes in a lookup consititing of an array of vectors
-// TODO write a unittest
+/// @brief - counts the number of clashes in a lookup consititing of an array of
+/// vectors
 int StericLookup::total_clash(math::Vector3s const &points) {
   int clash_count = 0;
   for (auto const &p : points) {
@@ -181,9 +180,9 @@ int StericLookup::total_clash(math::Vector3s const &points) {
 
   return clash_count;
 }
-
+*/
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// StericLookupNew
+// StericLookupNew - TODO make this the old one now
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 StericLookupNew::StericLookupNew() {
@@ -244,14 +243,15 @@ bool StericLookupNew::clash(math::Vector3 const &p) {
 }
 
 bool StericLookupNew::clash(math::Vector3s const &points) {
-  bool is_clash = 0;
+  bool is_clash = false;
   for (auto const &p : points) {
     is_clash = clash(p);
-    if (is_clash) {
+    if (is_clash == true) {
+      return is_clash;
+    } else if (is_clash == false) {
       return is_clash;
     }
   }
-
   return false;
 }
 

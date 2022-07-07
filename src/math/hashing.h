@@ -68,7 +68,7 @@ public: // box management
     _upper += scalar;
   }
 
-  // @brief contract box corners (subtractive)
+  /// @brief contract box corners (subtractive)
   template <typename U> inline void contract(U const &scalar) {
     _lower += scalar;
     _upper -= scalar;
@@ -604,7 +604,6 @@ public:
       : _binner(std::make_shared<ThreeDCoordinateBinner>(bounding_box,
                                                          bin_widths)) {}
 
-public:
   void setup(BoundingBox const &bounding_box, Real3 const &bin_widths) {
     _binner =
         std::make_shared<ThreeDCoordinateBinner>(bounding_box, bin_widths);
@@ -612,7 +611,6 @@ public:
 
   inline size_t size() { return _stored_values.size(); }
 
-public:
   void add(Vector3 const &values) {
     auto bin_index = _binner->bin_index(values);
     if (_stored_values.find(bin_index) == _stored_values.end()) {
@@ -621,7 +619,6 @@ public:
     _stored_values[bin_index] += 1;
   }
 
-public:
   bool contains(Vector3 const &values) {
     auto bin_index = _binner->bin_index(values);
     if (_stored_values.find(bin_index) == _stored_values.end()) {
@@ -636,7 +633,6 @@ public:
     return _stored_values[bin_index];
   }
 
-public:
   void write_histo_to_pdb(String const &pdb_name) {
     int i = 1;
     std::ofstream out;
