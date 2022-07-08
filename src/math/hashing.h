@@ -265,7 +265,6 @@ private:
         euler[i] += 360;
       }
     }
-
     return euler;
   }
 
@@ -561,17 +560,17 @@ public:
     auto lower = _binner.get_bounding_box().lower();
     auto upper = _binner.get_bounding_box().upper();
     double x = lower.get_x();
-    double y = lower.get_x();
-    double z = lower.get_x();
+    double y = lower.get_y();
+    double z = lower.get_z();
     double x1 = upper.get_x();
     double y1 = upper.get_y();
     double z1 = upper.get_z();
     out.write((const char *)(&x), sizeof(lower.get_x()));
-    out.write((const char *)(&y), sizeof(lower.get_x()));
-    out.write((const char *)(&z), sizeof(lower.get_x()));
+    out.write((const char *)(&y), sizeof(lower.get_y()));
+    out.write((const char *)(&z), sizeof(lower.get_z()));
     out.write((const char *)(&x1), sizeof(upper.get_x()));
-    out.write((const char *)(&y1), sizeof(upper.get_x()));
-    out.write((const char *)(&z1), sizeof(upper.get_x()));
+    out.write((const char *)(&y1), sizeof(upper.get_y()));
+    out.write((const char *)(&z1), sizeof(upper.get_z()));
 
     for (int i = 0; i < 6; i++) {
       out.write((const char *)&_binner.get_bin_widths()[i],
