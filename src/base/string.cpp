@@ -36,23 +36,6 @@ Strings split(const String & org_s, const String &delimiter) {
   return tokens;
 }
 
-<<<<<<< HEAD
-Strings tokenize(std::string const &str, const char delim) {
-  Strings out;
-  size_t start;
-  size_t end = 0;
-
-  while ((start = str.find_first_not_of(delim, end)) != std::string::npos) {
-    end = str.find(delim, start);
-    out.push_back(str.substr(start, end - start));
-  }
-  return out;
-}
-
-// @brief joins a vector of strings with a delimiter
-=======
-/// @brief joins a vector of strings with a delimiter
->>>>>>> fritz/structure_rework
 String join(const Strings &strs, const String &delimiter) {
   String return_s;
   int i = 0;

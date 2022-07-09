@@ -6,10 +6,10 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include "resources/segment_sqlite_connection.h"
-#include "base/settings.h"
+#include <resources/segment_sqlite_connection.h>
+#include <base/paths.hpp>
 
-namespace resources {
+namespace resource_management {
 
 SegmentSqliteDataOP const &SegmentSqliteConnection::next() {
   if (rc_ != SQLITE_ROW) {

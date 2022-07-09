@@ -5,54 +5,33 @@
 #ifndef RNAMAKE_NEW_SQLITE_LIBRARY_H
 #define RNAMAKE_NEW_SQLITE_LIBRARY_H
 
+#include <resource_management/exception.hpp>
 #include <util/sqlite/connection.hpp>
 
 namespace resource_management {
 
-
-class SqliteLibraryException : public std::runtime_error {
-public:
-    /**
-     * Standard constructor for SqliteLibraryException
-     * @param   message   Error message for SqliteLibrary
-     */
-    explicit SqliteLibraryException(String const & message) :
-            std::runtime_error(message) {}
-};
-
-
 class SqliteLibrary {
 public:
-    SqliteLibrary(
-            String const &,
-            String const &);
+  SqliteLibrary(const String &, const String &);
 
-    virtual
-    ~SqliteLibrary() = default;
+  virtual ~SqliteLibrary() = default;
 
 public:
-    size_t
-    get_num_of_rows();
-
+  size_t get_num_of_rows();
 
 protected:
-    void
-    _generate_query(
-            Strings const &,
-            StringStringMap const &) const;
+  void _generate_query(const Strings &, const StringStringMap &) const;
 
-    bool
-    _is_valid_key(
-            String const &) const;
+  bool _is_valid_key(const String &) const;
 
 protected:
-    util::sqlite::Database db_;
-    util::sqlite::TableDetails table_details_;
-    mutable util::sqlite::Connection conn_; // sqlite3 api commands cannot be const
-    mutable String query_string_;
+  util::sqlite::Database _db;
+  util::sqlite::TableDetails _table_details;
+  // sqlite3 api commands cannot be const
+  mutable util::sqlite::Connection _conn;
+  mutable String _query_string;
 };
 
-}
+} // namespace resource_management
 
-
-#endif //RNAMAKE_NEW_SQLITE_LIBRARY_H
+#endif // RNAMAKE_NEW_SQLITE_LIBRARY_H

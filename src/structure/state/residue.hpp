@@ -29,7 +29,6 @@ public:
 public:
   void move(const math::Vector3 &p) {}
 
-  void transform(const math::RotandTrans &rt) {}
 
 private:
   util::Beads _beads;

@@ -10,27 +10,50 @@
 
 namespace resource_management {
 
+struct SegmentInfo {
+  String name;
+  String end_name;
+  String end_id;
+
+  [[nodiscard]] bool is_valid() const {
+    if (name.empty() && end_name.empty() && end_id.empty()) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  [[nodiscard]] StringStringMap get_dict() const {
+    StringStringMap d;
+    if (!name.empty()) {
+      d["name"] = name;
+    }
+    if (!end_name.empty()) {
+      d["end_name"] = end_name;
+    }
+    if (!end_id.empty()) {
+      d["end_id"] = end_id;
+    }
+    return d;
+  }
+};
+
 class SegmentSqliteLibrary : public SqliteLibrary {
 public:
-  SegmentSqliteLibrary(String const &db_path, String const &table_name)
+  SegmentSqliteLibrary(const String &db_path, const String &table_name)
       : SqliteLibrary(db_path, table_name),
         _retrieved_columns(Strings{"id", "data"}) {}
 
   ~SegmentSqliteLibrary() override = default;
 
 public:
-  // TODO throw if no segment exists 
-  structure::all_atom::Segment get_segment(StringStringMap const & args) const {
-    _generate_query(_retrieved_columns, args);
-    auto row = conn_.get_first_row(query_string_);
-    return structure::all_atom::get_segment_from_str(row[1].get_str());
-  }
+  structure::all_atom::Segment get_segment(const SegmentInfo &) const;
 
-  bool contains_segment(StringStringMap const &) const;
+  bool contains_segment(const SegmentInfo &) const;
 
 protected:
   Strings _retrieved_columns;
-  mutable std::map<int, structure::all_atom::Segment> segments_; // ack this
+  mutable std::map<int, structure::all_atom::Segment> _segments; // ack this
                                                                  // seems bad
 };
 

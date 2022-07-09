@@ -59,9 +59,7 @@ public:
   }
 
 public: // non const methods //////////////////////////////////////////////////
-  void move(const math::Vector3 &p) {}
 
-  void transform(const math::RotandTrans &rt) {}
 
 public: // getters ////////////////////////////////////////////////////////////
   [[nodiscard]] util::Uuid const &get_partner(util::Uuid const &uuid) const {
