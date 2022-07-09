@@ -6,34 +6,23 @@
 
 namespace resource_management {
 
-//void SegmentSqliteLibrary::get_segment(StringStringMap const &args) const {
-
-  //_generate_query(_retrieved_columns, args);
-  /*auto row = conn_.get_first_row(query_string_);
-  if(row == nullptr) {
-      throw SqliteLibraryException("cannot segment: " +
-  base::string_map_to_string(args));
+// TODO throw if no segment exists
+structure::all_atom::Segment
+SegmentSqliteLibrary::get_segment(const SegmentInfo & seg_info) const {
+  _generate_query(_retrieved_columns, seg_info.get_dict());
+  try {
+    auto row = _conn.get_first_row(_query_string);
+    return structure::all_atom::get_segment_from_str(row[1].get_str());
   }
-  int id = row->at(0);
-  auto seg = all_atom::SegmentOP(nullptr);
-  if(segments_.find(id) != segments_.end() ) {
-      seg = std::make_shared<all_atom::Segment>(*segments_[id]);
-      seg->new_uuids();
+  catch(const util::SqliteException & e) {
+    throw ResourceManagementException(e.what());
   }
-  else {
-      std::vector<uint8_t> blob = row->at(1);
-      auto compressed_str = String(blob.begin(), blob.end());
-      auto depressed_str  = base::gzip::decompress(compressed_str.c_str(),
-  compressed_str.size()); auto j = json::JSON::Load(depressed_str); seg =
-  std::make_shared<all_atom::Segment>(j, rts_); segments_[id] = seg;
-  }
+}
 
-  return seg;  */
-//}
-
-bool SegmentSqliteLibrary::contains_segment(StringStringMap const &args) const {
+bool SegmentSqliteLibrary::contains_segment(const SegmentInfo & seg_info) const {
+  _generate_query(_retrieved_columns, seg_info.get_dict());
   /*_generate_query(_retrieved_columns, args);
-  auto row = conn_.get_first_row(query_string_);
+  auto row = _conn.get_first_row(_query_string);
   if(row != nullptr) { return true;  }
   else               { return false; }      */
   return true;

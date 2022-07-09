@@ -111,9 +111,7 @@ private:
   }
 
 public:
-  void move(const math::Vector3 &p) {}
 
-  void transform(const math::RotandTrans &rt) {}
 
 private:
   // A=0,C=1,G=2,U=3,T=3

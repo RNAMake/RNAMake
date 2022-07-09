@@ -18,9 +18,9 @@
 
 namespace util {
 typedef sole::uuid Uuid;
-Uuid generate_uuid() { return sole::uuid0(); }
+Uuid generate_uuid();
 
-Uuid uuid_from_str(const String &str) { return sole::rebuild(str); }
+Uuid uuid_from_str(const String &);
 
 } // namespace util
 

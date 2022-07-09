@@ -9,37 +9,30 @@
 #include <resource_management/segment_sqlite_library.h>
 #include <resource_management/sqlite_library.h>
 
+using namespace resource_management;
+
 TEST_CASE("Test basic sqlite library") {
   SUBCASE("test base") {
     auto db_path =
         base::path::unittest_resource_path() + "/resource_management/test.db";
-    auto sqlib = resource_management::SqliteLibrary(db_path, "data_table");
+    auto sqlib = SqliteLibrary(db_path, "data_table");
 
     SUBCASE("database file must exist") {
-      REQUIRE_THROWS_AS(
-          resource_management::SqliteLibrary("test_fake.db", "data_table"),
-          resource_management::SqliteLibraryException);
+      REQUIRE_THROWS_AS(SqliteLibrary("test_fake.db", "data_table"),
+                        ResourceManagementException);
     }
   }
 
   SUBCASE("test segment databases") {
     auto db_path =
         base::path::resources_path() + "/motif_libraries_new/ideal_helices.db";
-    auto seg_lib =
-        resource_management::SegmentSqliteLibrary(db_path, "data_table");
-    seg_lib.get_segment(StringStringMap{{"name", "HELIX.IDEAL.2"}});
-   /* REQUIRE(seg->get_name_str() == "HELIX.IDEAL.2");
+    auto seg_lib = SegmentSqliteLibrary(db_path, "data_table");
+    auto seg = seg_lib.get_segment(SegmentInfo{"HELIX.IDEAL.2"});
+    REQUIRE(seg.get_name() == "HELIX.IDEAL.2");
 
-    auto seg2 =
-        seg_lib.get_segment(StringStringMap{{"name", "HELIX.IDEAL.2"}});
-    // all uuids have changed should not be equal if checking uuids
-    REQUIRE(!seg->is_equal(*seg2, true));
-    REQUIRE(seg->is_equal(*seg2, false));
+    auto seg3 = seg_lib.get_segment(SegmentInfo{"", "", "GGGG_LLLL_CCCC_RRRR"});
 
-    auto seg3 = seg_lib.get_segment(
-        StringStringMap{{"end_id", "CCCC_LLLL_GGGG_RRRR"}});
-
-    REQUIRE(seg->is_equal(*seg3, false));     */
+    // REQUIRE(seg->is_equal(*seg3, false));
   }
 
   /*SECTION("test retrivial is the same from just using seg factory") {
@@ -55,22 +48,24 @@ TEST_CASE("Test basic sqlite library") {
     REQUIRE(seg->is_equal(*seg2, false));
   }  */
 
-  /*SECTION("test errors for invalid queries") {
-      REQUIRE_THROWS_AS(seg_lib.get_segment(StringStringMap{{"name",
+  SUBCASE("test errors for invalid queries") {
+    auto db_path =
+        base::path::resources_path() + "/motif_libraries_new/ideal_helices.db";
+    auto seg_lib = SegmentSqliteLibrary(db_path, "data_table");
+    REQUIRE_THROWS_AS(seg_lib.get_segment(SegmentInfo{"FAKE"}),
+                      ResourceManagementException);
+
+    /*REQUIRE_THROWS_AS(seg_lib.get_segment(StringStringMap{{"end_id",
 "FAKE"}}), resource_management::SqliteLibraryException);
 
-      REQUIRE_THROWS_AS(seg_lib.get_segment(StringStringMap{{"end_id",
+    REQUIRE_THROWS_AS(seg_lib.get_segment(StringStringMap{{"end_name",
 "FAKE"}}), resource_management::SqliteLibraryException);
 
-      REQUIRE_THROWS_AS(seg_lib.get_segment(StringStringMap{{"end_name",
-"FAKE"}}), resource_management::SqliteLibraryException);
-
-      REQUIRE_THROWS_AS(seg_lib.get_segment(StringStringMap{{"name",
+    REQUIRE_THROWS_AS(seg_lib.get_segment(StringStringMap{{"name",
 "HELIX.IDEAL.2"}, {"end_id", "FAKE"}}),
-                        resource_management::SqliteLibraryException);
-
+                      resource_management::SqliteLibraryException); */
   }
-
+  /*
   SECTION("test contains segments") {
       REQUIRE(seg_lib.contains_segment(StringStringMap{{"name",
 "HELIX.IDEAL.2"}}) == true);

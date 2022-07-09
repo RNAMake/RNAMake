@@ -27,7 +27,7 @@ TEST_CASE("test all atom") {
     }
     CHECK(i == 20);
     CHECK(r.get_atom("O5'").get_name() == "O5'");
-    CHECK_NOTHROW(r.get_coords("O5'"));
+    //CHECK_NOTHROW(r.get_coords("O5'"));
 
   }
 

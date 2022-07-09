@@ -50,8 +50,6 @@ if( ${COMPILER} STREQUAL clang  OR ${COMPILER} STREQUAL AppleClang  )
 	set(compile_flags 
 		-Wno-c++11-extensions;
         -std=gnu++1y;
-        -pedantic;
-        -O4 
 	)
 
 

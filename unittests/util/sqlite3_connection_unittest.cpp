@@ -94,7 +94,7 @@ TEST_CASE("Test sqlite3 interface ") {
   }
   SUBCASE("test actual sql table") {
     String path =
-        base::path::resources_path() + "/motif_libraries_new/bp_steps.db";
+        base::path::resources_path() + "/motif_libraries_new/ideal_helices.db";
     Database db(path);
     Connection q(db);
     auto const & row = q.get_first_row("SELECT * FROM data_table");
@@ -102,7 +102,5 @@ TEST_CASE("Test sqlite3 interface ") {
     // example parsing existing motif
     Strings spl = base::string::split(row[0].get_str(), "&");
     CHECK(spl.size() == 11);
-
-
   }
 }

@@ -23,7 +23,6 @@ public:
 public: // non const methods //////////////////////////////////////////////////
   void move(const math::Vector3 &p) {}
 
-  void transform(const math::RotandTrans &rt) {}
 
 public:
   [[nodiscard]] inline const String &get_name() const { return _name; }

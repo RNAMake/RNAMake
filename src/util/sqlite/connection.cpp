@@ -19,7 +19,7 @@ int Connection::setup_row_iteration(const String &command) const {
   if (sqlite3_step(_stmt) != SQLITE_ROW) {
     String msg = "cannot get sqlite row likely did not did not call setup "
                  "first ...";
-    base::log_and_throw<SqliteException>(msg);
+    throw SqliteException(msg);
   }
   return 0;
 }
@@ -38,6 +38,8 @@ const Row &Connection::get_first_row(const String &command) const {
   _first_row = true;
   _prepare(command);
   if (sqlite3_step(_stmt) != SQLITE_ROW) {
+    String msg = "cannot get sqlite row with commmand  '" + command + "'";
+    throw SqliteException(msg);
   }
   const Row &row = _generate_row_from_statement();
   sqlite3_finalize(_stmt);

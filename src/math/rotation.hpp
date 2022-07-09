@@ -26,16 +26,12 @@ inline void rotation_between_frames(const Matrix3x3 &m1, const Matrix3x3 &m2,
 }
 
 /// http://www.boris-belousov.net/2016/12/01/quat-dist/
-Real difference_between_frames(const Matrix3x3 &p, const Matrix3x3 &q) {
+inline Real difference_between_frames(const Matrix3x3 &p, const Matrix3x3 &q) {
   Matrix3x3 r = p * q.get_transposed();
   Real tr = r.get_trace();
   return acos((tr - 1)/2);
 }
 
-struct RotandTrans {
-  Matrix3x3 rotation;
-  Vector3 translation;
-};
 
 } // namespace math
 
