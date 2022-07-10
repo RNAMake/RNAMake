@@ -58,7 +58,12 @@ class SegmentSqliteLibrary : public SqliteLibrary {
 public:
   SegmentSqliteLibrary(const String &db_path, const String &table_name)
       : SqliteLibrary(db_path, table_name),
-        _retrieved_columns(Strings{"id", "data"}) {}
+        _retrieved_columns(Strings{"id", "data"}) {
+  }
+
+  //SegmentSqliteLibrary(SegmentSqliteLibrary && other) {
+
+  //}
 
   ~SegmentSqliteLibrary() override = default;
 

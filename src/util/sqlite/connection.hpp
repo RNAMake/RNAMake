@@ -14,9 +14,15 @@ namespace util::sqlite {
 
 class Connection {
 public: // construction ///////////////////////////////////////////////////////
-  inline explicit Connection(const Database &db) : _db(db) {}
+  inline explicit Connection(const String & db_name) {
+    _db.open(db_name);
+  }
 
   ~Connection() = default;
+
+  Connection(const Connection & other) {
+    _db.open(other._db.get_name());
+  }
 
 public: // interface to get rows //////////////////////////////////////////////
   int setup_row_iteration(const String &) const;
@@ -89,7 +95,7 @@ private:
   };
 
 private:
-  Database const &_db;
+  Database _db;
   mutable sqlite3_stmt *_stmt = nullptr; // statement
   mutable char *_zErrMsg = new char[1];
   mutable int _rc = 0;

@@ -10,21 +10,19 @@ using namespace util::sqlite;
 
 TEST_CASE("Test sqlite3 interface ") {
   SUBCASE("test database") {
-    Database db(":memory:");
+    Database db;
+    db.open(":memory:");
     CHECK(db.is_created());
     CHECK(db.is_open());
   }
-
   SUBCASE("test fields") {
     Field f("test", 1);
     CHECK(f.get_int() == 1);
     CHECK_THROWS_AS(double d = f.get_double(), util::SqliteException);
     CHECK_THROWS_AS(Blob b = f.get_blob(), util::SqliteException);
   }
-
   SUBCASE("test basic features of connection") {
-    auto db = util::sqlite::Database(":memory:");
-    auto q = util::sqlite::Connection(db);
+    auto q = util::sqlite::Connection(":memory:");
 
     q.exec("CREATE TABLE data_table (word TEXT, id INT, PRIMARY KEY(id));");
     q.start_transaction();
@@ -64,17 +62,14 @@ TEST_CASE("Test sqlite3 interface ") {
       CHECK(tb->get_column(0).name == "word");
     }
   }
-
   SUBCASE("test create table") {
-    auto db = Database(":memory:");
-    auto conn = Connection(db);
+    auto conn = Connection(":memory:");
     auto td = TableDetails("data_table");
     td.add_column("word", "TEXT");
     td.add_column("id", "INT", true);
     util::sqlite::create_table(conn, td);
 
     SUBCASE("test reading table details from sqlite database") {
-
       auto new_td = *conn.get_table_details("data_table");
       CHECK(new_td.size() == 2);
       CHECK(new_td[0].name == "word");
@@ -95,12 +90,26 @@ TEST_CASE("Test sqlite3 interface ") {
   SUBCASE("test actual sql table") {
     String path =
         base::path::resources_path() + "/motif_libraries_new/ideal_helices.db";
-    Database db(path);
-    Connection q(db);
-    auto const & row = q.get_first_row("SELECT * FROM data_table");
+    Connection q(path);
+    auto const &row = q.get_first_row("SELECT * FROM data_table");
     CHECK(row[0].get_name() == "data");
     // example parsing existing motif
     Strings spl = base::string::split(row[0].get_str(), "&");
     CHECK(spl.size() == 11);
+  }
+  SUBCASE("test twoways") {
+   // String path =
+    //    base::path::resources_path() + "/motif_libraries_new/twoway.db";
+    //Database db(path);
+    //Connection q(db);
+    /*try {
+      auto const &row =
+          q.setup_row_iteration("SELECT id ,data  FROM data_table WHERE "
+                                "name='HELIX.IDEAL.2'");
+    }
+    catch(...) { }
+    auto const &row =
+        q.setup_row_iteration("SELECT id ,data  FROM data_table WHERE "
+                              "name='HELIX.IDEAL.2'");  */
   }
 }

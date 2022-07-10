@@ -71,6 +71,19 @@ TEST_CASE("Test basic sqlite library") {
     auto seg_lib = SegmentSqliteLibrary(db_path, "data_table");
     REQUIRE(seg_lib.contains_segment(SegmentInfo{"HELIX.IDEAL.2"}) == true);
     REQUIRE(seg_lib.contains_segment(SegmentInfo{"FAKE"}) == false);
+    REQUIRE(seg_lib.contains_segment(SegmentInfo{"HELIX.IDEAL.2"}) == true);
+  }
+
+  SUBCASE("test moving") {
+    auto db_path =
+        base::path::resources_path() + "/motif_libraries_new/ideal_helices.db";
+    auto seg_lib = SegmentSqliteLibrary(db_path, "data_table");
+    std::vector<SegmentSqliteLibrary> seg_libs;
+    seg_libs.emplace_back(db_path, "data_table");
+    seg_libs.emplace_back(db_path, "data_table");
+    REQUIRE(seg_libs[0].contains_segment(SegmentInfo{"HELIX.IDEAL.2"}) == true);
+    REQUIRE(seg_libs[1].contains_segment(SegmentInfo{"HELIX.IDEAL.2"}) == true);
+
   }
 
 

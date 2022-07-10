@@ -16,7 +16,7 @@ class ResourceManager {
 public:
   ResourceManager() {
     auto path = base::path::resources_path() + "/motif_libraries_new/";
-    if(!std::filesystem::is_directory(path)) {
+    if (!std::filesystem::is_directory(path)) {
       String msg = "cannot locate sqlite3 resource directory! Something is "
                    "very wrong!";
       throw base::ResourceException(msg);
@@ -29,7 +29,6 @@ public:
   }
 
   ~ResourceManager() = default;
-
   // only want one resource manager active at a time
   ResourceManager(const ResourceManager &) = delete;
   // only want one resrouce manager active at a time
@@ -61,9 +60,8 @@ public: // load new segments from pdbs and components
   } */
 
 public: // get segments
-  [[nodiscard]] inline structure::all_atom::Segment
-  get_segment(const SegmentInfo &seg_info) const {
-    for (auto &seg_lib : _sqlite_libraries) {
+  structure::all_atom::Segment get_segment(const SegmentInfo &seg_info) {
+    for (const auto &seg_lib : _sqlite_libraries) {
       if (seg_lib.contains_segment(seg_info)) {
         return seg_lib.get_segment(seg_info);
       }

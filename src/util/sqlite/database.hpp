@@ -14,7 +14,7 @@ namespace util::sqlite {
 
 class Database {
 public:// construction
-  inline explicit Database(const String &name) { _connect(name); }
+  Database() = default;
 
   inline ~Database() {
     // close the db
@@ -22,10 +22,16 @@ public:// construction
   }
 
   // cannot copy
+  // only want one resrouce manager active at a time
   Database &operator=(const Database &) = delete;
+  // cannot copy
+  Database(const Database &) = delete;
 
 
 public:
+  void open(const String &name) {
+    _connect(name);  
+  }
   // close the database
   int close();
 
