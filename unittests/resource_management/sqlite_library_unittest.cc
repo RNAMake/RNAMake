@@ -16,7 +16,6 @@ TEST_CASE("Test basic sqlite library") {
     auto db_path =
         base::path::unittest_resource_path() + "/resource_management/test.db";
     auto sqlib = SqliteLibrary(db_path, "data_table");
-
     SUBCASE("database file must exist") {
       REQUIRE_THROWS_AS(SqliteLibrary("test_fake.db", "data_table"),
                         ResourceManagementException);
@@ -65,24 +64,14 @@ TEST_CASE("Test basic sqlite library") {
 "HELIX.IDEAL.2"}, {"end_id", "FAKE"}}),
                       resource_management::SqliteLibraryException); */
   }
-  /*
-  SECTION("test contains segments") {
-      REQUIRE(seg_lib.contains_segment(StringStringMap{{"name",
-"HELIX.IDEAL.2"}}) == true);
-      REQUIRE(seg_lib.contains_segment(StringStringMap{{"name", "FAKE"}}) ==
-false);
 
+  SUBCASE("test contains segments") {
+    auto db_path =
+        base::path::resources_path() + "/motif_libraries_new/ideal_helices.db";
+    auto seg_lib = SegmentSqliteLibrary(db_path, "data_table");
+    REQUIRE(seg_lib.contains_segment(SegmentInfo{"HELIX.IDEAL.2"}) == true);
+    REQUIRE(seg_lib.contains_segment(SegmentInfo{"FAKE"}) == false);
   }
 
-}    */
 
-  /*SECTION("test twoway database") {
-      auto rts = all_atom::ResidueTypeSet();
-      auto db_path = base::resources_path() + "/motif_libraries/two_ways.db";
-      auto seg_lib = resource_management::SegmentSqliteLibrary(db_path,
-  "data_table", rts);
-      //std::cout << seg_lib.contains_segment(StringStringMap{{"name",
-  "TWOWAY.1A34.0"}}) << std::endl;
-
-  } */
 }
