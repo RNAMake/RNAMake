@@ -36,6 +36,22 @@ struct SegmentInfo {
     }
     return d;
   }
+
+  [[nodiscard]] String get_str() const  {
+    String s;
+    if (!name.empty()) {
+      s += "name: " + name;
+    }
+    if (!end_name.empty()) {
+      if(!s.empty()) { s += " "; }
+      s += "end_name: " + end_name;
+    }
+    if (!end_id.empty()) {
+      if(!s.empty()) { s += " "; }
+      s += "end_id: " + end_id;
+    }
+    return s;
+  }
 };
 
 class SegmentSqliteLibrary : public SqliteLibrary {

@@ -17,6 +17,7 @@ int Connection::setup_row_iteration(const String &command) const {
   _done = false;
   _prepare(command);
   if (sqlite3_step(_stmt) != SQLITE_ROW) {
+    abort_iterate_rows();
     String msg = "cannot get sqlite row likely did not did not call setup "
                  "first ...";
     throw SqliteException(msg);

@@ -21,11 +21,13 @@ SegmentSqliteLibrary::get_segment(const SegmentInfo & seg_info) const {
 
 bool SegmentSqliteLibrary::contains_segment(const SegmentInfo & seg_info) const {
   _generate_query(_retrieved_columns, seg_info.get_dict());
-  /*_generate_query(_retrieved_columns, args);
-  auto row = _conn.get_first_row(_query_string);
-  if(row != nullptr) { return true;  }
-  else               { return false; }      */
-  return true;
+  try {
+    _conn.setup_row_iteration(_query_string);
+    return true;
+  }
+  catch(const util::SqliteException & e) {
+    return false;
+  }
 }
 
 } // namespace resource_management
