@@ -24,8 +24,9 @@ protected:
 
   bool _is_valid_key(const String &) const;
 
+  bool _does_query_return_rows(const StringStringMap &) const;
+
 protected:
-  util::sqlite::Database _db;
   util::sqlite::TableDetails _table_details;
   // sqlite3 api commands cannot be const
   mutable util::sqlite::Connection _conn;

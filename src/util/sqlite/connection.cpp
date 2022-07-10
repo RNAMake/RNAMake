@@ -9,15 +9,13 @@ namespace util::sqlite {
 
 // interface to get rows //////////////////////////////////////////////////////
 int Connection::setup_row_iteration(const String &command) const {
-  if (!_done) {
-    abort_iterate_rows();
-  }
   _row = {};
   _first_row = true;
   _done = false;
   _prepare(command);
   if (sqlite3_step(_stmt) != SQLITE_ROW) {
     abort_iterate_rows();
+    _done = true;
     String msg = "cannot get sqlite row likely did not did not call setup "
                  "first ...";
     throw SqliteException(msg);
@@ -39,6 +37,7 @@ const Row &Connection::get_first_row(const String &command) const {
   _first_row = true;
   _prepare(command);
   if (sqlite3_step(_stmt) != SQLITE_ROW) {
+    sqlite3_finalize(_stmt);
     String msg = "cannot get sqlite row with commmand  '" + command + "'";
     throw SqliteException(msg);
   }
@@ -124,6 +123,7 @@ TableDetailsOP Connection::get_table_details(const String &table_name) const {
     }
     td->add_column(names[i], types[i], is_primary);
   }
+  sqlite3_finalize(_stmt);
   return td;
 }
 
@@ -152,6 +152,7 @@ void Connection::bind(const char *param, const String &text) {
 int Connection::_execute(const String &command) const {
   _rc = sqlite3_exec(_db(), command.c_str(), nullptr, nullptr, &_zErrMsg);
   if (_rc != SQLITE_OK) {
+    sqlite3_finalize(_stmt);
     throw SqliteException(String(_zErrMsg));
   }
   return _rc;

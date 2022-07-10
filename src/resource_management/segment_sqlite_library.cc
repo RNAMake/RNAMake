@@ -20,12 +20,10 @@ SegmentSqliteLibrary::get_segment(const SegmentInfo & seg_info) const {
 }
 
 bool SegmentSqliteLibrary::contains_segment(const SegmentInfo & seg_info) const {
-  _generate_query(_retrieved_columns, seg_info.get_dict());
-  try {
-    _conn.setup_row_iteration(_query_string);
+  if(_does_query_return_rows(seg_info.get_dict())) {
     return true;
   }
-  catch(const util::SqliteException & e) {
+  else {
     return false;
   }
 }

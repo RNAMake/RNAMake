@@ -17,7 +17,7 @@ int Database::close() {
 void Database::_connect(const String &name, int flags) {
   _name = name;
   if (!std::filesystem::exists(name)) { _created = true; }
-  int err = sqlite3_open_v2(_name.c_str(), &_db, flags, nullptr);
+  int err = sqlite3_open_v2(_name.c_str(), &_db, 6, nullptr);
   _open = !err;
 }
 }// namespace util::sqlite

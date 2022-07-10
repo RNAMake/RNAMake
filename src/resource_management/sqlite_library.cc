@@ -6,9 +6,8 @@
 
 namespace resource_management {
 
-SqliteLibrary::SqliteLibrary(const String &db_path, const String &table_name)
-    : _db(util::sqlite::Database(db_path)),
-      _conn(util::sqlite::Connection(_db)),
+SqliteLibrary::SqliteLibrary(const String &db_path, const String &table_name):
+      _conn(util::sqlite::Connection(db_path)),
       _table_details(util::sqlite::TableDetails(table_name)) {
 
   if (_conn.is_database_created()) {
@@ -70,6 +69,31 @@ bool SqliteLibrary::_is_valid_key(const String &key) const {
     }
   }
   return false;
+}
+
+bool SqliteLibrary::_does_query_return_rows(
+    const StringStringMap &restraint_col_and_vals) const {
+  _query_string = "SELECT COUNT(*) FROM " + _table_details.name() + " WHERE ";
+  int i = 0;
+  for (auto const &kv : restraint_col_and_vals) {
+    i++;
+    //if (!_is_valid_key(kv.first)) {
+    //  throw ResourceManagementException(
+    //      "attempting to use colunn key: " + kv.first +
+    //      " does not exist in sqlite library");
+    //}
+    _query_string += kv.first + "='" + kv.second + "' ";
+    if (i != restraint_col_and_vals.size()) {
+      _query_string += "AND ";
+    }
+  }
+  const auto &row = _conn.get_first_row(_query_string);
+  int count = row[0].get_int();
+  if (count == 0) {
+    return false;
+  } else {
+    return true;
+  }
 }
 
 } // namespace resource_management
