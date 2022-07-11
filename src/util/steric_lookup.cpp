@@ -225,30 +225,39 @@ void StericLookupNew::_setup_additions() {
   }
 }
 
+/// @brief - adds a point to the steric lookup
 void StericLookupNew::add_point(math::Vector3 const &p) {
   for (auto const &add : _additions) {
+    if (p.get_x() < -200 || p.get_y() < -200 || p.get_z() < -200) {
+      String msg = "Point is outside the boundary! Bounds are from -200 to 100";
+      base::log_and_throw<base::MathException>(msg);
+    }
+    if (p.get_x() > 100 || p.get_y() > 100 || p.get_z() > 100) {
+      String msg = "Point is outside the boundary! Bounds are from -200 to 100";
+      base::log_and_throw<base::MathException>(msg);
+    }
     _dummy = p + add;
     _histo.add(_dummy);
   }
 }
 
+/// @brief - adds a set of points to the steric lookup
 void StericLookupNew::add_points(math::Vector3s const &points) {
   for (auto const &p : points) {
     add_point(p);
   }
 }
 
+/// @brief - checks if a point clashes with the lookup
 bool StericLookupNew::clash(math::Vector3 const &p) {
   return _histo.contains(p);
 }
 
+/// @brief - checks if any points in a set clash with the lookup
 bool StericLookupNew::clash(math::Vector3s const &points) {
-  bool is_clash = false;
   for (auto const &p : points) {
-    is_clash = clash(p);
+    bool is_clash = clash(p);
     if (is_clash == true) {
-      return is_clash;
-    } else if (is_clash == false) {
       return is_clash;
     }
   }
