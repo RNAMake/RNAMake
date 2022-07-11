@@ -478,5 +478,64 @@ TEST_CASE("Test xyz vector ") {
         CHECK_THROWS_AS(math::vectors_from_str(vec_1_string, vec_1), base::InputException);
       }
     }
+
+    SUBCASE("test absolute value") {
+      SUBCASE("test no argument fxn") {
+        SUBCASE("test simple") {
+          auto vector_1 = math::Vector3(1, 0, -1);
+          auto ab_val_vector = vector_1.get_absolute_value();
+
+          CHECK(vector_1.get_x() == doctest::Approx(1));
+          CHECK(vector_1.get_y() == doctest::Approx(0));
+          CHECK(vector_1.get_z() == doctest::Approx(-1));
+
+          CHECK(ab_val_vector.get_x() == doctest::Approx(1));
+          CHECK(ab_val_vector.get_y() == doctest::Approx(0));
+          CHECK(ab_val_vector.get_z() == doctest::Approx(1));
+        }
+        SUBCASE("test complex") {
+          auto vector_1 = math::Vector3(0.42, -9.32, -4.11);
+          auto ab_val_vector = vector_1.get_absolute_value();
+
+          CHECK(vector_1.get_x() == doctest::Approx(0.42));
+          CHECK(vector_1.get_y() == doctest::Approx(-9.32));
+          CHECK(vector_1.get_z() == doctest::Approx(-4.11));
+
+          CHECK(ab_val_vector.get_x() == doctest::Approx(0.42));
+          CHECK(ab_val_vector.get_y() == doctest::Approx(9.32));
+          CHECK(ab_val_vector.get_z() == doctest::Approx(4.11));
+        }
+      }
+      SUBCASE("test void fxn") {
+        SUBCASE("test simple") {
+          auto vector_1 = math::Vector3(1, 0, -1);
+          auto ab_val_vector = math::Vector3();
+
+          vector_1.get_absolute_value(ab_val_vector);
+
+          CHECK(vector_1.get_x() == doctest::Approx(1));
+          CHECK(vector_1.get_y() == doctest::Approx(0));
+          CHECK(vector_1.get_z() == doctest::Approx(-1));
+
+          CHECK(ab_val_vector.get_x() == doctest::Approx(1));
+          CHECK(ab_val_vector.get_y() == doctest::Approx(0));
+          CHECK(ab_val_vector.get_z() == doctest::Approx(1));
+        }
+        SUBCASE("test complex") {
+          auto vector_1 = math::Vector3(0.42, -9.32, -4.11);
+          auto ab_val_vector = math::Vector3();
+
+          vector_1.get_absolute_value(ab_val_vector);
+
+          CHECK(vector_1.get_x() == doctest::Approx(0.42));
+          CHECK(vector_1.get_y() == doctest::Approx(-9.32));
+          CHECK(vector_1.get_z() == doctest::Approx(-4.11));
+
+          CHECK(ab_val_vector.get_x() == doctest::Approx(0.42));
+          CHECK(ab_val_vector.get_y() == doctest::Approx(9.32));
+          CHECK(ab_val_vector.get_z() == doctest::Approx(4.11));
+        }
+      }
+    }
   }
 }
