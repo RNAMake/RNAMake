@@ -5,7 +5,6 @@
 
 TEST_CASE("Test Steric Lookup for quick Sterics ") {
   auto p_generator = util::PointGenerator();
-  // use StericLookupNew, not StericLookup
   SUBCASE("Test adding points to lookup") {
     auto sl = util::StericLookupNew();
     auto p = math::Vector3();
@@ -157,6 +156,7 @@ TEST_CASE("Test Steric Lookup for quick Sterics ") {
       auto test_point_8 = math::Vector3(0, 0, 3.7);
       auto test_point_9 = math::Vector3(1.25, 0, -1.25);
       auto test_point_10 = math::Vector3(0, 0, -2.75);
+      //
       auto test_point_11 = math::Vector3(0, 0, -2.7);
 
       CHECK(steric_lookup_test.clash(test_point_1) == true);
@@ -169,8 +169,9 @@ TEST_CASE("Test Steric Lookup for quick Sterics ") {
       CHECK(steric_lookup_test.clash(test_point_8) == true);
       CHECK(steric_lookup_test.clash(test_point_9) == true);
       CHECK(steric_lookup_test.clash(test_point_10) == false);
-      // TODO fix negative numbers rounding down
-      // CHECK(steric_lookup_test.clash(test_point_11) == true);
+
+      // TODO change greater/less than
+      //CHECK(steric_lookup_test.clash(test_point_11) == true);
     }
     SUBCASE("test adding collection of points in yz-plane") {
       auto point_1 = math::Vector3(0, 0, 0);
@@ -276,8 +277,7 @@ TEST_CASE("Test Steric Lookup for quick Sterics ") {
       auto point_set_2 = math::Vector3s{point_5, point_6, point_7, point_8};
       auto point_set_3 = math::Vector3s{point_9, point_10};
 
-      // TODO what's wrong here?
-      // CHECK(steric_lookup_test.clash(point_set_2) == true); // should be true
+      CHECK(steric_lookup_test.clash(point_set_2) == true); // should be true
       CHECK(steric_lookup_test.clash(point_11) == true);
     }
     SUBCASE("test points that are really close to boundary but far enough") {
@@ -419,13 +419,57 @@ TEST_CASE("Test Steric Lookup for quick Sterics ") {
       }
     }
   }
-  SUBCASE("write and test other code") {
-    auto point_1 = math::Vector3(0, 0, 0);
 
-    auto steric_lookup_test = util::StericLookupNew();
-    steric_lookup_test.add_point(point_1);
-    auto test_point_1 = math::Vector3(-1.6, -1.6, -1.6);
+  SUBCASE("test custom steric lookups") {
+    SUBCASE("test lookup with radius of 3") {
+      auto point_1 = math::Vector3(0, 0, 0);
 
-    // CHECK(steric_lookup_test.clash(test_point_1) == true);
+      // grid_size 0.5, cutoff 3, radius 10
+      auto steric_lookup_test = util::StericLookupNew(0.5, 3, 10);
+      steric_lookup_test.add_point(point_1);
+
+      auto test_point_1 = math::Vector3(0, 0, 0);
+      // TODO fix greater/equal to
+      // auto test_point_2 = math::Vector3(3, 0, 0);
+      auto test_point_3 = math::Vector3(2.75, 0, 0);
+      auto test_point_4 = math::Vector3(3.01, 0, 0);
+      auto test_point_5 = math::Vector3(2.99, 0, 0);
+      auto test_point_6 = math::Vector3(2.9995, 0, 0);
+
+      CHECK(steric_lookup_test.clash(test_point_1) == true);
+      // TODO fix greater/equal to
+      // CHECK(steric_lookup_test.clash(test_point_2) == true);
+      CHECK(steric_lookup_test.clash(test_point_3) == true);
+      CHECK(steric_lookup_test.clash(test_point_4) == false);
+      CHECK(steric_lookup_test.clash(test_point_5) == true);
+      CHECK(steric_lookup_test.clash(test_point_6) == true);
+    }
+    SUBCASE("test lookup with radius of 1") {
+      auto point_1 = math::Vector3(0, 0, 0);
+
+      // grid_size 0.1, cutoff 1, radius 12
+      auto steric_lookup_test = util::StericLookupNew(0.1, 1, 12);
+      steric_lookup_test.add_point(point_1);
+
+      auto test_point_1 = math::Vector3(0, 0, 0);
+      auto test_point_2 = math::Vector3(0.999, 0, 0);
+      auto test_point_3 = math::Vector3(0.577, 0.577, 0.577);
+
+      CHECK(steric_lookup_test.clash(test_point_1) == true);
+      CHECK(steric_lookup_test.clash(test_point_2) == true);
+      CHECK(steric_lookup_test.clash(test_point_3) == true);
+    }
+    SUBCASE("test negative arguments in the lookup") {
+      CHECK_THROWS_AS(util::StericLookupNew(-0.5, 2, 12), base::MathException);
+      CHECK_THROWS_AS(util::StericLookupNew(0.3, -1, 12), base::MathException);
+      CHECK_THROWS_AS(util::StericLookupNew(0.25, 4, -12), base::MathException);
+      CHECK_THROWS_AS(util::StericLookupNew(-0.2, -10, -12), base::MathException);
+    }
+    SUBCASE("test zero arguments in lookup") {
+      CHECK_THROWS_AS(util::StericLookupNew(0, 2, 12), base::MathException);
+      CHECK_THROWS_AS(util::StericLookupNew(0.3, 0, 12), base::MathException);
+      CHECK_THROWS_AS(util::StericLookupNew(0.25, 4, 0), base::MathException);
+      CHECK_THROWS_AS(util::StericLookupNew(0, 0, 0), base::MathException);
+    }
   }
 }
