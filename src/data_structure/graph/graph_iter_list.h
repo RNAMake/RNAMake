@@ -7,6 +7,7 @@
 
 // standard headers
 #include <queue>
+#include <type_traits>
 
 // RNAMake headers
 #include <base/types.hpp>
@@ -14,6 +15,7 @@
 #include <data_structure/graph/graph_base.h>
 
 namespace data_structure::graph {
+
 
 template <typename Data, typename AdjacencyList> class IterList {
 public:
@@ -61,7 +63,13 @@ public:
 
 public:
   typedef
-      typename std::vector<Node<Data> const *>::const_iterator const_iterator;
+      typename std::vector<Node<Data> *>::iterator iterator;
+  typedef
+      typename std::vector<Node<Data> *>::const_iterator const_iterator;
+
+
+  iterator begin() noexcept { return _iter_list.begin(); }
+  iterator end() noexcept { return _iter_list.end(); }
 
   const_iterator begin() const noexcept { return _iter_list.begin(); }
   const_iterator end() const noexcept { return _iter_list.end(); }
@@ -77,7 +85,7 @@ public:
     while (!_open.empty()) {
       auto current = _open.front();
       _open.pop();
-      const Node<Data> *p = &adj_list.get_node(current);
+      Node<Data> *p = &adj_list.get_node(current);
       _iter_list.push_back(p);
       _get_neighbors(current, adj_list, neighbors);
       for (auto const &n : neighbors) {
@@ -95,7 +103,7 @@ public:
       while (!_open.empty()) {
         auto current = _open.front();
         _open.pop();
-        const Node<Data> *p = &adj_list.get_node(current);
+        Node<Data> *p = &adj_list.get_node(current);
         _iter_list.push_back(p);
         _get_neighbors(current, adj_list, neighbors);
         for (auto const &n : neighbors) {
@@ -183,7 +191,7 @@ protected:
   }
 
 protected:
-  std::vector<const Node<Data> *> _iter_list = {};
+  std::vector<Node<Data> *> _iter_list = {};
   std::queue<Index> _open = {};
   std::map<Index, int> _seen = {};
 };
@@ -211,7 +219,7 @@ public:
     while (this->_open.size() > 0) {
       auto current = this->_open.front();
       this->_open.pop();
-      const Node<Data> *p = &adj_list.get_node(current);
+      Node<Data> *p = &adj_list.get_node(current);
       this->_iter_list.push_back(p);
       _get_neighbors(current, adj_list, neighbors);
       for (auto const &n : neighbors) {
@@ -238,7 +246,7 @@ public:
         while (this->_open.size() > 0) {
           auto current = this->_open.front();
           this->_open.pop();
-          const Node<Data> *p = &adj_list.get_node(current);
+          Node<Data> *p = &adj_list.get_node(current);
           this->_iter_list.push_back(p);
           _get_neighbors(current, adj_list, neighbors);
           for (auto const &n : neighbors) {

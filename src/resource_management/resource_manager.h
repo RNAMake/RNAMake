@@ -60,10 +60,11 @@ public: // load new segments from pdbs and components
   } */
 
 public: // get segments
-  structure::all_atom::Segment get_segment(const SegmentInfo &seg_info) {
+  structure::all_atom::SegmentOP get_segment(const SegmentInfo &seg_info) {
     for (const auto &seg_lib : _sqlite_libraries) {
       if (seg_lib.contains_segment(seg_info)) {
-        return seg_lib.get_segment(seg_info);
+        return std::make_shared<structure::all_atom::Segment>(
+            seg_lib.get_segment(seg_info));
       }
     }
     throw ResourceManagementException("cannot find segment: " +

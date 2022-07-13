@@ -20,5 +20,5 @@ TEST_CASE("Test resource manager") {
 
   // get segment
   auto seg = rm.get_segment(SegmentInfo{"HELIX.IDEAL.2"});
-  CHECK(seg.get_name() == "HELIX.IDEAL.2");
+  CHECK(seg->get_name() == "HELIX.IDEAL.2");
 }

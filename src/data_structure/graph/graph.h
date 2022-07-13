@@ -22,7 +22,11 @@ public: // construction ///////////////////////////////////////////////////////
   virtual ~_Graph() = default;
 
 public: // iteration //////////////////////////////////////////////////////////
+  typedef typename IterList::iterator iterator;
   typedef typename IterList::const_iterator const_iterator;
+
+  iterator begin() noexcept { return iter_list_.begin(); }
+  iterator end() noexcept { return iter_list_.end(); }
 
   const_iterator begin() const noexcept { return iter_list_.begin(); }
   const_iterator end() const noexcept { return iter_list_.end(); }

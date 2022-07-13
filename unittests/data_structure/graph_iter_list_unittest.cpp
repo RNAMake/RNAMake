@@ -8,6 +8,7 @@
 
 TEST_CASE("Test Graph Data Structure ") {
   using namespace data_structure::graph;
+
   SUBCASE("test trival case") {
     int i = 10, j = 10;
     FixedEdged_AL<int> adj_list;
@@ -41,12 +42,12 @@ TEST_CASE("Test Graph Data Structure ") {
     adj_list.add_connection(ConnectionPoint{4, 1}, ConnectionPoint{0, 2});
 
     /* adj_list connectivity
-     *
-     * 0 <-> 1 <-> 2 <-> 3 <-> 4   5
-     * ^     ^           ^     ^
-     * |     |           |     |
-     * |     -------------     |
-     * -------------------------
+   *
+   * 0 <-> 1 <-> 2 <-> 3 <-> 4   5
+   * ^     ^           ^     ^
+   * |     |           |     |
+   * |     -------------     |
+   * -------------------------
      */
     IterList<int, FixedEdged_AL<int>> iter_list;
 
@@ -91,15 +92,15 @@ TEST_CASE("Test Graph Data Structure ") {
     adj_list.add_node(data[5], 5, 0, ConnectionPoint{3, 2});
     adj_list.add_connection(ConnectionPoint{5, 1}, ConnectionPoint{1, 1});
     /* adj_list connectivity
-     *
-     *      5 -------
-     *      ^       |
-     *      |       |
-     * 2 -> 3 -> 4  |
-     * ^            |
-     * |            |
-     * 0 -> 1 -------
-     *
+   *
+   *      5 -------
+   *      ^       |
+   *      |       |
+   * 2 -> 3 -> 4  |
+   * ^            |
+   * |            |
+   * 0 -> 1 -------
+   *
      */
     DirectedIterList<int, FixedEdged_DAL<int>> iter_list;
     iter_list.transversal(adj_list, 0);
@@ -362,5 +363,22 @@ TEST_CASE("Test Graph Data Structure ") {
       CHECK(data[4] == doctest::Approx(9));
     }
   }
+  SUBCASE("test constness") {
+    struct XY {
+      inline XY(int x_, int y_) {
+        x = x_; y = y_;
+      }
+      int x; int y;
+    };
+    FixedEdged_AL<std::shared_ptr<XY>> adj_list;
+    auto v = std::make_shared<XY>(1, 1);
+    adj_list.add_node(v, 2);
+    auto iter_list = IterList<std::shared_ptr<XY>, FixedEdged_AL<std::shared_ptr<XY>>>();
+    iter_list.transversal(adj_list, 0);
+    for(const auto & n : iter_list) {
+      //n->get_data()->x = 2;
+    }
 
+
+  }
 }
