@@ -5,6 +5,8 @@
 #ifndef RNAMAKE_NEW_GRAPH_ADJACENCY_LIST_H
 #define RNAMAKE_NEW_GRAPH_ADJACENCY_LIST_H
 
+#include <type_traits>
+
 #include <base/log.hpp>
 #include <data_structure/graph/graph_base.h>
 
@@ -15,6 +17,9 @@ namespace data_structure::graph {
 // Data is the type of data stored in a node
 // Edge is the type of the edge either FixedEdges or DynamicEdges
 template <typename Data, typename Edge> class AdjacencyList {
+public:
+  friend Node<Data>;
+
 public: // construction ///////////////////////////////////////////////////////
   inline AdjacencyList() = default;
   /// @brief copy constructor
@@ -42,7 +47,7 @@ public: // iteration //////////////////////////////////////////////////////////
 
 public: // non const methods //////////////////////////////////////////////////
   void add_connection(const ConnectionPoint &cp1, const ConnectionPoint &cp2) {
-    if (std::is_same<Edge, DynamicEdges>::value) {
+    if constexpr (std::is_same<Edge, DynamicEdges>::value) {
       _update_dyanmic_edges(cp1);
       _update_dyanmic_edges(cp2);
     }
@@ -155,14 +160,19 @@ public: // getters ////////////////////////////////////////////////////////////
     return _connections.at(ni);
   }
 
+  [[nodiscard]] Node<Data> &get_node(Index ni) {
+    _error_if_node_not_exist(ni);
+    return _nodes.at(ni);
+  }
+
   [[nodiscard]] Node<Data> const &get_node(Index ni) const {
     _error_if_node_not_exist(ni);
-    return _nodes.find(ni)->second;
+    return _nodes.at(ni);
   }
 
   [[nodiscard]] Data const &get_node_data(Index ni) const {
     _error_if_node_not_exist(ni);
-    return _nodes.find(ni)->second.get_data();
+    return _nodes.at(ni).get_data();
   }
 
   [[nodiscard]] size_t get_num_connections() const {
@@ -213,7 +223,10 @@ protected: // internal functions //////////////////////////////////////////////
   }
 
   void _copy_list(const AdjacencyList &adj_list) {
-    _nodes = adj_list._nodes;
+    _nodes = {};
+    for(const auto & n : adj_list) {
+      _nodes.insert({n.first, n.second.clone()});
+    }
     _index = adj_list._index;
     for (auto const &kv : _nodes) {
       _connections[kv.first] =

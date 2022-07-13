@@ -55,11 +55,7 @@ TEST_CASE("Test Graph Data Structure ") {
     CHECK(g.get_node_data(0) == data[3]);
     g[0] = data[4];
     CHECK(g[0] == data[4]);
-    g.setup_transversal(0);
-    for (auto const &n : g) {
-      g[n->get_index()] = data[5];
-      CHECK(n->get_data() == data[5]);
-    }
+    
   }
   SUBCASE("test new types") {
     struct X {

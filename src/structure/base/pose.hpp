@@ -311,7 +311,7 @@ public: // only available to ends with ref frames?
 
 public:
   inline String get_end_name(Index index) const {
-    return get_end(index).get_name_str();
+    return get_end(index).get_name();
   }
 
 public: // get end by end id
@@ -337,6 +337,15 @@ public: // get end by end id
     }
   }
 
+  /*Index get_end_index(const String & name) const {
+    for(const auto & end_index : _end_indexes) {
+      if(_basepairs[end_index].get_name() == name) {
+        return end_index;
+      }
+    }
+    throw StructureException("cannot find end index of end with name: " + name);
+  } */
+
 public: // trivial getters ////////////////////////////////////////////////////
   inline const String &get_dot_bracket() const { return _dot_bracket; }
 
@@ -347,13 +356,13 @@ public: // trivial getters ////////////////////////////////////////////////////
   inline const String &get_name() const { return _name; }
 
 public: // other getters
-  int get_end_index(String const &str) const {
+  int get_end_index(const String &str) const {
     int i = 0;
-    for (auto const &ei : _end_ids) {
-      if (ei == str) {
+    for (const auto &ei : _end_indexes) {
+      if (_basepairs[ei].get_name() == str) {
         return i;
       }
-      if (get_end(i).get_name()->get_str() == str) {
+      if (get_end(i).get_name() == str) {
         return i;
       }
       i++;

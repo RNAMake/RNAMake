@@ -13,6 +13,15 @@
 
 namespace data_structure::graph {
 
+template <typename T> struct is_shared_ptr : std::false_type {};
+template <typename T>
+struct is_shared_ptr<std::shared_ptr<T>> : std::true_type {};
+
+template <typename T> struct Pointer;
+template <typename T> struct Pointer<T *> { typedef T Type; };
+template <typename T> struct Pointer<std::shared_ptr<T>> { typedef T Type; };
+template <typename T> struct Pointer<std::unique_ptr<T>> { typedef T Type; };
+
 /*
  * Exception for graph
  */
@@ -33,7 +42,19 @@ public:
       : _data(std::move(data)), _index(index) {}
 
 public:
-  inline DataType const &get_data() const { return _data; }
+  inline Node<DataType> clone() const {
+    if constexpr (is_shared_ptr<DataType>::value) {
+      typedef typename Pointer<DataType>::Type PointerType;
+      auto d = std::make_shared<PointerType>(*_data);
+      return {d, _index};
+    } else {
+      auto d = _data;
+      return {d, _index};
+    }
+  }
+
+public:
+  inline const DataType & get_data() const { return _data; }
 
   inline DataType &get_data() { return _data; }
 
@@ -46,6 +67,7 @@ private:
   DataType _data;
   Index _index;
 };
+
 
 /// @brief each graph node has an index and N edges ConnectionPoint allows
 /// specification of which node and edge position is involved in a connection

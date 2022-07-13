@@ -30,11 +30,15 @@ template <typename DataType> class Graph {
 public:
   Graph() : index_(0), level_(0) {}
 
-  virtual ~Graph() {}
+public: // iteration //////////////////////////////////////////////////////////
+  typedef typename IterList::iterator iterator;
+  typedef typename IterList::const_iterator const_iterator;
 
-public:
-  typedef GraphIterator<DataType> iterator;
-  typedef const GraphIterator<DataType> const_iterator;
+  iterator begin() noexcept { return iter_list_.begin(); }
+  iterator end() noexcept { return iter_list_.end(); }
+
+  const_iterator begin() const noexcept { return iter_list_.begin(); }
+  const_iterator end() const noexcept { return iter_list_.end(); }
 
   friend class GraphIterator<DataType>;
 

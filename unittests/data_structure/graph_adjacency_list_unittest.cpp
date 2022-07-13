@@ -176,4 +176,14 @@ TEST_CASE("Test Graph Data Structure ") {
     CHECK(adj_list_2.get_parent_index(1) == 0);
     CHECK(adj_list_2.get_parent_end_index(1) == 0);
   }
+  SUBCASE("test shared_ptr copy") {
+    auto i = std::make_shared<int>(1);
+    AdjacencyList<std::shared_ptr<int>, FixedEdges> adj_list;
+    adj_list.add_node(i, 1);
+    auto adj_list_2 = adj_list;
+    //auto j = std::make_shared<int>(2);
+    //adj_list.set_node_data(0, j);
+    *adj_list.get_node_data(0) = 2;
+    CHECK(*adj_list.get_node_data(0) != *adj_list_2.get_node_data(0));
+  }
 }

@@ -213,7 +213,7 @@ if __name__ == "__main__":
         "primitives"            : ["util"],
         "structure"             : ["util"],
         "motif"                 : ["structure", "secondary_structure"],
-        "segment_data_structure": ["motif", "resources"],
+        "segment_data_structure": ["resource_management", "data_structure"],
         "motif_tools"           : ["motif"],
         "resource_management"   : ["structure"],
         "motif_data_structure"  : ["resources", "data_structure"],
@@ -229,7 +229,8 @@ if __name__ == "__main__":
     }
 
     # libs = "base math data_structure util vienna secondary_structure eternabot structure motif motif_tools resources primitives motif_data_structure segment_data_structure thermo_fluctuation motif_search sequence_optimization".split()
-    libs = "base math data_structure util structure resource_management".split()
+    libs = "base math data_structure util structure resource_management segment_data_structure".split()
+    #libs = "base math data_structure".split()
     base_dir = get_base_dir()
 
     write_CML_file(

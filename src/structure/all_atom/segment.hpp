@@ -19,6 +19,7 @@ typedef structure::base::Chain<Residue> Chain;
 typedef structure::base::Structure<Chain, Residue> Structure;
 typedef structure::base::Pose<Basepair, Structure, Chain, Residue> Pose;
 typedef structure::base::Segment<Basepair, Structure, Chain, Residue> Segment;
+typedef std::shared_ptr<Segment> SegmentOP;
 
 Segment get_segment_from_str(const String &);
 

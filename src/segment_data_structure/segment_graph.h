@@ -5,244 +5,207 @@
 #ifndef RNAMAKE_NEW_SEGMENT_GRAPH_H
 #define RNAMAKE_NEW_SEGMENT_GRAPH_H
 
-#include <data_structure/graph.h>
-#include <structure/aligner.h>
-//#include <resources/resource_manager.h>
-#include <secondary_structure/aligner.h>
-#include <secondary_structure/segment.h>
+#include <type_traits>
 
+#include <data_structure/graph/graph.h>
+#include <resource_management/resource_manager.h>
+#include <structure/all_atom/aligner.hpp>
+//#include <structure/aligner.h>
+
+using namespace data_structure::graph;
 namespace segment_data_structure {
 
 template <typename SegmentType, typename AlignerType> class SegmentGraph {
 public:
+  typedef std::shared_ptr<SegmentType> SegmentTypeOP;
+public: // construction ////////////////////////////////////////////////////
   SegmentGraph()
-      : aligner_(AlignerType()),
-        graph_(data_structure::FixedEdgeDirectedGraph<SegmentType>()),
+      : aligner_(AlignerType()), _graph(FixedEdgeDirectedGraph<SegmentTypeOP>()),
         needs_update_(false), first_update_(INT_MAX) {}
 
   SegmentGraph(SegmentGraph const &sg)
-      : aligner_(AlignerType()), graph_(sg.graph_), needs_update_(false),
+      : aligner_(AlignerType()), _graph(sg._graph), needs_update_(false),
         first_update_(INT_MAX) {
     _update_default_transveral();
   }
 
-public:
-  typedef typename data_structure::FixedEdgeDirectedGraph<
-      SegmentType>::const_iterator const_iterator;
-  typedef typename data_structure::FixedEdgeDirectedGraph<SegmentType>::iterator
-      iterator;
+  ~SegmentGraph() = default;
+  
 
-  iterator begin() {
-    if (needs_update_) {
-      _update_alignments(first_update_);
-      needs_update_ = false;
-      first_update_ = INT_MAX;
-    }
-    return graph_.begin();
+public: // iteration ///////////////////////////////////////////////////////
+  typedef typename FixedEdgeDirectedGraph<SegmentTypeOP>::iterator iterator;
+  typedef typename FixedEdgeDirectedGraph<SegmentTypeOP>::const_iterator
+      const_iterator;
+
+  iterator begin() noexcept { return _graph.begin(); }
+  iterator end() noexcept { return _graph.end(); }
+
+  const_iterator begin() const noexcept { return _graph.begin(); }
+  const_iterator end() const noexcept { return _graph.end(); }
+
+public: // operators ///////////////////////////////////////////////////////
+  const SegmentType &operator[](Index ni) {
+    return *_graph.get_node_data(ni);
   }
-  iterator end() { return graph_.end(); }
-
-  const_iterator begin() const noexcept {
-    if (needs_update_) {
-      _update_alignments(first_update_);
-      needs_update_ = false;
-      first_update_ = INT_MAX;
-    }
-
-    return graph_.begin();
-  }
-  const_iterator end() const noexcept { return graph_.end(); }
 
 public:
-  inline size_t get_num_segments() const { return graph_.get_num_nodes(); }
+  [[nodiscard]] inline size_t get_num_segments() const {
+    return _graph.get_num_nodes();
+  }
 
   inline SegmentType const &get_segment(Index ni) const {
-
-    if (needs_update_) {
-      _update_alignments(first_update_);
-      needs_update_ = false;
-      first_update_ = INT_MAX;
-    }
-
-    return graph_.get_node_data(ni);
+    return *_graph.get_node_data(ni);
   }
 
   inline SegmentType &get_segment(Index ni) {
-    if (needs_update_) {
-      _update_alignments(first_update_);
-      needs_update_ = false;
-      first_update_ = INT_MAX;
-    }
-    return graph_.get_node_data(ni);
+    //_check_needs_update();
+    return _graph.get_node_data(ni);
   }
 
-  inline std::vector<data_structure::Edge const *> const &
+  [[nodiscard]] inline Connections const &
   get_segment_connections(Index ni) const {
-    return graph_.get_node_edges(ni);
+    return _graph.get_node_edges(ni);
   }
 
 public:
-  inline bool has_parent(Index ni) const { return graph_.has_parent(ni); }
-
-  inline Index get_parent_index(Index ni) const {
-    return graph_.get_parent_index(ni);
+  [[nodiscard]] inline bool has_parent(Index ni) const {
+    return _graph.has_parent(ni);
   }
 
-  inline Index get_parent_end_index(Index ni) const {
-    return graph_.get_parent_end_index(ni);
+  [[nodiscard]] inline Index get_parent_index(Index ni) const {
+    return _graph.get_parent_index(ni);
   }
 
-  inline bool are_motifs_connected(Index n1, Index n2) const {
-    return graph_.edge_between_nodes(n1, n2);
+  [[nodiscard]] inline Index get_parent_end_index(Index ni) const {
+    return _graph.get_parent_end_index(ni);
   }
 
-  inline std::vector<data_structure::Edge const *> const &
-  get_motif_connections(Index ni) const {
-    return graph_.get_node_edges(ni);
+  [[nodiscard]] inline bool are_segments_connected(Index n1, Index n2) const {
+    return _graph.edge_between_nodes(n1, n2);
   }
 
 public:
-  Index add_segment(SegmentType const &seg) {
-    auto ni = graph_.add_node(seg, seg.get_num_ends());
+  Index add(SegmentTypeOP &seg) {
+    Index ni = 0;
+    ni = _graph.add_node(seg, seg->get_num_ends());
     _update_default_transveral();
     return ni;
   }
 
-  Index add_segment(SegmentType const &seg, Index parent_index,
-                    String const &parent_end_name) {
-    auto seg_copy = seg;
-    auto &parent = graph_.get_node_data(parent_index);
-    auto parent_end_index = parent.get_end_index(parent_end_name);
-    aligner_.align(parent.get_end(parent_end_index), seg_copy);
-    auto ni = graph_.add_node(
-        seg_copy, seg.get_num_ends(), 0,
-        data_structure::NodeIndexandEdge{parent_index, parent_end_index});
+  Index add(SegmentTypeOP &seg, Index parent_index,
+            String const &parent_end_name) {
+    const auto &parent = _graph.get_node_data(parent_index);
+    auto parent_end_index = parent->get_end_index(parent_end_name);
+    aligner_.align(*parent, *seg, parent_end_index);
+    auto ni = _graph.add_node(seg, seg->get_num_ends(), 0,
+                              ConnectionPoint{parent_index, parent_end_index});
     _update_default_transveral();
     return ni;
   }
 
 public:
-  void add_connection(data_structure::NodeIndexandEdge const &nie1,
-                      data_structure::NodeIndexandEdge const &nie2) {
-    return graph_.add_edge(nie1, nie2);
+  void add_connection(const ConnectionPoint &nie1,
+                      const ConnectionPoint &nie2) {
+    return _graph.add_edge(nie1, nie2);
   }
 
 public:
-  void remove_segment(Index ni) {
-    graph_.remove_node(ni);
-    auto roots = graph_.get_root_indexes();
+  void remove(Index ni) {
+    _graph.remove_node(ni);
+    auto roots = _graph.get_root_indexes();
     if (roots.size() > 0) {
-      graph_.setup_transversal(roots[0]);
+      _graph.setup_transversal(roots[0]);
     }
   }
 
-  void replace_segment(Index pos, SegmentType const &seg, bool copy = true) {
-
+  void replace(Index pos, SegmentTypeOP &seg, bool copy = true) {
     if (!copy) {
       get_segment(pos) = seg;
     } else {
-      get_segment(pos) = SegmentType(seg);
+      get_segment(pos) = SegmentTypeOP(seg);
     }
-
     needs_update_ = true;
     if (first_update_ > pos) {
       first_update_ = pos;
     }
+    _update_alignments(first_update_);
   }
 
 public:
-  String get_segment_end_name(Index n_index, Index end_index) const {
-    auto temp = graph_.get_node_data(n_index).get_end(end_index).get_name_str();
-
-    std::cout << "Inside get_segment_end_nake: " << temp << std::endl;
-
-    return temp;
+  const String & get_end_name(Index n_index, Index end_index) const {
+    return _graph.get_node_data(n_index)->get_end(end_index).get_name();
   }
 
 public:
   void write_nodes_to_pdbs(String const &name) const {
-    if (needs_update_) {
-      _update_alignments(first_update_);
-      needs_update_ = false;
-      first_update_ = INT_MAX;
-    }
-
-    for (auto const &n : graph_) {
+    _check_needs_update();
+    for (auto const &n : _graph) {
       n->data().write_pdb(name + "." + std::to_string(n->index()) + ".pdb");
     }
   }
 
 protected:
   void _update_default_transveral() {
-    auto roots = graph_.get_root_indexes();
+    auto roots = _graph.get_root_indexes();
     if (roots.size() > 0) {
-      graph_.setup_transversal(roots[0]);
+      _graph.setup_transversal(roots[0]);
     }
   }
 
-  void _update_alignments(int start) const {
-
-    auto parent_index = 0;
+  void _update_alignments(int start) {
+    /*auto parent_index = 0;
     auto parent_end_index = 0;
     auto needs_update = false;
-    for (auto &n : graph_) {
-      if (!has_parent(n->index())) {
+    for (const auto &n : _graph) {
+      if (!has_parent(n->get_index())) {
         needs_update = false;
         continue;
       }
-
-      if (start == n->index()) {
+      if (start == n->get_index()) {
         needs_update = true;
       }
-
       if (!needs_update) {
         continue;
       }
+      parent_index = get_parent_index(n->get_index());
+      parent_end_index = get_parent_end_index(n->get_index());
 
-      parent_index = get_parent_index(n->index());
-      parent_end_index = get_parent_end_index(n->index());
+      aligner_.align(*_graph.get_node_data(parent_index),
+                     *_graph.get_node_data(n->get_index()), parent_end_index);
+    }  */
+  }
 
-      aligner_.align(
-          graph_.get_node_data(parent_index).get_end(parent_end_index),
-          n->data());
+private:
+  void _check_needs_update() {
+    if (needs_update_) {
+      _update_alignments(first_update_);
+      needs_update_ = false;
+      first_update_ = INT_MAX;
     }
   }
 
-protected:
+private:
   AlignerType aligner_;
-  // lots of mutatables to allow lazy updates
-  mutable data_structure::graph::FixedEdgeDirectedGraph<SegmentType> graph_;
-  mutable bool needs_update_;
-  mutable int first_update_;
+  FixedEdgeDirectedGraph<SegmentTypeOP> _graph;
+  bool needs_update_;
+  int first_update_;
 };
 
-template <typename SegmentType, typename AlignerType>
-using SegmentGraphOP = std::shared_ptr<SegmentGraph<SegmentType, AlignerType>>;
+typedef SegmentGraph<structure::all_atom::Segment,
+                     structure::all_atom::Aligner>
+    SegmentGraphAllAtom;
 
-} // namespace segment_data_structure
+// template <typename SegmentType, typename AlignerType>
+// using SegmentGraphOP = std::shared_ptr<SegmentGraph<SegmentType,
+//  AlignerType>>;
 
 // typedefs
 //////////////////////////////////////////////////////////////////////////////////
 
-namespace structure {
-
-typedef segment_data_structure::SegmentGraph<Segment, Aligner> SegmentGraph;
-typedef std::shared_ptr<SegmentGraph> SegmentGraphOP;
-
-} // namespace structure
-
-namespace secondary_structure {
-
-typedef segment_data_structure::SegmentGraph<Segment, Aligner> SegmentGraph;
-typedef std::shared_ptr<SegmentGraph> SegmentGraphOP;
-
-} // namespace secondary_structure
-
 // conversion functions
 /////////////////////////////////////////////////////////////////////////////////
 
-namespace segment_data_structure {
-
+/*
 namespace __helpers {
 
 template <typename SegmentType, typename AlignerType>
@@ -455,7 +418,7 @@ get_secondary_structure_graph(SegmentGraph const &sg) {
   return segment_data_structure::get_secondary_structure_graph<Segment,
                                                                Aligner>(sg);
 };
-
-} // namespace structure
+     */
+} // namespace segment_data_structure
 
 #endif // RNAMAKE_NEW_SEGMENT_GRAPH_H
