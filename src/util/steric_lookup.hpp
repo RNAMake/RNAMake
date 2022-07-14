@@ -34,9 +34,9 @@ public:
 
   bool clash(math::Vector3s const &);
 
-  int total_clash(math::Vector3 const &);
+//  int total_clash(math::Vector3 const &);
 
-  int total_clash(math::Vector3s const &);
+  int total_clash(math::Vector3s const &points);
 
 public:
   void to_pdb(String const &);

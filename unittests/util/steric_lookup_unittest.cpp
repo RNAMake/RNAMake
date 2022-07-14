@@ -156,8 +156,8 @@ TEST_CASE("Test Steric Lookup for quick Sterics ") {
       auto test_point_8 = math::Vector3(0, 0, 3.7);
       auto test_point_9 = math::Vector3(1.25, 0, -1.25);
       auto test_point_10 = math::Vector3(0, 0, -2.75);
-      //
-      auto test_point_11 = math::Vector3(0, 0, -2.7);
+      auto test_point_11 = math::Vector3(0, 0, -2.69);
+      auto test_point_12 = math::Vector3(0, 0, -2.75);
 
       CHECK(steric_lookup_test.clash(test_point_1) == true);
       CHECK(steric_lookup_test.clash(test_point_2) == true);
@@ -169,9 +169,8 @@ TEST_CASE("Test Steric Lookup for quick Sterics ") {
       CHECK(steric_lookup_test.clash(test_point_8) == true);
       CHECK(steric_lookup_test.clash(test_point_9) == true);
       CHECK(steric_lookup_test.clash(test_point_10) == false);
-
-      // TODO change greater/less than
-      //CHECK(steric_lookup_test.clash(test_point_11) == true);
+      CHECK(steric_lookup_test.clash(test_point_11) == false);
+      CHECK(steric_lookup_test.clash(test_point_12) == false);
     }
     SUBCASE("test adding collection of points in yz-plane") {
       auto point_1 = math::Vector3(0, 0, 0);
@@ -424,21 +423,20 @@ TEST_CASE("Test Steric Lookup for quick Sterics ") {
     SUBCASE("test lookup with radius of 3") {
       auto point_1 = math::Vector3(0, 0, 0);
 
-      // grid_size 0.5, cutoff 3, radius 10
-      auto steric_lookup_test = util::StericLookupNew(0.5, 3, 10);
+      // grid_size 0.5, cutoff 3, radius 12
+      auto steric_lookup_test = util::StericLookupNew(0.5, 3, 12);
       steric_lookup_test.add_point(point_1);
 
       auto test_point_1 = math::Vector3(0, 0, 0);
-      // TODO fix greater/equal to
-      // auto test_point_2 = math::Vector3(3, 0, 0);
+      auto test_point_2 = math::Vector3(3.0, 0, 0);
       auto test_point_3 = math::Vector3(2.75, 0, 0);
       auto test_point_4 = math::Vector3(3.01, 0, 0);
       auto test_point_5 = math::Vector3(2.99, 0, 0);
       auto test_point_6 = math::Vector3(2.9995, 0, 0);
 
       CHECK(steric_lookup_test.clash(test_point_1) == true);
-      // TODO fix greater/equal to
-      // CHECK(steric_lookup_test.clash(test_point_2) == true);
+      // TODO check boundaries greater/less than
+      // CHECK(steric_lookup_test.clash(test_point_2) == false);
       CHECK(steric_lookup_test.clash(test_point_3) == true);
       CHECK(steric_lookup_test.clash(test_point_4) == false);
       CHECK(steric_lookup_test.clash(test_point_5) == true);
@@ -463,7 +461,8 @@ TEST_CASE("Test Steric Lookup for quick Sterics ") {
       CHECK_THROWS_AS(util::StericLookupNew(-0.5, 2, 12), base::MathException);
       CHECK_THROWS_AS(util::StericLookupNew(0.3, -1, 12), base::MathException);
       CHECK_THROWS_AS(util::StericLookupNew(0.25, 4, -12), base::MathException);
-      CHECK_THROWS_AS(util::StericLookupNew(-0.2, -10, -12), base::MathException);
+      CHECK_THROWS_AS(util::StericLookupNew(-0.2, -10, -12),
+                      base::MathException);
     }
     SUBCASE("test zero arguments in lookup") {
       CHECK_THROWS_AS(util::StericLookupNew(0, 2, 12), base::MathException);
@@ -472,4 +471,45 @@ TEST_CASE("Test Steric Lookup for quick Sterics ") {
       CHECK_THROWS_AS(util::StericLookupNew(0, 0, 0), base::MathException);
     }
   }
+  SUBCASE("test counting of clashes") {
+    auto point_1 = math::Vector3(0, 0, 0);
+
+    auto steric_lookup_test = util::StericLookupNew();
+    steric_lookup_test.add_point(point_1);
+
+    auto test_point_1 = math::Vector3(0, 0, 0);            // true
+    auto test_point_2 = math::Vector3(1, 1, 1);            // true
+    auto test_point_3 = math::Vector3(2, 2, 2);            // false
+    auto test_point_4 = math::Vector3(5, 5, 5);            // false
+    auto test_point_5 = math::Vector3(-4, 1, 3);           // false
+    auto test_point_6 = math::Vector3(0.21, 1, 0);         // true
+    auto test_point_7 = math::Vector3(-1.11, 0.22, 0.45);  // true
+    auto test_point_8 = math::Vector3(-0.34, -1, 0);       // true
+    auto test_point_9 = math::Vector3(0, -1, 0);           // true
+    auto test_point_10 = math::Vector3(-1.75, 1.75, 1.75); // false
+
+    auto point_set_1 = math::Vector3s{
+        test_point_1, test_point_2, test_point_3, test_point_4, test_point_5,
+        test_point_6, test_point_7, test_point_8, test_point_9, test_point_10};
+
+    CHECK(steric_lookup_test.clash(test_point_1) == true);
+    CHECK(steric_lookup_test.clash(test_point_2) == true);
+    CHECK(steric_lookup_test.clash(test_point_3) == false);
+    CHECK(steric_lookup_test.clash(test_point_4) == false);
+    CHECK(steric_lookup_test.clash(test_point_5) == false);
+    CHECK(steric_lookup_test.clash(test_point_6) == true);
+    CHECK(steric_lookup_test.clash(test_point_7) == true);
+    CHECK(steric_lookup_test.clash(test_point_8) == true);
+    CHECK(steric_lookup_test.clash(test_point_9) == true);
+    CHECK(steric_lookup_test.clash(test_point_10) == false);
+
+    CHECK(steric_lookup_test.total_clash(point_set_1) == doctest::Approx(6));
+  }
+
+  SUBCASE("") {
+
+  }
+
 }
+
+// TODO think of unittests

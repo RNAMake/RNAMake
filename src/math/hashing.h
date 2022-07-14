@@ -16,8 +16,9 @@
 namespace math {
 
 template <typename T> class _BoundingBox {
+
 public: // types
-  typedef T PointPosition;
+  typedef T PointPosition; // PointPosition is a synonym for T
 
 public: // construct/destruct
   inline _BoundingBox() = default;
@@ -279,6 +280,8 @@ private:
 
 class ThreeDCoordinateBinner {
 public:
+
+  /// @brief - constructor
   ThreeDCoordinateBinner(BoundingBox const &bounding_box,
                          Real3 const &bin_widths)
       : _bounding_box(bounding_box), _bin_widths(bin_widths) {
@@ -318,25 +321,29 @@ public:
   }
 
   Real3 bin3(Vector3 const &values) const {
-    assert(_bounding_box.contains(values));
+    // assert(_bounding_box.contains(values));
 
     auto from_corner = values - _bounding_box.lower();
     Real3 bins;
 
     bins[0] = static_cast<size_t>(from_corner.get_x() / _bin_widths[0]);
+
     if (bins[0] == _dimsizes[0]) {
       bins[0] -= 1;
     }
 
     bins[1] = static_cast<size_t>(from_corner.get_y() / _bin_widths[1]);
+
     if (bins[1] == _dimsizes[1]) {
       bins[1] -= 1;
     }
 
     bins[2] = static_cast<size_t>(from_corner.get_z() / _bin_widths[2]);
+
     if (bins[2] == _dimsizes[2]) {
       bins[2] -= 1;
     }
+
     return bins;
   }
 

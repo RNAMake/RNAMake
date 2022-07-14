@@ -46,9 +46,6 @@ int StericLookup::total_clash(math::Vector3s const &points) {
 }
 */
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// StericLookupNew - TODO make this the old one now
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief - constructor
 StericLookupNew::StericLookupNew() {
   auto bb = math::BoundingBox(math::Vector3(-200, -200, -200),
@@ -88,14 +85,13 @@ StericLookupNew::StericLookupNew(float grid_size, float cutoff, int radius) {
     base::log_and_throw<base::MathException>(msg);
   }
 
-
   auto bb = math::BoundingBox(math::Vector3(-200, -200, -200),
                               math::Vector3(100, 100, 100));
   auto bin_widths = math::Real3{grid_size, grid_size, grid_size};
   _histo = math::ThreeDHistogram(bb, bin_widths);
   _grid_size = grid_size; // stock grid_size is 0.25
-  _cutoff = cutoff; // stock cutoff size is 2.70
-  _radius = radius; // stock radius is 12
+  _cutoff = cutoff;       // stock cutoff size is 2.70
+  _radius = radius;       // stock radius is 12
   _additions = math::Vector3s();
   _setup_additions();
 }
@@ -165,7 +161,8 @@ bool StericLookupNew::clash(math::Vector3s const &points) {
   return false;
 }
 
-int StericLookupNew::total_clash(const math::Vector3 &p) {
+/// @brief - maybe unused
+// int StericLookupNew::total_clash(const math::Vector3 &p) {
   /*
   _rounded.set_x(round(p.get_x() / _grid_size) * _grid_size);
   _rounded.set_y(round(p.get_y() / _grid_size) * _grid_size);
@@ -181,15 +178,20 @@ int StericLookupNew::total_clash(const math::Vector3 &p) {
     return 0;
   }
    */
-  return 0;
-}
+ // return 0;
+//}
 
-int StericLookupNew::total_clash(const math::Vector3s &) {
-  return 0;
+/// @brief - counts number of clashes between a given lookup and set of points
+int StericLookupNew::total_clash(const math::Vector3s &points) {
+  int clash_count = 0;
+  for (auto const &p : points) {
+    clash_count += clash(p);
+  }
+  return clash_count;
 }
-
 
 void StericLookupNew::to_pdb(String const &pdb_name) {
   _histo.write_histo_to_pdb(pdb_name);
 }
+
 } // namespace util

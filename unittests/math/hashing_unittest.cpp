@@ -335,4 +335,7 @@ TEST_CASE("Test hashing of 6D coords") {
     // should throw an error
     REQUIRE_THROWS_AS(math::BoundingBox(math::Vector3(1, 1, 1), math::Vector3(1, 1, 1)), base::MathException);
   }
+
+
+
 }
