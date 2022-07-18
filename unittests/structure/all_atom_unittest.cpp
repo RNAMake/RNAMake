@@ -82,8 +82,7 @@ TEST_CASE("test all atom") {
       segs.emplace_back(new_seg);
     }
     for(int i =0 ; i < segs.size(); i++) {
-      write_segment_to_pdb("test."+std::to_string(i)+".pdb", segs[i]);
+    //  write_segment_to_pdb("test."+std::to_string(i)+".pdb", segs[i]);
     }
-    
   }
 }

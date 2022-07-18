@@ -29,6 +29,16 @@ inline void rotation_between_frames(const Matrix3x3 &m1, const Matrix3x3 &m2,
 inline Real difference_between_frames(const Matrix3x3 &p, const Matrix3x3 &q) {
   Matrix3x3 r = p * q.get_transposed();
   Real tr = r.get_trace();
+  // when tr approaches 3 it leads to acos returning nan which is actually 0
+  // radians
+  if(abs(tr - 3) < 0.001) {
+    return 0;
+  }
+  // when tr approaches -1 it leads to acos returning nan which is actually PI
+  // radians
+  else if(abs(tr + 1) < 0.001) {
+    return M_PI;
+  }
   return acos((tr - 1)/2);
 }
 

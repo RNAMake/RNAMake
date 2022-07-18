@@ -43,6 +43,10 @@ public: // transversal ////////////////////////////////////////////////////////
     iter_list_.path_transversal(adjacency_list_, start_n, end_n);
   }
 
+  inline Indexes get_index_path() {
+    return iter_list_.get_index_path();
+  }
+
 public: // node and connection management  ////////////////////////////////////
   virtual inline Index add_node(Data &d, Size n_edges) {
     return adjacency_list_.add_node(d, n_edges);

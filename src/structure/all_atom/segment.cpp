@@ -41,6 +41,18 @@ Segment get_segment_from_str(const String &str) {
     const Residue &res2 = s.get_residue(res2_num, res2_id, ' ');
     Strings bp_state_strs = ::base::string::split(bp_spl[1], ";");
     math::Vector3 center = math::vector_from_str(bp_state_strs[0]);
+    int count = 0;
+    // center computed wrong sometimes ... 
+    math::Vector3 calc_center = {0, 0, 0};
+    for(const auto & a : res1) {
+      calc_center += a.get_coords();
+      count += 1;
+    }
+    for(const auto & a : res2) {
+      calc_center += a.get_coords();
+      count += 1;
+    }
+    calc_center /= count;
     math::Matrix3x3 ref_frame = math::matrix_from_str(bp_state_strs[1]);
     math::Vector3s sugars;
     math::vectors_from_str(bp_state_strs[2], sugars);
@@ -51,7 +63,7 @@ Segment get_segment_from_str(const String &str) {
                    structure::base::BasepairType::WC,
                    util::x3dna::X3dnaBPType::cWUW,
                    bp_name,
-                   center,
+                   calc_center,
                    sugars,
                    ref_frame};
     bps.emplace_back(bp);
@@ -173,9 +185,11 @@ void write_segment_to_pdb(const String &fname, const Segment &seg) {
 }
 
 void align_segment(const Segment &ref, Segment &seg, Index end_index) {
+  std::cout << seg.get_end_center(0) << std::endl;
   math::Matrix3x3 rot = math::rotation_between_frames(
       ref.get_end_ref_frame(end_index), seg.get_end_ref_frame(0));
   seg.rotate(rot);
+  std::cout << seg.get_end_center(0) << std::endl;
   seg.move(ref.get_end_center(end_index) - seg.get_end_center(0));
 
 }

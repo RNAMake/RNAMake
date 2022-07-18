@@ -24,9 +24,12 @@ TEST_CASE("Test Graph Data Structure") {
     const auto &bp2 = sg[1].get_aligned_end();
     Real diff = math::difference_between_frames(bp1.get_ref_frame(),
                                                 bp2.get_ref_frame());
-    // std::cout << sg[0].get_name() << std::endl;
-    for(const auto & n : sg) {
-      n->get_data()->move({0, 0, 0});
+    // rotation matrices should be approximately the same
+    CHECK(diff == doctest::Approx(0));
+    for (const auto &ii : sg) {
+      CHECK(sg[ii].get_name() == "HELIX.IDEAL.2");
+      structure::all_atom::write_segment_to_pdb(
+          "test." + std::to_string(ii) + ".pdb", sg[ii]);
     }
     // sg[0].move({0, 0, 0});
   }

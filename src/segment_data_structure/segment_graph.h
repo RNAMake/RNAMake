@@ -18,10 +18,12 @@ namespace segment_data_structure {
 template <typename SegmentType, typename AlignerType> class SegmentGraph {
 public:
   typedef std::shared_ptr<SegmentType> SegmentTypeOP;
+
 public: // construction ////////////////////////////////////////////////////
   SegmentGraph()
-      : aligner_(AlignerType()), _graph(FixedEdgeDirectedGraph<SegmentTypeOP>()),
-        needs_update_(false), first_update_(INT_MAX) {}
+      : aligner_(AlignerType()),
+        _graph(FixedEdgeDirectedGraph<SegmentTypeOP>()), needs_update_(false),
+        first_update_(INT_MAX) {}
 
   SegmentGraph(SegmentGraph const &sg)
       : aligner_(AlignerType()), _graph(sg._graph), needs_update_(false),
@@ -30,36 +32,23 @@ public: // construction ////////////////////////////////////////////////////
   }
 
   ~SegmentGraph() = default;
-  
 
 public: // iteration ///////////////////////////////////////////////////////
-  typedef typename FixedEdgeDirectedGraph<SegmentTypeOP>::iterator iterator;
-  typedef typename FixedEdgeDirectedGraph<SegmentTypeOP>::const_iterator
-      const_iterator;
+  typedef typename Indexes::iterator iterator;
+  typedef typename Indexes::const_iterator const_iterator;
 
-  iterator begin() noexcept { return _graph.begin(); }
-  iterator end() noexcept { return _graph.end(); }
+  iterator begin() noexcept { return _path.begin(); }
+  iterator end() noexcept { return _path.end(); }
 
-  const_iterator begin() const noexcept { return _graph.begin(); }
-  const_iterator end() const noexcept { return _graph.end(); }
+  const_iterator begin() const noexcept { return _path.begin(); }
+  const_iterator end() const noexcept { return _path.end(); }
 
 public: // operators ///////////////////////////////////////////////////////
-  const SegmentType &operator[](Index ni) {
-    return *_graph.get_node_data(ni);
-  }
+  const SegmentType &operator[](Index ni) { return *_graph.get_node_data(ni); }
 
 public:
   [[nodiscard]] inline size_t get_num_segments() const {
     return _graph.get_num_nodes();
-  }
-
-  inline SegmentType const &get_segment(Index ni) const {
-    return *_graph.get_node_data(ni);
-  }
-
-  inline SegmentType &get_segment(Index ni) {
-    //_check_needs_update();
-    return _graph.get_node_data(ni);
   }
 
   [[nodiscard]] inline Connections const &
@@ -86,8 +75,7 @@ public:
 
 public:
   Index add(SegmentTypeOP &seg) {
-    Index ni = 0;
-    ni = _graph.add_node(seg, seg->get_num_ends());
+    Index ni = _graph.add_node(seg, seg->get_num_ends());
     _update_default_transveral();
     return ni;
   }
@@ -97,6 +85,7 @@ public:
     const auto &parent = _graph.get_node_data(parent_index);
     auto parent_end_index = parent->get_end_index(parent_end_name);
     aligner_.align(*parent, *seg, parent_end_index);
+    //structure::all_atom::align_segment(*parent, *seg, parent_end_index);
     auto ni = _graph.add_node(seg, seg->get_num_ends(), 0,
                               ConnectionPoint{parent_index, parent_end_index});
     _update_default_transveral();
@@ -120,9 +109,9 @@ public:
 
   void replace(Index pos, SegmentTypeOP &seg, bool copy = true) {
     if (!copy) {
-      get_segment(pos) = seg;
+      _graph.get_node_data(pos) = seg;
     } else {
-      get_segment(pos) = SegmentTypeOP(seg);
+      _graph.get_node_data(pos) = SegmentTypeOP(seg);
     }
     needs_update_ = true;
     if (first_update_ > pos) {
@@ -132,28 +121,23 @@ public:
   }
 
 public:
-  const String & get_end_name(Index n_index, Index end_index) const {
+  [[nodiscard]] const String &get_end_name(Index n_index,
+                                           Index end_index) const {
     return _graph.get_node_data(n_index)->get_end(end_index).get_name();
   }
 
-public:
-  void write_nodes_to_pdbs(String const &name) const {
-    _check_needs_update();
-    for (auto const &n : _graph) {
-      n->data().write_pdb(name + "." + std::to_string(n->index()) + ".pdb");
-    }
-  }
 
-protected:
+private:
   void _update_default_transveral() {
     auto roots = _graph.get_root_indexes();
     if (roots.size() > 0) {
       _graph.setup_transversal(roots[0]);
     }
+    _path = _graph.get_index_path();
   }
 
   void _update_alignments(int start) {
-    /*auto parent_index = 0;
+    auto parent_index = 0;
     auto parent_end_index = 0;
     auto needs_update = false;
     for (const auto &n : _graph) {
@@ -172,27 +156,18 @@ protected:
 
       aligner_.align(*_graph.get_node_data(parent_index),
                      *_graph.get_node_data(n->get_index()), parent_end_index);
-    }  */
-  }
-
-private:
-  void _check_needs_update() {
-    if (needs_update_) {
-      _update_alignments(first_update_);
-      needs_update_ = false;
-      first_update_ = INT_MAX;
     }
   }
-
+  
 private:
   AlignerType aligner_;
   FixedEdgeDirectedGraph<SegmentTypeOP> _graph;
   bool needs_update_;
   int first_update_;
+  Indexes _path;
 };
 
-typedef SegmentGraph<structure::all_atom::Segment,
-                     structure::all_atom::Aligner>
+typedef SegmentGraph<structure::all_atom::Segment, structure::all_atom::Aligner>
     SegmentGraphAllAtom;
 
 // template <typename SegmentType, typename AlignerType>
