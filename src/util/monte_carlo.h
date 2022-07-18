@@ -20,7 +20,7 @@ namespace util {
 class MonteCarlo {
 public:
   inline MonteCarlo(float temperature = 1.0f)
-      : temperature_(temperature), rng_(RandomNumberGenerator()) {}
+      : _temperature(temperature), _rng(RandomNumberGenerator()) {}
 
   ~MonteCarlo() {}
 
@@ -30,8 +30,8 @@ public:
       return 1;
     }
 
-    score_ = exp((current - next) / temperature_);
-    if (rng_.rand() < score_) {
+    _score = exp((current - next) / _temperature);
+    if (_rng.rand() < _score) {
       return 1;
     }
 
@@ -39,16 +39,16 @@ public:
   }
 
 public:
-  inline void set_temperature(float new_temp) { temperature_ = new_temp; }
+  inline void set_temperature(float new_temp) { _temperature = new_temp; }
 
-  inline float get_temperature() { return temperature_; }
+  inline float get_temperature() { return _temperature; }
 
-  inline void scale_temperature(float scale) { temperature_ *= scale; }
+  inline void scale_temperature(float scale) { _temperature *= scale; }
 
 private:
-  float temperature_;
-  float score_;
-  RandomNumberGenerator rng_;
+  float _temperature;
+  float _score;
+  RandomNumberGenerator _rng;
 };
 
 } // namespace util
