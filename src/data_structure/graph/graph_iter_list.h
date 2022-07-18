@@ -16,7 +16,6 @@
 
 namespace data_structure::graph {
 
-
 template <typename Data, typename AdjacencyList> class IterList {
 public:
   struct VisitedNode {
@@ -62,11 +61,8 @@ public:
   virtual ~IterList() = default;
 
 public:
-  typedef
-      typename std::vector<Node<Data> *>::iterator iterator;
-  typedef
-      typename std::vector<Node<Data> *>::const_iterator const_iterator;
-
+  typedef typename std::vector<Node<Data> *>::iterator iterator;
+  typedef typename std::vector<Node<Data> *>::const_iterator const_iterator;
 
   iterator begin() noexcept { return _iter_list.begin(); }
   iterator end() noexcept { return _iter_list.end(); }
@@ -158,6 +154,13 @@ public:
     }
   }
 
+  Indexes get_index_path() {
+    Indexes path;
+    for (const auto &n : _iter_list) {
+      path.push_back(n->get_index());
+    }
+    return path;
+  }
 protected:
   virtual void _get_neighbors(Index ni, AdjacencyList &adj_list,
                               std::vector<Index> &neighbors) {
