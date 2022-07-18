@@ -18,8 +18,8 @@ namespace eternabot {
 class DirectionofGCPairsinMultiLoops : public Strategy {
 public:
   DirectionofGCPairsinMultiLoops() {
-    mean_ = 85.2869664088;
-    stdev_ = 26.9535204308;
+    _mean = 85.2869664088;
+    _stdev = 26.9535204308;
   }
 
   ~DirectionofGCPairsinMultiLoops() {}

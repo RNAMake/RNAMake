@@ -18,8 +18,8 @@ namespace eternabot {
 class NumofYellowNucleotidesperLengthofString : public Strategy {
 public:
   NumofYellowNucleotidesperLengthofString() {
-    params_ = std::vector<float>(1);
-    params_[0] = 791.641998291;
+    _params = Reals(1);
+    _params[0] = 791.641998291;
     upper_length_ = Indexes(10);
     upper_length_[0] = 0;
     upper_length_[1] = 1;
@@ -42,8 +42,8 @@ public:
     lower_length_[7] = 3;
     lower_length_[8] = 2;
     lower_length_[9] = 1;
-    mean_ = 91.2420911348;
-    stdev_ = 12.5663926344;
+    _mean = 91.2420911348;
+    _stdev = 12.5663926344;
   }
 
   ~NumofYellowNucleotidesperLengthofString() {}
@@ -88,7 +88,7 @@ public:
       return 100;
     }
 
-    return 100 - params_[0] * penalty / float(features->length);
+    return 100 - _params[0] * penalty / float(features->length);
   }
 
 private:

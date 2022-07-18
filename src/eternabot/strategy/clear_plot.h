@@ -18,13 +18,13 @@ namespace eternabot {
 class CleanPlotStackCapsandSafeGC : public Strategy {
 public:
   CleanPlotStackCapsandSafeGC() {
-    params_ = std::vector<float>(4);
-    params_[0] = 0.100135909783;
-    params_[1] = 1.76372839803;
-    params_[2] = 3.11085515568;
-    params_[3] = 0.966424875922;
-    mean_ = 82.3365692703;
-    stdev_ = 12.050647236;
+    _params = Reals(4);
+    _params[0] = 0.100135909783;
+    _params[1] = 1.76372839803;
+    _params[2] = 3.11085515568;
+    _params[3] = 0.966424875922;
+    _mean = 82.3365692703;
+    _stdev = 12.050647236;
   }
 
   ~CleanPlotStackCapsandSafeGC() {}
@@ -61,7 +61,7 @@ public:
     float gc_penalty = 0;
     if (npairs > 0) {
       plotscore = (1.0 - (penalty / npairs));
-      if (features->gc / npairs > params_[3]) {
+      if (features->gc / npairs > _params[3]) {
         gc_penalty = 1;
       }
     }
@@ -117,8 +117,8 @@ public:
       cap_score = cap_score / stack_count;
     }
 
-    float score = (2.0 + cap_score * params_[1] + plotscore * params_[0] -
-                   gc_penalty * params_[2]) *
+    float score = (2.0 + cap_score * _params[1] + plotscore * _params[0] -
+                   gc_penalty * _params[2]) *
                   25;
     return score;
   }
