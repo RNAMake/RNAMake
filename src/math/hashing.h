@@ -16,8 +16,9 @@
 namespace math {
 
 template <typename T> class _BoundingBox {
+
 public: // types
-  typedef T PointPosition;
+  typedef T PointPosition; // PointPosition is a synonym for T
 
 public: // construct/destruct
   inline _BoundingBox() = default;
@@ -68,7 +69,7 @@ public: // box management
     _upper += scalar;
   }
 
-  // @brief contract box corners (subtractive)
+  /// @brief contract box corners (subtractive)
   template <typename U> inline void contract(U const &scalar) {
     _lower += scalar;
     _upper -= scalar;
@@ -265,7 +266,6 @@ private:
         euler[i] += 360;
       }
     }
-
     return euler;
   }
 
@@ -280,6 +280,8 @@ private:
 
 class ThreeDCoordinateBinner {
 public:
+
+  /// @brief - constructor
   ThreeDCoordinateBinner(BoundingBox const &bounding_box,
                          Real3 const &bin_widths)
       : _bounding_box(bounding_box), _bin_widths(bin_widths) {
@@ -319,25 +321,29 @@ public:
   }
 
   Real3 bin3(Vector3 const &values) const {
-    assert(_bounding_box.contains(values));
+    // assert(_bounding_box.contains(values));
 
     auto from_corner = values - _bounding_box.lower();
     Real3 bins;
 
     bins[0] = static_cast<size_t>(from_corner.get_x() / _bin_widths[0]);
+
     if (bins[0] == _dimsizes[0]) {
       bins[0] -= 1;
     }
 
     bins[1] = static_cast<size_t>(from_corner.get_y() / _bin_widths[1]);
+
     if (bins[1] == _dimsizes[1]) {
       bins[1] -= 1;
     }
 
     bins[2] = static_cast<size_t>(from_corner.get_z() / _bin_widths[2]);
+
     if (bins[2] == _dimsizes[2]) {
       bins[2] -= 1;
     }
+
     return bins;
   }
 
@@ -561,17 +567,17 @@ public:
     auto lower = _binner.get_bounding_box().lower();
     auto upper = _binner.get_bounding_box().upper();
     double x = lower.get_x();
-    double y = lower.get_x();
-    double z = lower.get_x();
+    double y = lower.get_y();
+    double z = lower.get_z();
     double x1 = upper.get_x();
     double y1 = upper.get_y();
     double z1 = upper.get_z();
     out.write((const char *)(&x), sizeof(lower.get_x()));
-    out.write((const char *)(&y), sizeof(lower.get_x()));
-    out.write((const char *)(&z), sizeof(lower.get_x()));
+    out.write((const char *)(&y), sizeof(lower.get_y()));
+    out.write((const char *)(&z), sizeof(lower.get_z()));
     out.write((const char *)(&x1), sizeof(upper.get_x()));
-    out.write((const char *)(&y1), sizeof(upper.get_x()));
-    out.write((const char *)(&z1), sizeof(upper.get_x()));
+    out.write((const char *)(&y1), sizeof(upper.get_y()));
+    out.write((const char *)(&z1), sizeof(upper.get_z()));
 
     for (int i = 0; i < 6; i++) {
       out.write((const char *)&_binner.get_bin_widths()[i],
@@ -604,7 +610,6 @@ public:
       : _binner(std::make_shared<ThreeDCoordinateBinner>(bounding_box,
                                                          bin_widths)) {}
 
-public:
   void setup(BoundingBox const &bounding_box, Real3 const &bin_widths) {
     _binner =
         std::make_shared<ThreeDCoordinateBinner>(bounding_box, bin_widths);
@@ -612,7 +617,6 @@ public:
 
   inline size_t size() { return _stored_values.size(); }
 
-public:
   void add(Vector3 const &values) {
     auto bin_index = _binner->bin_index(values);
     if (_stored_values.find(bin_index) == _stored_values.end()) {
@@ -621,7 +625,6 @@ public:
     _stored_values[bin_index] += 1;
   }
 
-public:
   bool contains(Vector3 const &values) {
     auto bin_index = _binner->bin_index(values);
     if (_stored_values.find(bin_index) == _stored_values.end()) {
@@ -636,7 +639,6 @@ public:
     return _stored_values[bin_index];
   }
 
-public:
   void write_histo_to_pdb(String const &pdb_name) {
     int i = 1;
     std::ofstream out;

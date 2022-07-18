@@ -17,46 +17,13 @@
 
 namespace util {
 
-class StericLookup {
-public:
-  StericLookup();
-
-  StericLookup(float, float, int);
-
-  ~StericLookup() {}
-
-public:
-  void add_point(math::Vector3 const &);
-
-  void add_points(math::Vector3s const &);
-
-  bool clash(math::Vector3 const &);
-
-  int clash(math::Vector3s const &);
-
-  int better_clash(math::Vector3 const &);
-
-  int total_clash(math::Vector3 const &);
-
-  int total_clash(math::Vector3s const &);
-
-private:
-  void _setup_additions();
-
-private:
-  std::map<double, int> _bhash;
-  math::Vector3s _additions, _check_additions;
-  math::Vector3 _rounded;
-  math::Vector3 _p;
-  float _grid_size;
-  float _cutoff;
-  int _radius;
-  double _k;
-};
-
 class StericLookupNew {
 public:
   StericLookupNew();
+
+  StericLookupNew(float grid_size, float cutoff, int radius);
+
+  ~StericLookupNew() {}
 
 public:
   void add_point(math::Vector3 const &);
@@ -66,6 +33,10 @@ public:
   bool clash(math::Vector3 const &);
 
   bool clash(math::Vector3s const &);
+
+//  int total_clash(math::Vector3 const &);
+
+  int total_clash(math::Vector3s const &points);
 
 public:
   void to_pdb(String const &);
@@ -84,7 +55,7 @@ private:
   math::Vector3 _dummy;
 };
 
-typedef std::shared_ptr<StericLookup> StericLookupOP;
+// typedef std::shared_ptr<StericLookup> StericLookupOP;
 typedef std::shared_ptr<StericLookupNew> StericLookupNewOP;
 
 } // namespace util

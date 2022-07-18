@@ -213,20 +213,39 @@ public: // methods  //////////////////////////////////////////////////////////
     a._z = -_z;
   }
 
+  /// @brief Absolute value
+  inline Vector3 &absolute_value() {
+    _x = abs(_x);
+    _y = abs(_y);
+    _z = abs(_z);
+    return *this;
+  }
+
+  /// @brief Absolute value copy
+  [[nodiscard]] inline Vector3 get_absolute_value() const { return { abs(_x), abs(_y), abs(_z) }; }
+
+  /// @brief Absolute value via argument (slightly faster)
+  inline void get_absolute_value(Vector3 &a /* return */) const {
+    a._x = abs(_x);
+    a._y = abs(_y);
+    a._z = abs(_z);
+  }
+
   /// @brief Normalize
   inline Vector3 &normalize() {
-    double const length_ = get_length();
-    if (length_ == 0) {
+    double const _length = get_length();
+    if (_length == 0) {
       String msg = "Vector is zero, cannot be normalized!";
       base::log_and_throw<base::MathException>(msg);
     }
 
-    double const inv_length(double(1) / length_);
+    double const inv_length(double(1) / _length);
     _x *= inv_length;
     _y *= inv_length;
     _z *= inv_length;
     return *this;
   }
+
 
 public: // Properties: accessors
 public:
