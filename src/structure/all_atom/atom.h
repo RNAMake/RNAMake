@@ -7,14 +7,16 @@
 #include <base/exception.hpp>
 #include <base/types.hpp>
 #include <math/rotation.hpp>
+#include <math/numerical.hpp>
+#include <utility>
 
 namespace structure::all_atom {
 class Atom {
 public:
-  inline Atom(String const &name, math::Vector3 const &coords)
-      : _name(name), _coords(coords) {}
+  inline Atom(String & name, math::Vector3 const &coords)
+      : _name(std::move(name)), _coords(coords) {}
 
-  inline Atom(String const &s) {
+  inline explicit Atom(String const &s) {
     auto spl = ::base::string::split(s, " ");
     if (spl.size() != 4) {
       throw ::base::InputException("tried to initialize atom with string: " +
@@ -36,9 +38,9 @@ public:
     if (_name != a._name) {
       return false;
     }
-    // if (!math::are_points_equal(_coords, a._coords)) {
-    //   return false;
-    // }
+    if (!math::are_points_equal(_coords, a._coords)) {
+       return false;
+    }
     return true;
   }
 
@@ -67,8 +69,7 @@ public: // coord getters //////////////////////////////////////////////////////
 
 private:
   String _name;
-
-  math::Vector3 _coords{};
+  math::Vector3 _coords;
 };
 
 // TODO Need to remove these pointers
