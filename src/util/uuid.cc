@@ -1,4 +1,3 @@
-
 //
 //  uuid.cc
 //  RNAMake
@@ -7,12 +6,16 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+// Standard Headers
 #include <stdio.h>
 #include <iostream>
 
-//RNAMake Headers
+// RNAMake Headers
 #include "util/uuid.h"
 
 namespace util {
 
+
+
 }
+
