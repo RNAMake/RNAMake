@@ -25,13 +25,13 @@ public:
   virtual float score(FeaturesOP const &) = 0;
 
 public:
-  inline float mean() const { return mean_; }
+  inline float mean() const { return _mean; }
 
-  inline float stdev() const { return stdev_; }
+  inline float stdev() const { return _stdev; }
 
 protected:
-  float mean_, stdev_;
-  Reals params_;
+  float _mean, _stdev;
+  Reals _params;
 };
 
 typedef std::shared_ptr<Strategy> StrategyOP;

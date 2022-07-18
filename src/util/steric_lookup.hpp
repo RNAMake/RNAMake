@@ -17,13 +17,13 @@
 
 namespace util {
 
-class StericLookupNew {
+class StericLookup {
 public:
-  StericLookupNew();
+  StericLookup();
 
-  StericLookupNew(float grid_size, float cutoff, int radius);
+  StericLookup(float grid_size, float cutoff /*, float radius */ );
 
-  ~StericLookupNew() {}
+  ~StericLookup() {}
 
 public:
   void add_point(math::Vector3 const &);
@@ -34,14 +34,19 @@ public:
 
   bool clash(math::Vector3s const &);
 
-//  int total_clash(math::Vector3 const &);
-
   int total_clash(math::Vector3s const &points);
 
 public:
   void to_pdb(String const &);
 
   int size() { return _histo.size(); }
+
+  inline auto get_grid_size() const { return _grid_size; }
+
+  inline auto get_cutoff() const { return _cutoff; }
+
+  inline auto get_radius() { return _radius; }
+
 
 private:
   void _setup_additions();
@@ -55,8 +60,7 @@ private:
   math::Vector3 _dummy;
 };
 
-// typedef std::shared_ptr<StericLookup> StericLookupOP;
-typedef std::shared_ptr<StericLookupNew> StericLookupNewOP;
+typedef std::shared_ptr<StericLookup> StericLookupNewOP;
 
 } // namespace util
 
