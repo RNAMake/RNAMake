@@ -24,25 +24,25 @@ namespace eternabot {
 class Scorer {
 public:
   Scorer()
-      : generator_(FeatureGenerator()), strategies_(StrategyOPs()),
-        weights_(Reals()) {
+      : _generator(FeatureGenerator()), _strategies(StrategyOPs()),
+        _weights(Reals()) {
 
-    strategies_.push_back(std::make_shared<ABasicTest>());
-    strategies_.push_back(std::make_shared<CleanPlotStackCapsandSafeGC>());
-    strategies_.push_back(std::make_shared<DirectionofGCPairsinMultiLoops>());
-    strategies_.push_back(std::make_shared<BerexTest>());
-    strategies_.push_back(
+    _strategies.push_back(std::make_shared<ABasicTest>());
+    _strategies.push_back(std::make_shared<CleanPlotStackCapsandSafeGC>());
+    _strategies.push_back(std::make_shared<DirectionofGCPairsinMultiLoops>());
+    _strategies.push_back(std::make_shared<BerexTest>());
+    _strategies.push_back(
         std::make_shared<NumofYellowNucleotidesperLengthofString>());
 
-    weights_.push_back(0.09281782);
-    weights_.push_back(0.1250677);
-    weights_.push_back(0.2156337);
-    weights_.push_back(0.3661276);
-    weights_.push_back(0.2230357);
+    _weights.push_back(0.09281782);
+    _weights.push_back(0.1250677);
+    _weights.push_back(0.2156337);
+    _weights.push_back(0.3661276);
+    _weights.push_back(0.2230357);
 
-    scores_ = Reals(strategies_.size());
-    mean_ = 84.8005952381;
-    stdev_ = 16.4725276237;
+    _scores = Reals(_strategies.size());
+    _mean = 84.8005952381;
+    _stdev = 16.4725276237;
   }
 
   ~Scorer() {}
@@ -53,14 +53,14 @@ public:
   float score_secondary_structure(secondary_structure::PoseOP const &);
 
 public:
-  Reals const &scores() { return scores_; }
+  Reals const &scores() { return _scores; }
 
 private:
-  FeatureGenerator generator_;
-  FeaturesOP features_;
-  StrategyOPs strategies_;
-  Reals weights_, scores_;
-  float mean_, stdev_, total_score_ = 0.0;
+  FeatureGenerator _generator;
+  FeaturesOP _features;
+  StrategyOPs _strategies;
+  Reals _weights, _scores;
+  float _mean, _stdev, _total_score = 0.0;
 };
 
 } // namespace eternabot
