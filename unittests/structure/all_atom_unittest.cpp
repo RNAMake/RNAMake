@@ -1,7 +1,6 @@
 //
 // Created by Joe Yesselman on 6/25/22.
 //
-
 #include "../common.hpp"
 
 #include <base/paths.hpp>

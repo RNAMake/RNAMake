@@ -3,6 +3,7 @@
 //
 
 #include "../common.hpp"
+#include <util/basic_io.hpp>
 #include <util/find_pair.h>
 #include <util/x3dna/x3dna.h>
 
