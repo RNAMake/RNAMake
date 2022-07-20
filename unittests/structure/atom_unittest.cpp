@@ -35,8 +35,16 @@ TEST_CASE("test atom functions ") {
     String name_6 = "hydrogen";
     Atom atom_6 = Atom(name_6, position_6);
 
+    math::Vector3 position_7 = math::Vector3(0.001, 0.001, 0.001);
+    String name_7 = "carbon";
+    Atom atom_7 = Atom(name_7, position_7);
+
     CHECK((atom_1.get_name() == atom_6.get_name()) == true);
     CHECK((atom_1.get_name() == atom_3.get_name()) == false);
+
+    CHECK((atom_1.get_coords() == atom_6.get_coords()) == true);
+    CHECK((atom_1.get_coords() == atom_7.get_coords()) == false);
+    CHECK((atom_1.get_coords() == atom_3.get_coords()) == false);
 
     CHECK(atom_1.get_x() == doctest::Approx(0));
     CHECK(atom_1.get_y() == doctest::Approx(0));
@@ -46,12 +54,20 @@ TEST_CASE("test atom functions ") {
     CHECK(atom_4.get_y() == doctest::Approx(10));
     CHECK(atom_4.get_z() == doctest::Approx(10));
 
-    CHECK((atom_1.get_name() == atom_6.get_name()) == true);
-    CHECK((atom_2.get_name() == atom_3.get_name()) == false);
+    CHECK(atom_1.get_coords() == position);
+    CHECK(atom_2.get_coords() == position_2);
+    CHECK(atom_3.get_coords() == position_3);
+    CHECK(atom_4.get_coords() == position_4);
+    CHECK(atom_5.get_coords() == position_5);
+    CHECK(atom_6.get_coords() == position_6);
+    CHECK(atom_7.get_coords() == position_7);
+
   }
+  /*
   SUBCASE("test atom construction error") {
     math::Vector3 position = math::Vector3(0, 0, 0);
     String name = "";
-    //CHECK_THROWS_AS(Atom(name, position), base::InputException);
+    // CHECK_THROWS_AS(Atom(name, position), base::InputException);
   }
+   */
 }

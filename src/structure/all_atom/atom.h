@@ -2,6 +2,7 @@
 #define __RNAMake__atom__
 
 #include <cstdio>
+#include <utility>
 
 // RNAMake Headers
 #include <base/exception.hpp>
@@ -9,7 +10,6 @@
 #include <math/rotation.hpp>
 #include <math/numerical.hpp>
 #include <util/uuid.h>
-#include <utility>
 
 namespace structure::all_atom {
 class Atom {
@@ -18,9 +18,11 @@ public:
   inline Atom(String &name, math::Vector3 const &coords)
       : _name(std::move(name)), _coords(coords) {
 
-
-
-
+    // TODO maybe throw an error here for empty names?
+    //if (name == "") {
+    //  String msg = "No atom name entered!";
+    //  ::base::log_and_throw<base::InputException>(msg);
+    //}
   }
 
   inline explicit Atom(String const &s) {
