@@ -8,6 +8,7 @@
 #include <base/types.hpp>
 #include <math/rotation.hpp>
 #include <math/numerical.hpp>
+#include <util/uuid.h>
 #include <utility>
 
 namespace structure::all_atom {

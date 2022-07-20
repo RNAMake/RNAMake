@@ -4,11 +4,11 @@
 #include "../common.hpp"
 
 #include <base/paths.hpp>
-#include <math/rotation.hpp>
 #include <structure/all_atom/residue.h>
 
 using namespace structure::all_atom;
-TEST_CASE("test all atom") {
+
+TEST_CASE("test all atom residue ") {
   String path = base::path::unittest_resource_path() +
                 "residue/test_str_to_residue.dat";
   auto lines = Strings();
@@ -28,10 +28,10 @@ TEST_CASE("test all atom") {
     CHECK(i == 20);
     CHECK(r.get_atom("O5'").get_name() == "O5'");
     //CHECK_NOTHROW(r.get_coords("O5'"));
-
   }
 
-  /*SUBCASE("test string conversion consistency from seg str") {
+  /*
+  SUBCASE("test string conversion consistency from seg str") {
     for(int a = 0; a < 1000; a++) {
       String path = base::path::resources_path() + "motifs/base.motif";
       auto lines = Strings();
@@ -51,6 +51,7 @@ TEST_CASE("test all atom") {
       math::Vector3 v = {rand(), rand(), rand()};
       res[0].move(v);
     }
-  } */
+  }
+*/
 
 }

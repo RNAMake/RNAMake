@@ -10,6 +10,7 @@
 
 // RNAMake Headers
 #include <structure/all_atom/residue.h>
+#include <util/uuid.h>
 
 namespace structure::all_atom {
 

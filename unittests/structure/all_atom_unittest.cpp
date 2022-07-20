@@ -6,10 +6,11 @@
 #include <base/paths.hpp>
 #include <math/rotation.hpp>
 #include <structure/all_atom/segment.hpp>
+#include <structure/all_atom/atom.h>
 
 using namespace structure::all_atom;
 
-TEST_CASE("test all atom") {
+TEST_CASE("test all atom ") {
   SUBCASE("test generate residue") {
     String path = base::path::unittest_resource_path() +
                   "residue/test_str_to_residue.dat";
@@ -25,9 +26,9 @@ TEST_CASE("test all atom") {
     Residues res;
     res.emplace_back(get_residue_from_str(lines[0]));
     res.emplace_back(get_residue_from_str(lines[1]));
-    // Chain c(res);
-    // CHECK(c.get_first().get_num_atoms() == res[0].get_num_atoms());
-    // CHECK(c.get_last().get_num_atoms() == res[1].get_num_atoms());
+    Chain c(res);
+    CHECK(c.get_first().get_num_atoms() == res[0].get_num_atoms());
+    CHECK(c.get_last().get_num_atoms() == res[1].get_num_atoms());
   }
   SUBCASE("test structure") {
     String path = base::path::unittest_resource_path() +
@@ -66,8 +67,8 @@ TEST_CASE("test all atom") {
     Real diff = math::difference_between_frames(seg.get_end_ref_frame(1),
                                                 seg2.get_end_ref_frame(0));
     //std::cout << diff*180.0 / PI << std::endl;
-    //write_segment_to_pdb("test.pdb", seg);
-    //write_segment_to_pdb("test2.pdb", seg2);
+    write_segment_to_pdb("test.pdb", seg);
+    write_segment_to_pdb("test2.pdb", seg2);
   }
   SUBCASE("test alignment chain") {
     String path = base::path::resources_path() + "motifs/base.motif";
@@ -81,7 +82,7 @@ TEST_CASE("test all atom") {
       segs.emplace_back(new_seg);
     }
     for(int i =0 ; i < segs.size(); i++) {
-    //  write_segment_to_pdb("test."+std::to_string(i)+".pdb", segs[i]);
+      write_segment_to_pdb("test."+std::to_string(i)+".pdb", segs[i]);
     }
   }
 }

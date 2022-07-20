@@ -3,8 +3,10 @@
 //
 #include "../common.hpp"
 
-TEST_CASE("brief test of primitive functionility") {
+TEST_CASE("brief test of primitive functionality ") {
+  SUBCASE("test") {
 
+  }
 
   
 }
