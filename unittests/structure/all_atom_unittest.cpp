@@ -6,7 +6,6 @@
 #include <base/paths.hpp>
 #include <math/rotation.hpp>
 #include <structure/all_atom/segment.hpp>
-#include <structure/all_atom/atom.h>
 
 using namespace structure::all_atom;
 

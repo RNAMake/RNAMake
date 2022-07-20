@@ -14,8 +14,14 @@
 namespace structure::all_atom {
 class Atom {
 public:
-  inline Atom(String & name, math::Vector3 const &coords)
-      : _name(std::move(name)), _coords(coords) {}
+  /// @brief - constructor
+  inline Atom(String &name, math::Vector3 const &coords)
+      : _name(std::move(name)), _coords(coords) {
+
+
+
+
+  }
 
   inline explicit Atom(String const &s) {
     auto spl = ::base::string::split(s, " ");
@@ -27,7 +33,6 @@ public:
     _coords =
         math::Vector3(std::stod(spl[1]), std::stod(spl[2]), std::stod(spl[3]));
   }
-
   /**
    * Copy constructor
    * @param   a   atom object to from
@@ -48,24 +53,29 @@ public:
   inline bool operator!=(Atom const &a) const { return !(*this == a); }
 
 public: // non const methods //////////////////////////////////////////////////
+  /// @brief - moves atoms by distance "p"; the distance is added to coords
   inline void move(const math::Vector3 &p) { _coords = _coords + p; }
 
+  /// @brief - rotates a point by a degree defined by a rotation matrix
   inline void rotate(const math::Matrix3x3 &rot) {
     _coords = rot.dot(_coords);
   }
 
 public: // trival getters /////////////////////////////////////////////////////
+  /// @brief - gets the name of the atom
   [[nodiscard]] inline const String &get_name() const { return _name; }
 
+  /// @brief - gets the coords of the atom
   [[nodiscard]] inline const math::Vector3 &get_coords() const {
     return _coords;
   }
 
 public: // coord getters //////////////////////////////////////////////////////
+  /// @brief - gets x coordinate of the atom
   [[nodiscard]] inline double get_x() const { return _coords.get_x(); }
-
+  /// @brief - gets y coordinate of the atom
   [[nodiscard]] inline double get_y() const { return _coords.get_y(); }
-
+  /// @brief - gets z coordinate of the atom
   [[nodiscard]] inline double get_z() const { return _coords.get_z(); }
 
 private:
