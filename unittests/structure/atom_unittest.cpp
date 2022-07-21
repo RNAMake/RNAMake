@@ -39,21 +39,50 @@ TEST_CASE("test atom functions ") {
     String name_7 = "carbon";
     Atom atom_7 = Atom(name_7, position_7);
 
+    math::Vector3 position_8 = math::Vector3(0, 0, 0);
+    String name_8 = "HYDROGEN";
+    Atom atom_8 = Atom(name_8, position_8);
+
+    // checks equality fxns and some basic logic
     CHECK((atom_1.get_name() == atom_6.get_name()) == true);
     CHECK((atom_1.get_name() == atom_3.get_name()) == false);
+    // TODO should names be transferred to lowercase?
+    CHECK((atom_1.get_name() == atom_8.get_name()) == false);
 
     CHECK((atom_1.get_coords() == atom_6.get_coords()) == true);
     CHECK((atom_1.get_coords() == atom_7.get_coords()) == false);
     CHECK((atom_1.get_coords() == atom_3.get_coords()) == false);
 
+    // checks atom coord-getting fxn
     CHECK(atom_1.get_x() == doctest::Approx(0));
     CHECK(atom_1.get_y() == doctest::Approx(0));
     CHECK(atom_1.get_z() == doctest::Approx(0));
+
+    CHECK(atom_2.get_x() == doctest::Approx(0));
+    CHECK(atom_2.get_y() == doctest::Approx(0));
+    CHECK(atom_2.get_z() == doctest::Approx(0));
+
+    CHECK(atom_3.get_x() == doctest::Approx(5));
+    CHECK(atom_3.get_y() == doctest::Approx(-5));
+    CHECK(atom_3.get_z() == doctest::Approx(5));
 
     CHECK(atom_4.get_x() == doctest::Approx(-10));
     CHECK(atom_4.get_y() == doctest::Approx(10));
     CHECK(atom_4.get_z() == doctest::Approx(10));
 
+    CHECK(atom_5.get_x() == doctest::Approx(25));
+    CHECK(atom_5.get_y() == doctest::Approx(25));
+    CHECK(atom_5.get_z() == doctest::Approx(-25));
+
+    CHECK(atom_6.get_x() == doctest::Approx(0));
+    CHECK(atom_6.get_y() == doctest::Approx(0));
+    CHECK(atom_6.get_z() == doctest::Approx(0));
+
+    CHECK(atom_7.get_x() == doctest::Approx(0.001));
+    CHECK(atom_7.get_y() == doctest::Approx(0.001));
+    CHECK(atom_7.get_z() == doctest::Approx(0.001));
+
+    // checks get_coords functions
     CHECK(atom_1.get_coords() == position);
     CHECK(atom_2.get_coords() == position_2);
     CHECK(atom_3.get_coords() == position_3);
@@ -61,6 +90,43 @@ TEST_CASE("test atom functions ") {
     CHECK(atom_5.get_coords() == position_5);
     CHECK(atom_6.get_coords() == position_6);
     CHECK(atom_7.get_coords() == position_7);
+
+    // double-checks get_coords functions
+    math::Vector3 vector_1 = atom_1.get_coords();
+    math::Vector3 vector_2 = atom_2.get_coords();
+    math::Vector3 vector_3 = atom_3.get_coords();
+    math::Vector3 vector_4 = atom_4.get_coords();
+    math::Vector3 vector_5 = atom_5.get_coords();
+    math::Vector3 vector_6 = atom_6.get_coords();
+    math::Vector3 vector_7 = atom_7.get_coords();
+
+    CHECK(vector_1.get_x() == doctest::Approx(0));
+    CHECK(vector_1.get_y() == doctest::Approx(0));
+    CHECK(vector_1.get_z() == doctest::Approx(0));
+
+    CHECK(vector_2.get_x() == doctest::Approx(0));
+    CHECK(vector_2.get_y() == doctest::Approx(0));
+    CHECK(vector_2.get_z() == doctest::Approx(0));
+
+    CHECK(vector_3.get_x() == doctest::Approx(5));
+    CHECK(vector_3.get_y() == doctest::Approx(-5));
+    CHECK(vector_3.get_z() == doctest::Approx(5));
+
+    CHECK(vector_4.get_x() == doctest::Approx(-10));
+    CHECK(vector_4.get_y() == doctest::Approx(10));
+    CHECK(vector_4.get_z() == doctest::Approx(10));
+
+    CHECK(vector_5.get_x() == doctest::Approx(25));
+    CHECK(vector_5.get_y() == doctest::Approx(25));
+    CHECK(vector_5.get_z() == doctest::Approx(-25));
+
+    CHECK(vector_6.get_x() == doctest::Approx(0));
+    CHECK(vector_6.get_y() == doctest::Approx(0));
+    CHECK(vector_6.get_z() == doctest::Approx(0));
+
+    CHECK(vector_7.get_x() == doctest::Approx(0.001));
+    CHECK(vector_7.get_y() == doctest::Approx(0.001));
+    CHECK(vector_7.get_z() == doctest::Approx(0.001));
 
   }
   /*
