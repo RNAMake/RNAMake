@@ -90,7 +90,6 @@ ResidueTypeSet::get_residue_type(String const &resname) const {
 }
 
 bool ResidueTypeSet::contains_residue_type(String const &resname) const {
-
   for (auto const &restype : _residue_types) {
     if (restype.is_valid_residue_name(resname)) {
       return true;

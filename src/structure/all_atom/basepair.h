@@ -30,8 +30,8 @@ public:
   ~Basepair() = default;
 
 public:
-  /*
-  bool is_equal(Basepair const &bp, bool check_uuid = true) const {
+
+  inline bool is_equal(Basepair const &bp, bool check_uuid = true) const {
     if (check_uuid) {
       if (_uuid != bp._uuid) {
         return false;
@@ -58,7 +58,7 @@ public:
     }
     return true;
   }
-  */
+
 
 public: // non const methods //////////////////////////////////////////////////
   void move(const math::Vector3 &p) {

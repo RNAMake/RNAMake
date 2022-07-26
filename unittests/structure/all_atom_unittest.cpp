@@ -16,6 +16,7 @@ TEST_CASE("test all atom ") {
     auto lines = Strings();
     base::path::get_lines_from_file(path, lines);
     Residue r = get_residue_from_str(lines[0]);
+    //std::cout << r << std::endl;
   }
   SUBCASE("test chain") {
     String path = base::path::unittest_resource_path() +
@@ -40,7 +41,13 @@ TEST_CASE("test all atom ") {
     structure::base::Cutpoints cutpoints;
     Structure s(res, cutpoints);
   }
-  SUBCASE("test basepair") {}
+  SUBCASE("test basepair") {
+    String path = base::path::unittest_resource_path() +
+                  "residue/test_str_to_residue.dat";
+    auto lines = Strings();
+    base::path::get_lines_from_file(path, lines);
+    //Residues res;
+  }
   SUBCASE("test segment") {
     String path = base::path::resources_path() + "motifs/ref.motif";
     auto lines = Strings();
@@ -65,7 +72,7 @@ TEST_CASE("test all atom ") {
     seg2.move(seg.get_end_center(1) - seg2.get_end_center(0));
     Real diff = math::difference_between_frames(seg.get_end_ref_frame(1),
                                                 seg2.get_end_ref_frame(0));
-    //std::cout << diff*180.0 / PI << std::endl;
+    // std::cout << diff*180.0 / PI << std::endl;
     write_segment_to_pdb("test.pdb", seg);
     write_segment_to_pdb("test2.pdb", seg2);
   }
@@ -75,13 +82,13 @@ TEST_CASE("test all atom ") {
     base::path::get_lines_from_file(path, lines);
     std::vector<Segment> segs;
     segs.emplace_back(get_segment_from_str(lines[0]));
-    for(int i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++) {
       Segment new_seg = segs.back();
       align_segment(segs.back(), new_seg, 1);
       segs.emplace_back(new_seg);
     }
-    for(int i =0 ; i < segs.size(); i++) {
-      write_segment_to_pdb("test."+std::to_string(i)+".pdb", segs[i]);
+    for (int i = 0; i < segs.size(); i++) {
+      write_segment_to_pdb("test." + std::to_string(i) + ".pdb", segs[i]);
     }
   }
 }

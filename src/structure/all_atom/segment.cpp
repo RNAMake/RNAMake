@@ -32,7 +32,7 @@ Segment get_segment_from_str(const String &str) {
     Strings bp_spl = ::base::string::split(bp_str, ",");
     Strings res_spl = ::base::string::split(bp_spl[0], "-");
     // TODO this does not account for chain ids now be longer than one char
-    // We need to think of another strategy.
+    //  We need to think of another strategy.
     String res1_id = res_spl[0].substr(0, 1);
     String res2_id = res_spl[1].substr(0, 1);
     int res1_num = std::stoi(res_spl[0].substr(1));
@@ -42,7 +42,7 @@ Segment get_segment_from_str(const String &str) {
     Strings bp_state_strs = ::base::string::split(bp_spl[1], ";");
     math::Vector3 center = math::vector_from_str(bp_state_strs[0]);
     int count = 0;
-    // center computed wrong sometimes ... 
+    // TODO center computed wrong sometimes ...
     math::Vector3 calc_center = {0, 0, 0};
     for(const auto & a : res1) {
       calc_center += a.get_coords();

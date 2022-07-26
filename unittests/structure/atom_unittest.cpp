@@ -5,7 +5,6 @@
 #include "../common.hpp"
 #include <structure/all_atom/atom.h>
 
-
 TEST_CASE("test atom functions ") {
 
   using namespace structure::all_atom;
@@ -46,7 +45,7 @@ TEST_CASE("test atom functions ") {
     // checks equality fxns and some basic logic
     CHECK((atom_1.get_name() == atom_6.get_name()) == true);
     CHECK((atom_1.get_name() == atom_3.get_name()) == false);
-    // TODO should names be transferred to lowercase?
+    // case-sensitive test
     CHECK((atom_1.get_name() == atom_8.get_name()) == false);
 
     CHECK((atom_1.get_coords() == atom_6.get_coords()) == true);
@@ -129,11 +128,37 @@ TEST_CASE("test atom functions ") {
     CHECK(vector_7.get_z() == doctest::Approx(0.001));
 
   }
-  /*
-  SUBCASE("test atom construction error") {
-    math::Vector3 position = math::Vector3(0, 0, 0);
-    String name = "";
-    // CHECK_THROWS_AS(Atom(name, position), base::InputException);
+  SUBCASE("test move and rotate simple") {
+    math::Vector3 position = math::Vector3(0, -4, 2);
+    String name = "aluminum";
+    Atom aluminum = Atom(name, position);
+    math::Vector3 movement_distance = math::Vector3(10, 3, -3);
+
+    aluminum.move(movement_distance);
+
+    CHECK(aluminum.get_x() == doctest::Approx(10));
+    CHECK(aluminum.get_y() == doctest::Approx(-1));
+    CHECK(aluminum.get_z() == doctest::Approx(-1));
+
+    math::Matrix3x3 x_rotation = {-1, 0, 0, 0, 1, 0, 0, 0, 1};
+    aluminum.rotate(x_rotation);
+
+    CHECK(aluminum.get_x() == doctest::Approx(-10));
+    CHECK(aluminum.get_y() == doctest::Approx(-1));
+    CHECK(aluminum.get_z() == doctest::Approx(-1));
+
+    math::Matrix3x3 y_rotation = {1, 0, 0, 0, -1, 0, 0, 0, 1};
+    aluminum.rotate(y_rotation);
+
+    CHECK(aluminum.get_x() == doctest::Approx(-10));
+    CHECK(aluminum.get_y() == doctest::Approx(1));
+    CHECK(aluminum.get_z() == doctest::Approx(-1));
+
+    math::Matrix3x3 z_rotation = {1, 0, 0, 0, 1, 0, 0, 0, -1};
+    aluminum.rotate(z_rotation);
+
+    CHECK(aluminum.get_x() == doctest::Approx(-10));
+    CHECK(aluminum.get_y() == doctest::Approx(1));
+    CHECK(aluminum.get_z() == doctest::Approx(1));
   }
-   */
 }

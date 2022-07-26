@@ -9,17 +9,14 @@
 using namespace structure::all_atom;
 
 TEST_CASE("test all atom residue ") {
+  // initialization
   String path = base::path::unittest_resource_path() +
                 "residue/test_str_to_residue.dat";
   auto lines = Strings();
   base::path::get_lines_from_file(path, lines);
   Residue r = get_residue_from_str(lines[0]);
-  SUBCASE("test trival") {
-    CHECK(r.get_name() == 'G');
-    CHECK(r.get_num() == 103);
-    CHECK(r.get_chain_id() == "A");
-    std::cout << r.get_chain_id() << std::endl;
-  }
+  // /initialization
+
   SUBCASE("test getting atoms") {
     int i = 0;
     for(auto const & a : r) {
@@ -29,6 +26,19 @@ TEST_CASE("test all atom residue ") {
     CHECK(r.get_atom("O5'").get_name() == "O5'");
     //CHECK_NOTHROW(r.get_coords("O5'"));
   }
+  SUBCASE("test trival") {
+    CHECK(r.get_name() == 'G');
+    CHECK(r.get_num() == 103);
+    CHECK(r.get_chain_id() == "A");
+    auto atom_1_name = r.get_atom("").get_name();
+
+    //std::cout << r.get_chain_id() << std::endl;
+  }
+
+  SUBCASE("test complex") {
+    //auto atom_1_name = r.get_atom("").get_name();
+  }
+
 
   /*
   SUBCASE("test string conversion consistency from seg str") {

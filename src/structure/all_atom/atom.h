@@ -19,10 +19,11 @@ public:
       : _name(std::move(name)), _coords(coords) {
 
     // TODO maybe throw an error here for empty names?
-    //if (name == "") {
-    //  String msg = "No atom name entered!";
-    //  ::base::log_and_throw<base::InputException>(msg);
-    //}
+
+    // if (name == "") {
+    //   String msg = "No atom name entered!";
+    //   ::base::log_and_throw<base::InputException>(msg);
+    // }
   }
 
   inline explicit Atom(String const &s) {

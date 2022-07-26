@@ -76,6 +76,8 @@ void Residue::_build_beads_RNA() {
 Residue get_residue_from_str(const String &s) {
   Strings spl = ::base::string::split(s, ",");
   if(spl.size() < 6) {
+    // TODO what goes here?
+    // TODO throw error here
   }
   char name = spl[1][0];
   int num = std::stoi(spl[2]);
