@@ -16,7 +16,9 @@ TEST_CASE("test all atom ") {
     auto lines = Strings();
     base::path::get_lines_from_file(path, lines);
     Residue r = get_residue_from_str(lines[0]);
-    //std::cout << r << std::endl;
+
+
+
   }
   SUBCASE("test chain") {
     String path = base::path::unittest_resource_path() +
@@ -27,6 +29,7 @@ TEST_CASE("test all atom ") {
     res.emplace_back(get_residue_from_str(lines[0]));
     res.emplace_back(get_residue_from_str(lines[1]));
     Chain c(res);
+
     CHECK(c.get_first().get_num_atoms() == res[0].get_num_atoms());
     CHECK(c.get_last().get_num_atoms() == res[1].get_num_atoms());
   }
@@ -40,6 +43,9 @@ TEST_CASE("test all atom ") {
     res.emplace_back(get_residue_from_str(lines[1]));
     structure::base::Cutpoints cutpoints;
     Structure s(res, cutpoints);
+
+
+
   }
   SUBCASE("test basepair") {
     String path = base::path::unittest_resource_path() +
@@ -56,6 +62,9 @@ TEST_CASE("test all atom ") {
     structure::secondary_structure::Segment ss_seg =
         get_secondary_structure(seg);
     structure::state::Segment s_seg = get_state(seg);
+
+
+
   }
   SUBCASE("test alignment") {
     String path = base::path::resources_path() + "motifs/base.motif";
@@ -64,17 +73,17 @@ TEST_CASE("test all atom ") {
     Segment seg = get_segment_from_str(lines[0]);
     Segment seg2 = seg;
     math::Matrix3x3 rot;
-    // std::cout << seg.get_end(1).get_ref_frame().get_flip_orientation()
-    //                  .get_str() << std::endl;
     math::rotation_between_frames(seg.get_end_ref_frame(1),
                                   seg2.get_end_ref_frame(0), rot);
     seg2.rotate(rot);
     seg2.move(seg.get_end_center(1) - seg2.get_end_center(0));
     Real diff = math::difference_between_frames(seg.get_end_ref_frame(1),
                                                 seg2.get_end_ref_frame(0));
-    // std::cout << diff*180.0 / PI << std::endl;
     write_segment_to_pdb("test.pdb", seg);
     write_segment_to_pdb("test2.pdb", seg2);
+
+
+
   }
   SUBCASE("test alignment chain") {
     String path = base::path::resources_path() + "motifs/base.motif";
@@ -90,5 +99,8 @@ TEST_CASE("test all atom ") {
     for (int i = 0; i < segs.size(); i++) {
       write_segment_to_pdb("test." + std::to_string(i) + ".pdb", segs[i]);
     }
+
+
+
   }
 }

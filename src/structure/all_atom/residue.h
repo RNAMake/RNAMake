@@ -139,6 +139,7 @@ public: // getters ////////////////////////////////////////////////////////////
         return a;
       }
     }
+
     throw structure::base::StructureException(
         "atom name: " + name + " does not exist in this residue");
   }
@@ -148,7 +149,15 @@ public: // getters ////////////////////////////////////////////////////////////
     return get_atom(name).get_coords();
   }
 
+  // get coords of residue
+
   [[nodiscard]] math::Vector3 get_center() const;
+
+  [[nodiscard]] double get_center_x() const;
+
+  [[nodiscard]] double get_center_y() const;
+
+  [[nodiscard]] double get_center_z() const;
 
   [[nodiscard]] inline size_t get_num_atoms() const { return _atoms.size(); }
 

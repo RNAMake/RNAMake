@@ -11,6 +11,7 @@
 // RNAMake Headers
 #include <structure/all_atom/residue.h>
 #include <util/uuid.h>
+#include <base/exception.hpp>
 
 namespace structure::all_atom {
 
@@ -26,6 +27,17 @@ math::Vector3 Residue::get_center() const {
   return center_of_atoms(_atoms);
 }
 
+double Residue::get_center_x() const {
+  return center_of_atoms(_atoms).get_x();
+}
+
+double Residue::get_center_y() const {
+  return center_of_atoms(_atoms).get_y();
+}
+
+double Residue::get_center_z() const {
+  return center_of_atoms(_atoms).get_z();
+}
 
 void Residue::_build_beads() {
   if (_rtype == structure::base::ResidueType::RNA) {
@@ -76,8 +88,9 @@ void Residue::_build_beads_RNA() {
 Residue get_residue_from_str(const String &s) {
   Strings spl = ::base::string::split(s, ",");
   if(spl.size() < 6) {
-    // TODO what goes here?
     // TODO throw error here
+    String msg = "Size is too small!";
+    ::base::log_and_throw<::base::InputException>(msg);
   }
   char name = spl[1][0];
   int num = std::stoi(spl[2]);

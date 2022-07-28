@@ -25,19 +25,47 @@ TEST_CASE("test all atom residue ") {
     CHECK(i == 20);
     CHECK(r.get_atom("O5'").get_name() == "O5'");
     //CHECK_NOTHROW(r.get_coords("O5'"));
+
   }
-  SUBCASE("test trival") {
+  SUBCASE("test trivial") {
     CHECK(r.get_name() == 'G');
     CHECK(r.get_num() == 103);
     CHECK(r.get_chain_id() == "A");
-    auto atom_1_name = r.get_atom("").get_name();
-
+    //auto atom_1_name = r.get_atom("").get_name();
     //std::cout << r.get_chain_id() << std::endl;
   }
-
   SUBCASE("test complex") {
     //auto atom_1_name = r.get_atom("").get_name();
+    Residue s = get_residue_from_str(lines[1]);
+
+    CHECK(s.get_name() == 'A');
+    CHECK(s.get_num() == 104);
+    CHECK(s.get_chain_id() == "A");
   }
+  SUBCASE("test more lines and functions") {
+    Residue residue_2 = get_residue_from_str(lines[2]);
+
+    CHECK(residue_2.get_name() == 'A');
+    CHECK(residue_2.get_num() == 105);
+    CHECK(residue_2.get_chain_id() == "A");
+
+    CHECK(residue_2.get_i_code() == ' ');
+    //CHECK(residue_2.get_uuid() == );
+    //CHECK(residue_2.get_coords() == );
+    CHECK(residue_2.get_center().get_x() == doctest::Approx(-12.736000));
+    CHECK(residue_2.get_center().get_y() == doctest::Approx(-41.318591));
+    CHECK(residue_2.get_center().get_z() == doctest::Approx(91.471318));
+
+    CHECK(residue_2.get_center_x() == doctest::Approx(-12.736000));
+    CHECK(residue_2.get_center_y() == doctest::Approx(-41.318591));
+    CHECK(residue_2.get_center_z() == doctest::Approx(91.471318));
+
+    CHECK(residue_2.get_num_atoms() == doctest::Approx(22));
+
+
+
+  }
+
 
 
   /*

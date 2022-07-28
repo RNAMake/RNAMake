@@ -151,7 +151,7 @@ public:
     }
   }
 
-  void rotate(const math::Matrix3x3 & rot) {
+  void rotate(const math::Matrix3x3 &rot) {
     for (auto &r : _residues) {
       r.rotate(rot);
     }
@@ -162,6 +162,6 @@ private:
   Cutpoints _cut_points;
 };
 
-}
+} // namespace structure::base
 
 #endif // RNAMAKE_SRC_STRUCTURE_BASE_STRUCTURE_HPP_

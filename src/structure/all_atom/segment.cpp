@@ -44,11 +44,11 @@ Segment get_segment_from_str(const String &str) {
     int count = 0;
     // TODO center computed wrong sometimes ...
     math::Vector3 calc_center = {0, 0, 0};
-    for(const auto & a : res1) {
+    for (const auto &a : res1) {
       calc_center += a.get_coords();
       count += 1;
     }
-    for(const auto & a : res2) {
+    for (const auto &a : res2) {
       calc_center += a.get_coords();
       count += 1;
     }
@@ -170,13 +170,13 @@ void write_segment_to_pdb(const String &fname, const Segment &seg) {
     for (auto const &a : r) {
       char buffer[200];
       math::Vector3 c = a.get_coords();
-      std::sprintf(
-          buffer,
-          "%-6s%5d %-4s%1s%-4c%1c%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f     "
-          " %4s%2s\n",
-          "ATOM", acount, a.get_name().c_str(), "", r.get_name(), chain_id,
-          rnum, "", c.get_x(), c.get_y(), c.get_z(), 1.00, 0.00, "", "");
-      out << buffer;
+      //std::sprintf(
+      //    buffer,
+      //    "%-6s%5d %-4s%1s%-4c%1c%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f     "
+      //    " %4s%2s\n",
+      //    "ATOM", acount, a.get_name().c_str(), "", r.get_name(), chain_id,
+      //    rnum, "", c.get_x(), c.get_y(), c.get_z(), 1.00, 0.00, "", "");
+      //out << buffer;
       acount += 1;
     }
     rnum += 1;
@@ -185,13 +185,16 @@ void write_segment_to_pdb(const String &fname, const Segment &seg) {
 }
 
 void align_segment(const Segment &ref, Segment &seg, Index end_index) {
-  std::cout << seg.get_end_center(0) << std::endl;
+  //std::cout << seg.get_end_center(0) << std::endl;
+
   math::Matrix3x3 rot = math::rotation_between_frames(
       ref.get_end_ref_frame(end_index), seg.get_end_ref_frame(0));
   seg.rotate(rot);
-  std::cout << seg.get_end_center(0) << std::endl;
+
+  //std::cout << seg.get_end_center(0) << std::endl;
+
   seg.move(ref.get_end_center(end_index) - seg.get_end_center(0));
 
 }
 
-}
+} // namespace structure::all_atom

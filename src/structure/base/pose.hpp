@@ -159,8 +159,7 @@ public: // get basepair interface  (single basepair!)
     }
     if (bps.size() > 1) {
       throw StructureException("got more than one basepair matching this uuid");
-    }
-    if (bps.size() == 1) {
+    } else if (bps.size() == 1) {
       return *bps[0];
     } else {
       throw StructureException("no basepairs matching this uuid");
