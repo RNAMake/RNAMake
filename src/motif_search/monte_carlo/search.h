@@ -5,8 +5,9 @@
 #ifndef RNAMAKE_NEW_MONTE_CARLO_SEARCH_H
 #define RNAMAKE_NEW_MONTE_CARLO_SEARCH_H
 
-#include <base/option.h>
-#include <motif/motif_state_aligner.h>
+#include <base/types.hpp>
+//#include <base/option.h>
+//#include <motif/motif_state_aligner.h>
 #include <motif_data_structure/motif_state_graph.hpp>
 #include <motif_search/monte_carlo/scorer.h>
 #include <motif_search/search.h>
@@ -19,7 +20,7 @@ namespace monte_carlo {
 
 class Move {
 public:
-  Move(String const &name) : name_(name), mc_(util::MonteCarlo(3.0)) {}
+  Move(String const &name) : _name(name), _mc(util::MonteCarlo(3.0)) {}
 
   virtual ~Move() {}
 
@@ -31,13 +32,13 @@ public:
   virtual void undo(motif_data_structure::MotifStateGraphOP) = 0;
 
 public:
-  void set_temperature(float temp) { mc_.set_temperature(temp); }
+  void set_temperature(float temp) { _mc.set_temperature(temp); }
 
-  void scale_temperature(float scale) { mc_.scale_temperature(scale); }
+  void scale_temperature(float scale) { _mc.scale_temperature(scale); }
 
 protected:
-  String name_;
-  util::MonteCarlo mc_;
+  String _name;
+  util::MonteCarlo _mc;
 };
 
 typedef std::shared_ptr<Move> MoveOP;
@@ -46,21 +47,21 @@ typedef std::vector<MoveOP> MoveOPs;
 class MotifSwapMove : public Move {
 public:
   MotifSwapMove(ScorerOP scorer, SolutionToplogy const &sol_top)
-      : Move("MotifSwap"), scorer_(scorer), sol_top_(sol_top) {
-    this->mc_ = util::MonteCarlo(1.0f);
-    rng_ = util::RandomNumberGenerator();
+      : Move("MotifSwap"), _scorer(scorer), _sol_top(sol_top) {
+    this->_mc = util::MonteCarlo(1.0f);
+    _rng = util::RandomNumberGenerator();
   }
 
 public:
   bool apply(motif_data_structure::MotifStateGraphOP msg, float current_score) {
-    pos_ = rng_.randrange((int)sol_top_.size() - 1);
-    new_ms = sol_top_.get_motif_state(pos_);
-    last_ms_ = msg->get_node(pos_ + 1)->data()->cur_state;
-    msg->replace_state(pos_ + 1, new_ms);
-    new_score_ =
-        scorer_->score(*msg->last_node()->data()->cur_state->end_states()[1]);
-    accept_ = mc_.accept(current_score, new_score_);
-    if (accept_) {
+    _pos = _rng.randrange((int)_sol_top.size() - 1);
+    _new_ms = _sol_top.get_motif_state(_pos);
+    _last_ms = msg->get_node(_pos + 1)->data()->cur_state;
+    msg->replace_state(_pos + 1, _new_ms);
+    _new_score =
+        _scorer->score(*msg->last_node()->data()->cur_state->end_states()[1]);
+    _accept = _mc.accept(current_score, _new_score);
+    if (_accept) {
       return true;
     } else {
       undo(msg);
@@ -70,19 +71,19 @@ public:
     return true;
   }
 
-  float score() { return new_score_; }
+  float score() { return _new_score; }
 
   void undo(motif_data_structure::MotifStateGraphOP msg) {
-    msg->replace_state(pos_ + 1, last_ms_);
+    msg->replace_state(_pos + 1, _last_ms);
   }
 
 private:
-  ScorerOP scorer_;
-  SolutionToplogy sol_top_;
-  float new_score_;
-  int accept_, pos_;
-  util::RandomNumberGenerator rng_;
-  motif::MotifStateOP new_ms, last_ms_;
+  ScorerOP _scorer;
+  SolutionToplogy _sol_top;
+  float _new_score;
+  int _accept, _pos;
+  util::RandomNumberGenerator _rng;
+  motif::MotifStateOP _new_ms, _last_ms;
 };
 
 class MoveSet {};
@@ -97,9 +98,9 @@ public:
 public:
   Search(ScorerOP scorer, SolutionToplogy const &sol_top,
          SolutionFilterOP filter)
-      : motif_search::Search("monte_carlo"), scorer_(scorer->clone()),
-        sol_top_(sol_top), filter_(filter->clone()) {
-    finished_ = false;
+      : motif_search::Search("monte_carlo"), _scorer(scorer->clone()),
+        _sol_top(sol_top), _filter(filter->clone()) {
+    _finished = false;
     setup_options();
     update_var_options();
   }
@@ -110,15 +111,15 @@ public:
 
 public:
   virtual void setup(ProblemOP p) {
-    msg_ = sol_top_.initialize_solution(p->start);
-    scorer_->set_target(p->end, p->target_an_aligned_end);
-    lookup_ = p->lookup;
-    if (lookup_ != nullptr) {
-      using_lookup_ = true;
+    _msg = _sol_top.initialize_solution(p->start);
+    _scorer->set_target(p->end, p->target_an_aligned_end);
+    _lookup = p->lookup;
+    if (_lookup != nullptr) {
+      _using_lookup = true;
     }
-    stages_ = 50;
-    steps_ = 500000;
-    stage_ = 0;
+    _stages = 50;
+    _steps = 500000;
+    _stage = 0;
   }
 
   virtual void
@@ -133,12 +134,12 @@ public:
 
   virtual SolutionOP next() {
     auto cur_score =
-        scorer_->score(*msg_->last_node()->data()->cur_state->end_states()[1]);
+        _scorer->score(*_msg->last_node()->data()->cur_state->end_states()[1]);
     auto new_score = 0.0;
     auto best_score = cur_score;
-    auto mover = std::make_shared<MotifSwapMove>(scorer_, sol_top_);
-    auto hot_mover = std::make_shared<MotifSwapMove>(scorer_, sol_top_);
-    auto min_mover = std::make_shared<MotifSwapMove>(scorer_, sol_top_);
+    auto mover = std::make_shared<MotifSwapMove>(_scorer, _sol_top);
+    auto hot_mover = std::make_shared<MotifSwapMove>(_scorer, _sol_top);
+    auto min_mover = std::make_shared<MotifSwapMove>(_scorer, _sol_top);
     hot_mover->set_temperature(100.0f);
     min_mover->set_temperature(0.1f);
     auto temp = 4.5;
@@ -149,21 +150,21 @@ public:
     // TODO add sterics
     auto accept = false;
     auto accepted_steps = 0.0;
-    while (stage_ < stages_) {
+    while (_stage < _stages) {
       accepted_steps = 0.0;
       auto round_best_score = 100000.0f;
       auto best_sol = motif_data_structure::MotifStateGraphOP(nullptr);
-      while (step_ < steps_) {
-        step_ += 1;
-        accept = mover->apply(msg_, cur_score);
+      while (_step < _steps) {
+        _step += 1;
+        accept = mover->apply(_msg, cur_score);
         if (!accept) {
           continue;
         }
         accepted_steps += 1;
         cur_score = mover->score();
-        if (cur_score < parameters_.accept_score) {
-          _get_solution_motif_names(msg_);
-          if (!filter_->accept(motif_names_)) {
+        if (cur_score < _parameters.accept_score) {
+          _get_solution_motif_names(_msg);
+          if (!_filter->accept(_motif_names)) {
             continue;
           }
           auto sol_msg = _get_solution_msg();
@@ -177,25 +178,25 @@ public:
           round_best_score = cur_score;
         }
       }
-      auto accept_ratio = (float)(accepted_steps / steps_);
-      LOG_DEBUG << "stage: " << stage_ << " best_score: " << best_score
+      auto accept_ratio = (float)(accepted_steps / _steps);
+      LOG_DEBUG << "stage: " << _stage << " best_score: " << best_score
                 << " acceptance: " << accept_ratio << " temp: " << temp;
       LOG_DEBUG << "round best score: " << round_best_score;
       // heatup
       for (int i = 0; i < 1000; i++) {
-        accept = hot_mover->apply(msg_, cur_score);
+        accept = hot_mover->apply(_msg, cur_score);
         if (accept) {
           cur_score = hot_mover->score();
         }
       }
       // reset mover
-      mover = std::make_shared<MotifSwapMove>(scorer_, sol_top_);
+      mover = std::make_shared<MotifSwapMove>(_scorer, _sol_top);
       auto diff = (accept_ratio - 0.235) * 10;
       // temp = temp - diff;
       // mover->set_temperature(temp);
 
-      step_ = 0;
-      stage_ += 1;
+      _step = 0;
+      _stage += 1;
     }
 
     LOG_DEBUG << "exiting monte carlo search";
@@ -206,10 +207,10 @@ public:
 private:
   bool _steric_clash(motif_data_structure::MotifStateGraphOP msg) {
     auto clash = false;
-    if (using_lookup_) {
+    if (_using_lookup) {
       for (auto const &n : *msg) {
         for (auto const &b : n->data()->cur_state->beads()) {
-          clash = lookup_->clash(b);
+          clash = _lookup->clash(b);
           if (clash) {
             return true;
           }
@@ -222,7 +223,7 @@ private:
   motif_data_structure::MotifStateGraphOP _get_solution_msg() {
     auto new_msg = std::make_shared<motif_data_structure::MotifStateGraph>();
     new_msg->set_option_value("sterics", false);
-    for (auto const &n : *msg_) {
+    for (auto const &n : *_msg) {
       if (n->index() == 0) {
         continue;
       }
@@ -239,40 +240,40 @@ private:
   }
 
   void _get_solution_motif_names(motif_data_structure::MotifStateGraphOP msg) {
-    motif_names_.resize(0);
+    _motif_names.resize(0);
     for (auto const &n : *msg) {
-      motif_names_.push_back(n->data()->name());
+      _motif_names.push_back(n->data()->name());
     }
   }
 
 protected:
   void setup_options() {
-    options_.add_option("sterics", true, base::OptionType::BOOL);
-    options_.add_option("min_size", 0, base::OptionType::INT);
-    options_.add_option("max_size", 1000000, base::OptionType::INT);
-    options_.add_option("max_solutions", 1, base::OptionType::INT);
-    options_.add_option("accept_score", 10.0f, base::OptionType::FLOAT);
-    options_.add_option("return_best", false, base::OptionType::BOOL);
-    options_.lock_option_adding();
+    _options.add_option("sterics", true, base::OptionType::BOOL);
+    _options.add_option("min_size", 0, base::OptionType::INT);
+    _options.add_option("max_size", 1000000, base::OptionType::INT);
+    _options.add_option("max_solutions", 1, base::OptionType::INT);
+    _options.add_option("accept_score", 10.0f, base::OptionType::FLOAT);
+    _options.add_option("return_best", false, base::OptionType::BOOL);
+    _options.lock_option_adding();
   }
 
   void update_var_options() {
-    parameters_.accept_score = options_.get_float("accept_score");
-    parameters_.max_size = options_.get_int("max_size");
+    _parameters.accept_score = _options.get_float("accept_score");
+    _parameters.max_size = _options.get_int("max_size");
   }
 
 private:
-  Parameters parameters_;
-  ScorerOP scorer_;
-  SolutionToplogy sol_top_;
-  SolutionFilterOP filter_;
-  util::StericLookupNewOP lookup_;
-  motif_data_structure::MotifStateGraphOP msg_;
-  float score_;
-  int stages_, stage_;
-  int steps_, step_;
-  bool finished_, using_lookup_;
-  Strings motif_names_;
+  Parameters _parameters;
+  ScorerOP _scorer;
+  SolutionToplogy _sol_top;
+  SolutionFilterOP _filter;
+  util::StericLookupNewOP _lookup;
+  motif_data_structure::MotifStateGraphOP _msg;
+  float _score;
+  int _stages, _stage;
+  int _steps, _step;
+  bool _finished, _using_lookup;
+  Strings _motif_names;
 };
 
 } // namespace monte_carlo

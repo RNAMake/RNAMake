@@ -2,8 +2,8 @@
 // Created by Joseph Yesselman on 3/17/19.
 //
 
-#include <base/global_constants.h>
-#include <base/log.h>
+//#include <base/global_constants.h>
+#include <base/log.hpp>
 #include <motif_search/path_finding/search.h>
 
 namespace motif_search {
@@ -14,32 +14,32 @@ namespace path_finding {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Search::setup_options() {
-  options_.add_option("sterics", true, base::OptionType::BOOL);
-  options_.add_option("max_node_level", 100, base::OptionType::INT);
-  options_.add_option("min_node_level", -1, base::OptionType::INT);
-  options_.add_option("min_size", 0, base::OptionType::INT);
-  options_.add_option("max_size", 1000000, base::OptionType::INT);
-  options_.add_option("max_solutions", 1, base::OptionType::INT);
-  options_.add_option("accept_score", 10, base::OptionType::FLOAT);
-  options_.add_option("min_ss_score", 10000, base::OptionType::FLOAT);
-  options_.add_option("max_steps", 1000000000, base::OptionType::FLOAT);
-  options_.add_option("return_best", false, base::OptionType::BOOL);
-  options_.add_option("helix_end", false, base::OptionType::BOOL);
-  options_.lock_option_adding();
+  _options.add_option("sterics", true, base::OptionType::BOOL);
+  _options.add_option("max_node_level", 100, base::OptionType::INT);
+  _options.add_option("min_node_level", -1, base::OptionType::INT);
+  _options.add_option("min_size", 0, base::OptionType::INT);
+  _options.add_option("max_size", 1000000, base::OptionType::INT);
+  _options.add_option("max_solutions", 1, base::OptionType::INT);
+  _options.add_option("accept_score", 10, base::OptionType::FLOAT);
+  _options.add_option("min_ss_score", 10000, base::OptionType::FLOAT);
+  _options.add_option("max_steps", 1000000000, base::OptionType::FLOAT);
+  _options.add_option("return_best", false, base::OptionType::BOOL);
+  _options.add_option("helix_end", false, base::OptionType::BOOL);
+  _options.lock_option_adding();
 }
 
 void Search::update_var_options() {
-  parameters_.sterics = options_.get_bool("sterics");
-  parameters_.min_size = options_.get_int("min_size");
-  parameters_.max_size = options_.get_int("max_size");
-  parameters_.max_solutions = options_.get_int("max_solutions");
-  parameters_.max_node_level = options_.get_int("max_node_level");
-  parameters_.min_node_level = options_.get_int("min_node_level");
-  parameters_.accept_score = options_.get_float("accept_score");
-  parameters_.min_ss_score = options_.get_float("min_ss_score");
-  parameters_.max_steps = options_.get_float("max_steps");
-  parameters_.helix_end = options_.get_bool("helix_end");
-  parameters_.return_best = options_.get_bool("return_best");
+  _parameters.sterics = _options.get_bool("sterics");
+  _parameters.min_size = _options.get_int("min_size");
+  _parameters.max_size = _options.get_int("max_size");
+  _parameters.max_solutions = _options.get_int("max_solutions");
+  _parameters.max_node_level = _options.get_int("max_node_level");
+  _parameters.min_node_level = _options.get_int("min_node_level");
+  _parameters.accept_score = _options.get_float("accept_score");
+  _parameters.min_ss_score = _options.get_float("min_ss_score");
+  _parameters.max_steps = _options.get_float("max_steps");
+  _parameters.helix_end = _options.get_bool("helix_end");
+  _parameters.return_best = _options.get_bool("return_best");
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -50,19 +50,19 @@ void Search::setup(motif_search::ProblemOP p) {
 
   auto ms = std::make_shared<motif::MotifState>(
       "start", Strings{"start", "start"}, Strings{"", ""},
-      structure::BasepairStateOPs{p->start, p->start}, math::Points(), 0, 0, 0);
+      structure::BasepairStateOPs{p->start, p->start}, math::Vector3s(), 0, 0, 0);
 
   auto start_n = std::make_shared<Node>(ms, nullptr, 100000, 1, 0, -1);
-  queue_ = NodeQueue();
-  queue_.push(start_n);
+  _queue = NodeQueue();
+  _queue.push(start_n);
 
-  scorer_->set_target(p->end, p->target_an_aligned_end);
+  _scorer->set_target(p->end, p->target_an_aligned_end);
 
   if (p->lookup->size() != 0) {
-    lookup_ = p->lookup;
-    using_lookup_ = true;
+    _lookup = p->lookup;
+    _using_lookup = true;
   } else {
-    using_lookup_ = false;
+    _using_lookup = false;
   }
 }
 
@@ -74,18 +74,18 @@ motif_search::SolutionOP Search::next() {
   auto selector_data = SelectorNodeDataOP(nullptr);
   int steps = 0;
   float score = 0, best = 10000, new_score = 0;
-  while (!queue_.empty()) {
-    current = queue_.top();
-    queue_.pop();
+  while (!_queue.empty()) {
+    current = _queue.top();
+    _queue.pop();
 
     steps += 1;
 
-    if (steps > parameters_.max_steps) {
+    if (steps > _parameters.max_steps) {
       LOG_VERBOSE << "reached max steps";
       break;
     }
 
-    score = scorer_->accept_score(*current);
+    score = _scorer->accept_score(*current);
     if (score < best) {
       best = score;
       best_node = current;
@@ -95,9 +95,9 @@ motif_search::SolutionOP Search::next() {
     }
 
     // accept solution
-    if (score < parameters_.accept_score && _accept_node(*current)) {
-      _get_solution_motif_names(current, motif_names_);
-      if (!solution_filter_->accept(motif_names_)) {
+    if (score < _parameters.accept_score && _accept_node(*current)) {
+      _get_solution_motif_names(current, _motif_names);
+      if (!_solution_filter->accept(_motif_names)) {
         continue;
       }
 
@@ -106,14 +106,14 @@ motif_search::SolutionOP Search::next() {
       return std::make_shared<Solution>(msg, score);
     }
 
-    if (current->level() + 1 >= parameters_.max_node_level) {
+    if (current->level() + 1 >= _parameters.max_node_level) {
       continue;
     }
 
     int j = 0;
-    selector_->start(current->node_type());
-    while (!selector_->finished()) {
-      selector_data = selector_->next();
+    _selector->start(current->node_type());
+    while (!_selector->finished()) {
+      selector_data = _selector->next();
       j = -1;
       for (auto const &end : current->state()->end_states()) {
         j++;
@@ -122,30 +122,30 @@ motif_search::SolutionOP Search::next() {
         }
 
         for (auto &ms : selector_data->motif_states) {
-          if (current->size() + ms->size() > parameters_.max_size) {
+          if (current->size() + ms->size() > _parameters.max_size) {
             continue;
           }
 
-          aligner_.get_aligned_motif_state(end, ms);
-          new_score = scorer_->score(*ms, *current);
+          _aligner.get_aligned_motif_state(end, ms);
+          new_score = _scorer->score(*ms, *current);
 
           if (new_score > current->score()) {
             continue;
           }
-          if (parameters_.sterics && _steric_clash(*ms, *current)) {
+          if (_parameters.sterics && _steric_clash(*ms, *current)) {
             continue;
           }
 
           child = std::make_shared<Node>(
               std::make_shared<motif::MotifState>(*ms), current, new_score,
               current->level() + 1, j, selector_data->type);
-          queue_.push(child);
+          _queue.push(child);
         }
       }
     }
   }
 
-  if (parameters_.return_best) {
+  if (_parameters.return_best) {
     LOG_VERBOSE << "no solution met constraints, returning best";
     auto msg = _graph_from_node(best_node);
     return std::make_shared<Solution>(msg, best);
@@ -188,8 +188,8 @@ motif_data_structure::MotifStateGraphOP Search::_graph_from_node(NodeOP node) {
 
 bool Search::_steric_clash(motif::MotifState const &ms, Node const &n) {
   auto clash = false;
-  if (using_lookup_) {
-    clash = lookup_->clash(ms.beads());
+  if (_using_lookup) {
+    clash = _lookup->clash(ms.beads());
     if (clash) {
       return true;
     }
@@ -225,11 +225,11 @@ bool Search::_steric_clash(motif::MotifState const &ms, Node const &n) {
 }
 
 void Search::_get_solution_motif_names(NodeOP n, Strings &motif_names) {
-  motif_names_.resize(0);
+  _motif_names.resize(0);
   motif_names.push_back(n->state()->name());
   while (n->parent() != nullptr) {
     n = n->parent();
-    motif_names_.push_back(n->state()->name());
+    _motif_names.push_back(n->state()->name());
   }
 }
 

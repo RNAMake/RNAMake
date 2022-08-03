@@ -17,9 +17,7 @@
 
 namespace structure::all_atom {
 
-/*
- * Exception for residue type
- */
+/// @brief - exception for residue type
 class ResidueTypeException : public std::runtime_error {
 public:
   /**

@@ -14,14 +14,14 @@ namespace secondary_structure {
 SecondaryStructureChainGraphOP Parser::parse(String const &sequence,
                                              String const &dot_bracket) {
 
-  structure_ = std::make_shared<Structure>(sequence, dot_bracket);
-  residues_ = structure_->residues();
+  _structure = std::make_shared<Structure>(sequence, dot_bracket);
+  _residues = _structure->residues();
 
   auto g = std::make_shared<SecondaryStructureChainGraph>();
 
   auto res = ResidueOPs();
-  pairs_ = BasepairOPs();
-  for (auto const &r : residues_) {
+  _pairs = BasepairOPs();
+  for (auto const &r : _residues) {
     int is_start_res = _start_of_chain(r);
     if (r->dot_bracket() == ".") {
       res.push_back(r);
@@ -77,7 +77,7 @@ void Parser::_add_paired_res_to_graph(SecondaryStructureChainGraphOP &g,
   auto pair_res = _get_bracket_pair(r);
   int parent_index = g->get_node_by_res(_previous_res(r));
   auto pair = std::make_shared<Basepair>(r, pair_res, util::Uuid());
-  pairs_.push_back(pair);
+  _pairs.push_back(pair);
   auto new_data = NodeData(ResidueOPs{r}, NodeType::PAIRED);
   g->add_chain(new_data, parent_index, is_start_res);
 }
@@ -85,7 +85,7 @@ void Parser::_add_paired_res_to_graph(SecondaryStructureChainGraphOP &g,
 BasepairOP Parser::_get_previous_pair(ResidueOP const &r) {
 
   BasepairOP pair = nullptr;
-  for (auto const &p : pairs_) {
+  for (auto const &p : _pairs) {
     if (p->res2()->uuid() == r->uuid()) {
       pair = p;
       break;
@@ -94,7 +94,7 @@ BasepairOP Parser::_get_previous_pair(ResidueOP const &r) {
 
   if (pair == nullptr) {
     throw Exception("cannot parse secondary structure: \n" +
-                    structure_->sequence() + "\n" + structure_->dot_bracket() +
+                    _structure->sequence() + "\n" + _structure->dot_bracket() +
                     "\n position: " + std::to_string(r->num()) +
                     " has no matching pair");
   }
@@ -111,7 +111,7 @@ MotifOPs Parser::parse_to_motifs(String const &sequence,
 
 MotifOPs Parser::_parse_to_motifs(SecondaryStructureChainGraphOP g) {
   auto motifs = MotifOPs();
-  seen_ = std::map<SSNodeOP, int>();
+  _seen = std::map<SSNodeOP, int>();
 
   for (auto const &n : *g) {
     if (n->connections()[1] == nullptr) {
@@ -121,7 +121,7 @@ MotifOPs Parser::_parse_to_motifs(SecondaryStructureChainGraphOP g) {
       continue;
     }
     auto m = _generate_motif(n);
-    seen_[n] = 1;
+    _seen[n] = 1;
     if (m == nullptr) {
       continue;
     }
@@ -134,14 +134,14 @@ MotifOP Parser::parse_to_motif(String const &sequence,
                                String const &dot_bracket) {
 
   parse(sequence, dot_bracket);
-  return _build_motif(structure_);
+  return _build_motif(_structure);
 }
 
 PoseOP Parser::parse_to_pose(String const &sequence,
                              String const &dot_bracket) {
 
   auto motifs = parse_to_motifs(sequence, dot_bracket);
-  auto m = _build_motif(structure_);
+  auto m = _build_motif(_structure);
 
   return std::make_shared<Pose>(m, motifs);
 }
@@ -156,7 +156,7 @@ SSNodeOP Parser::_walk_nodes(SSNodeOP const &n) {
     return nullptr;
   }
   while (current != nullptr) {
-    if (seen_.find(current) != seen_.end()) {
+    if (_seen.find(current) != _seen.end()) {
       return nullptr;
     }
     if (current->data().type == NodeType::PAIRED) {
@@ -179,21 +179,21 @@ SSNodeOP Parser::_walk_nodes(SSNodeOP const &n) {
       break;
     }
   }
-  chain_ = std::make_shared<Chain>(res);
+  _chain = std::make_shared<Chain>(res);
   return last_node->connections()[2]->partner(last_node->index());
 }
 
 MotifOP Parser::_generate_motif(SSNodeOP const &n) {
 
   auto next_n = _walk_nodes(n);
-  auto chains = ChainOPs{chain_};
+  auto chains = ChainOPs{_chain};
 
   while (next_n != n) {
     next_n = _walk_nodes(next_n);
     if (next_n == nullptr) {
       return nullptr;
     }
-    chains.push_back(chain_);
+    chains.push_back(_chain);
   }
 
   auto struc = std::make_shared<Structure>(chains);
@@ -212,7 +212,7 @@ MotifOP Parser::_build_motif(StructureOP const &struc) {
   }
 
   auto bps = BasepairOPs();
-  for (auto const &bp : pairs_) {
+  for (auto const &bp : _pairs) {
     if (res.find(bp->res1()) != res.end() &&
         res.find(bp->res2()) != res.end()) {
       bps.push_back(bp);

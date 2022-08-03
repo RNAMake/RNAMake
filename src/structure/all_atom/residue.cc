@@ -88,14 +88,18 @@ void Residue::_build_beads_RNA() {
 Residue get_residue_from_str(const String &s) {
   Strings spl = ::base::string::split(s, ",");
   if(spl.size() < 6) {
-    // TODO throw error here
-    String msg = "Size is too small!";
+    String msg = "String is too short! Not enough arguments";
     ::base::log_and_throw<::base::InputException>(msg);
   }
+  // the name of the residue is the second space in the .dat file
   char name = spl[1][0];
+  // num is the third space in the .dat file
   int num = std::stoi(spl[2]);
+  // chain_id is the 4th space in the .dat file
   String chain_id = spl[3];
+  // i_code will always just be a space
   char i_code = ' ';
+  // uuid will be a randomly-generated thing
   util::Uuid uuid = util::generate_uuid();
   Atoms atoms;
   int i = 5;

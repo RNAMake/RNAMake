@@ -64,7 +64,7 @@ private:
                                String const &end_name = dummy_name);
 
 private:
-  motif::MotifOPs motifs_;
+  motif::MotifOPs _motifs;
 };
 
 } // namespace resources

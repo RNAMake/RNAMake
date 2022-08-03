@@ -86,8 +86,6 @@ private:
   math::Vector3 _coords;
 };
 
-// TODO Need to remove these pointers
-//  (do we really?)
 typedef std::vector<Atom> Atoms;
 
 } // namespace structure::all_atom

@@ -16,8 +16,8 @@ namespace motif_tools {
 void Segmenter::_get_pairs(structure::RNAStructureOP const &m,
                            structure::ResidueOPs const &res) {
 
-  pairs_ = PairOPs();
-  end_pairs_ = PairOPs();
+  _pairs = PairOPs();
+  _end_pairs = PairOPs();
 
   structure::ChainOP sc, sc1, sc2;
   float dist;
@@ -38,7 +38,7 @@ void Segmenter::_get_pairs(structure::RNAStructureOP const &m,
           continue;
         }
         dist = (int)sc->length();
-        pairs_.push_back(std::make_shared<Pair>(res1, res2, dist));
+        _pairs.push_back(std::make_shared<Pair>(res1, res2, dist));
       }
       try {
         sc1 = c->subchain(res1, c->last());
@@ -53,12 +53,12 @@ void Segmenter::_get_pairs(structure::RNAStructureOP const &m,
       if (res1 != c->last() &&
           std::find(res.begin(), res.end(), c->last()) == res.end()) {
         auto pair = std::make_shared<Pair>(res1, c->last(), sc1->length());
-        end_pairs_.push_back(pair);
+        _end_pairs.push_back(pair);
       }
       if (res1 != c->first() &&
           std::find(res.begin(), res.end(), c->first()) == res.end()) {
         auto pair = std::make_shared<Pair>(res1, c->first(), sc2->length());
-        end_pairs_.push_back(pair);
+        _end_pairs.push_back(pair);
       }
     }
   }
@@ -108,9 +108,9 @@ SegmentsOP Segmenter::_get_segments(structure::RNAStructureOP const &m,
     res_uuids[r->uuid()] = 1;
   }
 
-  auto removed = mf_.motif_from_res(res, bps);
+  auto removed = _mf.motif_from_res(res, bps);
   removed->name(m->name() + ".removed");
-  mf_.standardize_rna_structure_ends(removed);
+  _mf.standardize_rna_structure_ends(removed);
 
   auto other_bps = structure::BasepairOPs();
 
@@ -121,9 +121,9 @@ SegmentsOP Segmenter::_get_segments(structure::RNAStructureOP const &m,
     }
   }
 
-  auto remaining = mf_.motif_from_res(other_res, other_bps);
+  auto remaining = _mf.motif_from_res(other_res, other_bps);
   remaining->name(m->name() + ".remaining");
-  mf_.standardize_rna_structure_ends(remaining);
+  _mf.standardize_rna_structure_ends(remaining);
 
   for (auto &end : remaining->ends()) {
     int flip_res = 0;
@@ -158,7 +158,7 @@ SegmentsOP Segmenter::apply(structure::RNAStructureOP const &m,
 
   _get_pairs(m, res);
   auto pair_search = PairSearch();
-  auto sols = pair_search.search(res, pairs_, end_pairs_);
+  auto sols = pair_search.search(res, _pairs, _end_pairs);
 
   for (auto const &s : sols) {
     auto subchains = structure::ChainOPs();

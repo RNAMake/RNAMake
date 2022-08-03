@@ -33,7 +33,7 @@ typedef std::shared_ptr<SelectorNodeData> SelectorNodeDataOP;
 
 class Selector {
 public:
-  Selector() : pos_(0), max_(0), parent_type_(0) {}
+  Selector() : _pos(0), _max(0), _parent_type(0) {}
 
   virtual ~Selector() {}
 
@@ -41,7 +41,7 @@ public:
 
 public:
   virtual void add(String const &lib_name) {
-    auto type = graph_.size();
+    auto type = _graph.size();
     auto motif_states = motif::MotifStateOPs();
     auto ms_lib = resources::MotifStateSqliteLibrary(lib_name);
     ms_lib.load_all();
@@ -53,7 +53,7 @@ public:
   }
 
   virtual void add(String const &lib_name, motif::MotifStateEnsembleOP mse) {
-    auto type = graph_.size();
+    auto type = _graph.size();
     auto motif_states = motif::MotifStateOPs();
     for (auto const &mem : mse->members()) {
       motif_states.push_back(mem->motif_state);
@@ -63,7 +63,7 @@ public:
   }
 
   virtual void add(motif::MotifOP motif) {
-    auto type = graph_.size();
+    auto type = _graph.size();
     auto motif_states = motif::MotifStateOPs{motif->get_state()};
     auto d =
         std::make_shared<SelectorNodeData>(motif->name(), motif_states, type);
@@ -75,13 +75,13 @@ public:
 
 public:
   void start(int parent_type) const {
-    parent_type_ = parent_type;
+    _parent_type = parent_type;
     if (parent_type == -1) {
-      max_ = 0;
+      _max = 0;
     } else {
-      max_ = graph_.get_node(parent_type)->connections().size() - 1;
+      _max = _graph.get_node(parent_type)->connections().size() - 1;
     }
-    pos_ = -1;
+    _pos = -1;
   }
 
   SelectorNodeDataOP next() const {
@@ -89,32 +89,32 @@ public:
       throw SelectorException(
           "cannot enumerate anymore selector is done enumerating");
     }
-    pos_ += 1;
-    if (parent_type_ == -1) {
-      return graph_.get_node(0)->data();
+    _pos += 1;
+    if (_parent_type == -1) {
+      return _graph.get_node(0)->data();
     } else {
-      auto c = graph_.get_node(parent_type_)->connections()[pos_];
-      return c->partner(parent_type_)->data();
+      auto c = _graph.get_node(_parent_type)->connections()[_pos];
+      return c->partner(_parent_type)->data();
     }
   }
 
-  bool finished() const { return pos_ == max_; }
+  bool finished() const { return _pos == _max; }
 
-  size_t size() const { return graph_.size(); }
+  size_t size() const { return _graph.size(); }
 
 protected:
   void _add(SelectorNodeDataOP d) {
-    for (auto const &n : graph_) {
+    for (auto const &n : _graph) {
       if (d->name == n->data()->name) {
         throw SelectorException("cannot have two nodes with the same name");
       }
     }
-    graph_.add_data(d, -1, 1);
+    _graph.add_data(d, -1, 1);
   }
 
 protected:
-  data_structure::graph::GraphDynamic<SelectorNodeDataOP> graph_;
-  mutable int pos_, max_, parent_type_;
+  data_structure::graph::GraphDynamic<SelectorNodeDataOP> _graph;
+  mutable int _pos, _max, _parent_type;
 };
 
 class RoundRobinSelector : public Selector {
@@ -143,12 +143,12 @@ public:
 
 private:
   void _add_new_connections() {
-    auto i = (int)graph_.size() - 1;
-    for (int j = 0; j < graph_.size(); j++) {
+    auto i = (int)_graph.size() - 1;
+    for (int j = 0; j < _graph.size(); j++) {
       if (j == i) {
         continue;
       }
-      graph_.connect(j, i);
+      _graph.connect(j, i);
     }
   }
 };

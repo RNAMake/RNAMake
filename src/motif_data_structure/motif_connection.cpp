@@ -20,10 +20,10 @@ String MotifConnection::to_str() {
 // motif connections constructors
 // ////////////////////////////////////////////////////////////////
 
-MotifConnections::MotifConnections() : connections_(MotifConnectionOPs()) {}
+MotifConnections::MotifConnections() : _connections(MotifConnectionOPs()) {}
 
 MotifConnections::MotifConnections(MotifConnections const &mcs)
-    : connections_(MotifConnectionOPs()) {
+    : _connections(MotifConnectionOPs()) {
 
   for (auto const &c : mcs) {
     add_connection(c->i(), c->j(), c->name_i(), c->name_j());

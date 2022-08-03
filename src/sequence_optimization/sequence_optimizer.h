@@ -9,7 +9,7 @@
 #ifndef __RNAMake__sequence_optimizer__
 #define __RNAMake__sequence_optimizer__
 
-#include "base/option.h"
+//#include "base/option.h"
 #include "eternabot/sequence_designer.h"
 #include "motif_data_structure/motif_graph.h"
 #include "motif_data_structure/motif_tree.h"

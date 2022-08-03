@@ -8,6 +8,8 @@
 #include <base/settings.h>
 #include <structure/segment_factory.h>
 #include <util/sqlite/connection.h>
+#include <base/types.hpp>
+#include <util/sqlite/connection.hpp>
 
 namespace resources {
 
@@ -25,9 +27,9 @@ class ResourceBuilder {
 public:
   inline ResourceBuilder(structure::SegmentFactory &seg_f,
                          String const &motif_dirs_path)
-      : seg_f_(seg_f), motif_dirs_path_(motif_dirs_path),
-        motif_table_(_generate_motif_table_details()) {
-    start_insert_str_ =
+      : _seg_f(seg_f), _motif_dirs_path(motif_dirs_path),
+        _motif_table(_generate_motif_table_details()) {
+    _start_insert_str =
         "INSERT INTO data_table (id, data, name, end_name, end_id) VALUES (";
   }
 
@@ -57,12 +59,12 @@ public:
                             std::map<String, int> const &);
 
 private:
-  structure::SegmentFactory &seg_f_;
-  String motif_dirs_path_;
-  util::sqlite::TableDetails motif_table_;
-  std::vector<uint8_t> blob_;
-  String compressed_str_;
-  String start_insert_str_;
+  structure::SegmentFactory &_seg_f;
+  String _motif_dirs_path;
+  util::sqlite::TableDetails _motif_table;
+  std::vector<uint8_t> _blob;
+  String _compressed_str;
+  String _start_insert_str;
 };
 
 } // namespace resources

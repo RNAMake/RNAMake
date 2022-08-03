@@ -13,12 +13,12 @@ namespace exhaustive {
 
 MotifStateEnumerator::MotifStateEnumerator(
     motif_search::SolutionToplogy sol_toplogy) {
-  indices_ = Indexes(sol_toplogy.size());
-  maxes_ = Indexes(sol_toplogy.size());
-  motif_states_ = std::vector<motif::MotifStateOPs>(sol_toplogy.size());
-  current_ = motif::MotifStateOPs(sol_toplogy.size());
-  end_ = 0;
-  size_limit_ = 99999;
+  _indices = Indexes(sol_toplogy.size());
+  _maxes = Indexes(sol_toplogy.size());
+  _motif_states = std::vector<motif::MotifStateOPs>(sol_toplogy.size());
+  _current = motif::MotifStateOPs(sol_toplogy.size());
+  _end = 0;
+  _size_limit = 99999;
   int i = 0;
   auto m_states = motif::MotifStateOPs();
   for (auto const &n : sol_toplogy) {
@@ -33,12 +33,12 @@ MotifStateEnumerator::MotifStateEnumerator(
       m_states.push_back(
           std::make_shared<motif::MotifState>(*mem->motif_state));
     }
-    motif_states_[i] = m_states;
-    maxes_[i] = m_states.size();
-    indices_[i] = 0;
+    _motif_states[i] = m_states;
+    _maxes[i] = m_states.size();
+    _indices[i] = 0;
     i++;
   }
-  if (motif_states_.size() == 0) {
+  if (_motif_states.size() == 0) {
     throw std::runtime_error("must supply a topology with atleast one node");
   }
 }
@@ -48,16 +48,16 @@ MotifStateEnumerator::MotifStateEnumerator(
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void MotifStateEnumerator::start(structure::BasepairStateOP start_bp) {
-  start_bp_ = start_bp;
-  update_ = 0;
-  end_ = 0;
+  _start_bp = start_bp;
+  _update = 0;
+  _end = 0;
 
-  for (auto &index : indices_) {
+  for (auto &index : _indices) {
     index = 0;
   }
 }
 
-bool MotifStateEnumerator::finished() { return end_; }
+bool MotifStateEnumerator::finished() { return _end; }
 
 void MotifStateEnumerator::next() {
   auto done = false;
@@ -70,22 +70,22 @@ void MotifStateEnumerator::next() {
 }
 
 motif::MotifStateOP MotifStateEnumerator::top_state() {
-  if (!end_ || !updated_) {
+  if (!_end || !_updated) {
     _update_current_states();
   }
-  return motif_states_.back()[indices_.back()];
+  return _motif_states.back()[_indices.back()];
 }
 
 motif::MotifStateOPs const &MotifStateEnumerator::all_states() {
-  if (!end_ || !updated_) {
+  if (!_end || !_updated) {
     _update_current_states();
   }
   int j = 0;
-  for (auto const &v : motif_states_) {
-    current_[j] = v[indices_[j]];
+  for (auto const &v : _motif_states) {
+    _current[j] = v[_indices[j]];
     j++;
   }
-  return current_;
+  return _current;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -93,41 +93,41 @@ motif::MotifStateOPs const &MotifStateEnumerator::all_states() {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void MotifStateEnumerator::_update_current_states() {
-  updated_ = true;
-  if (update_ == 0) {
-    aligner_.get_aligned_motif_state(start_bp_, motif_states_[0][indices_[0]]);
-    update_ += 1;
+  _updated = true;
+  if (_update == 0) {
+    _aligner.get_aligned_motif_state(_start_bp, _motif_states[0][_indices[0]]);
+    _update += 1;
   }
-  for (int j = update_; j < indices_.size(); j++) {
-    aligner_.get_aligned_motif_state(
-        motif_states_[j - 1][indices_[j - 1]]->end_states()[1],
-        motif_states_[j][indices_[j]]);
+  for (int j = _update; j < _indices.size(); j++) {
+    _aligner.get_aligned_motif_state(
+        _motif_states[j - 1][_indices[j - 1]]->end_states()[1],
+        _motif_states[j][_indices[j]]);
   }
 }
 
 void MotifStateEnumerator::_iterate() {
   bool not_updated = true;
-  if (updated_ == false) {
+  if (_updated == false) {
     not_updated = false;
   }
-  updated_ = false;
-  int i = (int)indices_.size() - 1;
+  _updated = false;
+  int i = (int)_indices.size() - 1;
   while (i > -1) {
     if (not_updated) {
-      update_ = i;
+      _update = i;
     } else {
-      if (updated_ > i) {
-        updated_ = i;
+      if (_updated > i) {
+        _updated = i;
       }
     }
-    indices_[i]++;
-    if (indices_[i] == maxes_[i]) {
+    _indices[i]++;
+    if (_indices[i] == _maxes[i]) {
       if (i == 0) {
-        end_ = 1;
-        indices_[i]--;
+        _end = 1;
+        _indices[i]--;
         break;
       }
-      indices_[i] = 0;
+      _indices[i] = 0;
       i--;
       continue;
     }
@@ -138,11 +138,11 @@ void MotifStateEnumerator::_iterate() {
 bool MotifStateEnumerator::_within_size_limit() {
   auto total_size = -2;
   auto j = 0;
-  for (auto const &v : motif_states_) {
-    total_size += v[indices_[j]]->size() - 2;
+  for (auto const &v : _motif_states) {
+    total_size += v[_indices[j]]->size() - 2;
     j += 1;
   }
-  if (total_size > size_limit_) {
+  if (total_size > _size_limit) {
     return false;
   }
   return true;

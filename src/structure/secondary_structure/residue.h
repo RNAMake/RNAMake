@@ -110,11 +110,8 @@ private:
     }
   }
 
-public:
-
-
 private:
-  // A=0,C=1,G=2,U=3,T=3
+  // A = 0, C = 1, G = 2, U = 3, T = 3
   char _name;
   int _num;
   String _chain_id;

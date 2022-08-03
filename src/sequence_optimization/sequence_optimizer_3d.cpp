@@ -9,7 +9,7 @@
 #include "sequence_optimization/sequence_optimizer_3d.hpp"
 #include "secondary_structure/util.h"
 #include "util/monte_carlo.h"
-#include <base/log.h>
+#include <base/log.hpp>
 
 namespace sequence_optimization {
 

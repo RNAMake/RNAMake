@@ -24,12 +24,12 @@ class MotifStateEnsembleSqliteLibrary : public SqliteLibrary {
 public:
   MotifStateEnsembleSqliteLibrary(String const &libname) {
 
-    libnames_ = get_libnames();
-    rng_ = util::RandomNumberGenerator();
+    _libnames = get_libnames();
+    _rng = util::RandomNumberGenerator();
     auto path = _get_path(libname);
     MotifEnsembleSqliteConnection conn(path);
-    connection_ = conn;
-    max_size_ = connection_.count();
+    _connection = conn;
+    _max_size = _connection.count();
   }
 
   ~MotifStateEnsembleSqliteLibrary() {}
@@ -38,26 +38,26 @@ public: // iterator stuff
   class iterator {
   public:
     iterator(std::map<String, motif::MotifStateEnsembleOP>::iterator const &i)
-        : i_(i) {}
+        : _i(i) {}
 
     iterator operator++() {
-      ++i_;
+      ++_i;
       return *this;
     }
 
-    motif::MotifStateEnsembleOP const &operator*() { return i_->second; }
+    motif::MotifStateEnsembleOP const &operator*() { return _i->second; }
 
-    bool operator==(iterator const &rhs) const { return i_ == rhs.i_; }
+    bool operator==(iterator const &rhs) const { return _i == rhs._i; }
 
-    bool operator!=(iterator const &rhs) const { return i_ != rhs.i_; }
+    bool operator!=(iterator const &rhs) const { return _i != rhs._i; }
 
   private:
-    std::map<String, motif::MotifStateEnsembleOP>::iterator i_;
+    std::map<String, motif::MotifStateEnsembleOP>::iterator _i;
   };
 
-  iterator begin() { return iterator(data_.begin()); }
+  iterator begin() { return iterator(_data.begin()); }
 
-  iterator end() { return iterator(data_.end()); }
+  iterator end() { return iterator(_data.end()); }
 
 public:
   static StringStringMap get_libnames();
@@ -78,9 +78,9 @@ private:
   String _generate_query(String const &, String const &);
 
 private:
-  MotifEnsembleSqliteConnection connection_;
-  std::map<String, motif::MotifStateEnsembleOP> data_;
-  util::RandomNumberGenerator rng_;
+  MotifEnsembleSqliteConnection _connection;
+  std::map<String, motif::MotifStateEnsembleOP> _data;
+  util::RandomNumberGenerator _rng;
 };
 
 typedef std::shared_ptr<MotifStateEnsembleSqliteLibrary>

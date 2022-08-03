@@ -13,7 +13,7 @@
 
 // RNAMake Libraries
 #include "base/types.hpp"
-#include "util/sqlite3_connection.h"
+#include "util/sqlite/connection.hpp"
 
 namespace resources {
 
@@ -25,19 +25,19 @@ struct MotifEnsembleSqliteData {
 
 typedef std::shared_ptr<MotifEnsembleSqliteData> MotifEnsembleSqliteDataOP;
 
-class MotifEnsembleSqliteConnection : public util::Sqlite3Connection {
+class MotifEnsembleSqliteConnection : public util::sqlite::Connection {
 public:
   MotifEnsembleSqliteConnection() {}
 
   MotifEnsembleSqliteConnection(String const &path)
-      : util::Sqlite3Connection(path),
-        data_(std::make_shared<MotifEnsembleSqliteData>()) {}
+      : util::sqlite::Connection(path),
+        _data(std::make_shared<MotifEnsembleSqliteData>()) {}
 
 public:
   MotifEnsembleSqliteDataOP const &next();
 
 private:
-  MotifEnsembleSqliteDataOP data_;
+  MotifEnsembleSqliteDataOP _data;
 };
 
 } // namespace resources

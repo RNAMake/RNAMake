@@ -29,20 +29,20 @@ public: // iterators
   typedef typename data_structure::tree::TreeStatic<MotifOP>::const_iterator
       const_iterator;
 
-  iterator begin() { return tree_.begin(); }
-  iterator end() { return tree_.end(); }
+  iterator begin() { return _tree.begin(); }
+  iterator end() { return _tree.end(); }
 
-  const_iterator begin() const { return tree_.begin(); }
-  const_iterator end() const { return tree_.end(); }
+  const_iterator begin() const { return _tree.begin(); }
+  const_iterator end() const { return _tree.end(); }
 
 public:
-  size_t size() { return tree_.size(); }
+  size_t size() { return _tree.size(); }
 
   int add_motif(MotifOP const &m, int parent_index = -1,
                 int parent_end_index = -1);
 
 private:
-  data_structure::tree::TreeStatic<MotifOP> tree_;
+  data_structure::tree::TreeStatic<MotifOP> _tree;
 };
 
 typedef std::shared_ptr<SecondaryStructureTree> SecondaryStructureTreeOP;

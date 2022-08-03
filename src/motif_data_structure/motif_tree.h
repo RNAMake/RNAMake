@@ -316,17 +316,17 @@ public: // misc
   void _update_merger();
 
 public: // getters
-  MotifConnections const &connections() { return connections_; }
+  MotifConnections const &connections() { return _connections; }
 
   util::Beads beads();
 
 public: // tree wrappers
-  size_t size() { return tree_.size(); }
+  size_t size() { return _tree.size(); }
 
   inline data_structure::tree::TreeNodeOP<motif::MotifOP> const &
   get_node(int i) {
     try {
-      return tree_.get_node(i);
+      return _tree.get_node(i);
     } catch (data_structure::tree::TreeException) {
       throw MotifTreeException("cannot get node: " + std::to_string(i) +
                                " in MotifTree it does not exist");
@@ -335,7 +335,7 @@ public: // tree wrappers
 
   inline data_structure::tree::TreeNodeOP<motif::MotifOP> const &
   get_node(util::Uuid const &uuid) {
-    for (auto const &n : tree_) {
+    for (auto const &n : _tree) {
       if (n->data()->id() == uuid) {
         return n;
       }
@@ -347,14 +347,13 @@ public: // tree wrappers
   inline data_structure::tree::TreeNodeOP<motif::MotifOP>
   get_node(String const &m_name) {
     auto node = data_structure::tree::TreeNodeOP<motif::MotifOP>(nullptr);
-    for (auto const &n : tree_) {
+    for (auto const &n : _tree) {
       if (n->data()->name() == m_name) {
         if (node != nullptr) {
           throw MotifTreeException("cannot get node with name: " + m_name +
                                    " there is more then one motif "
                                    "with this name");
         }
-
         node = n;
       }
     }
@@ -364,19 +363,18 @@ public: // tree wrappers
                                " there is no motif in the tree with "
                                "this name");
     }
-
     return node;
   }
 
   inline data_structure::tree::TreeNodeOP<motif::MotifOP> const &last_node() {
-    return tree_.last_node();
+    return _tree.last_node();
   }
 
   void write_pdbs(String const &fname = "nodes");
 
-  inline void increase_level() { tree_.increase_level(); }
+  inline void increase_level() { _tree.increase_level(); }
 
-  inline void decrease_level() { tree_.decrease_level(); }
+  inline void decrease_level() { _tree.decrease_level(); }
 
 public: // merger wrappers
   inline structure::RNAStructureOP const &get_structure() {
@@ -404,7 +402,7 @@ public: // merger wrappers
   }
 
   secondary_structure::PoseOP designable_secondary_structure() {
-    auto ss = merger_->secondary_structure();
+    auto ss = _merger->secondary_structure();
     auto ss_r = secondary_structure::ResidueOP(nullptr);
 
     for (auto const &n : tree_) {
@@ -424,24 +422,24 @@ public: // merger wrappers
 
 public: // option wrappers
   inline float get_int_option(String const &name) {
-    return options_.get_int(name);
+    return _options.get_int(name);
   }
 
   inline float get_float_option(String const &name) {
-    return options_.get_float(name);
+    return _options.get_float(name);
   }
 
   inline String get_string_option(String const &name) {
-    return options_.get_string(name);
+    return _options.get_string(name);
   }
 
   inline bool get_bool_option(String const &name) {
-    return options_.get_bool(name);
+    return _options.get_bool(name);
   }
 
   template <typename T>
   void set_option_value(String const &name, T const &val) {
-    options_.set_value(name, val);
+    _options.set_value(name, val);
     update_var_options();
   }
 
@@ -451,13 +449,13 @@ private: // private option functions
   void update_var_options();
 
 private:
-  data_structure::tree::TreeStatic<motif::MotifOP> tree_;
-  MotifMergerOP merger_;
-  MotifConnections connections_;
-  bool sterics_;
-  float clash_radius_;
-  int update_merger_;
-  base::Options options_;
+  data_structure::tree::TreeStatic<motif::MotifOP> _tree;
+  MotifMergerOP _merger;
+  MotifConnections _connections;
+  bool _sterics;
+  float _clash_radius;
+  int _update_merger;
+  base::Options _options;
 };
 
 typedef std::shared_ptr<MotifTree> MotifTreeOP;

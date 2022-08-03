@@ -21,13 +21,13 @@ public:
 
 public: // construction ////////////////////////////////////////////////////
   SegmentGraph()
-      : aligner_(AlignerType()),
-        _graph(FixedEdgeDirectedGraph<SegmentTypeOP>()), needs_update_(false),
-        first_update_(INT_MAX) {}
+      : _aligner(AlignerType()),
+        _graph(FixedEdgeDirectedGraph<SegmentTypeOP>()), _needs_update(false),
+        _first_update(INT_MAX) {}
 
   SegmentGraph(SegmentGraph const &sg)
-      : aligner_(AlignerType()), _graph(sg._graph), needs_update_(false),
-        first_update_(INT_MAX) {
+      : _aligner(AlignerType()), _graph(sg._graph), _needs_update(false),
+        _first_update(INT_MAX) {
     _update_default_transveral();
   }
 
@@ -84,7 +84,7 @@ public:
             String const &parent_end_name) {
     const auto &parent = _graph.get_node_data(parent_index);
     auto parent_end_index = parent->get_end_index(parent_end_name);
-    aligner_.align(*parent, *seg, parent_end_index);
+    _aligner.align(*parent, *seg, parent_end_index);
     //structure::all_atom::align_segment(*parent, *seg, parent_end_index);
     auto ni = _graph.add_node(seg, seg->get_num_ends(), 0,
                               ConnectionPoint{parent_index, parent_end_index});
@@ -113,11 +113,11 @@ public:
     } else {
       _graph.get_node_data(pos) = SegmentTypeOP(seg);
     }
-    needs_update_ = true;
-    if (first_update_ > pos) {
-      first_update_ = pos;
+    _needs_update = true;
+    if (_first_update > pos) {
+      _first_update = pos;
     }
-    _update_alignments(first_update_);
+    _update_alignments(_first_update);
   }
 
 public:
@@ -154,16 +154,16 @@ private:
       parent_index = get_parent_index(n->get_index());
       parent_end_index = get_parent_end_index(n->get_index());
 
-      aligner_.align(*_graph.get_node_data(parent_index),
+      _aligner.align(*_graph.get_node_data(parent_index),
                      *_graph.get_node_data(n->get_index()), parent_end_index);
     }
   }
   
 private:
-  AlignerType aligner_;
+  AlignerType _aligner;
   FixedEdgeDirectedGraph<SegmentTypeOP> _graph;
-  bool needs_update_;
-  int first_update_;
+  bool _needs_update;
+  int _first_update;
   Indexes _path;
 };
 

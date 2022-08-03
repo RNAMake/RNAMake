@@ -43,16 +43,16 @@ public: // iterators
 
   iterator begin() {
     _update_align_list();
-    return align_list_.begin();
+    return _align_list.begin();
   }
 
-  iterator end() { return align_list_.end(); }
+  iterator end() { return _align_list.end(); }
 
 private:
   void _setup_from_mg(MotifGraphOP const &);
 
 public:
-  size_t size() { return graph_.size(); }
+  size_t size() { return _graph.size(); }
 
 private: // add function helpers
   data_structure::graph::GraphNodeOP<MSNodeDataOP> _get_parent(String const &,
@@ -69,11 +69,11 @@ private: // add function helpers
 
   inline int _steric_clash(MSNodeDataOP const &new_data) {
     float dist;
-    for (auto const &n : graph_.nodes()) {
+    for (auto const &n : _graph.nodes()) {
       for (auto const &b1 : n->data()->cur_state->beads()) {
         for (auto const &b2 : new_data->cur_state->beads()) {
           dist = b1.distance(b2);
-          if (dist < clash_radius_) {
+          if (dist < _clash_radius) {
             return 1;
           }
         }
@@ -100,17 +100,17 @@ public: // remove functions
 
 public: // graph wrappers
   inline data_structure::graph::GraphNodeOP<MSNodeDataOP> last_node() {
-    return graph_.last_node();
+    return _graph.last_node();
   }
 
   inline data_structure::graph::GraphNodeOP<MSNodeDataOP> const &
   get_node(int i) const {
-    return graph_.get_node(i);
+    return _graph.get_node(i);
   }
 
   inline data_structure::graph::GraphNodeOP<MSNodeDataOP> const
   get_node(util::Uuid const &uuid) const {
-    for (auto const &n : graph_) {
+    for (auto const &n : _graph) {
       if (n->data()->uuid() == uuid) {
         return n;
       }
@@ -122,7 +122,7 @@ public: // graph wrappers
   inline data_structure::graph::GraphNodeOP<MSNodeDataOP> const
   get_node(String const &m_name) const {
     auto node = data_structure::graph::GraphNodeOP<MSNodeDataOP>(nullptr);
-    for (auto const &n : graph_) {
+    for (auto const &n : _graph) {
       if (n->data()->name() == m_name) {
         if (node != nullptr) {
           throw MotifStateGraphException(
@@ -144,7 +144,7 @@ public: // graph wrappers
     return node;
   }
 
-  void increase_level() { return graph_.increase_level(); }
+  void increase_level() { return _graph.increase_level(); }
 
 public: // motif graph wrappers
   MotifGraphOP to_motif_graph();
@@ -160,24 +160,24 @@ public: // getters
 
 public: // Options Wrappers
   inline float get_int_option(String const &name) {
-    return options_.get_int(name);
+    return _options.get_int(name);
   }
 
   inline float get_float_option(String const &name) {
-    return options_.get_float(name);
+    return _options.get_float(name);
   }
 
   inline String get_string_option(String const &name) {
-    return options_.get_string(name);
+    return _options.get_string(name);
   }
 
   inline bool get_bool_option(String const &name) {
-    return options_.get_bool(name);
+    return _options.get_bool(name);
   }
 
   template <typename T>
   void set_option_value(String const &name, T const &val) {
-    options_.set_value(name, val);
+    _options.set_value(name, val);
     update_var_options();
   }
 
@@ -187,15 +187,15 @@ private:
   void update_var_options();
 
 private:
-  data_structure::graph::GraphStatic<MSNodeDataOP> graph_;
-  data_structure::graph::GraphNodeOPs<MSNodeDataOP> align_list_;
-  motif::MotifStateAligner aligner_;
-  base::Options options_;
-  std::map<int, int> aligned_;
-  int update_align_list_;
+  data_structure::graph::GraphStatic<MSNodeDataOP> _graph;
+  data_structure::graph::GraphNodeOPs<MSNodeDataOP> _align_list;
+  motif::MotifStateAligner _aligner;
+  base::Options _options;
+  std::map<int, int> _aligned;
+  int _update_align_list;
   // options
-  float clash_radius_;
-  bool sterics_;
+  float _clash_radius;
+  bool _sterics;
 };
 
 typedef std::shared_ptr<MotifStateGraph> MotifStateGraphOP;

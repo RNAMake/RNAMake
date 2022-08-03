@@ -24,7 +24,7 @@ typedef std::shared_ptr<Solution> SolutionOP;
 class Search {
 public:
 public:
-  Search(String const &name) : name_(name) {}
+  Search(String const &name) : _name(name) {}
 
   virtual ~Search() = default;
 
@@ -40,28 +40,28 @@ public:
   virtual SolutionOP next() = 0;
 
 public:
-  String const &name() { return name_; }
+  String const &name() { return _name; }
 
 public: // option wrappers
   inline float get_int_option(String const &name) {
-    return options_.get_int(name);
+    return _options.get_int(name);
   }
 
   inline float get_float_option(String const &name) {
-    return options_.get_float(name);
+    return _options.get_float(name);
   }
 
   inline String get_string_option(String const &name) {
-    return options_.get_string(name);
+    return _options.get_string(name);
   }
 
   inline bool get_bool_option(String const &name) {
-    return options_.get_bool(name);
+    return _options.get_bool(name);
   }
 
   template <typename T>
   void set_option_value(String const &name, T const &val) {
-    options_.set_value(name, val);
+    _options.set_value(name, val);
     update_var_options();
   }
 
@@ -71,8 +71,8 @@ protected:
   virtual void update_var_options() = 0;
 
 protected:
-  base::Options options_;
-  String name_;
+  base::Options _options;
+  String _name;
 };
 
 typedef std::shared_ptr<Search> SearchOP;

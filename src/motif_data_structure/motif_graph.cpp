@@ -19,10 +19,10 @@ namespace motif_data_structure {
 
 MotifGraph::MotifGraph()
     : graph_(data_structure::graph::GraphStatic<motif::MotifOP>()),
-      merger_(nullptr), clash_radius_(2.5), sterics_(1),
-      options_(base::Options()), update_merger_(1), update_align_list_(1),
-      align_list_(data_structure::graph::GraphNodeOPs<motif::MotifOP>()),
-      aligned_(std::map<int, int>()) {
+      _merger(nullptr), _clash_radius(2.5), _sterics(1),
+      _options(base::Options()), _update_merger(1), _update_align_list(1),
+      _align_list(data_structure::graph::GraphNodeOPs<motif::MotifOP>()),
+      _aligned(std::map<int, int>()) {
   setup_options();
 }
 
@@ -40,49 +40,49 @@ MotifGraph::MotifGraph(String const &s, MotifGraphStringType const &s_type)
 }
 
 void MotifGraph::_setup_from_top_str(String const &s) {
-  options_.set_value("sterics", false);
-  auto spl = base::split_str_by_delimiter(s, "&");
-  auto node_spl = base::split_str_by_delimiter(spl[0], "|");
+  _options.set_value("sterics", false);
+  auto spl = base::string::split(s, "&");
+  auto node_spl = base::string::split(spl[0], "|");
   auto sspl = Strings();
   // int i = 0;
   int max_index = 0;
   for (auto const &n_spl : node_spl) {
-    sspl = base::split_str_by_delimiter(n_spl, ",");
+    sspl = base::string::split(n_spl, ",");
     auto m = resources::Manager::instance().motif(sspl[0], "", sspl[1]);
 
     m->get_beads(m->ends());
-    graph_.add_data(m, -1, -1, -1, (int)m->ends().size(), 1,
+    _graph.add_data(m, -1, -1, -1, (int)m->ends().size(), 1,
                     std::stoi(sspl[2]));
-    aligned_[std::stoi(sspl[2])] = std::stoi(sspl[3]);
+    _aligned[std::stoi(sspl[2])] = std::stoi(sspl[3]);
 
     if (std::stoi(sspl[2]) > max_index) {
       max_index = std::stoi(sspl[2]);
     }
   }
 
-  graph_.index(max_index + 1);
+  _graph.index(max_index + 1);
 
-  auto con_spl = base::split_str_by_delimiter(spl[1], "|");
+  auto con_spl = base::string::split(spl[1], "|");
   for (auto const &c_str : con_spl) {
-    auto c_spl = base::split_str_by_delimiter(c_str, ",");
-    graph_.connect(std::stoi(c_spl[0]), std::stoi(c_spl[1]),
+    auto c_spl = base::string::split(c_str, ",");
+    _graph.connect(std::stoi(c_spl[0]), std::stoi(c_spl[1]),
                    std::stoi(c_spl[2]), std::stoi(c_spl[3]));
   }
 
-  options_.set_value("sterics", true);
+  _options.set_value("sterics", true);
   _align_motifs_all_motifs();
 }
 
 void MotifGraph::_setup_from_str(String const &s) {
-  options_.set_value("sterics", false);
-  auto spl = base::split_str_by_delimiter(s, "FAF");
-  auto node_spl = base::split_str_by_delimiter(spl[0], "KAK");
+  _options.set_value("sterics", false);
+  auto spl = base::string::split(s, "FAF");
+  auto node_spl = base::string::split(spl[0], "KAK");
   int max_index = 0;
   for (auto const &n_str : node_spl) {
     if (n_str.length() < 10) {
       break;
     }
-    auto n_spl = base::split_str_by_delimiter(n_str, "^");
+    auto n_spl = base::string::split(n_str, "^");
     auto m = std::make_shared<motif::Motif>(
         n_spl[0],
         structure::ResidueTypeSetManager::getInstance().residue_type_set());
@@ -96,43 +96,43 @@ void MotifGraph::_setup_from_str(String const &s) {
     if (m->ends().size() > 1) {
       m->get_beads(m->ends()[0]);
     }
-    graph_.add_data(m, -1, -1, -1, (int)m->ends().size(), 1,
+    _graph.add_data(m, -1, -1, -1, (int)m->ends().size(), 1,
                     std::stoi(n_spl[1]));
-    aligned_[std::stoi(n_spl[1])] = std::stoi(n_spl[2]);
+    _aligned[std::stoi(n_spl[1])] = std::stoi(n_spl[2]);
     if (std::stoi(n_spl[1]) > max_index) {
       max_index = std::stoi(n_spl[1]);
     }
   }
 
-  graph_.index(max_index + 1);
+  _graph.index(max_index + 1);
 
-  auto con_spl = base::split_str_by_delimiter(spl[1], "|");
+  auto con_spl = base::string::split(spl[1], "|");
   for (auto const &c_str : con_spl) {
     if (c_str.length() < 4) {
       break;
     }
-    auto c_spl = base::split_str_by_delimiter(c_str, ",");
-    graph_.connect(std::stoi(c_spl[0]), std::stoi(c_spl[1]),
+    auto c_spl = base::string::split(c_str, ",");
+    _graph.connect(std::stoi(c_spl[0]), std::stoi(c_spl[1]),
                    std::stoi(c_spl[2]), std::stoi(c_spl[3]));
   }
 
-  options_.set_value("sterics", true);
+  _options.set_value("sterics", true);
 }
 
 MotifGraph::MotifGraph(MotifGraph const &mg)
-    : options_(base::Options()),
-      graph_(data_structure::graph::GraphStatic<motif::MotifOP>(mg.graph_)) {
-  options_ = base::Options(mg.options_);
+    : _options(base::Options()),
+      graph_(data_structure::graph::GraphStatic<motif::MotifOP>(mg._graph)) {
+  _options = base::Options(mg._options);
 
   // dear god this is horrible but cant figure out a better way to do a copy
-  for (auto const &n : mg.graph_.nodes()) {
-    graph_.get_node(n->index())->data() =
+  for (auto const &n : mg._graph.nodes()) {
+    _graph.get_node(n->index())->data() =
         std::make_shared<motif::Motif>(*n->data());
   }
 
-  aligned_ = mg.aligned_;
-  update_merger_ = 1;
-  update_align_list_ = 1;
+  _aligned = mg._aligned;
+  _update_merger = 1;
+  _update_align_list = 1;
 }
 
 // setup helpers
@@ -154,7 +154,7 @@ void MotifGraph::update_indexes(std::map<int, int> const &index_hash) {
 
   for (auto &n : nodes) {
     auto new_i = invert_hash[n->index()];
-    auto aligned = aligned_[n->index()];
+    auto aligned = _aligned[n->index()];
 
     if (new_i > largest) {
       largest = new_i;
@@ -163,10 +163,10 @@ void MotifGraph::update_indexes(std::map<int, int> const &index_hash) {
     new_aligned[new_i] = aligned;
   }
 
-  aligned_ = new_aligned;
-  update_merger_ = 1;
-  update_align_list_ = 1;
-  graph_.index(largest + 1);
+  _aligned = new_aligned;
+  _update_merger = 1;
+  _update_align_list = 1;
+  _graph.index(largest + 1);
 }
 
 // add function helpers
@@ -175,12 +175,12 @@ void MotifGraph::update_indexes(std::map<int, int> const &index_hash) {
 data_structure::graph::GraphNodeOP<motif::MotifOP>
 MotifGraph::_get_parent(String const &m_name, int parent_index) {
 
-  auto parent = graph_.last_node();
+  auto parent = _graph.last_node();
 
   // catch non existant parent
   try {
     if (parent_index != -1) {
-      parent = graph_.get_node(parent_index);
+      parent = _graph.get_node(parent_index);
     }
   } catch (data_structure::graph::GraphException const &e) {
     throw MotifGraphException(
@@ -972,8 +972,8 @@ void MotifGraph::setup_options() {
 }
 
 void MotifGraph::update_var_options() {
-  sterics_ = options_.get_bool("sterics");
-  clash_radius_ = options_.get_int("clash_radius");
+  _sterics = options_.get_bool("sterics");
+  _clash_radius = options_.get_int("clash_radius");
 }
 
 } // namespace motif_data_structure

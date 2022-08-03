@@ -10,7 +10,7 @@ namespace path_finding {
 void Selector::connect(String const &name_i, String const &name_j) {
 
   int i = -1, j = -1;
-  for (auto const &n : graph_) {
+  for (auto const &n : _graph) {
     if (n->data()->name == name_i) {
       i = n->index();
     }
@@ -23,7 +23,7 @@ void Selector::connect(String const &name_i, String const &name_j) {
     throw SelectorException("could not connect nodes: " + name_i + " " +
                             name_j);
   }
-  graph_.connect(i, j);
+  _graph.connect(i, j);
 }
 
 SelectorOP default_selector() {

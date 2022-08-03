@@ -18,54 +18,54 @@ public:
   class Node {
   public:
     inline Node(String const &lib_name)
-        : type_(NodeType::LIBRARY), lib_name_(lib_name) {}
+        : _type(NodeType::LIBRARY), _lib_name(lib_name) {}
 
     inline Node(motif::MotifStateOP ms)
-        : type_(NodeType::MOTIF_STATE), motif_state_(ms) {}
+        : _type(NodeType::MOTIF_STATE), _motif_state(ms) {}
 
     inline Node(motif::MotifStateEnsembleOP mse)
-        : type_(NodeType::ENSEMBLE), ensemble_(mse) {}
+        : _type(NodeType::ENSEMBLE), _ensemble(mse) {}
 
   public:
-    inline NodeType get_type() const { return type_; }
+    inline NodeType get_type() const { return _type; }
 
     inline String const &get_lib_name() const {
-      if (type_ != NodeType::LIBRARY) {
+      if (_type != NodeType::LIBRARY) {
         throw std::runtime_error("cannot get_lib_name(), wrong type");
       }
-      return lib_name_;
+      return _lib_name;
     }
 
     inline motif::MotifStateOP get_motif_state() const {
-      if (type_ != NodeType::MOTIF_STATE) {
+      if (_type != NodeType::MOTIF_STATE) {
         throw std::runtime_error("cannot get_motif_state(), wrong type");
       }
-      return motif_state_;
+      return _motif_state;
     }
 
     inline motif::MotifStateEnsembleOP get_motif_state_ensemble() const {
-      if (type_ != NodeType::ENSEMBLE) {
+      if (_type != NodeType::ENSEMBLE) {
         throw std::runtime_error(
             "cannot get_motif_state_ensemble(), wrong type");
       }
-      return ensemble_;
+      return _ensemble;
     }
 
   private:
-    NodeType type_;
-    String lib_name_;
-    motif::MotifStateOP motif_state_;
-    motif::MotifStateEnsembleOP ensemble_;
+    NodeType _type;
+    String _lib_name;
+    motif::MotifStateOP _motif_state;
+    motif::MotifStateEnsembleOP _ensemble;
   };
 
 public:
   SolutionTopologyTemplate()
-      : g_(data_structure::FixedEdgeDirectedGraph<Node>()) {
-    motif_type_ends_ = StringIntMap();
-    motif_type_ends_["ideal_helices"] = 2;
-    motif_type_ends_["flex_helices"] = 2;
-    motif_type_ends_["twoway"] = 2;
-    motif_type_ends_["unique_twoway"] = 2;
+      : _g(data_structure::FixedEdgeDirectedGraph<Node>()) {
+    _motif_type_ends = StringIntMap();
+    _motif_type_ends["ideal_helices"] = 2;
+    _motif_type_ends["flex_helices"] = 2;
+    _motif_type_ends["twoway"] = 2;
+    _motif_type_ends["unique_twoway"] = 2;
   }
 
   ~SolutionTopologyTemplate() {}
@@ -76,17 +76,17 @@ public: // iterators
   typedef
       typename data_structure::FixedEdgeDirectedGraph<Node>::iterator iterator;
 
-  iterator begin() { return g_.begin(); }
-  iterator end() { return g_.end(); }
+  iterator begin() { return _g.begin(); }
+  iterator end() { return _g.end(); }
 
-  const_iterator begin() const noexcept { return g_.begin(); }
-  const_iterator end() const noexcept { return g_.end(); }
+  const_iterator begin() const noexcept { return _g.begin(); }
+  const_iterator end() const noexcept { return _g.end(); }
 
 public:
   void add_library(String const &lib_name) {
     auto num_ends = _get_ends_for_motif_type(lib_name);
     auto n = Node(lib_name);
-    g_.add_node(n, num_ends);
+    _g.add_node(n, num_ends);
     _update_default_transveral();
   }
 
@@ -94,68 +94,68 @@ public:
                    data_structure::NodeIndexandEdge const &parent_nie) {
     auto num_ends = _get_ends_for_motif_type(lib_name);
     auto n = Node(lib_name);
-    g_.add_node(n, num_ends, 0, parent_nie);
+    _g.add_node(n, num_ends, 0, parent_nie);
     _update_default_transveral();
   }
 
 public:
   void add_motif_state(motif::MotifStateOP ms) {
     auto n = Node(ms);
-    g_.add_node(n, ms->end_names().size());
+    _g.add_node(n, ms->end_names().size());
     _update_default_transveral();
   }
 
   void add_motif_state(motif::MotifStateOP ms,
                        data_structure::NodeIndexandEdge const &parent_nie) {
     auto n = Node(ms);
-    g_.add_node(n, ms->end_names().size(), 0, parent_nie);
+    _g.add_node(n, ms->end_names().size(), 0, parent_nie);
     _update_default_transveral();
   }
 
 public:
   void add_ensemble(motif::MotifStateEnsembleOP mse) {
     auto n = Node(mse);
-    g_.add_node(n, mse->num_end_states());
+    _g.add_node(n, mse->num_end_states());
     _update_default_transveral();
   }
 
   void add_ensemble(motif::MotifStateEnsembleOP mse,
                     data_structure::NodeIndexandEdge const &parent_nie) {
     auto n = Node(mse);
-    g_.add_node(n, mse->num_end_states(), 0, parent_nie);
+    _g.add_node(n, mse->num_end_states(), 0, parent_nie);
     _update_default_transveral();
   }
 
 public:
-  inline bool has_parent(Index ni) const { return g_.has_parent(ni); }
+  inline bool has_parent(Index ni) const { return _g.has_parent(ni); }
 
   inline Index get_parent_index(Index ni) const {
-    return g_.get_parent_index(ni);
+    return _g.get_parent_index(ni);
   }
 
   inline Index get_parent_end_index(Index ni) const {
-    return g_.get_parent_end_index(ni);
+    return _g.get_parent_end_index(ni);
   }
 
 private:
   void _update_default_transveral() {
-    auto roots = g_.get_root_indexes();
+    auto roots = _g.get_root_indexes();
     if (roots.size() > 0) {
-      g_.setup_transversal(roots[0]);
+      _g.setup_transversal(roots[0]);
     }
   }
 
   int _get_ends_for_motif_type(String const &motif_type) {
-    if (motif_type_ends_.find(motif_type) == motif_type_ends_.end()) {
+    if (_motif_type_ends.find(motif_type) == _motif_type_ends.end()) {
       throw std::runtime_error("motif type: " + motif_type +
                                " not accepted in SolutionTopology");
     }
-    return motif_type_ends_[motif_type];
+    return _motif_type_ends[motif_type];
   }
 
 private:
-  data_structure::FixedEdgeDirectedGraph<Node> g_;
-  StringIntMap motif_type_ends_;
+  data_structure::FixedEdgeDirectedGraph<Node> _g;
+  StringIntMap _motif_type_ends;
 };
 
 typedef std::shared_ptr<SolutionTopologyTemplate> SolutionTopologyTemplateOP;
@@ -211,12 +211,12 @@ public:
 
 private:
   resources::MotifStateSqliteLibraryOP _get_library(String const &lib_name) {
-    if (libraries_.find(lib_name) == libraries_.end()) {
-      libraries_[lib_name] =
+    if (_libraries.find(lib_name) == _libraries.end()) {
+      _libraries[lib_name] =
           std::make_shared<resources::MotifStateSqliteLibrary>(lib_name);
-      libraries_[lib_name]->load_all();
+      _libraries[lib_name]->load_all();
     }
-    return libraries_[lib_name];
+    return _libraries[lib_name];
   }
 
   motif::MotifStateEnsembleOP
@@ -232,8 +232,8 @@ private:
     }
 
     for (auto const &ms : *library) {
-      if (is_helix_lib && (ms->size() > parameters_.max_helix_size ||
-                           ms->size() < parameters_.min_helix_size)) {
+      if (is_helix_lib && (ms->size() > _parameters.max_helix_size ||
+                           ms->size() < _parameters.min_helix_size)) {
         continue;
       }
       ms->new_uuids();
@@ -257,52 +257,52 @@ private:
   };
 
   void setup_options() {
-    options_.add_option("max_helix_size", 99, base::OptionType::INT);
-    options_.add_option("min_helix_size", 6, base::OptionType::INT);
-    options_.lock_option_adding();
+    _options.add_option("max_helix_size", 99, base::OptionType::INT);
+    _options.add_option("min_helix_size", 6, base::OptionType::INT);
+    _options.lock_option_adding();
   }
 
   void update_var_options() {
-    parameters_.max_helix_size = options_.get_int("max_helix_size");
-    parameters_.min_helix_size = options_.get_int("min_helix_size");
+    _parameters.max_helix_size = _options.get_int("max_helix_size");
+    _parameters.min_helix_size = _options.get_int("min_helix_size");
   }
 
 public: // option wrappers
   inline float get_int_option(String const &name) {
-    return options_.get_int(name);
+    return _options.get_int(name);
   }
 
   inline float get_float_option(String const &name) {
-    return options_.get_float(name);
+    return _options.get_float(name);
   }
 
   inline String get_string_option(String const &name) {
-    return options_.get_string(name);
+    return _options.get_string(name);
   }
 
   inline bool get_bool_option(String const &name) {
-    return options_.get_bool(name);
+    return _options.get_bool(name);
   }
 
   template <typename T>
   void set_option_value(String const &name, T const &val) {
-    options_.set_value(name, val);
+    _options.set_value(name, val);
     update_var_options();
   }
 
 private:
-  base::Options options_;
-  Parameters parameters_;
-  std::map<String, resources::MotifStateSqliteLibraryOP> libraries_;
-  std::map<String, motif::MotifStateEnsembleOP> ensembles_;
+  base::Options _options;
+  Parameters _parameters;
+  std::map<String, resources::MotifStateSqliteLibraryOP> _libraries;
+  std::map<String, motif::MotifStateEnsembleOP> _ensembles;
 };
 
 class SolutionToplogy {
 public:
   SolutionToplogy(motif_data_structure::MotifStateEnsembleOPGraphOP mseg) {
-    mseg_ = mseg;
-    rng_ = util::RandomNumberGenerator();
-    solution_nie_ = mseg_->get_leafs();
+    _mseg = mseg;
+    _rng = util::RandomNumberGenerator();
+    _solution_nie = _mseg->get_leafs();
   }
 
 public:
@@ -312,11 +312,11 @@ public:
   typedef typename motif_data_structure::MotifStateEnsembleOPGraph::iterator
       iterator;
 
-  iterator begin() { return mseg_->begin(); }
-  iterator end() { return mseg_->end(); }
+  iterator begin() { return _mseg->begin(); }
+  iterator end() { return _mseg->end(); }
 
-  const_iterator begin() const noexcept { return mseg_->begin(); }
-  const_iterator end() const noexcept { return mseg_->end(); }
+  const_iterator begin() const noexcept { return _mseg->begin(); }
+  const_iterator end() const noexcept { return _mseg->end(); }
 
 public:
   // TODO come up with better system to distingiush these too options
@@ -333,11 +333,11 @@ public:
     msg->set_option_value("sterics", false);
     msg->add_state(ms);
 
-    for (auto const &n : *mseg_) {
+    for (auto const &n : *_mseg) {
       auto ms = get_motif_state(n->index());
-      if (mseg_->has_parent(n->index())) {
-        msg->add_state(ms, mseg_->get_parent_index(n->index()) + 1,
-                       mseg_->get_parent_end_index(n->index()));
+      if (_mseg->has_parent(n->index())) {
+        msg->add_state(ms, _mseg->get_parent_index(n->index()) + 1,
+                       _mseg->get_parent_end_index(n->index()));
       } else {
         msg->add_state(ms);
       }
@@ -353,11 +353,11 @@ public:
     msg->set_option_value("sterics", false);
     // msg->add_state(ms);
 
-    for (auto const &n : *mseg_) {
+    for (auto const &n : *_mseg) {
       auto ms = get_motif_state(n->index());
-      if (mseg_->has_parent(n->index())) {
-        msg->add_state(ms, mseg_->get_parent_index(n->index()),
-                       mseg_->get_parent_end_index(n->index()));
+      if (_mseg->has_parent(n->index())) {
+        msg->add_state(ms, _mseg->get_parent_index(n->index()),
+                       _mseg->get_parent_end_index(n->index()));
       } else {
         msg->add_state(ms);
       }
@@ -366,26 +366,26 @@ public:
   }
 
   motif::MotifStateOP get_motif_state(Index pos) {
-    max_member_ = mseg_->get_ensemble(pos)->size();
-    mem_pos_ = rng_.randrange(max_member_);
-    return mseg_->get_ensemble(pos)->get_member(mem_pos_)->motif_state;
+    _max_member = _mseg->get_ensemble(pos)->size();
+    _mem_pos = _rng.randrange(_max_member);
+    return _mseg->get_ensemble(pos)->get_member(_mem_pos)->motif_state;
   }
 
   std::vector<data_structure::NodeIndexandEdge> const &get_solution_nie() {
-    return solution_nie_;
+    return _solution_nie;
   }
 
-  inline size_t size() { return mseg_->size(); }
+  inline size_t size() { return _mseg->size(); }
 
   inline size_t get_ensemble_size(Index pos) {
-    return mseg_->get_ensemble(pos)->size();
+    return _mseg->get_ensemble(pos)->size();
   }
 
 private:
-  motif_data_structure::MotifStateEnsembleOPGraphOP mseg_;
-  util::RandomNumberGenerator rng_;
-  int max_member_, mem_pos_;
-  std::vector<data_structure::NodeIndexandEdge> solution_nie_;
+  motif_data_structure::MotifStateEnsembleOPGraphOP _mseg;
+  util::RandomNumberGenerator _rng;
+  int _max_member, _mem_pos;
+  std::vector<data_structure::NodeIndexandEdge> _solution_nie;
 };
 
 } // namespace motif_search

@@ -5,7 +5,9 @@
 #include <structure/all_atom/residue_type_set.h>
 
 TEST_CASE("Test ResidueType for Structure") {
+
   using namespace structure::all_atom;
+
   SUBCASE("Can generate new residue type") {
     auto name = String("GUA");
     auto atom_map = StringIntMap();

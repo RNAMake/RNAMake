@@ -66,33 +66,33 @@ public: // iterators
   typedef typename MotifConnectionOPs::iterator iterator;
   typedef typename MotifConnectionOPs::const_iterator const_iterator;
 
-  iterator begin() { return connections_.begin(); }
+  iterator begin() { return _connections.begin(); }
 
-  iterator end() { return connections_.end(); }
+  iterator end() { return _connections.end(); }
 
-  const_iterator begin() const { return connections_.begin(); }
+  const_iterator begin() const { return _connections.begin(); }
 
-  const_iterator end() const { return connections_.end(); }
+  const_iterator end() const { return _connections.end(); }
 
 public:
-  inline size_t size() const { return connections_.size(); }
+  inline size_t size() const { return _connections.size(); }
 
   void add_connection(int i, int j, String const &name_i,
                       String const &name_j) {
 
-    connections_.push_back(
+    _connections.push_back(
         std::make_shared<MotifConnection>(i, j, name_i, name_j));
   }
 
   void remove_connections_to(int index) {
 
     int pos = 0;
-    while (pos < connections_.size()) {
-      if (index == connections_[pos]->i()) {
-        connections_.erase(connections_.begin() + pos);
+    while (pos < _connections.size()) {
+      if (index == _connections[pos]->i()) {
+        _connections.erase(_connections.begin() + pos);
         pos--;
-      } else if (index == connections_[pos]->j()) {
-        connections_.erase(connections_.begin() + pos);
+      } else if (index == _connections[pos]->j()) {
+        _connections.erase(_connections.begin() + pos);
         pos--;
       }
       pos++;
@@ -101,7 +101,7 @@ public:
 
   bool in_connection(int index, String const &name) const {
 
-    for (auto const &c : connections_) {
+    for (auto const &c : _connections) {
       if (index == c->i() && name == c->name_i()) {
         return true;
       }
@@ -115,7 +115,7 @@ public:
   void update_connection_name(int index, String const &name,
                               String const &new_name) {
 
-    for (auto &c : connections_) {
+    for (auto &c : _connections) {
       if (index == c->i() && name == c->name_i()) {
         c->name_i(new_name);
         return;
@@ -131,7 +131,7 @@ public:
   }
 
 private:
-  MotifConnectionOPs connections_;
+  MotifConnectionOPs _connections;
 };
 
 } // namespace motif_data_structure

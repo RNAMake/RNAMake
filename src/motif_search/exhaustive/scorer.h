@@ -7,6 +7,7 @@
 
 #include <motif/motif_state.h>
 #include <structure/basepair_state.h>
+#include "base/types.hpp"
 
 namespace motif_search {
 namespace exhaustive {
@@ -22,19 +23,19 @@ public:
 public:
   void set_target(structure::BasepairStateOP target,
                   bool target_an_aligned_end) {
-    target_ = target;
-    target_an_aligned_end_ = target_an_aligned_end;
-    target_flip_ = std::make_shared<structure::BasepairState>(target_->copy());
-    target_flip_->flip();
+    _target = target;
+    _target_an_aligned_end = target_an_aligned_end;
+    _target_flip = std::make_shared<structure::BasepairState>(_target->copy());
+    _target_flip->flip();
   }
 
 public:
   virtual inline float score(structure::BasepairState const &bps) = 0;
 
 protected:
-  structure::BasepairStateOP target_, target_flip_;
-  float best_score_, score_, r_diff_, r_diff_flip_, d_diff_, scale_;
-  bool target_an_aligned_end_;
+  structure::BasepairStateOP _target, _target_flip;
+  float _best_score, _score, _r_diff, _r_diff_flip, _d_diff, _scale;
+  bool _target_an_aligned_end;
 };
 
 typedef std::shared_ptr<Scorer> ScorerOP;
@@ -47,18 +48,18 @@ public:
 
 public:
   inline float score(structure::BasepairState const &bps) {
-    score_ = bps.d().distance(target_->d());
+    _score = bps.d().distance(_target->d());
 
-    if (target_an_aligned_end_) {
-      r_diff_ = bps.r().difference(target_->r());
+    if (_target_an_aligned_end) {
+      _r_diff = bps.r().difference(_target->r());
     } else {
-      r_diff_ = bps.r().difference(target_flip_->r());
+      _r_diff = bps.r().difference(_target_flip->r());
     }
-    score_ += 2 * r_diff_;
+    _score += 2 * _r_diff;
     // score_ += r_diff_;
     // score_ = bps.sugars()[0].distance(target_->sugars()[1]) +
     // bps.sugars()[1].distance(target_->sugars()[0]);
-    return score_;
+    return _score;
   }
 };
 

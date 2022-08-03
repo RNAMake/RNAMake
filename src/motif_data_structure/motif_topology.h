@@ -68,7 +68,7 @@ private:
       data_structure::graph::GraphConnectionOP<motif::MotifOP> const &);
 
 private:
-  MotifTreeOP mt_;
+  MotifTreeOP _mt;
 };
 
 MotifTreeOP graph_to_tree(

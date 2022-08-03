@@ -9,12 +9,13 @@
 #ifndef __RNAMake__segmenter__
 #define __RNAMake__segmenter__
 
-#include "motif/motif.h"
-#include "motif/motif_factory.h"
-#include "structure/residue.h"
+#include <base/types.hpp>
 #include <map>
+#include <motif/motif.h>
+#include <motif/motif_factory.h>
 #include <queue>
 #include <stdio.h>
+#include <structure/residue.h>
 
 namespace motif_tools {
 
@@ -113,8 +114,8 @@ typedef std::priority_queue<PairSearchNode, PairSearchNodes,
 class PairSearch {
 public:
   PairSearch()
-      : queue_(PairSearchNodePriortyQueue()), solutions_(PairSearchNodes()),
-        values_(std::map<structure::ResidueOP, float>()) {}
+      : _queue(PairSearchNodePriortyQueue()), _solutions(PairSearchNodes()),
+        _values(std::map<structure::ResidueOP, float>()) {}
 
   ~PairSearch() {}
 
@@ -122,7 +123,7 @@ public:
   PairSearchNodes const &search(structure::ResidueOPs const &res,
                                 PairOPs const &pairs,
                                 PairOPs const &end_pairs) {
-    res_ = res;
+    _res = res;
     _get_default_values(res, pairs, end_pairs);
 
     auto all_pairs = PairOPs();
@@ -136,13 +137,13 @@ public:
     for (auto const &p : pairs) {
       auto n = PairSearchNode(PairOPs{p});
       n.score += _get_estimated_score(n);
-      queue_.push(n);
+      _queue.push(n);
     }
 
     auto current = PairSearchNode(PairOPs{});
-    while (!queue_.empty()) {
-      current = queue_.top();
-      queue_.pop();
+    while (!_queue.empty()) {
+      current = _queue.top();
+      _queue.pop();
 
       for (auto p : all_pairs) {
         if (current.contains(p->res1) || current.contains(p->res2)) {
@@ -153,18 +154,18 @@ public:
         auto node = PairSearchNode(pairs);
         auto estimated_score = _get_estimated_score(node);
         if (estimated_score == 0) {
-          solutions_.push_back(node);
-          if (solutions_.size() > 10) {
-            return solutions_;
+          _solutions.push_back(node);
+          if (_solutions.size() > 10) {
+            return _solutions;
           }
         } else {
           node.score += _get_estimated_score(node);
-          queue_.push(node);
+          _queue.push(node);
         }
       }
     }
 
-    return solutions_;
+    return _solutions;
   }
 
 private:
@@ -187,26 +188,26 @@ private:
           count += 1;
         }
       }
-      values_[r] = (total / count) / 2;
+      _values[r] = (total / count) / 2;
     }
   }
 
   int _get_estimated_score(PairSearchNode const &n) {
     int score = 0;
-    for (auto const &r : res_) {
+    for (auto const &r : _res) {
       if (n.contains(r)) {
         continue;
       }
-      score += values_[r];
+      score += _values[r];
     }
     return score;
   }
 
 private:
-  PairSearchNodePriortyQueue queue_;
-  PairSearchNodes solutions_;
-  std::map<structure::ResidueOP, float> values_;
-  structure::ResidueOPs res_;
+  PairSearchNodePriortyQueue _queue;
+  PairSearchNodes _solutions;
+  std::map<structure::ResidueOP, float> _values;
+  structure::ResidueOPs _res;
 };
 
 class Segmenter {
@@ -233,8 +234,8 @@ private:
                            structure::BasepairOPs const &);
 
 private:
-  motif::MotifFactory mf_;
-  PairOPs pairs_, end_pairs_;
+  motif::MotifFactory _mf;
+  PairOPs _pairs, _end_pairs;
 };
 
 } // namespace motif_tools

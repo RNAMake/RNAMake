@@ -11,8 +11,8 @@
 
 #include <stdio.h>
 
-#include "base/option.h"
-#include "base/types.h"
+//#include "base/option.hpp"
+#include "base/types.hpp"
 #include "eternabot/scorer.h"
 #include "motif_data_structure/motif_graph.h"
 #include "motif_data_structure/motif_state_graph.hpp"
@@ -124,7 +124,7 @@ public:
   ~SequenceOptimizer3D() {}
 
 public: // setup
-  void set_scorer(SequenceOptimizerScorerOP const &scorer) { scorer_ = scorer; }
+  void set_scorer(SequenceOptimizerScorerOP const &scorer) { _scorer = scorer; }
 
 private:
   struct DesignableBP {
@@ -205,18 +205,18 @@ private:
     }
   }
 
-  void find_seq_violations(secondary_structure::PoseOP, Ints &);
+  void find_seq_violations(secondary_structure::PoseOP, Indexes &);
 
   int find_gc_helix_stretches(secondary_structure::PoseOP);
 
   bool new_seq_violations() {
-    for (int i = 0; i < current_violations_.size(); i++) {
-      if (current_violations_[i] != next_violations_[i]) {
+    for (int i = 0; i < _current_violations.size(); i++) {
+      if (_current_violations[i] != _next_violations[i]) {
         return true;
       }
     }
 
-    if (current_gc_stretches_ < next_gc_stretches_) {
+    if (_current_gc_stretches < _next_gc_stretches) {
       return true;
     }
 
@@ -224,27 +224,27 @@ private:
   }
 
 public: // option wrappers
-  inline base::Options &options() { return options_; }
+  inline base::Options &options() { return _options; }
 
   inline float get_int_option(String const &name) {
-    return options_.get_int(name);
+    return _options.get_int(name);
   }
 
   inline float get_float_option(String const &name) {
-    return options_.get_float(name);
+    return _options.get_float(name);
   }
 
   inline String get_string_option(String const &name) {
-    return options_.get_string(name);
+    return _options.get_string(name);
   }
 
   inline bool get_bool_option(String const &name) {
-    return options_.get_bool(name);
+    return _options.get_bool(name);
   }
 
   template <typename T>
   void set_option_value(String const &name, T const &val) {
-    options_.set_value(name, val);
+    _options.set_value(name, val);
     update_var_options();
   }
 
@@ -254,21 +254,21 @@ protected:
   void setup_options();
 
 private:
-  base::Options options_;
-  eternabot::Scorer eterna_scorer_;
-  util::RandomNumberGenerator rng_;
-  SequenceOptimizerScorerOP scorer_;
-  std::vector<Strings> possible_bps_;
+  base::Options _options;
+  eternabot::Scorer _eterna_scorer;
+  util::RandomNumberGenerator _rng;
+  SequenceOptimizerScorerOP _scorer;
+  std::vector<Strings> _possible_bps;
   // option vars
-  int solutions_;
-  int steps_;
-  float cutoff_, eterna_cutoff_;
-  bool verbose_, return_lowest_;
-  Strings disallowed_sequences_;
-  std::vector<secondary_structure::ResTypes> disallowed_res_types_sequences_;
-  Ints current_violations_;
-  Ints next_violations_;
-  int current_gc_stretches_, next_gc_stretches_;
+  int _solutions;
+  int _steps;
+  float _cutoff, _eterna_cutoff;
+  bool _verbose, _return_lowest;
+  Strings _disallowed_sequences;
+  std::vector<secondary_structure::ResTypes> _disallowed_res_types_sequences;
+  Indexes _current_violations;
+  Indexes _next_violations;
+  int _current_gc_stretches, _next_gc_stretches;
 };
 
 typedef std::shared_ptr<SequenceOptimizer3D> SequenceOptimizer3DOP;

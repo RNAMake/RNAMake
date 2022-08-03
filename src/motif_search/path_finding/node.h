@@ -19,40 +19,40 @@ class Node {
 public:
   inline Node(motif::MotifStateOP ms, NodeOP parent, float score, int level,
               int parent_end_index, int node_type)
-      : state_(ms), parent_(parent), score_(score), level_(level),
-        parent_end_index_(parent_end_index), node_type_(node_type),
-        size_(ms->size()), ss_score_(ms->score()) {
-    if (parent_ != nullptr) {
-      ss_score_ += parent_->ss_score();
+      : _state(ms), _parent(parent), _score(score), _level(level),
+        _parent_end_index(parent_end_index), _node_type(node_type),
+        _size(ms->size()), _ss_score(ms->score()) {
+    if (_parent != nullptr) {
+      _ss_score += _parent->ss_score();
       // -2 for shared base pair
-      size_ += parent->size() - 2;
+      _size += parent->size() - 2;
     }
   }
 
   ~Node() {}
 
 public: // getters
-  int level() const { return level_; }
+  int get_level() const { return _level; }
 
-  inline int size() const { return size_; }
+  inline int get_size() const { return _size; }
 
-  inline int node_type() const { return node_type_; }
+  inline int get_node_type() const { return _node_type; }
 
-  inline float ss_score() const { return ss_score_; }
+  inline float get_ss_score() const { return _ss_score; }
 
-  inline float score() const { return score_; }
+  inline float get_score() const { return _score; }
 
-  inline int parent_end_index() const { return parent_end_index_; }
+  inline int get_parent_end_index() const { return _parent_end_index; }
 
-  inline motif::MotifStateOP state() const { return state_; }
+  inline motif::MotifStateOP get_state() const { return _state; }
 
-  inline NodeOP parent() const { return parent_; }
+  inline NodeOP get_parent() const { return _parent; }
 
 private:
-  NodeOP parent_;
-  motif::MotifStateOP state_;
-  int parent_end_index_, level_, size_, node_type_;
-  float ss_score_, score_;
+  NodeOP _parent;
+  motif::MotifStateOP _state;
+  int _parent_end_index, _level, _size, _node_type;
+  float _ss_score, _score;
 };
 
 struct NodeCompare {

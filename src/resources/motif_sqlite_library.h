@@ -28,24 +28,24 @@ class MotifSqliteLibrary : public SqliteLibrary {
 public:
   MotifSqliteLibrary(String const &libname) {
 
-    libnames_ = get_libnames();
-    rng_ = util::RandomNumberGenerator();
+    _libnames = get_libnames();
+    _rng = util::RandomNumberGenerator();
     auto path = _get_path(libname);
     MotifSqliteConnection conn(path);
-    connection_ = conn;
-    max_size_ = connection_.count();
+    _connection = conn;
+    _max_size = _connection.count();
     // max_size_ = 1; // Does this matter? CJ
   }
   // added by CJ for validation purposes
   MotifSqliteLibrary(int i, // something to change the overloading
                      std::filesystem::path const &path) {
 
-    libnames_ = get_libnames();
-    rng_ = util::RandomNumberGenerator();
+    _libnames = get_libnames();
+    _rng = util::RandomNumberGenerator();
 
     MotifSqliteConnection conn(path);
-    connection_ = conn;
-    max_size_ = connection_.count();
+    _connection = conn;
+    _max_size = _connection.count();
     // max_size_ = 1; // Does this matter? CJ
   }
   ~MotifSqliteLibrary() {}
@@ -53,26 +53,26 @@ public:
 public: // iterator stuff
   class iterator {
   public:
-    iterator(std::map<String, motif::MotifOP>::iterator const &i) : i_(i) {}
+    iterator(std::map<String, motif::MotifOP>::iterator const &i) : _i(i) {}
 
     iterator operator++() {
-      i_++;
+      _i++;
       return *this;
     }
 
-    motif::MotifOP const &operator*() { return i_->second; }
+    motif::MotifOP const &operator*() { return _i->second; }
 
-    bool operator==(iterator const &rhs) const { return i_ == rhs.i_; }
+    bool operator==(iterator const &rhs) const { return _i == rhs._i; }
 
-    bool operator!=(iterator const &rhs) const { return i_ != rhs.i_; }
+    bool operator!=(iterator const &rhs) const { return _i != rhs._i; }
 
   private:
-    std::map<String, motif::MotifOP>::iterator i_;
+    std::map<String, motif::MotifOP>::iterator _i;
   };
 
-  iterator begin() { return iterator(data_.begin()); }
+  iterator begin() { return iterator(_data.begin()); }
 
-  iterator end() { return iterator(data_.end()); }
+  iterator end() { return iterator(_data.end()); }
 
 public:
   static StringStringMap get_libnames();
@@ -101,9 +101,9 @@ private:
                                 String const &);
 
 private:
-  MotifSqliteConnection connection_;
-  std::map<String, motif::MotifOP> data_;
-  util::RandomNumberGenerator rng_;
+  MotifSqliteConnection _connection;
+  std::map<String, motif::MotifOP> _data;
+  util::RandomNumberGenerator _rng;
 };
 
 typedef std::shared_ptr<MotifSqliteLibrary> MotifSqliteLibraryOP;

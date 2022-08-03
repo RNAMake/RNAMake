@@ -5,7 +5,7 @@
 #ifndef RNAMAKE_NEW_SEQUENCE_CONSTRAINT_H
 #define RNAMAKE_NEW_SEQUENCE_CONSTRAINT_H
 
-#include <secondary_structure/pose.h>
+//#include <secondary_structure/pose.h>
 #include <secondary_structure/sequence_tools.h>
 
 namespace secondary_structure {
@@ -34,31 +34,31 @@ class DisallowedSequence : public SequenceConstraint {
 public:
   DisallowedSequence(String const &disallowed_sequence) : SequenceConstraint() {
     get_res_types_from_sequence(disallowed_sequence,
-                                disallowed_res_type_array_);
+                                _disallowed_res_type_array);
   }
 
   SequenceConstraint *clone() const { return new DisallowedSequence(*this); };
 
 public:
   int violations(PoseOP p) {
-    return find_res_types_in_pose(p, disallowed_res_type_array_);
+    return find_res_types_in_pose(p, _disallowed_res_type_array);
   }
 
 private:
-  ResTypes disallowed_res_type_array_;
+  ResTypes _disallowed_res_type_array;
 };
 
 class GCHelixStretchLimit : public SequenceConstraint {
 public:
-  GCHelixStretchLimit(int length) : SequenceConstraint() { length_ = length; }
+  GCHelixStretchLimit(int length) : SequenceConstraint() { _length = length; }
 
   SequenceConstraint *clone() const { return new GCHelixStretchLimit(*this); };
 
 public:
-  int violations(PoseOP p) { return find_gc_helix_stretches(p, length_); }
+  int violations(PoseOP p) { return find_gc_helix_stretches(p, _length); }
 
 private:
-  int length_;
+  int _length;
 };
 
 typedef std::shared_ptr<SequenceConstraint> SequenceConstraintOP;
@@ -66,14 +66,15 @@ typedef std::vector<SequenceConstraintOP> SequenceConstraintOPs;
 
 class SequenceConstraints {
 public:
+  /// @brief - constructor
   SequenceConstraints() {}
 
   ~SequenceConstraints() {}
 
 public:
   void add_sequence_constraint(SequenceConstraintOP seq_constraint) {
-    violations_.push_back(0);
-    seq_constraints_.push_back(SequenceConstraintOP(seq_constraint->clone()));
+    _violations.push_back(0);
+    _seq_constraints.push_back(SequenceConstraintOP(seq_constraint->clone()));
   }
 
   void add_disallowed_sequence(String const &seq) {
@@ -85,19 +86,19 @@ public:
   }
 
 public:
-  Ints const &violations(PoseOP p) {
-    for (int i = 0; i < seq_constraints_.size(); i++) {
-      violations_[i] = seq_constraints_[i]->violations(p);
+  Indexes const &violations(PoseOP p) {
+    for (int i = 0; i < _seq_constraints.size(); i++) {
+      _violations[i] = _seq_constraints[i]->violations(p);
     }
 
-    return violations_;
+    return _violations;
   }
 
-  size_t num_constraints() { return seq_constraints_.size(); }
+  size_t num_constraints() { return _seq_constraints.size(); }
 
 private:
-  Ints violations_;
-  SequenceConstraintOPs seq_constraints_;
+  Indexes _violations;
+  SequenceConstraintOPs _seq_constraints;
 };
 
 } // namespace secondary_structure
