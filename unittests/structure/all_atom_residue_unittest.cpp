@@ -65,7 +65,6 @@ TEST_CASE("test all atom residue ") {
     auto lines_2 = Strings();
     base::path::get_lines_from_file(error_path, lines_2);
     // TODO wtf is going on here?
-
     // TODO error here
     Residue new_residue = get_residue_from_str(lines[0]);
     //std::cout << new_residue << std::endl;

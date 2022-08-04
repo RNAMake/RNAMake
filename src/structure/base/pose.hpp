@@ -6,6 +6,7 @@
 #define RNAMAKE_SRC_STRUCTURE_BASE_POSE_HPP_
 
 #include <structure/base/structure.hpp>
+#include <base/exception.hpp>
 
 namespace structure::base {
 
@@ -25,11 +26,20 @@ public:
         _basepairs(std::move(basepairs)), _end_indexes(end_indexes),
         _end_ids(end_ids), _name(name), _dot_bracket(std::move(dot_bracket)) {
 
-    /*expects<StructureException>(
+      /*expects<StructureException>(
         _end_ids.size() == _end_indexes.size(),
         "Pose must have the same number of ends as end_ids has " +
             std::to_string(_end_indexes.size()) + " ends and " +
             std::to_string(end_ids.size()) + "end ids");   */
+
+      // the above commented-out exception  |||||
+      //                                    VVVVV
+
+      if (_end_ids.size() == _end_indexes.size()) {
+        String msg = "Poses must have the same number of ends!";
+        ::base::log_and_throw<base::StructureException>(msg);
+      }
+
   }
 
 public: // iterators //////////////////////////////////////////////////////////
@@ -52,38 +62,50 @@ public: // iterators //////////////////////////////////////////////////////////
   Indexes::const_iterator end_indexes_end() const { return _end_indexes.end(); }
 
 public: // structure wrappers
+  // getters
+
+  /// @brief - gets a sequence from the structure
   inline String get_sequence() { return _structure.get_sequence(); }
 
+  /// @brief - gets the specified residue from the structure
   inline Residue const &get_residue(int num, char chain_id, char i_code) const {
     return _structure.get_residue(num, chain_id, i_code);
   }
 
+  /// @brief - gets the specified residue from the structure (by UUID)
   inline Residue const &get_residue(util::Uuid const &uuid) const {
     return _structure.get_residue(uuid);
   }
 
+  /// @brief - gets the specified residue from the structure (by index)
   inline Residue const &get_residue(Index index) const {
     return _structure.get_residue(index);
   }
 
+  /// @brief - counts and returns the number of residues in a structure
   inline size_t get_num_residues() const {
     return _structure.get_num_residues();
   }
 
+  /// @brief - counts and returns the number of chains in a structure
   inline size_t get_num_chains() const { return _structure.get_num_chains(); }
 
+  /// @brief - returns the cutpoints in a structure
   inline const Cutpoints &get_cutpoints() const {
     return _structure.get_cutpoints();
   };
 
+  /// @brief - returns the cutpoints
   inline void get_chains() const {
     // return _structure.get_chains();
   }
 
+  /// @brief - asks whether or not the given residue is the start of a chain
   inline bool is_residue_start_of_chain(const Residue &r) const {
     return _structure.is_residue_start_of_chain(r);
   }
 
+  /// @brief - asks whether or not the given residue is the end of a chain
   inline bool is_residue_end_of_chain(const Residue &r) const {
     return _structure.is_residue_end_of_chain(r);
   }
@@ -157,12 +179,15 @@ public: // get basepair interface  (single basepair!)
         bps.push_back(&bp);
       }
     }
+
     if (bps.size() > 1) {
-      throw StructureException("got more than one basepair matching this uuid");
+      String msg = "Got more than one basepair matching this uuid";
+      ::base::log_and_throw<base::StructureException>(msg);
     } else if (bps.size() == 1) {
       return *bps[0];
     } else {
-      throw StructureException("no basepairs matching this uuid");
+      String msg = "No basepairs matching this uuid";
+      ::base::log_and_throw<base::StructureException>(msg);
     }
   }
 
@@ -406,7 +431,6 @@ protected:
   mutable Strings _end_ids;
 };
 
-}
-
+} // namespace structure::base
 
 #endif // RNAMAKE_SRC_STRUCTURE_BASE_POSE_HPP_

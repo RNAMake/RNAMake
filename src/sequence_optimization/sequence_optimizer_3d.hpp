@@ -9,6 +9,7 @@
 #ifndef sequence_optimizer_3d_hpp
 #define sequence_optimizer_3d_hpp
 
+/*
 #include <stdio.h>
 
 //#include "base/option.hpp"
@@ -26,7 +27,7 @@ namespace sequence_optimization {
 class SequenceOptimizerScorer {
 public:
   SequenceOptimizerScorer(bool target_an_aligned_end)
-      : target_an_aligned_end_(target_an_aligned_end) {}
+      : _target_an_aligned_end(target_an_aligned_end) {}
 
 public:
   virtual float score(motif_data_structure::MotifStateGraphOP const &) = 0;
@@ -35,7 +36,7 @@ public:
   float motif_state_diff(structure::BasepairStateOP const &end1,
                          structure::BasepairStateOP const &end2) {
     auto diff = end1->d().distance(end2->d());
-    if (target_an_aligned_end_) {
+    if (_target_an_aligned_end) {
       diff += end1->r().difference(end2->r()) * 2;
     } else {
       end2->flip();
@@ -46,7 +47,7 @@ public:
   }
 
 protected:
-  bool target_an_aligned_end_;
+  bool _target_an_aligned_end;
 };
 
 typedef std::shared_ptr<SequenceOptimizerScorer> SequenceOptimizerScorerOP;
@@ -55,58 +56,58 @@ class ExternalTargetScorer : public SequenceOptimizerScorer {
 public:
   ExternalTargetScorer(structure::BasepairStateOP const &target, int ni, int ei,
                        bool target_an_aligned_end)
-      : SequenceOptimizerScorer(target_an_aligned_end), target_(target),
-        ni_(ni), ei_(ei) {}
+      : SequenceOptimizerScorer(target_an_aligned_end), _target(target),
+        _ni(ni), _ei(ei) {}
 
 public:
   float score(motif_data_structure::MotifStateGraphOP const &msg) {
-    state_ = msg->get_node(ni_)->data()->get_end_state(ei_);
-    return motif_state_diff(state_, target_);
+    _state = msg->get_node(_ni)->data()->get_end_state(_ei);
+    return motif_state_diff(_state, _target);
   }
 
 private:
-  structure::BasepairStateOP target_, state_;
-  int ni_, ei_;
+  structure::BasepairStateOP _target, _state;
+  int _ni, _ei;
 };
 
 class InternalTargetScorer : public SequenceOptimizerScorer {
 public:
   InternalTargetScorer(int ni1, int ei1, int ni2, int ei2,
                        bool target_an_aligned_end)
-      : SequenceOptimizerScorer(target_an_aligned_end), ni1_(ni1), ei1_(ei1),
-        ni2_(ni2), ei2_(ei2) {}
+      : SequenceOptimizerScorer(target_an_aligned_end), _ni1(ni1), _ei1(ei1),
+        _ni2(ni2), _ei2(ei2) {}
 
 public:
   float score(motif_data_structure::MotifStateGraphOP const &msg) {
-    state1_ = msg->get_node(ni1_)->data()->get_end_state(ei1_);
-    state2_ = msg->get_node(ni2_)->data()->get_end_state(ei2_);
+    _state1 = msg->get_node(_ni1)->data()->get_end_state(_ei1);
+    _state2 = msg->get_node(_ni2)->data()->get_end_state(_ei2);
     // return state1_->diff(state2_);
-    return motif_state_diff(state1_, state2_);
+    return motif_state_diff(_state1, _state2);
   }
 
 private:
-  int ni1_, ni2_;
-  int ei1_, ei2_;
-  structure::BasepairStateOP state1_, state2_;
+  int _ni1, _ni2;
+  int _ei1, _ei2;
+  structure::BasepairStateOP _state1, _state2;
 };
 
 class MultiTargetScorer : public SequenceOptimizerScorer {
 public:
   MultiTargetScorer(std::vector<SequenceOptimizerScorerOP> sub_scorers)
-      : sub_scorers_(sub_scorers), SequenceOptimizerScorer(false) {}
+      : _sub_scorers(sub_scorers), SequenceOptimizerScorer(false) {}
 
 public:
   float score(motif_data_structure::MotifStateGraphOP const &msg) {
-    score_ = 0;
-    for (auto const &sub_scorer : sub_scorers_) {
-      score_ += sub_scorer->score(msg);
+    _score = 0;
+    for (auto const &sub_scorer : _sub_scorers) {
+      _score += sub_scorer->score(msg);
     }
-    return score_;
+    return _score;
   }
 
 private:
-  std::vector<SequenceOptimizerScorerOP> sub_scorers_;
-  float score_;
+  std::vector<SequenceOptimizerScorerOP> _sub_scorers;
+  float _score;
 };
 
 struct OptimizedSequence {
@@ -274,5 +275,6 @@ private:
 typedef std::shared_ptr<SequenceOptimizer3D> SequenceOptimizer3DOP;
 
 } // namespace sequence_optimization
+*/
 
 #endif /* sequence_optimizer_3d_hpp */

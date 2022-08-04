@@ -30,19 +30,28 @@ public: // iterator ///////////////////////////////////////////////////////////
   const_iterator end() const noexcept { return _residues.end(); }
 
 public:
+
+  // getters
+
+  /// @brief - gets the length of the residue
   [[nodiscard]] inline size_t get_length() const {
     return (int)_residues.size();
   }
 
+  /// @brief - gets the first residue in the chain
   [[nodiscard]] inline const Residue &get_first() const { return _residues[0]; }
 
+
+  /// @brief - gets the last residue in the chain
   [[nodiscard]] inline const Residue &get_last() const {
     return _residues.back();
   }
 
+  /// @brief - gets the residue at any position in the chain
   [[nodiscard]] inline const Residue &get_residue(Index index) const {
     return _residues[index];
   }
+
 
   inline int contain_res(const Residue &r) const {
     for (auto const &res : _residues) {
