@@ -35,7 +35,7 @@ public:
       // the above commented-out exception  |||||
       //                                    VVVVV
 
-      if (_end_ids.size() == _end_indexes.size()) {
+      if (_end_ids.size() != _end_indexes.size()) {
         String msg = "Poses must have the same number of ends!";
         ::base::log_and_throw<base::StructureException>(msg);
       }
@@ -204,17 +204,16 @@ public: // get basepair interface  (single basepair!)
       }
     }
     if (bps.size() > 1) {
-      throw StructureException(
-          "got more than one basepair matching residue uuids");
+      String msg = "got more than one basepair matching residue uuids";
+      ::base::log_and_throw<base::StructureException>(msg);
     }
     if (bps.size() == 1) {
       return *bps[0];
     } else {
-      throw StructureException(
-          "no basepair found matching residue uuids supplied");
+      String msg = "no basepair found matching residue uuids supplied";
+      ::base::log_and_throw<base::StructureException>(msg);
     }
   }
-
   Basepair const &get_basepair(String const &name) const {
     auto bps = std::vector<Basepair const *>();
     for (auto const &bp : _basepairs) {
@@ -222,16 +221,14 @@ public: // get basepair interface  (single basepair!)
         bps.push_back(&bp);
       }
     }
-
     if (bps.size() > 1) {
-      throw StructureException(
-          "got more than one basepair matching this name: " + name);
-    }
-    if (bps.size() == 1) {
+      String msg = "Got more than one basepair matching this name: " + name;
+      ::base::log_and_throw<base::StructureException>(msg);
+    } else if (bps.size() == 1) {
       return *bps[0];
     } else {
-      throw StructureException(
-          "no basepair found matching residue uuids supplied");
+      String msg = "No basepair found matching residue uuids supplied";
+      ::base::log_and_throw<base::StructureException>(msg);
     }
   }
 
@@ -240,10 +237,20 @@ public: // get basepair interface  (single basepair!)
                            "cannot get basepair " + std::to_string(index) +
                                " only " + std::to_string(_basepairs.size()) +
                                " total residues");   */
+
+    if (index >= _basepairs.size()) {
+      String msg = "cannot get basepair " + std::to_string(index) +
+                   " only " + std::to_string(_basepairs.size()) +
+                   " total residues";
+      ::base::log_and_throw<base::StructureException>(msg);
+    }
+
     return _basepairs[index];
   }
 
-public: // get end interace
+public:
+
+  // get end interace
   Basepair const &get_end(util::Uuid const &bp_uuid) const {
     auto bps = std::vector<Basepair const *>();
     for (auto const &ei : _end_indexes) {
@@ -256,12 +263,13 @@ public: // get end interace
       }
     }
     if (bps.size() > 1) {
-      throw StructureException("got more than one basepair matching this uuid");
-    }
-    if (bps.size() == 1) {
+      String msg = "got more than one basepair matching this uuid";
+      ::base::log_and_throw<base::StructureException>(msg);
+    } else if (bps.size() == 1) {
       return *bps[0];
     } else {
-      throw StructureException("no end found matching basepair uuid supplied");
+      String msg = "no end found matching basepair uuid supplied";
+      ::base::log_and_throw<base::StructureException>(msg);
     }
   }
 
@@ -279,12 +287,14 @@ public: // get end interace
       }
     }
     if (bps.size() > 1) {
-      throw StructureException("got more than one end matching residue uuids");
+      String msg = "got more than one end matching residue uuids";
+      ::base::log_and_throw<base::StructureException>(msg);
     }
     if (bps.size() == 1) {
       return *bps[0];
     } else {
-      throw StructureException("no end found matching residue uuids supplied");
+      String msg = "no end found matching residue uuids supplied";
+      ::base::log_and_throw<base::StructureException>(msg);
     }
   }
 
@@ -298,13 +308,14 @@ public: // get end interace
     }
 
     if (bps.size() > 1) {
-      throw StructureException(
-          "got more than one basepair matching this name: " + name);
+      String msg = "got more than one basepair matching this name: " + name;
+      ::base::log_and_throw<base::StructureException>(msg);
     }
     if (bps.size() == 1) {
       return *bps[0];
     } else {
-      throw StructureException("cannot find end with name: " + name);
+      String msg = "cannot find end with name: " + name;
+      ::base::log_and_throw<base::StructureException>(msg);
     }
   }
 
@@ -315,6 +326,10 @@ public: // get end interace
                                     " there are only " +
                                     std::to_string(_end_indexes.size()));    */
 
+    if (index > _end_indexes.size()) {
+      String msg = "trying to get end: " + std::to_string(index) + " there are only " + std::to_string(_end_indexes.size());
+      ::base::log_and_throw<base::StructureException>(msg);
+    }
     /* std::cout << index << " " << _basepairs.size() << " " << _end_indexes
                                                                     .size()
                << std::endl;
