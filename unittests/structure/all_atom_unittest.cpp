@@ -9,6 +9,29 @@
 
 using namespace structure::all_atom;
 
+/*
+// TODO list of needed unittests
+ - align(const Segment, Segment, index)
+ - test basepair constructors
+ - is_equal(basepair)
+ - move(vector)
+ - rotate(matrix)
+ - swap_residue_positions()
+ - invert_reference_frame()
+ - new_uuids(r1 uuid, r2 uuid)
+ - get_partner(uuid)
+ - get_bp_type()
+ - get_uuid()
+ - get_name()
+ - get_res1_uuid()
+ - get_res2_uuid()
+ - get_ref_frame()
+ - get_center()
+ - get_c1_prime_coords()
+ - get_res1_c1_prime_coord()
+ - get_res2_c1_prime_coord()
+ */
+
 TEST_CASE("test all atom ") {
   SUBCASE("test generate residue") {
     String path = base::path::unittest_resource_path() +

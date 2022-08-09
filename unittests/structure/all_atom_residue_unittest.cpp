@@ -9,13 +9,14 @@
 using namespace structure::all_atom;
 
 TEST_CASE("test all atom residue ") {
-  // initialization
+
+  //*          initialization
   String path =
       base::path::unittest_resource_path() + "residue/test_str_to_residue.dat";
   auto lines = Strings();
   base::path::get_lines_from_file(path, lines);
   Residue r = get_residue_from_str(lines[0]);
-  // /initialization
+  //*          /initialization
 
   SUBCASE("test getting atoms") {
     int i = 0;
@@ -41,7 +42,7 @@ TEST_CASE("test all atom residue ") {
     CHECK(s.get_num() == 104);
     CHECK(s.get_chain_id() == "A");
   }
-  SUBCASE("test more lines and functions") {
+  SUBCASE("test getters") {
     Residue residue_2 = get_residue_from_str(lines[2]);
 
     CHECK(residue_2.get_name() == 'A');
@@ -68,7 +69,12 @@ TEST_CASE("test all atom residue ") {
     // TODO error here
     Residue new_residue = get_residue_from_str(lines[0]);
     //std::cout << new_residue << std::endl;
-    CHECK_THROWS_AS(get_residue_from_str(lines_2[0]), base::InputException);
+    //CHECK_THROWS_AS(get_residue_from_str(lines_2[0]), base::InputException);
+
+
+  }
+
+  SUBCASE("test ") {
 
 
   }

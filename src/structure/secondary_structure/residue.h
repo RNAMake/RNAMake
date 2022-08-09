@@ -36,11 +36,14 @@ public:
   virtual ~Residue() = default;
 
 public:
+  /// @brief - checks if residues are equal
   inline bool operator==(const Residue &r) const { return is_equal(r); }
 
+  /// @brief - checks if residues are not equal
   inline bool operator!=(const Residue &r) const { return !is_equal(r); }
 
 public:
+  /// @brief - checks if residues are equal (with slightly different arguments)
   [[nodiscard]] inline bool is_equal(const Residue &r,
                                      bool check_uuid = true) const {
     if (check_uuid && _uuid != r._uuid) {
@@ -65,6 +68,7 @@ public:
   }
 
 public:
+  /// @brief - stringifies the residue
   [[nodiscard]] inline String get_str() const {
     std::stringstream ss;
     // ss << _name << "," << dot_bracket_ << "," << _num << "," << _chain_id <<
@@ -74,19 +78,25 @@ public:
   }
 
 public: // getters
+
+  /// @brief - gets the structure code
   [[nodiscard]] inline char get_structure_code() const {
     return _structure_code;
   }
 
+  /// @brief - gets the residue code
   [[nodiscard]] inline int get_res_code() const { return _res_code; }
 
 public: // setters
+
+  /// @brief - sets the name of the residue code
   inline void set_name(char name) {
     _name = name;
     _res_code = _assign_res_code(_name);
   }
 
 private:
+  /// @brief - assigns number codes to eacah base in the residue
   int _assign_res_code(char name) {
     if (_rtype != structure::base::ResidueType::RNA) {
       return 99;

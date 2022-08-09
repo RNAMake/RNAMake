@@ -14,6 +14,7 @@ TEST_CASE("Test ResidueType for Structure") {
     atom_map["P"] = 0;
     auto strings = Strings();
     auto rt = ResidueType(name, atom_map, SetType::RNA, strings);
+
     CHECK(rt.get_short_name() == 'G');
     CHECK(rt.get_atom_index("P") == 0);
   }
