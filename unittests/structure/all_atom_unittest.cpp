@@ -15,17 +15,7 @@ using namespace structure::all_atom;
 
  // basepair fxns
  // TODO should we write a fxn for get_basepair_from_string() ?
- - test basepair constructors
- - is_equal(basepair)
- - swap_residue_positions()
- - invert_reference_frame()
  - new_uuids(r1 uuid, r2 uuid)
- - get_res1_uuid()
- - get_res2_uuid()
- - get_ref_frame()
- - get_c1_prime_coords()
- - get_res1_c1_prime_coord()
- - get_res2_c1_prime_coord()
  - generate_bp_type(res1, res2, x3dna_bp_type)
 
  */
@@ -187,8 +177,44 @@ TEST_CASE("test all atom ") {
 
       // TODO test swap_residue_positions
     }
+    SUBCASE("test invert reference frame") {
+      Residue residue_1 = get_residue_from_str(lines[0]);
+      Residue residue_2 = get_residue_from_str(lines[1]);
+      // TODO this should be a basepair not a residue
+
+      // TODO test invert_reference_frame
+    }
+    SUBCASE("test basepair constructors") {
+      // TODO this should be a basepair
+
+      // TODO test basepair constructors
+    }
+    SUBCASE("test is_equal") {
+      // TODO test is_equal
+      //Basepair basepair_1 = get_residue_from_str(lines[0]);
+    }
+    SUBCASE("test get res1 uuid") {
+      // TODO test get_res_1_uuid
+    }
+    SUBCASE("test get res2 uuid") {
+      // TODO test get_res_2_uuid
+    }
+    SUBCASE("test ref frame") {
+      // TODO test get_ref_frame
+    }
+    SUBCASE("get res1_c1_prime_coord") {
+      // TODO test get res1 c1 prime coord
+    }
+    SUBCASE("get res2_c1_prime_coord") {
+      // TODO test get res2 c1 prime coord
+    }
+    SUBCASE("get c1_prime_coords") {
+      // TODO test c1 prime coords
+    }
     SUBCASE("") {
 
     }
+
+
   }
 }

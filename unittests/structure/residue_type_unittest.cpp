@@ -51,4 +51,7 @@ TEST_CASE("Test ResidueType for Structure") {
     CHECK(rt.get_short_name() == 'A');
     CHECK(rt.get_atom_index("N") == 0);
   }
+
+
+
 }

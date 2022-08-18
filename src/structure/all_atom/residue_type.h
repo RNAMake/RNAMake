@@ -27,30 +27,39 @@ public:
   ResidueTypeException(String const &message) : std::runtime_error(message) {}
 };
 
+/// @brief - enum of residue types
 enum class SetType { RNA, PROTEIN, UNKNOWN };
 
 class ResidueType {
+  /// @brief - constructor
 public:
   ResidueType(String const &, StringIntMap const &, SetType, Strings const &);
 
   ~ResidueType() = default;
 
-public:
+  /// @brief - checks if the atom name is valid/something real
   bool is_valid_atom_name(String const &) const;
 
+  /// @brief - gets the index of an atom from a given string of a residue
   Index get_atom_index(String const &) const;
 
+  /// @brief - gets the name of an atom at a specified position/index
   String get_atom_name_at_pos(Index) const;
 
+  /// @brief - checks if the residue name is valid
   bool is_valid_residue_name(String const &) const;
 
 public: // getters
+  /// @brief - gets the name of the residue type
   inline String const &get_name() const { return _name; }
 
+  /// @brief - gets the shortname of the residue type
   inline char get_short_name() const { return _name[0]; }
 
+  /// @brief - gets set type
   inline SetType get_set_type() const { return _set_type; }
 
+  /// @brief - gets the number of atoms in the residue
   inline size_t get_num_atoms() const { return _atom_name_map.size(); }
 
 private:
