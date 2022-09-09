@@ -74,6 +74,7 @@ void Residue::_build_beads_RNA() {
 
 Residue get_residue_from_str(const String &s) {
   Strings spl = ::base::string::split(s, ",");
+  //TODO throw errror
   if(spl.size() < 6) {
   }
   char name = spl[1][0];
