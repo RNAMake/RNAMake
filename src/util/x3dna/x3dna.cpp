@@ -27,7 +27,7 @@ X3dna::X3dna()
     : rebuild_files_(true), generated_dssr_(false),
       generated_ref_frames_(false), no_ref_frames_(false) {
 
-  auto os_name = getprogname();
+  auto os_name = get_os_name();
 }
 
 void X3dna::_delete_file(String const &file_name) const {
