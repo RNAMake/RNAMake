@@ -1,0 +1,13 @@
+# To build a minimized image (i.e., just RNAMake functionality)
+docker build -t rnamake -f docker/Dockerfile .
+docker run -d -i --name RNAMake rnamake
+
+# To build a dev image (i.e., keep source and test code)
+docker build -t rnamake_dev -f docker/devDockerfile .
+docker run -d -i --name RNAMake_dev rnamake_dev
+
+# If you're on a Mac that uses and AMD processor, you might want to use
+# the following command instead:
+# ```
+# docker build -t rnamake --platform linux/amd64/v8 -f docker/Dockerfile .
+# ```
