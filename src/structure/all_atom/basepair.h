@@ -33,7 +33,6 @@ public:
   ~Basepair() = default;
 
 public:
-
   /// @brief - checks if two basepairs are equal
   inline bool is_equal(Basepair const &bp, bool check_uuid = true) const {
     if (check_uuid) {
@@ -63,7 +62,6 @@ public:
     return true;
   }
 
-
 public: // non const methods //////////////////////////////////////////////////
   /// @brief - moves the basepair by the specified vector
   void move(const math::Vector3 &p) {
@@ -72,7 +70,7 @@ public: // non const methods //////////////////////////////////////////////////
     _c1_prime_coords[1] = _c1_prime_coords[1] + p;
   }
   /// @brief - rotates the basepair by the specified rotation matrix
-  void rotate(const math::Matrix3x3 & rot) {
+  void rotate(const math::Matrix3x3 &rot) {
     _center = rot.dot(_center);
     _c1_prime_coords[0] = rot.dot(_c1_prime_coords[0]);
     _c1_prime_coords[1] = rot.dot(_c1_prime_coords[1]);
@@ -146,17 +144,19 @@ public: // getters
     return _center;
   }
 
-  /// @brief -
+  /// @brief - gets the set of coordinates of the Carbon 1 primes
   [[nodiscard]] inline const math::Vector3s &get_c1_prime_coords() const {
     return _c1_prime_coords;
   }
 
-  /// @brief -
+  /// @brief - gets the coordinates of the carbon 1 prime of the first residue
+  /// in the basepair
   [[nodiscard]] inline const math::Vector3 &get_res1_c1_prime_coord() const {
     return _c1_prime_coords[0];
   }
 
-  /// @brief -
+  /// @brief - gets the coordinates of the carbon 1 prime of the second residue
+  /// in the basepair
   [[nodiscard]] inline const math::Vector3 &get_res2_c1_prime_coord() const {
     return _c1_prime_coords[1];
   }
@@ -166,6 +166,7 @@ private:
   util::Uuid _res1_uuid;
   util::Uuid _res2_uuid;
   structure::base::BasepairType _bp_type;
+  // TODO did we want to take this out? it's left out for now
   util::x3dna::X3dnaBPType _x3dna_type;
   String _name;
   math::Vector3 _center;

@@ -99,31 +99,94 @@ TEST_CASE("test all atom ") {
                   "residue/test_str_to_residue.dat";
     auto lines = Strings();
     base::path::get_lines_from_file(path, lines);
-    // Residues res;
+    Residue residue_1 = get_residue_from_str(lines[0]);
+    Residue residue_2 = get_residue_from_str(lines[1]);
+    math::Vector3 res_1_center = residue_1.get_center();
+    math::Vector3 res_2_center = residue_2.get_center();
+    math::Vector3 basepair_1_center;
+    basepair_1_center.set_x((res_1_center.get_x() + res_2_center.get_x()) / 2);
+    basepair_1_center.set_y((res_1_center.get_y() + res_2_center.get_y()) / 2);
+    basepair_1_center.set_z((res_1_center.get_z() + res_2_center.get_z()) / 2);
+    math::Matrix3x3 basepair_ref_frame;
+    structure::base::BasepairType basepair_type =
+        structure::base::BasepairType::WC;
+    auto basepair_1_name = "test basepair";
+    auto basepair_x3dna_type = util::x3dna::get_x3dna_by_type("cM-");
+    // TODO these are not the actual C1' coords, just filler for debugging
+    auto c1_prime_coords = {res_1_center, res_2_center};
+
+    Basepair basepair_1 = Basepair(
+        residue_1.get_uuid(), residue_2.get_uuid(), util::generate_uuid(),
+        basepair_type, basepair_x3dna_type, basepair_1_name, basepair_1_center,
+        c1_prime_coords, basepair_ref_frame);
 
     SUBCASE("test basepair move") {
-      Residue residue_1 = get_residue_from_str(lines[0]);
-      Residue residue_2 = get_residue_from_str(lines[1]);
       math::Vector3 vector_1 = {4, -1, 2};
+      basepair_1.move(vector_1);
+      basepair_1_center = basepair_1.get_center();
 
-      // TODO test move fxn
-      // the two residue above should make a basepair
-      // then the basepair should be moved by the specified vector
-      // finally we should check the position of the atoms in the basepair
+      CHECK(basepair_1_center.get_x() == doctest::Approx(4));
+      CHECK(basepair_1_center.get_y() == doctest::Approx(-1));
+      CHECK(basepair_1_center.get_z() == doctest::Approx(2));
+
+      math::Vector3 vector_2 = {-4, 1, -2};
+      basepair_1.move(vector_1);
+      basepair_1_center = basepair_1.get_center();
+
+      CHECK(basepair_1_center.get_x() == doctest::Approx(0));
+      CHECK(basepair_1_center.get_y() == doctest::Approx(0));
+      CHECK(basepair_1_center.get_z() == doctest::Approx(0));
     }
     SUBCASE("test basepair rotate") {
-      Residue residue_1 = get_residue_from_str(lines[0]);
-      Residue residue_2 = get_residue_from_str(lines[1]);
-      math::Matrix3x3 matrix_1 = {-1, 0, 0, 0, 1, 0, 0, 0, 1};
+      SUBCASE("test basepair rotate x") {
+        math::Matrix3x3 matrix_1 = {-1, 0, 0, 0, 1, 0, 0, 0, 1};
+        basepair_1.rotate(matrix_1);
+        math::Matrix3x3 ref_frame_matrix = basepair_1.get_ref_frame();
 
-      // TODO test rotate fxn
-      // the two residue above should make a basepair
-      // then the basepair should be rotated by the specified matrix
-      // finally we should check the position of the atoms in the basepair
+        CHECK(ref_frame_matrix.get_xx() == doctest::Approx(-1));
+        CHECK(ref_frame_matrix.get_xy() == doctest::Approx(0));
+        CHECK(ref_frame_matrix.get_xz() == doctest::Approx(0));
+        CHECK(ref_frame_matrix.get_yx() == doctest::Approx(0));
+        CHECK(ref_frame_matrix.get_yy() == doctest::Approx(1));
+        CHECK(ref_frame_matrix.get_yz() == doctest::Approx(0));
+        CHECK(ref_frame_matrix.get_zx() == doctest::Approx(0));
+        CHECK(ref_frame_matrix.get_zy() == doctest::Approx(0));
+        CHECK(ref_frame_matrix.get_zz() == doctest::Approx(1));
+      }
+      SUBCASE("test basepair rotate y") {
+        math::Matrix3x3 matrix_1 = {1, 0, 0, 0, -1, 0, 0, 0, 1};
+        basepair_1.rotate(matrix_1);
+        math::Matrix3x3 ref_frame_matrix = basepair_1.get_ref_frame();
+
+        CHECK(ref_frame_matrix.get_xx() == doctest::Approx(1));
+        CHECK(ref_frame_matrix.get_xy() == doctest::Approx(0));
+        CHECK(ref_frame_matrix.get_xz() == doctest::Approx(0));
+        CHECK(ref_frame_matrix.get_yx() == doctest::Approx(0));
+        CHECK(ref_frame_matrix.get_yy() == doctest::Approx(-1));
+        CHECK(ref_frame_matrix.get_yz() == doctest::Approx(0));
+        CHECK(ref_frame_matrix.get_zx() == doctest::Approx(0));
+        CHECK(ref_frame_matrix.get_zy() == doctest::Approx(0));
+        CHECK(ref_frame_matrix.get_zz() == doctest::Approx(1));
+      }
+      SUBCASE("test basepair rotate z") {
+        math::Matrix3x3 matrix_1 = {1, 0, 0, 0, 1, 0, 0, 0, -1};
+        basepair_1.rotate(matrix_1);
+        math::Matrix3x3 ref_frame_matrix = basepair_1.get_ref_frame();
+
+        CHECK(ref_frame_matrix.get_xx() == doctest::Approx(1));
+        CHECK(ref_frame_matrix.get_xy() == doctest::Approx(0));
+        CHECK(ref_frame_matrix.get_xz() == doctest::Approx(0));
+        CHECK(ref_frame_matrix.get_yx() == doctest::Approx(0));
+        CHECK(ref_frame_matrix.get_yy() == doctest::Approx(1));
+        CHECK(ref_frame_matrix.get_yz() == doctest::Approx(0));
+        CHECK(ref_frame_matrix.get_zx() == doctest::Approx(0));
+        CHECK(ref_frame_matrix.get_zy() == doctest::Approx(0));
+        CHECK(ref_frame_matrix.get_zz() == doctest::Approx(-1));
+      }
     }
     SUBCASE("test get uuid") {
-      Residue residue_1 = get_residue_from_str(lines[0]);
-      Residue residue_2 = get_residue_from_str(lines[1]);
+      Residue residue_3 = get_residue_from_str(lines[0]);
+      Residue residue_4 = get_residue_from_str(lines[1]);
       // TODO this should be a basepair not a residue
       util::Uuid uuid_1 = residue_2.get_uuid();
 
@@ -132,8 +195,8 @@ TEST_CASE("test all atom ") {
       // find out what the UUID is and test it
     }
     SUBCASE("test get name") {
-      Residue residue_1 = get_residue_from_str(lines[0]);
-      Residue residue_2 = get_residue_from_str(lines[1]);
+      Residue residue_3 = get_residue_from_str(lines[0]);
+      Residue residue_4 = get_residue_from_str(lines[1]);
       // TODO this should be a basepair not a residue
       auto basepair_name = residue_2.get_name();
 
@@ -142,8 +205,8 @@ TEST_CASE("test all atom ") {
       // find out what the name is and test it
     }
     SUBCASE("test get center") {
-      Residue residue_1 = get_residue_from_str(lines[0]);
-      Residue residue_2 = get_residue_from_str(lines[1]);
+      Residue residue_3 = get_residue_from_str(lines[0]);
+      Residue residue_4 = get_residue_from_str(lines[1]);
       // TODO this should be a basepair not a residue
       auto center = residue_2.get_center();
 
@@ -153,8 +216,8 @@ TEST_CASE("test all atom ") {
       // CHECK(center.get_z() == doctest::Approx(z));
     }
     SUBCASE("test get partner") {
-      Residue residue_1 = get_residue_from_str(lines[0]);
-      Residue residue_2 = get_residue_from_str(lines[1]);
+      Residue residue_3 = get_residue_from_str(lines[0]);
+      Residue residue_4 = get_residue_from_str(lines[1]);
       // TODO this should be a basepair not a residue
 
       // TODO test get_partner fxn
@@ -162,45 +225,59 @@ TEST_CASE("test all atom ") {
       // CHECK(partner_uuid == residue_2.get_uuid());
     }
     SUBCASE("test get basepair type") {
-      Residue residue_1 = get_residue_from_str(lines[0]);
-      Residue residue_2 = get_residue_from_str(lines[1]);
-      // TODO this should be a basepair not a residue
-
       // TODO test get_bp_type fxn
       // should be a basepair
       // find out what the basepair type is and test it
     }
     SUBCASE("test swap residue positions") {
-      Residue residue_1 = get_residue_from_str(lines[0]);
-      Residue residue_2 = get_residue_from_str(lines[1]);
-      // TODO this should be a basepair not a residue
-
       // TODO test swap_residue_positions
     }
     SUBCASE("test invert reference frame") {
-      Residue residue_1 = get_residue_from_str(lines[0]);
-      Residue residue_2 = get_residue_from_str(lines[1]);
-      // TODO this should be a basepair not a residue
+      math::Vector3 vector_1 = {4, -2, 1};
+      basepair_1.move(vector_1);
+      basepair_1.invert_reference_frame();
+      math::Matrix3x3 basepair_1_ref_frame = basepair_1.get_ref_frame();
 
-      // TODO test invert_reference_frame
+      CHECK(basepair_1_ref_frame.get_xx() == doctest::Approx(0));
+      CHECK(basepair_1_ref_frame.get_xy() == doctest::Approx(0));
+      CHECK(basepair_1_ref_frame.get_xz() == doctest::Approx(0));
+      CHECK(basepair_1_ref_frame.get_yx() == doctest::Approx(0));
+      CHECK(basepair_1_ref_frame.get_yy() == doctest::Approx(0));
+      CHECK(basepair_1_ref_frame.get_yz() == doctest::Approx(0));
+      CHECK(basepair_1_ref_frame.get_zx() == doctest::Approx(0));
+      CHECK(basepair_1_ref_frame.get_zy() == doctest::Approx(0));
+      CHECK(basepair_1_ref_frame.get_zz() == doctest::Approx(0));
+      // TODO fix this so the reference frame is actually inverted
     }
     SUBCASE("test basepair constructors") {
-      // TODO this should be a basepair
-
       // TODO test basepair constructors
     }
     SUBCASE("test is_equal") {
-      // TODO test is_equal
-      //Basepair basepair_1 = get_residue_from_str(lines[0]);
+      SUBCASE("test is_equal = true") {}
+      SUBCASE("test is_equal = false") {}
     }
     SUBCASE("test get res1 uuid") {
-      // TODO test get_res_1_uuid
+      auto uuid_1 = basepair_1.get_res1_uuid();
+      CHECK(basepair_1.get_res1_uuid() == uuid_1);
     }
     SUBCASE("test get res2 uuid") {
-      // TODO test get_res_2_uuid
+      auto uuid_2 = basepair_1.get_res2_uuid();
+      CHECK(basepair_1.get_res2_uuid() == uuid_2);
     }
-    SUBCASE("test ref frame") {
-      // TODO test get_ref_frame
+    SUBCASE("test get ref frame") {
+      math::Matrix3x3 basepair_1_ref_frame = basepair_1.get_ref_frame();
+
+      CHECK(basepair_1_ref_frame.get_xx() == doctest::Approx(0));
+      CHECK(basepair_1_ref_frame.get_xy() == doctest::Approx(0));
+      CHECK(basepair_1_ref_frame.get_xz() == doctest::Approx(0));
+      CHECK(basepair_1_ref_frame.get_yx() == doctest::Approx(0));
+      CHECK(basepair_1_ref_frame.get_yy() == doctest::Approx(0));
+      CHECK(basepair_1_ref_frame.get_yz() == doctest::Approx(0));
+      CHECK(basepair_1_ref_frame.get_zx() == doctest::Approx(0));
+      CHECK(basepair_1_ref_frame.get_zy() == doctest::Approx(0));
+      CHECK(basepair_1_ref_frame.get_zz() == doctest::Approx(0));
+      // TODO double check to make sure the right ref_frame coords are in the
+      // doctest expression
     }
     SUBCASE("get res1_c1_prime_coord") {
       // TODO test get res1 c1 prime coord
@@ -211,10 +288,6 @@ TEST_CASE("test all atom ") {
     SUBCASE("get c1_prime_coords") {
       // TODO test c1 prime coords
     }
-    SUBCASE("") {
-
-    }
-
-
+    SUBCASE("") {}
   }
 }

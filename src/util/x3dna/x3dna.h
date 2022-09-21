@@ -145,7 +145,7 @@ public:
   X3dna();
 
   ~X3dna() {
-    // delete s_;
+    // delete _s;
   }
 
 public:
