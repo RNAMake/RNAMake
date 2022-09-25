@@ -21,7 +21,7 @@ jobs:
           command: docker run -d -i --name rnamake_dev rnamake_dev
       - run:
           name: Test
-          command: docker exec rnamake_dev ctest --test-dir RNAMake/cmake/build
+          command: docker exec rnamake_dev ctest -V --test-dir RNAMake/cmake/build
 
 workflows:
   validate_changes:
