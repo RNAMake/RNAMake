@@ -20,3 +20,6 @@ RUN cd RNAMake/cmake/build/ && \
     cmake -G Ninja && \
     ninja && \
     chmod +x ./*
+
+# Prepare test dat for evaluation in Linux
+RUN sed -i.bak 's/\r$//' /RNAMake/unittests/unittest_resources/base/path/test.csv
