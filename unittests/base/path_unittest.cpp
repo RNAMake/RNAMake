@@ -31,7 +31,7 @@ TEST_CASE("test path functions") {
     }
     SUBCASE("test resources path") {
       String path = base::path::resources_path();
-      CHECK(path == base::path::rnamake_path() + "resources/");
+      CHECK(path == base::path::rnamake_path() + "/resources/");
     }
     SUBCASE("test unittest_resource_path") {
       String path = base::path::unittest_resource_path();

@@ -54,7 +54,7 @@ String rnamake_path() {
   return path;
 }
 
-String resources_path() { return rnamake_path() + "resources/"; }
+String resources_path() { return rnamake_path() + "/resources/"; }
 
 String unittest_resource_path() {
   return rnamake_path() + "/unittests/unittest_resources/";
