@@ -5,7 +5,8 @@ RUN     dnf -y --disablerepo '*' --enablerepo=extras swap centos-linux-repos cen
         dnf -y distro-sync && \
         dnf -y install scl-utils scl-utils-build git python3 'dnf-command(config-manager)' && \
         dnf config-manager --enable powertools && \
-        dnf install -y gcc-toolset-9 ninja-build cmake
+        dnf install -y gcc-toolset-9 ninja-build cmake && \
+        dnf install -y sqlite
 RUN     dnf install -y -q glibc-static
 
 SHELL ["/usr/bin/scl", "enable", "gcc-toolset-9"]
