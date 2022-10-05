@@ -215,20 +215,20 @@ public: // methods  //////////////////////////////////////////////////////////
 
   /// @brief Absolute value
   inline Vector3 &absolute_value() {
-    _x = abs(_x);
-    _y = abs(_y);
-    _z = abs(_z);
+    _x = fabs(_x);
+    _y = fabs(_y);
+    _z = fabs(_z);
     return *this;
   }
 
   /// @brief Absolute value copy
-  [[nodiscard]] inline Vector3 get_absolute_value() const { return { abs(_x), abs(_y), abs(_z) }; }
+  [[nodiscard]] inline Vector3 get_absolute_value() const { return { fabs(_x), fabs(_y), fabs(_z) }; }
 
   /// @brief Absolute value via argument (slightly faster)
   inline void get_absolute_value(Vector3 &a /* return */) const {
-    a._x = abs(_x);
-    a._y = abs(_y);
-    a._z = abs(_z);
+    a._x = fabs(_x);
+    a._y = fabs(_y);
+    a._z = fabs(_z);
   }
 
   /// @brief Normalize
