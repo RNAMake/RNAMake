@@ -480,6 +480,13 @@ TEST_CASE("Test xyz vector ") {
     }
 
     SUBCASE("test absolute value") {
+      SUBCASE("test self casting absolute value function") {
+        auto vec = math::Vector3(0.42, -9.32, -4.11);
+        vec.absolute_value();
+        CHECK(vec.get_x() == doctest::Approx(0.42));
+        CHECK(vec.get_y() == doctest::Approx(9.32));
+        CHECK(vec.get_z() == doctest::Approx(4.11));
+      }
       SUBCASE("test no argument fxn") {
         SUBCASE("test simple") {
           auto vector_1 = math::Vector3(1, 0, -1);

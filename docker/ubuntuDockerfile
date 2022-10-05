@@ -1,0 +1,19 @@
+FROM ubuntu:20.04
+
+RUN apt-get update
+RUN yes | apt-get install gcc g++ python3 build-essential
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y cmake
+RUN yes | apt-get install ninja-build
+RUN yes | apt-get install sqlite
+
+RUN mkdir /RNAMake
+ADD . /RNAMake
+ENV RNAMAKE=/RNAMake
+ENV X3DNA=$RNAMAKE/resources/x3dna/linux
+RUN cd RNAMake/cmake/build/ && \
+    python3 ../make_project.py -target linux && \
+    cmake -G Ninja && \
+    ninja && \
+    chmod +x ./*
+
+RUN sed -i.bak 's/\r$//' /RNAMake/unittests/unittest_resources/base/path/test.csv
