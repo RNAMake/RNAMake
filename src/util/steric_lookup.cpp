@@ -125,11 +125,11 @@ void StericLookup::_setup_additions() {
 /// @brief - adds a point to the steric lookup
 void StericLookup::add_point(math::Vector3 const &p) {
   for (auto const &add : _additions) {
-    if (add.get_x() < -200 || add.get_y() < -200 || add.get_z() < -200) {
+    if (p.get_x() < -200 || p.get_y() < -200 || p.get_z() < -200) {
       String msg = "Point is outside the boundary! Bounds are from -200 to 100";
       base::log_and_throw<base::MathException>(msg);
     }
-    if (add.get_x() > 100 || add.get_y() > 100 || add.get_z() > 100) {
+    if (p.get_x() > 100 || p.get_y() > 100 || p.get_z() > 100) {
       String msg = "Point is outside the boundary! Bounds are from -200 to 100";
       base::log_and_throw<base::MathException>(msg);
     }
