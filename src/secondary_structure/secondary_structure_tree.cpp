@@ -16,22 +16,22 @@ namespace secondary_structure {
 int SecondaryStructureTree::add_motif(MotifOP const &m, int parent_index,
                                       int parent_end_index) {
 
-  auto parent = tree_.last_node();
+  auto parent = _tree.last_node();
 
   if (parent_index != -1) {
-    parent = tree_.get_node(parent_index);
+    parent = _tree.get_node(parent_index);
   }
 
   auto m_copy = std::make_shared<Motif>(*m);
   if (parent == nullptr) {
-    return tree_.add_data(m_copy, (int)m_copy->ends().size(), -1, -1);
+    return _tree.add_data(m_copy, (int)m_copy->ends().size(), -1, -1);
   }
 
-  auto avail_pos = tree_.get_available_pos(parent, parent_end_index);
+  auto avail_pos = _tree.get_available_pos(parent, parent_end_index);
   if (avail_pos.size() == 0) {
     throw std::runtime_error("cannot add motif to tree no available pos");
   }
-  return tree_.add_data(m_copy, (int)m_copy->ends().size(), parent->index(),
+  return _tree.add_data(m_copy, (int)m_copy->ends().size(), parent->index(),
                         avail_pos[0]);
 
   return -1;

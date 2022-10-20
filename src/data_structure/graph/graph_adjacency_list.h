@@ -283,13 +283,13 @@ public:
 
   DirectedAdjacencyList(const DirectedAdjacencyList &abj_list)
       : DirectedAdjacencyList() {
-    this->parent_ = abj_list.parent_;
+    this->_parent = abj_list._parent;
     this->_copy_list(abj_list);
   }
 
 public:
   DirectedAdjacencyList &operator=(DirectedAdjacencyList const &abj_list) {
-    this->parent_ = abj_list.parent_;
+    this->_parent = abj_list._parent;
     this->_copy_list(abj_list);
     return *this;
   }
@@ -297,7 +297,7 @@ public:
 public:
   Index add_node(Data &d, Size n_edges) {
     auto ni = BaseClass::add_node(d, n_edges);
-    parent_[ni] = -1;
+    _parent[ni] = -1;
     return ni;
   }
 
@@ -311,23 +311,23 @@ public:
     this->_error_if_node_not_exist(cp.ni);
     auto n_index = add_node(d, n_edges);
     BaseClass::add_connection(cp, ConnectionPoint{n_index, n_edge_index});
-    parent_[n_index] = cp.ni;
+    _parent[n_index] = cp.ni;
     return n_index;
   }
 
   void remove_node(Index ni) {
     BaseClass::remove_node(ni);
-    for (auto &kv : parent_) {
+    for (auto &kv : _parent) {
       if (kv.second == ni) {
         kv.second = -1;
       }
     }
-    parent_.erase(ni);
+    _parent.erase(ni);
   }
 
 public:
   [[nodiscard]] bool has_parent(Index n_index) const {
-    if (parent_.at(n_index) == -1) {
+    if (_parent.at(n_index) == -1) {
       return false;
     } else {
       return true;
@@ -336,11 +336,11 @@ public:
 
   [[nodiscard]] Index get_parent_index(Index ni) const {
     this->_error_if_node_not_exist(ni);
-    if (parent_.at(ni) == -1) {
+    if (_parent.at(ni) == -1) {
       String msg = "node does not have a parent cannot get parent index";
       base::log_and_throw<GraphException>(msg);
     }
-    return parent_.find(ni)->second;
+    return _parent.find(ni)->second;
   }
 
   [[nodiscard]] Index get_parent_end_index(Index ni) const {
@@ -360,7 +360,7 @@ public:
   }
 
 protected:
-  std::map<Index, Index> parent_;
+  std::map<Index, Index> _parent;
 };
 
 template <typename DataType>

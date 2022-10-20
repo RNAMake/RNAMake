@@ -15,7 +15,7 @@ motif::MotifOPs AddedMotifLibrary::_find_motifs(String const &name,
                                                 String const &end_name) {
 
   motif::MotifOPs motifs;
-  for (auto const &m : motifs_) {
+  for (auto const &m : _motifs) {
     if (name.length() > 0 && name != m->name()) {
       continue;
     }

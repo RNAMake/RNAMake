@@ -14,8 +14,8 @@
 #include <stdio.h>
 
 // RNAMake Libraries
-#include "base/types.hpp"
-#include "util/sqlite3_connection.h"
+#include <base/types.hpp>
+#include <util/sqlite/connection.hpp>
 
 namespace resources {
 
@@ -33,7 +33,7 @@ public:
 
   MotifSqliteConnection(String const &path)
       : util::Sqlite3Connection(path),
-        data_(std::make_shared<MotifSqliteData>()) {}
+        _data(std::make_shared<MotifSqliteData>()) {}
 
 public:
   MotifSqliteDataOP const &next();
@@ -41,13 +41,13 @@ public:
   MotifSqliteDataOP const &contains();
 
   inline void clear() {
-    if (rc_ == SQLITE_ROW || rc_ == SQLITE_DONE) {
-      sqlite3_finalize(stmt_);
+    if (_rc == SQLITE_ROW || _rc == SQLITE_DONE) {
+      sqlite3_finalize(_stmt);
     }
   }
 
 private:
-  MotifSqliteDataOP data_;
+  MotifSqliteDataOP _data;
 };
 
 } // namespace resources

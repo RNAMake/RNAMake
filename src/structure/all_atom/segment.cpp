@@ -32,7 +32,7 @@ Segment get_segment_from_str(const String &str) {
     Strings bp_spl = ::base::string::split(bp_str, ",");
     Strings res_spl = ::base::string::split(bp_spl[0], "-");
     // TODO this does not account for chain ids now be longer than one char
-    // We need to think of another strategy.
+    //  We need to think of another strategy.
     String res1_id = res_spl[0].substr(0, 1);
     String res2_id = res_spl[1].substr(0, 1);
     int res1_num = std::stoi(res_spl[0].substr(1));
@@ -42,13 +42,13 @@ Segment get_segment_from_str(const String &str) {
     Strings bp_state_strs = ::base::string::split(bp_spl[1], ";");
     math::Vector3 center = math::vector_from_str(bp_state_strs[0]);
     int count = 0;
-    // center computed wrong sometimes ... 
+    // TODO center computed wrong sometimes ...
     math::Vector3 calc_center = {0, 0, 0};
-    for(const auto & a : res1) {
+    for (const auto &a : res1) {
       calc_center += a.get_coords();
       count += 1;
     }
-    for(const auto & a : res2) {
+    for (const auto &a : res2) {
       calc_center += a.get_coords();
       count += 1;
     }
@@ -170,13 +170,13 @@ void write_segment_to_pdb(const String &fname, const Segment &seg) {
     for (auto const &a : r) {
       char buffer[200];
       math::Vector3 c = a.get_coords();
-      std::sprintf(
-          buffer,
-          "%-6s%5d %-4s%1s%-4c%1c%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f     "
-          " %4s%2s\n",
-          "ATOM", acount, a.get_name().c_str(), "", r.get_name(), chain_id,
-          rnum, "", c.get_x(), c.get_y(), c.get_z(), 1.00, 0.00, "", "");
-      out << buffer;
+      //std::sprintf(
+      //    buffer,
+      //    "%-6s%5d %-4s%1s%-4c%1c%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f     "
+      //    " %4s%2s\n",
+      //    "ATOM", acount, a.get_name().c_str(), "", r.get_name(), chain_id,
+      //    rnum, "", c.get_x(), c.get_y(), c.get_z(), 1.00, 0.00, "", "");
+      //out << buffer;
       acount += 1;
     }
     rnum += 1;
@@ -185,13 +185,16 @@ void write_segment_to_pdb(const String &fname, const Segment &seg) {
 }
 
 void align_segment(const Segment &ref, Segment &seg, Index end_index) {
-  std::cout << seg.get_end_center(0) << std::endl;
+  //std::cout << seg.get_end_center(0) << std::endl;
+
   math::Matrix3x3 rot = math::rotation_between_frames(
       ref.get_end_ref_frame(end_index), seg.get_end_ref_frame(0));
   seg.rotate(rot);
-  std::cout << seg.get_end_center(0) << std::endl;
+
+  //std::cout << seg.get_end_center(0) << std::endl;
+
   seg.move(ref.get_end_center(end_index) - seg.get_end_center(0));
 
 }
 
-}
+} // namespace structure::all_atom

@@ -12,21 +12,28 @@ namespace structure::state {
 
 class Residue {
 public:
-  inline explicit Residue(util::Beads& beads): _beads(std::move(beads)) {}
 
+  /// @brief - constructors
+  inline explicit Residue(util::Beads& beads): _beads(std::move(beads)) {}
+  // constructor
   Residue(const Residue &) = default;
-  
+  // destructor
   ~Residue() = default;
-public:
+
+public: // getters
   typedef util::Beads::const_iterator const_iterator;
 
+  /// @brief - gets the beginning (?) of the
   [[nodiscard]] const_iterator begin() const noexcept { return _beads.begin(); }
 
+  /// @brief -
   [[nodiscard]] const_iterator end() const noexcept { return _beads.end(); }
 
-  [[nodiscard]] inline size_t num_of_beads() const {return _beads.size(); }
+  /// @brief -
+  [[nodiscard]] inline size_t num_of_beads() const { return _beads.size(); }
 
 public:
+  /// @brief - moves the residue by the appropriate vector
   void move(const math::Vector3 &p) {}
 
 

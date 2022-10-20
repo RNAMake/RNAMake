@@ -7,7 +7,7 @@
 //
 
 #include "resources/motif_ensemble_sqlite_connection.h"
-#include "base/settings.h"
+//#include "base/settings.h"
 
 namespace resources {
 
@@ -25,7 +25,7 @@ MotifEnsembleSqliteDataOP const &MotifEnsembleSqliteConnection::next() {
       String(reinterpret_cast<const char *>(sqlite3_column_text(stmt_, 2)));
   rc_ = sqlite3_step(stmt_);
 
-  return data_;
+  return _data;
 }
 
 } // namespace resources

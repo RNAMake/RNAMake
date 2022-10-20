@@ -82,13 +82,13 @@ public: // iterators
   typedef typename data_structure::tree::TreeStatic<
       motif::MotifStateEnsembleOP>::const_iterator const_iterator;
 
-  iterator begin() { return tree_.begin(); }
+  iterator begin() { return _tree.begin(); }
 
-  iterator end() { return tree_.end(); }
+  iterator end() { return _tree.end(); }
 
-  const_iterator begin() const { return tree_.begin(); }
+  const_iterator begin() const { return _tree.begin(); }
 
-  const_iterator end() const { return tree_.end(); }
+  const_iterator end() const { return _tree.end(); }
 
 public: // add functions
   int add_ensemble(motif::MotifStateEnsembleOP const &ensemble,
@@ -97,19 +97,19 @@ public: // add functions
   MotifStateTreeOP to_mst();
 
 public:
-  size_t size() { return tree_.size(); }
+  size_t size() { return _tree.size(); }
 
   MotifStateEnsembleTreeNodeOP const &get_node(int i) {
-    return tree_.get_node(i);
+    return _tree.get_node(i);
   }
 
   inline MotifStateEnsembleTreeNodeOP const &last_node() {
-    return tree_.last_node();
+    return _tree.last_node();
   }
 
 private:
-  data_structure::tree::TreeStatic<motif::MotifStateEnsembleOP> tree_;
-  MotifConnections connections_;
+  data_structure::tree::TreeStatic<motif::MotifStateEnsembleOP> _tree;
+  MotifConnections _connections;
 };
 
 typedef std::shared_ptr<MotifStateEnsembleTree> MotifStateEnsembleTreeOP;
@@ -117,7 +117,7 @@ typedef std::shared_ptr<MotifStateEnsembleTree> MotifStateEnsembleTreeOP;
 class MotifStateEnsembleTreeEnumerator {
 public:
   MotifStateEnsembleTreeEnumerator(MotifStateEnsembleTreeOP const &mtst)
-      : mtst_(mtst) {}
+      : _mtst(mtst) {}
 
   ~MotifStateEnsembleTreeEnumerator() {}
 
@@ -125,7 +125,7 @@ public:
   void record(String fname = "test");
 
 public:
-  MotifStateEnsembleTreeOP mtst_;
+  MotifStateEnsembleTreeOP _mtst;
 };
 
 } // namespace motif_data_structure

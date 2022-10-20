@@ -42,6 +42,7 @@ public: // operators //////////////////////////////////////////////////////////
   inline bool operator!=(Basepair const &bp) const { return !(*this == bp); }
 
 public:
+  /// @brief - checks if two basepairs are equal
   inline bool is_equal(Basepair const &bp, bool check_uuid = true) const {
     if (check_uuid && _res1_uuid != bp._res1_uuid) {
       return false;
@@ -62,6 +63,7 @@ public: // non const methods //////////////////////////////////////////////////
 
 
 public: // getters ////////////////////////////////////////////////////////////
+  /// @brief - gets second base in base pair
   [[nodiscard]] util::Uuid const &get_partner(util::Uuid const &uuid) const {
     if (uuid == _res1_uuid) {
       return _res2_uuid;
@@ -71,17 +73,21 @@ public: // getters ////////////////////////////////////////////////////////////
   }
 
 public: // trivial getters ///////////////////////////////////////////////////
+  /// @brief - gets the basepair type
   [[nodiscard]] inline structure::base::BasepairType const &
   get_bp_type() const {
     return _bp_type;
   }
 
+  /// @brief - gets the UUID of the basepair
   [[nodiscard]] inline util::Uuid const &get_uuid() const { return _uuid; }
 
+  /// @brief - gets the UUID of an individual base
   [[nodiscard]] inline util::Uuid const &get_res1_uuid() const {
     return _res1_uuid;
   }
 
+  /// @brief - gets the UUID of an individual base
   [[nodiscard]] inline util::Uuid const &get_res2_uuid() const {
     return _res2_uuid;
   }

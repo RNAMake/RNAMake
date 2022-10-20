@@ -17,10 +17,10 @@ namespace resources {
 
 String SqliteLibrary::_get_path(String const &libname) {
 
-  name_ = libname;
-  if (libnames_.find(libname) == libnames_.end()) {
+  _name = libname;
+  if (_libnames.find(libname) == _libnames.end()) {
     auto options = String("");
-    for (auto const &kv : libnames_) {
+    for (auto const &kv : _libnames) {
       options += kv.first + " ";
     }
 
@@ -28,7 +28,7 @@ String SqliteLibrary::_get_path(String const &libname) {
         "cannot find library type in sqlite_library: " + libname +
         " valid options are: " + options);
   }
-  return base::resources_path() + libnames_[libname];
+  return base::resources_path() + _libnames[libname];
 }
 
 void build_sqlite_library(String const &path, std::vector<Strings> const &data,
@@ -61,7 +61,7 @@ void build_sqlite_library(String const &path, std::vector<Strings> const &data,
     insert_str += ") VALUES ";
     for (int ii = 0; ii < data.size(); ++ii) {
       const auto &entry = data[ii];
-      auto line = base::join_by_delimiter(entry, "\',\'");
+      auto line = base::string::join(entry, "\',\'");
       line.pop_back();
       line.pop_back();
 

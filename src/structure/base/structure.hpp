@@ -16,17 +16,22 @@ public:
   typedef std::vector<Chain> ChainsOP;
 
 public:
+  /// @brief - constructor
   inline Structure() : _residues(Residues()), _cut_points(Cutpoints()) {}
 
   inline Structure(Residues &res, Cutpoints &cut_points)
       : _residues(std::move(res)), _cut_points(std::move(cut_points)) {}
 
+  /// @brief - deconstructor
   ~Structure() = default;
 
 public: // res iterator
   typedef typename Residues::const_iterator const_iterator;
 
+  /// @brief - gets the start of the residue chain
   const_iterator begin() const { return _residues.begin(); }
+
+  /// @brief - gets the end of the residue chain
   const_iterator end() const { return _residues.end(); }
 
 public: // get_residue interface
@@ -47,6 +52,7 @@ public: // get_residue interface
     throw StructureException(ss.str());   */
   }
 
+  /// @brief - gets a residue by the UUID
   Residue const &get_residue(util::Uuid const &uuid) const {
     for (auto const &r : _residues) {
       if (r.get_uuid() == uuid) {
@@ -56,6 +62,7 @@ public: // get_residue interface
     throw StructureException("cannot find residue by uuid");
   }
 
+  /// @brief - gets a residue by the index
   Residue const &get_residue(Index index) const {
     /*expects<StructureException>(
         index < _residues.size(),
@@ -65,6 +72,7 @@ public: // get_residue interface
     return _residues[index];
   }
 
+  /// @brief - gets the index of a residue
   int get_res_index(Residue const &res) const {
     int i = -1;
     for (auto const &r : _residues) {
@@ -78,6 +86,7 @@ public: // get_residue interface
   }
 
 public:
+  /// @brief -
   ChainsOP get_chains() const {
     auto pos = 0;
     auto res = Residues();
@@ -100,12 +109,16 @@ public:
     return std::make_shared<Chains>(chains);
   }
 
+  /// @brief - retuns cutpoints
   [[nodiscard]] const Cutpoints &get_cutpoints() const { return _cut_points; }
 
+  /// @brief - counts and returns the number of residues
   [[nodiscard]] size_t get_num_residues() const { return _residues.size(); }
 
+  /// @brief - counts and returns the number of chains
   [[nodiscard]] size_t get_num_chains() const { return _cut_points.size(); }
 
+  /// @brief -
   [[nodiscard]] String get_sequence() const {
     auto i = -1;
     auto seq = String("");
@@ -121,6 +134,7 @@ public:
     return seq;
   }
 
+  /// @brief - checks if the residue is the start of a chain
   bool is_residue_start_of_chain(Residue const &r) const {
     auto res_index = get_res_index(r);
     if (res_index == 0) {
@@ -134,6 +148,7 @@ public:
     return false;
   }
 
+  /// @brief - checks if the residue is the end of a chain
   bool is_residue_end_of_chain(Residue const &r) const {
     auto res_index = get_res_index(r);
     for (auto const c : _cut_points) {
@@ -145,13 +160,15 @@ public:
   }
 
 public:
+  /// @brief - moves each residue in a chain by the specified position vector
   void move(const math::Vector3 &p) {
     for (auto &r : _residues) {
       r.move(p);
     }
   }
 
-  void rotate(const math::Matrix3x3 & rot) {
+  /// @brief - rotates each residue in a chain by the specified rotation matrix
+  void rotate(const math::Matrix3x3 &rot) {
     for (auto &r : _residues) {
       r.rotate(rot);
     }
@@ -162,6 +179,6 @@ private:
   Cutpoints _cut_points;
 };
 
-}
+} // namespace structure::base
 
 #endif // RNAMAKE_SRC_STRUCTURE_BASE_STRUCTURE_HPP_

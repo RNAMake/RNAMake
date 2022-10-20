@@ -11,28 +11,28 @@
 namespace motif_search::exhaustive {
 
 void Search::setup_options() {
-  options_.add_option("sterics", true, base::OptionType::BOOL);
-  options_.add_option("max_node_level", 100, base::OptionType::INT);
-  options_.add_option("min_node_level", -1, base::OptionType::INT);
-  options_.add_option("min_size", 0, base::OptionType::INT);
-  options_.add_option("max_size", 1000000, base::OptionType::INT);
-  options_.add_option("max_solutions", 1, base::OptionType::INT);
-  options_.add_option("accept_score", 10, base::OptionType::FLOAT);
-  options_.add_option("min_ss_score", 10000, base::OptionType::FLOAT);
-  options_.add_option("return_best", false, base::OptionType::BOOL);
-  options_.lock_option_adding();
+  _options.add_option("sterics", true, base::OptionType::BOOL);
+  _options.add_option("max_node_level", 100, base::OptionType::INT);
+  _options.add_option("min_node_level", -1, base::OptionType::INT);
+  _options.add_option("min_size", 0, base::OptionType::INT);
+  _options.add_option("max_size", 1000000, base::OptionType::INT);
+  _options.add_option("max_solutions", 1, base::OptionType::INT);
+  _options.add_option("accept_score", 10, base::OptionType::FLOAT);
+  _options.add_option("min_ss_score", 10000, base::OptionType::FLOAT);
+  _options.add_option("return_best", false, base::OptionType::BOOL);
+  _options.lock_option_adding();
 }
 
 void Search::update_var_options() {
-  parameters_.sterics = options_.get_bool("sterics");
-  parameters_.min_size = options_.get_int("min_size");
-  parameters_.max_size = options_.get_int("max_size");
-  parameters_.max_solutions = options_.get_int("max_solutions");
-  parameters_.max_node_level = options_.get_int("max_node_level");
-  parameters_.min_node_level = options_.get_int("min_node_level");
-  parameters_.accept_score = options_.get_float("accept_score");
-  parameters_.min_ss_score = options_.get_float("min_ss_score");
-  parameters_.return_best = options_.get_bool("return_best");
+  _parameters.sterics = _options.get_bool("sterics");
+  _parameters.min_size = _options.get_int("min_size");
+  _parameters.max_size = _options.get_int("max_size");
+  _parameters.max_solutions = _options.get_int("max_solutions");
+  _parameters.max_node_level = _options.get_int("max_node_level");
+  _parameters.min_node_level = _options.get_int("min_node_level");
+  _parameters.accept_score = _options.get_float("accept_score");
+  _parameters.min_ss_score = _options.get_float("min_ss_score");
+  _parameters.return_best = _options.get_bool("return_best");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

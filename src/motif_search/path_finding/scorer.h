@@ -84,9 +84,9 @@ protected:
   }
 
 protected:
-  structure::BasepairStateOP target_, target_flip_;
-  float best_score_, score_, r_diff_, r_diff_flip_, d_diff_, scale_;
-  bool target_an_aligned_end_;
+  structure::BasepairStateOP _target, _target_flip;
+  float _best_score, _score, _r_diff, _r_diff_flip, _d_diff, _scale;
+  bool _target_an_aligned_end;
 };
 
 typedef std::shared_ptr<Scorer> ScorerOP;
@@ -99,7 +99,7 @@ public:
 
 public:
   inline float score(Node const &node) {
-    best_score_ = 1000;
+    _best_score = 1000;
     int i = -1;
     for (auto const &state : node.state()->end_states()) {
       i++;
@@ -107,17 +107,17 @@ public:
         continue;
       }
 
-      score_ = _weighted_score(state, target_, target_flip_);
+      _score = _weighted_score(state, _target, _target_flip);
 
-      if (score_ < best_score_) {
-        best_score_ = score_;
+      if (_score < _best_score) {
+        _best_score = _score;
       }
     }
-    return best_score_;
+    return _best_score;
   }
 
   inline float score(motif::MotifState &ms, Node const &node) {
-    best_score_ = 1000;
+    _best_score = 1000;
     int i = -1;
     for (auto const &state : ms.end_states()) {
       i++;
@@ -125,30 +125,30 @@ public:
         continue;
       }
 
-      score_ = _weighted_score(state, target_, target_flip_);
+      _score = _weighted_score(state, _target, _target_flip);
 
-      if (score_ < best_score_) {
-        best_score_ = score_;
+      if (_score < _best_score) {
+        _best_score = _score;
       }
     }
-    return best_score_;
+    return _best_score;
   }
 };
 
 class AstarScorer : public Scorer {
 public:
   AstarScorer() : Scorer() {
-    g_ = 0;
-    h_ = 0;
-    ss_score_weight_ = 0.10;
-    level_weight_ = 3;
+    _g = 0;
+    _g = 0;
+    _ss_score_weight = 0.10;
+    _level_weight = 3;
   }
 
   Scorer *clone() const { return new AstarScorer(*this); };
 
 public:
   inline float score(Node const &node) {
-    best_score_ = 1000;
+    _best_score = 1000;
     int i = -1;
     for (auto const &state : node.state()->end_states()) {
       i++;
@@ -156,23 +156,23 @@ public:
         continue;
       }
 
-      score_ = _weighted_score(state, target_, target_flip_);
+      _score = _weighted_score(state, _target, _target_flip);
 
-      if (score_ < best_score_) {
-        best_score_ = score_;
+      if (_score < _best_score) {
+        _best_score = _score;
       }
     }
-    h_ = best_score_;
-    g_ = node.ss_score() * ss_score_weight_;
+    _h = _best_score;
+    _g = node.ss_score() * _ss_score_weight;
     if (node.level() > 3) {
-      g_ += node.level() * level_weight_;
+      _g += node.level() * _level_weight;
     }
-    std::cout << h_ << " " << g_ << std::endl;
-    return g_ + h_;
+    std::cout << _h << " " << _g << std::endl;
+    return _g + _h;
   }
 
   inline float score(motif::MotifState &ms, Node const &node) {
-    best_score_ = 1000;
+    _best_score = 1000;
     int i = -1;
     for (auto const &state : ms.end_states()) {
       i++;
@@ -180,24 +180,24 @@ public:
         continue;
       }
 
-      score_ = _weighted_score(state, target_, target_flip_);
+      _score = _weighted_score(state, _target, _target_flip);
 
-      if (score_ < best_score_) {
-        best_score_ = score_;
+      if (_score < _best_score) {
+        _best_score = _score;
       }
     }
 
-    h_ = best_score_;
-    g_ = (node.ss_score() + ms.score()) * ss_score_weight_;
+    _h = _best_score;
+    _g = (node.ss_score() + ms.score()) * _ss_score_weight;
     if (node.level() + 1 > 3) {
-      g_ += (node.level() + 1) * level_weight_;
+      _g += (node.level() + 1) * _level_weight;
     }
-    return h_ + g_;
+    return _h + _g;
   }
 
 private:
-  float g_, h_;
-  float ss_score_weight_, level_weight_;
+  float _g, _h;
+  float _ss_score_weight, _level_weight;
 };
 
 } // namespace path_finding

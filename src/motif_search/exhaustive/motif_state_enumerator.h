@@ -34,7 +34,7 @@ public: // main interface
   motif::MotifStateOPs const &all_states();
 
 public: // setters
-  inline void set_size_limit(int size_limit) { size_limit_ = size_limit; }
+  inline void set_size_limit(int size_limit) { _size_limit = size_limit; }
 
 private:
   void _update_current_states();
@@ -44,16 +44,16 @@ private:
   bool _within_size_limit();
 
 private:
-  Indexes indices_;
-  Indexes maxes_;
-  std::vector<motif::MotifStateOPs> motif_states_;
-  motif::MotifStateOPs current_;
-  structure::BasepairStateOP start_bp_;
-  motif::MotifStateAligner aligner_;
-  int update_;
-  bool updated_;
-  int end_;
-  int size_limit_;
+  Indexes _indices;
+  Indexes _maxes;
+  std::vector<motif::MotifStateOPs> _motif_states;
+  motif::MotifStateOPs _current;
+  structure::BasepairStateOP _start_bp;
+  motif::MotifStateAligner _aligner;
+  int _update;
+  bool _updated;
+  int _end;
+  int _size_limit;
 };
 
 } // namespace exhaustive

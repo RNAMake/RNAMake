@@ -72,7 +72,7 @@ ResidueTypeSet::get_residue_type(String const &resname) const {
   for (auto const &restype : _residue_types) {
     if (resname[0] == ':') {
       // TODO remove these string manipulation, string should be passed as
-      // expected.
+      //  expected.
       // res = replace_char(resname, ':', ' ');
       // res.erase(0, 1);
       if (restype.is_valid_residue_name(res)) {
@@ -90,7 +90,6 @@ ResidueTypeSet::get_residue_type(String const &resname) const {
 }
 
 bool ResidueTypeSet::contains_residue_type(String const &resname) const {
-
   for (auto const &restype : _residue_types) {
     if (restype.is_valid_residue_name(resname)) {
       return true;

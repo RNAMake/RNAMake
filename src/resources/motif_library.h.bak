@@ -13,26 +13,26 @@
 #include <stdio.h>
 
 // RNAMAke Headers
-#include "base/types.hpp"
-#include "motif/motif.h"
-#include "motif/motif_type.h"
-#include "resources/motif_sqlite_connection.h"
-#include "structure/residue_type_set.h"
+#include <base/types.hpp>
+#include <motif/motif.h>
+#include <motif/motif_type.h>
+#include <resources/motif_sqlite_connection.h>
+#include <structure/residue_type_set.h>
 
 typedef std::map<String, MotifOP> StringMotifMap;
 
 class MotifLibrary {
 public:
   MotifLibrary(util::MotifType const &mtype)
-      : connection_(MotifSqliteConnection(get_db_path(mtype))), mtype_(mtype) {
-    mdict_ = StringMotifMap();
-    rts_ = ResidueTypeSet();
+      : _connection(MotifSqliteConnection(get_db_path(mtype))), _mtype(mtype) {
+    _mdict = StringMotifMap();
+    _rts = ResidueTypeSet();
   }
 
   MotifLibrary(String const &path, util::MotifType const &mtype = UNKNOWN)
-      : connection_(MotifSqliteConnection(path)), mtype_(mtype) {
-    mdict_ = StringMotifMap();
-    rts_ = ResidueTypeSet();
+      : _connection(MotifSqliteConnection(path)), _mtype(mtype) {
+    _mdict = StringMotifMap();
+    _rts = ResidueTypeSet();
   }
 
   ~MotifLibrary() {}
@@ -45,11 +45,11 @@ public:
   bool contains_motif(String const &);
 
 public:
-  size_t const size() { return mdict_.size(); }
+  size_t const size() { return _mdict.size(); }
 
   MotifOPs motifs() {
     MotifOPs motifs;
-    for (auto const &kv : mdict_) {
+    for (auto const &kv : _mdict) {
       motifs.push_back(kv.second);
     }
     return motifs;
@@ -59,10 +59,10 @@ private:
   String get_db_path(util::MotifType const &mtype);
 
 private:
-  MotifSqliteConnection connection_;
-  util::MotifType mtype_;
-  StringMotifMap mdict_;
-  ResidueTypeSet rts_;
+  MotifSqliteConnection _connection;
+  util::MotifType _mtype;
+  StringMotifMap _mdict;
+  ResidueTypeSet _rts;
 };
 
 typedef std::shared_ptr<MotifLibrary> MotifLibraryOP;

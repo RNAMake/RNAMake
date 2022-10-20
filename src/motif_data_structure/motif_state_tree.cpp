@@ -71,13 +71,13 @@ MotifStateTree::MotifStateTree(String const &s) : MotifStateTree() {
 
   set_option_value("sterics", false);
 
-  auto spl = base::split_str_by_delimiter(s, "|");
-  auto node_spl = base::split_str_by_delimiter(spl[0], " ");
+  auto spl = base::string::split(s, "|");
+  auto node_spl = base::string::split(spl[0], " ");
   int i = -1;
   int pos = 0;
   for (auto const &e : node_spl) {
     i++;
-    auto n_spl = base::split_str_by_delimiter(e, ",");
+    auto n_spl = base::string::split(e, ",");
     auto ms = motif::MotifStateOP(nullptr);
 
     try {
@@ -108,9 +108,9 @@ MotifStateTree::MotifStateTree(String const &s) : MotifStateTree() {
     return;
   }
 
-  auto connection_spl = base::split_str_by_delimiter(spl[1], " ");
+  auto connection_spl = base::string::split(spl[1], " ");
   for (auto const &c_str : connection_spl) {
-    auto c_spl = base::split_str_by_delimiter(c_str, ",");
+    auto c_spl = base::string::split(c_str, ",");
     connections_.add_connection(std::stoi(c_spl[0]), std::stoi(c_spl[1]),
                                 c_spl[2], c_spl[3]);
   }

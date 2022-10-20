@@ -33,12 +33,15 @@ public: // trival getters ////////////////////////////////////////////////////
     return _aligned_end_index;
   }
 
+  /// @brief - gets the UUID of the segment in the structure
   [[nodiscard]] inline util::Uuid const &get_uuid() const { return _uuid; }
 
+  /// @brief - gets the type of the segment in the structure
   [[nodiscard]] inline util::MotifType get_segment_type() const {
     return _segment_type;
   }
 
+  /// @brief - ???
   [[nodiscard]] inline const Basepair &get_aligned_end() const {
     return this->_basepairs[this->_end_indexes[_aligned_end_index]];
   }

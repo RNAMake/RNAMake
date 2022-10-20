@@ -15,7 +15,7 @@
 
 // RNAMake Libraries
 #include "base/types.hpp"
-#include "util/sqlite3_connection.h"
+#include "util/sqlite/connection.hpp"
 
 namespace resources {
 
@@ -33,7 +33,7 @@ public:
 
   SegmentSqliteConnection(String const &path)
       : util::Sqlite3Connection(path),
-        data_(std::make_shared<SegmentSqliteData>()) {}
+        _data(std::make_shared<SegmentSqliteData>()) {}
 
 public:
   SegmentSqliteDataOP const &next();
@@ -41,13 +41,13 @@ public:
   SegmentSqliteDataOP const &contains();
 
   inline void clear() {
-    if (rc_ == SQLITE_ROW || rc_ == SQLITE_DONE) {
-      sqlite3_finalize(stmt_);
+    if (_rc == SQLITE_ROW || _rc == SQLITE_DONE) {
+      sqlite3_finalize(_stmt);
     }
   }
 
 private:
-  SegmentSqliteDataOP data_;
+  SegmentSqliteDataOP _data;
 };
 
 } // namespace resources

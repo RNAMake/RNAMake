@@ -6,50 +6,50 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include <resources/segment_sqlite_connection.h>
 #include <base/paths.hpp>
+#include <resources/segment_sqlite_connection.h>
 
 namespace resource_management {
 
 SegmentSqliteDataOP const &SegmentSqliteConnection::next() {
-  if (rc_ != SQLITE_ROW) {
-    sqlite3_finalize(stmt_);
-    data_->data = "";
-    return data_;
+  if (_rc != SQLITE_ROW) {
+    sqlite3_finalize(_stmt);
+    _data->data = "";
+    return _data;
   }
-  data_->data =
-      String(reinterpret_cast<const char *>(sqlite3_column_text(stmt_, 0)));
-  data_->name =
-      String(reinterpret_cast<const char *>(sqlite3_column_text(stmt_, 1)));
-  data_->end_name =
-      String(reinterpret_cast<const char *>(sqlite3_column_text(stmt_, 2)));
-  data_->end_id =
-      String(reinterpret_cast<const char *>(sqlite3_column_text(stmt_, 3)));
-  data_->id =
-      String(reinterpret_cast<const char *>(sqlite3_column_text(stmt_, 4)));
-  rc_ = sqlite3_step(stmt_);
-  return data_;
+  _data->data =
+      String(reinterpret_cast<const char *>(sqlite3_column_text(_stmt, 0)));
+  _data->name =
+      String(reinterpret_cast<const char *>(sqlite3_column_text(_stmt, 1)));
+  _data->end_name =
+      String(reinterpret_cast<const char *>(sqlite3_column_text(_stmt, 2)));
+  _data->end_id =
+      String(reinterpret_cast<const char *>(sqlite3_column_text(_stmt, 3)));
+  _data->id =
+      String(reinterpret_cast<const char *>(sqlite3_column_text(_stmt, 4)));
+  _rc = sqlite3_step(_stmt);
+  return _data;
 }
 
 SegmentSqliteDataOP const &SegmentSqliteConnection::contains() {
-  if (rc_ != SQLITE_ROW) {
-    sqlite3_finalize(stmt_);
-    data_->data = "";
-    return data_;
+  if (_rc != SQLITE_ROW) {
+    sqlite3_finalize(_stmt);
+    _data->data = "";
+    return _data;
   }
-  data_->data =
-      String(reinterpret_cast<const char *>(sqlite3_column_text(stmt_, 0)));
-  data_->name =
-      String(reinterpret_cast<const char *>(sqlite3_column_text(stmt_, 1)));
-  data_->end_name =
-      String(reinterpret_cast<const char *>(sqlite3_column_text(stmt_, 2)));
-  data_->end_id =
-      String(reinterpret_cast<const char *>(sqlite3_column_text(stmt_, 3)));
-  data_->id =
-      String(reinterpret_cast<const char *>(sqlite3_column_text(stmt_, 4)));
+  _data->data =
+      String(reinterpret_cast<const char *>(sqlite3_column_text(_stmt, 0)));
+  _data->name =
+      String(reinterpret_cast<const char *>(sqlite3_column_text(_stmt, 1)));
+  _data->end_name =
+      String(reinterpret_cast<const char *>(sqlite3_column_text(_stmt, 2)));
+  _data->end_id =
+      String(reinterpret_cast<const char *>(sqlite3_column_text(_stmt, 3)));
+  _data->id =
+      String(reinterpret_cast<const char *>(sqlite3_column_text(_stmt, 4)));
 
-  sqlite3_finalize(stmt_);
-  return data_;
+  sqlite3_finalize(_stmt);
+  return _data;
 }
 
-} // namespace resources
+} // namespace resource_management

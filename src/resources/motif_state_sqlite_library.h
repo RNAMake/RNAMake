@@ -11,7 +11,7 @@
 
 #include <stdio.h>
 
-#include "motif/motif_state.h"
+//#include "motif/motif_state.h"
 #include "resources/motif_sqlite_connection.h"
 #include "resources/motif_sqlite_library.h"
 #include "util/random_number_generator.h"
@@ -22,13 +22,13 @@ class MotifStateSqliteLibrary : public SqliteLibrary {
 public:
   MotifStateSqliteLibrary(String const &libname) {
 
-    libnames_ = get_libnames();
-    rng_ = util::RandomNumberGenerator();
-    name_ = libname;
+    _libnames = get_libnames();
+    _rng = util::RandomNumberGenerator();
+    _name = libname;
     auto path = _get_path(libname);
     MotifSqliteConnection conn(path);
-    connection_ = conn;
-    max_size_ = connection_.count();
+    _connection = conn;
+    _max_size = _connection.count();
   }
 
   ~MotifStateSqliteLibrary() {}
@@ -37,26 +37,26 @@ public: // iterator stuff
   class iterator {
   public:
     iterator(std::map<String, motif::MotifStateOP>::iterator const &i)
-        : i_(i) {}
+        : _i(i) {}
 
     iterator operator++() {
-      i_++;
+      _i++;
       return *this;
     }
 
-    motif::MotifStateOP const &operator*() { return i_->second; }
+    motif::MotifStateOP const &operator*() { return _i->second; }
 
-    bool operator==(iterator const &rhs) const { return i_ == rhs.i_; }
+    bool operator==(iterator const &rhs) const { return _i == rhs._i; }
 
-    bool operator!=(iterator const &rhs) const { return i_ != rhs.i_; }
+    bool operator!=(iterator const &rhs) const { return _i != rhs._i; }
 
   private:
-    std::map<String, motif::MotifStateOP>::iterator i_;
+    std::map<String, motif::MotifStateOP>::iterator _i;
   };
 
-  iterator begin() { return iterator(data_.begin()); }
+  iterator begin() { return iterator(_data.begin()); }
 
-  iterator end() { return iterator(data_.end()); }
+  iterator end() { return iterator(_data.end()); }
 
 public:
   static StringStringMap get_libnames();
@@ -80,17 +80,17 @@ public:
 
   void load_all(int limit = 99999);
 
-  String const &get_name() { return name_; }
+  String const &get_name() { return _name; }
 
 private:
   String _generate_query(String const &, String const &, String const &,
                          String const &);
 
 private:
-  MotifSqliteConnection connection_;
-  std::map<String, motif::MotifStateOP> data_;
-  util::RandomNumberGenerator rng_;
-  String name_;
+  MotifSqliteConnection _connection;
+  std::map<String, motif::MotifStateOP> _data;
+  util::RandomNumberGenerator _rng;
+  String _name;
 };
 
 typedef std::shared_ptr<MotifStateSqliteLibrary> MotifStateSqliteLibraryOP;

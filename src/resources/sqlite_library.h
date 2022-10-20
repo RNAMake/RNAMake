@@ -43,9 +43,9 @@ protected:
   String _get_path(String const &);
 
 protected:
-  StringStringMap libnames_;
-  String name_;
-  int max_size_;
+  StringStringMap _libnames;
+  String _name;
+  int _max_size;
 };
 
 void build_sqlite_library(String const &, std::vector<Strings> const &,

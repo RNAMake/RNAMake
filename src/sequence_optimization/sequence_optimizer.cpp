@@ -10,20 +10,22 @@
 #include "motif_data_structure/motif_topology.h"
 #include "secondary_structure/secondary_structure_parser.h"
 
-namespace sequence_optimization {
 
 /*
+namespace sequence_optimization {
+
+
 void
 SequenceOptimizer::setup_options() {
-    options_.add_option("sub_sequence", String(""), base::OptionType::STRING);
-    options_.add_option("solutions", 100, base::OptionType::INT);
-    options_.lock_option_adding();
+    _options.add_option("sub_sequence", String(""), base::OptionType::STRING);
+    _options.add_option("solutions", 100, base::OptionType::INT);
+    _options.lock_option_adding();
     update_var_options();
 }
 
 void
 SequenceOptimizer::update_var_options() {
-    solutions_ = get_int_option("solutions");
+    _solutions = get_int_option("solutions");
 
 }
 
@@ -46,33 +48,33 @@ SequenceOptimizer::get_optimized_sequences(
     auto start_dss = mg->designable_secondary_structure();
 
 
-    designer_ = eternabot::SequenceDesigner();
-    designer_.setup();
+    _designer = eternabot::SequenceDesigner();
+    _designer.setup();
 
-    //hack to only optimize a part of the sequence at a time, so vienna doesn't
-get confused
-    //with multiple strands
+    // hack to only optimize a part of the sequence at a time, so vienna doesn't
+    // get confused
+    // with multiple strands
     if(get_string_option("sub_sequence") != "") {
-        sub_sequence_ = true;
+        _sub_sequence = true;
         auto spl =
-base::split_str_by_delimiter(get_string_option("sub_sequence"), ":"); start_ =
-std::stoi(spl[0]); end_   = std::stoi(spl[1]); if (end_ == -1) { end_ =
+base::string::split(get_string_option("sub_sequence"), ":"); _start =
+std::stoi(spl[0]); _end   = std::stoi(spl[1]); if (_end == -1) { _end =
 start_dss->sequence().length();
         }
 
-        auto seq = start_dss->sequence().substr(start_, (end_-start_));
-        auto db  = start_dss->dot_bracket().substr(start_, (end_-start_));
+        auto seq = start_dss->sequence().substr(_start, (_end-_start));
+        auto db  = start_dss->dot_bracket().substr(_start, (_end-_start));
         auto parser = secondary_structure::Parser();
         auto new_p = parser.parse_to_pose(seq, db);
         start_dss = new_p;
     }
 
-    designer_results_ = designer_.design(start_dss);
+    _designer_results = _designer.design(start_dss);
     auto org_seq = dss->sequence();
     auto designed_seq = String("");
     int i = 0;
     int new_node_j = 0;
-    math::Point d1, d2;
+    math::Vector3 d1, d2;
     float dist;
 
     auto best_seq = String();
@@ -84,7 +86,7 @@ start_dss->sequence().length();
 
     auto node_1 = mg->get_node(uuid_1);
 
-    for(auto const & r : designer_results_) {
+    for(auto const & r : _designer_results) {
         i++;
 
 
@@ -94,12 +96,12 @@ start_dss->sequence().length();
         dss->replace_sequence(designed_seq);
         mg->replace_helical_sequence(dss);
 
-        mt_ = graph_to_tree(mg, unaligned_nodes[0],
+        _mt = graph_to_tree(mg, unaligned_nodes[0],
                             node_1->data()->ends()[end_1]);
 
 
-        end_state_1 = mt_->get_node(uuid_1)->data()->ends()[end_1]->state();
-        end_state_2 = mt_->get_node(uuid_2)->data()->ends()[end_2]->state();
+        end_state_1 = _mt->get_node(uuid_1)->data()->ends()[end_1]->state();
+        end_state_2 = _mt->get_node(uuid_2)->data()->ends()[end_2]->state();
         end_state_2->flip();
         end_state_2_flip =
 std::make_shared<structure::BasepairState>(end_state_2->copy());
@@ -108,7 +110,7 @@ std::make_shared<structure::BasepairState>(end_state_2->copy());
 end_state_2_flip);
 
         sols.push_back(std::make_shared<OptimizedSequence>(designed_seq, dist,
-r->score)); if(i > solutions_-1) { break;
+r->score)); if(i > _solutions-1) { break;
         }
 
     }
@@ -122,19 +124,21 @@ SequenceOptimizer::get_final_sequence(
     String const & designed_seq,
     String const & org_seq) {
 
-    if(!sub_sequence_) { return designed_seq; }
+    if(!_sub_sequence) { return designed_seq; }
 
     String full_seq = "";
-    if(start_ > 0) {
-        full_seq += org_seq.substr(0, start_);
+    if(_start > 0) {
+        full_seq += org_seq.substr(0, _start);
     }
     full_seq += designed_seq;
-    if(end_ < org_seq.length()) {
-        full_seq += org_seq.substr(end_);
+    if(_end < org_seq.length()) {
+        full_seq += org_seq.substr(_end);
     }
     return full_seq;
 
 }
-*/
+
 
 }
+*/
+

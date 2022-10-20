@@ -17,7 +17,9 @@
 #include <external/sole/sole.hpp>
 
 namespace util {
+
 typedef sole::uuid Uuid;
+
 Uuid generate_uuid();
 
 Uuid uuid_from_str(const String &);

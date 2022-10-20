@@ -172,7 +172,7 @@ TEST_CASE("Test hashing of 6D coords") {
     auto in = std::ifstream();
     in.open(path);
     auto line = String();
-    int i = -1;
+    auto i = -1;
 
     auto constraints = std::array<math::Real2, 6>{
         math::Real2{-3.5, 5.25},  math::Real2{-3.5, 4.75},

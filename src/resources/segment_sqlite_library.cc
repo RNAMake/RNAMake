@@ -39,22 +39,22 @@ structure::SegmentOP SegmentSqliteLibrary::get(String const &name,
 
   std::cout << "Test new Doctest \n";
   auto query = _generate_query(name, end_id, end_name, id);
-  connection_.query(query);
-  auto row = connection_.next();
+  _connection.query(query);
+  auto row = _connection.next();
 
   if (row->data.length() == 0) {
     throw SqliteLibraryException(query + ": returned no rows");
   }
 
-  connection_.clear();
+  _connection.clear();
 
-  if (data_.find(row->id) == data_.end()) {
-    data_[row->id] = std::make_shared<structure::Segment>(
+  if (_data.find(row->id) == _data.end()) {
+    _data[row->id] = std::make_shared<structure::Segment>(
         row->data,
         structure::ResidueTypeSetManager::getInstance().residue_type_set());
   }
 
-  auto m = std::make_shared<structure::Segment>(*data_[row->id]);
+  auto m = std::make_shared<structure::Segment>(*_data[row->id]);
 
   // TODO Uncomment this
   //      m->new_uuids();
@@ -69,25 +69,25 @@ structure::SegmentOPs SegmentSqliteLibrary::get_multi(String const &name,
 
   auto segments = structure::SegmentOPs();
   auto query = _generate_query(name, end_id, end_name, id);
-  connection_.query(query);
-  auto row = connection_.next();
+  _connection.query(query);
+  auto row = _connection.next();
 
   if (row->data.length() == 0) {
     throw SqliteLibraryException(query + ": returned no rows");
   }
 
   while (row->data.length() != 0) {
-    if (data_.find(row->id) == data_.end()) {
-      data_[row->id] = std::make_shared<structure::Segment>(
+    if (_data.find(row->id) == _data.end()) {
+      _data[row->id] = std::make_shared<structure::Segment>(
           row->data,
           structure::ResidueTypeSetManager::getInstance().residue_type_set());
     }
 
-    segments.push_back(std::make_shared<structure::Segment>(*data_[row->id]));
-    row = connection_.next();
+    segments.push_back(std::make_shared<structure::Segment>(*_data[row->id]));
+    row = _connection.next();
   }
 
-  connection_.clear();
+  _connection.clear();
 
   for (auto const &m : segments) {
     m->new_uuids();
@@ -100,8 +100,8 @@ int SegmentSqliteLibrary::contains(String const &name, String const &end_id,
                                    String const &end_name, String const &id) {
 
   String query = _generate_query(name, end_id, end_name, id);
-  connection_.query(query);
-  auto row = connection_.contains();
+  _connection.query(query);
+  auto row = _connection.contains();
   int length = (int)row->data.length();
 
   if (length == 0) {
@@ -112,14 +112,14 @@ int SegmentSqliteLibrary::contains(String const &name, String const &end_id,
 }
 
 structure::SegmentOP SegmentSqliteLibrary::get_random() {
-  int pos = 1 + rng_.randrange(max_size_ - 1);
+  int pos = 1 + _rng.randrange(_max_size - 1);
   return get("", "", "", std::to_string(pos));
 }
 
 void SegmentSqliteLibrary::load_all(int limit) {
 
   int count = 0;
-  for (int i = 1; i < max_size_; i++) {
+  for (int i = 1; i < _max_size; i++) {
     get("", "", "", std::to_string(i));
     if (count > limit) {
       break;

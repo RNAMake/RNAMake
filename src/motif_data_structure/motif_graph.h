@@ -13,7 +13,7 @@
 #include <stdio.h>
 
 // RNAMake Headers
-#include "base/option.h"
+//#include "base/option.h"
 #include "data_structure/graph/graph.h"
 #include "motif/motif.h"
 #include "motif_data_structure/motif_merger.h"
@@ -52,10 +52,10 @@ public:
 
   iterator begin() {
     _update_align_list();
-    return align_list_.begin();
+    return _align_list.begin();
   }
 
-  iterator end() { return align_list_.end(); }
+  iterator end() { return _align_list.end(); }
 
 private: // add function helpers
   data_structure::graph::GraphNodeOP<motif::MotifOP> _get_parent(String const &,
@@ -96,20 +96,20 @@ public: // add functions
 
 public:
   inline int parent_index(int node_index) {
-    if (aligned_.find(node_index) == aligned_.end()) {
+    if (_aligned.find(node_index) == _aligned.end()) {
       return -1;
     }
-    if (aligned_[node_index] == 0) {
+    if (_aligned[node_index] == 0) {
       return -1;
     }
     return get_node(node_index)->connections()[0]->partner(node_index)->index();
   }
 
   inline int parent_end_index(int node_index) {
-    if (aligned_.find(node_index) == aligned_.end()) {
+    if (_aligned.find(node_index) == _aligned.end()) {
       return -1;
     }
-    if (aligned_[node_index] == 0) {
+    if (_aligned[node_index] == 0) {
       return -1;
     }
     auto pi = parent_index(node_index);
@@ -122,26 +122,26 @@ public: // remove functions
   void remove_level(int level);
 
 public: // graph wrappers
-  inline size_t size() { return graph_.size(); }
+  inline size_t size() { return _graph.size(); }
 
-  inline void increase_level() { return graph_.increase_level(); }
+  inline void increase_level() { return _graph.increase_level(); }
 
   inline data_structure::graph::GraphNodeOP<motif::MotifOP> const &last_node() {
-    return graph_.last_node();
+    return _graph.last_node();
   }
 
   inline data_structure::graph::GraphNodeOP<motif::MotifOP> oldest_node() {
-    return graph_.oldest_node();
+    return _graph.oldest_node();
   }
 
   inline data_structure::graph::GraphNodeOP<motif::MotifOP> const &
   get_node(int i) const {
-    return graph_.get_node(i);
+    return _graph.get_node(i);
   }
 
   inline data_structure::graph::GraphNodeOP<motif::MotifOP> const
   get_node(util::Uuid const &uuid) const {
-    for (auto const &n : graph_) {
+    for (auto const &n : _graph) {
       if (n->data()->id() == uuid) {
         return n;
       }
@@ -153,7 +153,7 @@ public: // graph wrappers
   inline data_structure::graph::GraphNodeOP<motif::MotifOP> const
   get_node(String const &m_name) const {
     auto node = data_structure::graph::GraphNodeOP<motif::MotifOP>(nullptr);
-    for (auto const &n : graph_) {
+    for (auto const &n : _graph) {
       if (n->data()->name() == m_name) {
         if (node != nullptr) {
           throw MotifGraphException("cannot get node with name: " + m_name +
@@ -174,7 +174,7 @@ public: // graph wrappers
     return node;
   }
 
-  inline void set_index(int index) { graph_.index(index); }
+  inline void set_index(int index) { _graph.index(index); }
 
 public: // designing functions
   void replace_ideal_helices();
@@ -193,10 +193,10 @@ public: // designing functions
 
   secondary_structure::PoseOP designable_secondary_structure() {
     _update_merger();
-    auto ss = merger_->secondary_structure();
+    auto ss = _merger->secondary_structure();
     auto ss_r = secondary_structure::ResidueOP(nullptr);
 
-    for (auto const &n : graph_) {
+    for (auto const &n : _graph) {
       if (n->data()->name() != "HELIX.IDEAL") {
         continue;
       }
@@ -231,7 +231,7 @@ public: // misc functions
 public: // getters
   inline util::Beads beads() {
     util::Beads beads;
-    for (auto const &n : graph_.nodes()) {
+    for (auto const &n : _graph.nodes()) {
       std::copy(n->data()->beads().begin(), n->data()->beads().end(),
                 std::inserter(beads, beads.end()));
     }
@@ -248,18 +248,18 @@ public: // getters
   unaligned_nodes() const;
 
   // this is bad
-  std::map<int, int> aligned() { return aligned_; }
+  std::map<int, int> aligned() { return _aligned; }
 
   data_structure::graph::GraphConnectionOPs<motif::MotifOP> const &
   connections() {
-    return graph_.connections();
+    return _graph.connections();
   }
 
 public: // Motif Merger Wrappers
   inline structure::RNAStructureOP const &get_structure() {
     try {
       _update_merger();
-      return merger_->get_structure();
+      return _merger->get_structure();
     } catch (MotifMergerException) {
       throw MotifGraphException(
           "cannot produce merged structure it is likely you have created a "
@@ -271,11 +271,11 @@ public: // Motif Merger Wrappers
   secondary_structure::PoseOP secondary_structure() {
 
     _update_merger();
-    return merger_->secondary_structure();
+    return _merger->secondary_structure();
 
     try {
       _update_merger();
-      return merger_->secondary_structure();
+      return _merger->secondary_structure();
     } catch (MotifMergerException) {
       throw MotifGraphException("cannot produce merged secondary structure it "
                                 "is likely you have created a ring "
@@ -289,7 +289,7 @@ public: // Motif Merger Wrappers
 
     try {
       _update_merger();
-      return merger_->to_pdb(fname, renumber, close_chains, conect_statement);
+      return _merger->to_pdb(fname, renumber, close_chains, conect_statement);
     } catch (MotifMergerException) {
       throw MotifGraphException("cannot produce merged structure for a pdb it "
                                 "is likely you have created a ring "
@@ -310,24 +310,24 @@ public: // Motif Merger Wrappers
 
 public: // Options Wrappers
   inline float get_int_option(String const &name) {
-    return options_.get_int(name);
+    return _options.get_int(name);
   }
 
   inline float get_float_option(String const &name) {
-    return options_.get_float(name);
+    return _options.get_float(name);
   }
 
   inline String get_string_option(String const &name) {
-    return options_.get_string(name);
+    return _options.get_string(name);
   }
 
   inline bool get_bool_option(String const &name) {
-    return options_.get_bool(name);
+    return _options.get_bool(name);
   }
 
   template <typename T>
   void set_option_value(String const &name, T const &val) {
-    options_.set_value(name, val);
+    _options.set_value(name, val);
     update_var_options();
   }
 
@@ -342,16 +342,16 @@ private:
   void _setup_from_str(String const &);
 
 private:
-  data_structure::graph::GraphStatic<motif::MotifOP> graph_;
-  data_structure::graph::GraphNodeOPs<motif::MotifOP> align_list_;
-  MotifMergerOP merger_;
-  base::Options options_;
-  std::map<int, int> aligned_;
-  int update_merger_;
-  int update_align_list_;
+  data_structure::graph::GraphStatic<motif::MotifOP> _graph;
+  data_structure::graph::GraphNodeOPs<motif::MotifOP> _align_list;
+  MotifMergerOP _merger;
+  base::Options _options;
+  std::map<int, int> _aligned;
+  int _update_merger;
+  int _update_align_list;
   // options
-  float clash_radius_;
-  bool sterics_;
+  float _clash_radius;
+  bool _sterics;
 };
 
 typedef std::shared_ptr<MotifGraph> MotifGraphOP;

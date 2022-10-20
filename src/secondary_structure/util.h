@@ -12,6 +12,7 @@
 #include <stdio.h>
 
 // RNAMake Headers
+#include <base/types.hpp>
 #include "secondary_structure/pose.h"
 #include "secondary_structure/rna_structure.h"
 

@@ -26,10 +26,10 @@ public:
 public:
   Search(ScorerOP scorer, SolutionToplogy const &sol_top,
          SolutionFilterOP filter)
-      : motif_search::Search("exhaustive"), scorer_(scorer->clone()),
-        enumerator_(MotifStateEnumerator(sol_top)), filter_(filter->clone()),
-        parameters_(Parameters()) {
-    finished_ = false;
+      : motif_search::Search("exhaustive"), _scorer(scorer->clone()),
+        _enumerator(MotifStateEnumerator(sol_top)), _filter(filter->clone()),
+        _parameters(Parameters()) {
+    _finished = false;
     setup_options();
     update_var_options();
   }
@@ -40,43 +40,43 @@ public:
 
 public:
   void setup(ProblemOP p) {
-    enumerator_.set_size_limit(get_int_option("max_size"));
-    enumerator_.start(p->start);
-    scorer_->set_target(p->end, p->target_an_aligned_end);
+    _enumerator.set_size_limit(get_int_option("max_size"));
+    _enumerator.start(p->start);
+    _scorer->set_target(p->end, p->target_an_aligned_end);
   }
 
   void start() {}
 
-  bool finished() { return finished_; }
+  bool finished() { return _finished; }
 
   SolutionOP next() {
     auto best = 1000.0f;
-    while (!enumerator_.finished()) {
-      current_ = enumerator_.top_state();
-      score_ = scorer_->score(*current_->end_states()[1]);
+    while (!_enumerator.finished()) {
+      _current = _enumerator.top_state();
+      _score = _scorer->score(*_scorer->end_states()[1]);
 
-      if (score_ < parameters_.accept_score) {
+      if (_score < _parameters.accept_score) {
         auto msg = _get_graph_from_solution();
-        enumerator_.next();
+        _enumerator.next();
         _get_solution_motif_names(msg);
-        if (!filter_->accept(motif_names_)) {
+        if (!_filter->accept(_motif_names)) {
           continue;
         }
 
-        return std::make_shared<motif_search::Solution>(msg, score_);
+        return std::make_shared<motif_search::Solution>(msg, _score);
       }
-      enumerator_.next();
+      _enumerator.next();
     }
 
-    finished_ = true;
+    _finished = true;
     return SolutionOP(nullptr);
   }
 
 private:
   void _get_solution_motif_names(motif_data_structure::MotifStateGraphOP msg) {
-    motif_names_.resize(0);
+    _motif_names.resize(0);
     for (auto const &n : *msg) {
-      motif_names_.push_back(n->data()->name());
+      _motif_names.push_back(n->data()->name());
     }
   }
 
@@ -88,14 +88,14 @@ protected:
   void update_var_options();
 
 private:
-  Parameters parameters_;
-  ScorerOP scorer_;
-  SolutionFilterOP filter_;
-  MotifStateEnumerator enumerator_;
-  motif::MotifStateOP current_;
-  float score_;
-  bool finished_;
-  Strings motif_names_;
+  Parameters _parameters;
+  ScorerOP _scorer;
+  SolutionFilterOP _filter;
+  MotifStateEnumerator _enumerator;
+  motif::MotifStateOP _current;
+  float _score;
+  bool _finished;
+  Strings _motif_names;
 };
 
 } // namespace exhaustive

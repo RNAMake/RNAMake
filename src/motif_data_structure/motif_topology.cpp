@@ -20,8 +20,8 @@ MotifTreeOP GraphtoTree::convert(
     int start_end_index,
     data_structure::graph::GraphNodeOP<motif::MotifOP> last_node) {
 
-  mt_ = std::make_shared<MotifTree>();
-  mt_->set_option_value("sterics", false);
+  _mt = std::make_shared<MotifTree>();
+  _mt->set_option_value("sterics", false);
 
   auto start_node = _get_start_node(mg, start, start_end_index);
   auto last_node_to_add = _GraphtoTreeNodeOP(nullptr);
@@ -44,7 +44,7 @@ MotifTreeOP GraphtoTree::convert(
 
     int found = 0;
     try {
-      mt_->get_node(current->motif->id());
+      _mt->get_node(current->motif->id());
       found = 1;
     } catch (MotifTreeException const &e) {
     }
@@ -54,9 +54,9 @@ MotifTreeOP GraphtoTree::convert(
     }
 
     if (current->parent == nullptr) {
-      mt_->add_motif(current->motif);
+      _mt->add_motif(current->motif);
     } else {
-      auto parent = mt_->get_node(current->parent->data()->id());
+      auto parent = _mt->get_node(current->parent->data()->id());
       auto new_parent_index = parent->index();
 
       // currently a hack to make sure that if we start building not at an end
@@ -72,7 +72,7 @@ MotifTreeOP GraphtoTree::convert(
         continue;
       }
 
-      auto pos = mt_->add_motif(current->motif, new_parent_index,
+      auto pos = _mt->add_motif(current->motif, new_parent_index,
                                 current->parent_end_index);
       if (pos == -1) {
         continue;
@@ -84,7 +84,7 @@ MotifTreeOP GraphtoTree::convert(
       // if(n == last_node_to_add) { continue; }
       int found = 0;
       try {
-        mt_->get_node(n->motif->id());
+        _mt->get_node(n->motif->id());
         found = 1;
       } catch (MotifTreeException const &e) {
       }
@@ -101,8 +101,8 @@ MotifTreeOP GraphtoTree::convert(
 
   if (last_node_to_add != nullptr) {
     auto new_parent_index =
-        mt_->get_node(last_node_to_add->parent->data()->id())->index();
-    mt_->add_motif(last_node_to_add->motif, new_parent_index,
+        _mt->get_node(last_node_to_add->parent->data()->id())->index();
+    _mt->add_motif(last_node_to_add->motif, new_parent_index,
                    last_node_to_add->parent_end_index);
   }
 
@@ -120,8 +120,8 @@ MotifTreeOP GraphtoTree::convert(
       auto mt_n1 = data_structure::tree::TreeNodeOP<motif::MotifOP>(nullptr);
       auto mt_n2 = data_structure::tree::TreeNodeOP<motif::MotifOP>(nullptr);
       try {
-        mt_n1 = mt_->get_node(n_id);
-        mt_n2 = mt_->get_node(pn_id);
+        mt_n1 = _mt->get_node(n_id);
+        mt_n2 = _mt->get_node(pn_id);
       } catch (MotifTreeException const &e) {
         continue;
       }
@@ -140,7 +140,7 @@ MotifTreeOP GraphtoTree::convert(
 
       auto n1_end_name = n->data()->end_name(n1_ei);
 
-      if (mt_->connections().in_connection(mt_n1->index(), n1_end_name)) {
+      if (_mt->connections().in_connection(mt_n1->index(), n1_end_name)) {
         continue;
       }
 
@@ -151,19 +151,19 @@ MotifTreeOP GraphtoTree::convert(
 
       auto n2_end_name = partner->data()->end_name(n2_ei);
 
-      if (mt_->connections().in_connection(mt_n2->index(), n2_end_name)) {
+      if (_mt->connections().in_connection(mt_n2->index(), n2_end_name)) {
         continue;
       }
 
       // std::cout << mt_n1->index() << " " << mt_n2->index() << " " <<
       // n1_end_name << " " << n2_end_name << std::endl;
-      mt_->add_connection(mt_n1->index(), mt_n2->index(), n1_end_name,
+      _mt->add_connection(mt_n1->index(), mt_n2->index(), n1_end_name,
                           n2_end_name);
     }
   }
 
-  mt_->set_option_value("sterics", false);
-  return mt_;
+  _mt->set_option_value("sterics", false);
+  return _mt;
 }
 
 GraphtoTree::_GraphtoTreeNodeOP GraphtoTree::_get_start_node(
@@ -215,7 +215,7 @@ motif::MotifOP GraphtoTree::_get_reoriented_motif(motif::MotifOP const &m,
       return new_m;
 
     } else {
-      auto spl = base::split_str_by_delimiter(m->name(), "=");
+      auto spl = base::string::split(m->name(), "=");
       auto new_name = spl[1] + "=" + spl[0];
       auto new_m = resources::Manager::instance().motif(m->name());
       // since each basepair step has a different motif to represent it
@@ -243,7 +243,7 @@ GraphtoTree::_get_new_nodes(GraphtoTree::_GraphtoTreeNodeOP const &current) {
     partner = c->partner(current->node->index());
     // check to see if motif is already in tree
     try {
-      n = mt_->get_node(partner->data()->id());
+      n = _mt->get_node(partner->data()->id());
     } catch (...) {
       found = 0;
     }

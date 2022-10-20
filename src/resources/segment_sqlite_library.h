@@ -26,12 +26,12 @@ class SegmentSqliteLibrary : public SqliteLibrary {
 public:
   SegmentSqliteLibrary(String const &libname) {
 
-    libnames_ = get_libnames();
-    rng_ = util::RandomNumberGenerator();
+    _libnames = get_libnames();
+    _rng = util::RandomNumberGenerator();
     auto path = _get_path(libname);
     SegmentSqliteConnection conn(path);
-    connection_ = conn;
-    max_size_ = connection_.count();
+    _connection = conn;
+    _max_size = _connection.count();
     // max_size_ = 1; // Does this matter? CJ
   }
 
@@ -41,26 +41,26 @@ public: // iterator stuff
   class iterator {
   public:
     iterator(std::map<String, structure::SegmentOP>::iterator const &i)
-        : i_(i) {}
+        : _i(i) {}
 
     iterator operator++() {
-      i_++;
+      _i++;
       return *this;
     }
 
-    structure::SegmentOP const &operator*() { return i_->second; }
+    structure::SegmentOP const &operator*() { return _i->second; }
 
-    bool operator==(iterator const &rhs) const { return i_ == rhs.i_; }
+    bool operator==(iterator const &rhs) const { return _i == rhs._i; }
 
-    bool operator!=(iterator const &rhs) const { return i_ != rhs.i_; }
+    bool operator!=(iterator const &rhs) const { return _i != rhs._i; }
 
   private:
-    std::map<String, structure::SegmentOP>::iterator i_;
+    std::map<String, structure::SegmentOP>::iterator _i;
   };
 
-  iterator begin() { return iterator(data_.begin()); }
+  iterator begin() { return iterator(_data.begin()); }
 
-  iterator end() { return iterator(data_.end()); }
+  iterator end() { return iterator(_data.end()); }
 
 public:
   static StringStringMap get_libnames();
@@ -89,9 +89,9 @@ private:
                          String const &);
 
 private:
-  SegmentSqliteConnection connection_;
-  std::map<String, structure::SegmentOP> data_;
-  util::RandomNumberGenerator rng_;
+  SegmentSqliteConnection _connection;
+  std::map<String, structure::SegmentOP> _data;
+  util::RandomNumberGenerator _rng;
 };
 
 typedef std::shared_ptr<SegmentSqliteLibrary> SegmentSqliteLibraryOP;

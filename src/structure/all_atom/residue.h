@@ -20,10 +20,12 @@
 
 namespace structure::all_atom {
 
+/// @brief - calculates the coordinates of the center of the residue
 math::Vector3 center_of_atoms(const Atoms &);
 
 class Residue {
 public: // construction ///////////////////////////////////////////////////////
+  /// @brief - constructors
   Residue(char name, int num, String &chain_id, char i_code, Atoms &atoms,
           const util::Uuid &uuid, structure::base::ResidueType rtype)
       : _name(name), _num(num), _chain_id(std::move(chain_id)), _i_code(i_code),
@@ -33,11 +35,13 @@ public: // construction ///////////////////////////////////////////////////////
 
   Residue(const Residue &) = default;
 
+  /// @brief - destructor
   ~Residue() = default;
 
 public: // iterator ////////////////////////////////////////////////////////////
   typedef Atoms::const_iterator const_iterator;
 
+  /// @brief - retrieves the beginning atom (?)
   [[nodiscard]] const_iterator begin() const noexcept { return _atoms.begin(); }
 
   [[nodiscard]] const_iterator end() const noexcept { return _atoms.end(); }
@@ -53,8 +57,10 @@ public: // iterator ////////////////////////////////////////////////////////////
   }
 
 public:
+  /// @brief - are residues equal? (==)
   inline bool operator==(const Residue &r) const { return is_equal(r); }
 
+  /// @brief - are residues not equal? (!=)
   inline bool operator!=(const Residue &r) const { return !is_equal(r); }
 
   friend std::ostream &operator<<(std::ostream &stream, const Residue &r) {
@@ -66,6 +72,7 @@ public:
   }
 
 public:
+  /// @brief - checks if two residues' components are equal
   [[nodiscard]] inline bool is_equal(const Residue &r,
                                      bool check_uuid = true) const {
     if (check_uuid && _uuid != r._uuid) {
@@ -92,15 +99,17 @@ public:
   }
 
 public: // non const methods /////////////////////////////////////////////////
+  /// @brief - moves residue by specified position vector
   void move(const math::Vector3 &p) {
     for (auto &a : _atoms) {
       a.move(p);
     }
-    for(auto &b : _beads) {
+    for (auto &b : _beads) {
       b.move(p);
     }
   }
 
+  /// @brief - rotates residue by specified rotation matrix
   void rotate(const math::Matrix3x3 &rot) {
     for (auto &a : _atoms) {
       a.rotate(rot);
@@ -110,46 +119,72 @@ public: // non const methods /////////////////////////////////////////////////
     }
   }
 
+  /// @brief -
   inline void remove_beads() { _beads = util::Beads(); }
 
+  /// @brief -
   inline void build_beads() { _build_beads(); }
 
+  /// @brief - generates new UUID
   inline void new_uuid() { _uuid = util::generate_uuid(); }
 
 public: // getters ////////////////////////////////////////////////////////////
+  /// @brief - gets the name of the residue
   [[nodiscard]] inline char get_name() const { return _name; }
 
+  /// @brief - gets the num of the residue
   [[nodiscard]] inline int get_num() const { return _num; }
 
+  /// @brief - gets the id of the chain the residue is a part of
   [[nodiscard]] inline const String &get_chain_id() const { return _chain_id; }
 
+  /// @brief - gets the i-code
+  // TODO what's an i-code?
   [[nodiscard]] inline char get_i_code() const { return _i_code; }
 
+  /// @brief - gets the UUID of the residue
   [[nodiscard]] inline util::Uuid get_uuid() const { return _uuid; }
 
+  /// @brief - gets the residue type
   [[nodiscard]] inline structure::base::ResidueType get_rtype() const {
     return _rtype;
   }
 
+  /// @brief - gets the beads
   [[nodiscard]] inline const util::Beads &get_beads() const { return _beads; }
 
+  /// @brief - gets the specified atom in the residue
   [[nodiscard]] inline const Atom &get_atom(const String &name) const {
     for (auto const &a : _atoms) {
       if (a.get_name() == name) {
         return a;
       }
     }
+
     throw structure::base::StructureException(
         "atom name: " + name + " does not exist in this residue");
   }
 
+  /// @brief - gets the coordinates of the specified atom
   [[nodiscard]] inline const math::Vector3 &
   get_coords(const String &name) const {
     return get_atom(name).get_coords();
   }
 
+  // get coords of residue
+  /// @brief - gets the coordinates of the center of the residue
   [[nodiscard]] math::Vector3 get_center() const;
 
+  /// @brief - gets the x-coordinate of the center of the residue
+  [[nodiscard]] double get_center_x() const;
+
+  /// @brief - gets the y-coordinate of the center of the residue
+  [[nodiscard]] double get_center_y() const;
+
+  /// @brief - gets the z-coordinate of the center of the residue
+  [[nodiscard]] double get_center_z() const;
+
+  /// @brief - gets the number of atoms in the residue
   [[nodiscard]] inline size_t get_num_atoms() const { return _atoms.size(); }
 
   // inline String const &get_res_name() const { return _res_type.get_name(); }

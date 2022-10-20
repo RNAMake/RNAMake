@@ -1,5 +1,3 @@
-
-
 #include "../common.hpp"
 
 #include <base/paths.hpp>
@@ -7,13 +5,16 @@
 #include <structure/all_atom/residue_type_set.h>
 
 TEST_CASE("Test ResidueType for Structure") {
+
   using namespace structure::all_atom;
+
   SUBCASE("Can generate new residue type") {
     auto name = String("GUA");
     auto atom_map = StringIntMap();
     atom_map["P"] = 0;
     auto strings = Strings();
     auto rt = ResidueType(name, atom_map, SetType::RNA, strings);
+
     CHECK(rt.get_short_name() == 'G');
     CHECK(rt.get_atom_index("P") == 0);
   }
@@ -50,4 +51,7 @@ TEST_CASE("Test ResidueType for Structure") {
     CHECK(rt.get_short_name() == 'A');
     CHECK(rt.get_atom_index("N") == 0);
   }
+
+
+
 }

@@ -54,13 +54,13 @@ public: // iterators
       typename data_structure::tree::TreeStatic<MSNodeDataOP>::const_iterator
           const_iterator;
 
-  iterator begin() { return tree_.begin(); }
+  iterator begin() { return _tree.begin(); }
 
-  iterator end() { return tree_.end(); }
+  iterator end() { return _tree.end(); }
 
-  const_iterator begin() const { return tree_.begin(); }
+  const_iterator begin() const { return _tree.begin(); }
 
-  const_iterator end() const { return tree_.end(); }
+  const_iterator end() const { return _tree.end(); }
 
 private: // add function helpers
   MotifStateTreeNodeOP _get_parent(int);
@@ -72,11 +72,11 @@ private: // add function helpers
   inline int _steric_clash(MSNodeDataOP const &new_data) {
 
     float dist;
-    for (auto const &n : tree_) {
+    for (auto const &n : _tree) {
       for (auto const &b1 : n->data()->cur_state->beads()) {
         for (auto const &b2 : new_data->cur_state->beads()) {
           dist = b1.distance(b2);
-          if (dist < clash_radius_) {
+          if (dist < _clash_radius) {
             return 1;
           }
         }
@@ -116,7 +116,7 @@ public: // outputting functions
 public: // getters
   inline math::Vector3 centers() {
     auto centers = math::Vector3s();
-    for (auto const &n : tree_) {
+    for (auto const &n : _tree) {
       for (auto const &b : n->data()->cur_state->beads()) {
         centers.push_back(b);
       }
@@ -124,7 +124,7 @@ public: // getters
     return centers;
   }
 
-  inline MotifConnections const &connections() { return connections_; }
+  inline MotifConnections const &connections() { return _connections; }
 
 public: // motif tree wrappers
   void write_pdbs(String const &fname = "node") {
@@ -136,14 +136,14 @@ public: // motif tree wrappers
   }
 
 public: // tree wrapers
-  size_t size() { return tree_.size(); }
+  size_t size() { return _tree.size(); }
 
-  MotifStateTreeNodeOP const &last_node() { return tree_.last_node(); }
+  MotifStateTreeNodeOP const &last_node() { return _tree.last_node(); }
 
-  MotifStateTreeNodeOP const &get_node(int i) { return tree_.get_node(i); }
+  MotifStateTreeNodeOP const &get_node(int i) { return _tree.get_node(i); }
 
   inline MotifStateTreeNodeOP const &get_node(util::Uuid const &uuid) {
-    for (auto const &n : tree_) {
+    for (auto const &n : _tree) {
       if (n->data()->uuid() == uuid) {
         return n;
       }
@@ -154,7 +154,7 @@ public: // tree wrapers
 
   inline MotifStateTreeNodeOP get_node(String const &m_name) {
     auto node = MotifStateTreeNodeOP(nullptr);
-    for (auto const &n : tree_) {
+    for (auto const &n : _tree) {
       if (n->data()->name() == m_name) {
         if (node != nullptr) {
           throw MotifStateTreeException("cannot get node with name: " + m_name +
@@ -175,30 +175,30 @@ public: // tree wrapers
     return node;
   }
 
-  inline void increase_level() { tree_.increase_level(); }
+  inline void increase_level() { _tree.increase_level(); }
 
-  inline void decrease_level() { tree_.decrease_level(); }
+  inline void decrease_level() { _tree.decrease_level(); }
 
 public: // option wrappers
   inline float get_int_option(String const &name) {
-    return options_.get_int(name);
+    return _options.get_int(name);
   }
 
   inline float get_float_option(String const &name) {
-    return options_.get_float(name);
+    return _options.get_float(name);
   }
 
   inline String get_string_option(String const &name) {
-    return options_.get_string(name);
+    return _options.get_string(name);
   }
 
   inline bool get_bool_option(String const &name) {
-    return options_.get_bool(name);
+    return _options.get_bool(name);
   }
 
   template <typename T>
   void set_option_value(String const &name, T const &val) {
-    options_.set_value(name, val);
+    _options.set_value(name, val);
     update_var_options();
   }
 
@@ -208,13 +208,13 @@ private:
   void update_var_options();
 
 private:
-  data_structure::tree::TreeStatic<MSNodeDataOP> tree_;
-  std::queue<MotifStateTreeNodeOP> queue_;
-  motif::MotifStateAligner aligner_;
-  MotifConnections connections_;
-  base::Options options_;
-  int sterics_;
-  float clash_radius_;
+  data_structure::tree::TreeStatic<MSNodeDataOP> _tree;
+  std::queue<MotifStateTreeNodeOP> _queue;
+  motif::MotifStateAligner _aligner;
+  MotifConnections _connections;
+  base::Options _options;
+  int _sterics;
+  float _clash_radius;
 };
 
 } // namespace motif_data_structure
