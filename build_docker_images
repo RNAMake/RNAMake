@@ -1,2 +1,0 @@
-docker build -t rnamake -f docker/Dockerfile .
-docker build -t rnamake_dev -f docker/devDockerfile
