@@ -85,9 +85,11 @@ void Residue::_build_beads_RNA() {
 /// in a file)
 Residue get_residue_from_str(const String &s) {
   Strings spl = ::base::string::split(s, ",");
+
   if (spl.size() < 6) {
     String msg = "String is too short! Not enough arguments";
     ::base::log_and_throw<::base::InputException>(msg);
+
   }
   // the name of the residue is the second space in the .dat file
   char name = spl[1][0];
