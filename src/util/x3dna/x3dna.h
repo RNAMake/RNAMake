@@ -151,11 +151,20 @@ public:
 public:
   static void set_envs() {
     // check x3dna path
-    auto os_name = getprogname();
-    auto x3dna_path = base::path::resources_path() + "/x3dna/" + os_name + "/";
+    auto x3dna_path = base::path::resources_path() + "/x3dna/" + get_os_name() + "/";
     String env = "X3DNA=" + x3dna_path;
     auto s = strdup(env.c_str());
     putenv(s);
+  }
+
+public:
+  static std::string get_os_name() {
+    #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+      // The stdlib in Windows doesn't have getprogname() so we
+      // just explicitly return "windows"
+      return "windows";
+    #else return std::string(getprogname());
+    #endif
   }
 
 public:
