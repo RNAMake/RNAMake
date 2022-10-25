@@ -110,10 +110,10 @@ TEST_CASE("test all atom ") {
     math::Matrix3x3 basepair_ref_frame;
     structure::base::BasepairType basepair_type =
         structure::base::BasepairType::WC;
-    auto basepair_1_name = "test basepair";
+    String basepair_1_name = "test basepair";
     auto basepair_x3dna_type = util::x3dna::get_x3dna_by_type("cM-");
     // TODO these are not the actual C1' coords, just filler for debugging
-    auto c1_prime_coords = {res_1_center, res_2_center};
+    math::Vector3s c1_prime_coords = {res_1_center, res_2_center};
 
     Basepair basepair_1 = Basepair(
         residue_1.get_uuid(), residue_2.get_uuid(), util::generate_uuid(),
