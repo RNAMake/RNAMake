@@ -250,7 +250,7 @@ protected: // error checks ////////////////////////////////////////////////////
   void _error_if_connection_point_empty(const ConnectionPoint &cp) const {
     if (connection_point_empty(cp.ni, cp.ei)) {
       String msg = "cannot get paired connection point for: " + cp.get_str() +
-                   " its empty!";
+                   " it's empty!";
       base::log_and_throw<GraphException>(msg);
     }
   }
@@ -305,7 +305,9 @@ public:
                  const ConnectionPoint &cp) {
     // not sure why this would happen but will catch anyway
     if (n_edges < n_edge_index) {
-      String msg = "n_edges must be greater than n_edge_index";
+      String msg = "n_edges must be greater than n_edge_index. n_edges: " +
+                   std::to_string(n_edges) + ", n_edge_index: " +
+                   std::to_string(n_edge_index) + "\n";
       base::log_and_throw<GraphException>(msg);
     }
     this->_error_if_node_not_exist(cp.ni);
