@@ -9,7 +9,7 @@ namespace util::io {
 
 void PDBParser::parse(const String & path) {
   if(!std::filesystem::exists(path)) {
-    String msg = "file does not exist";
+    String msg = "file " + path + " does not exist";
     base::log_and_throw<base::InputException>(msg);
   }
   _in.open(path);

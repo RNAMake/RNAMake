@@ -126,11 +126,15 @@ void StericLookup::_setup_additions() {
 void StericLookup::add_point(math::Vector3 const &p) {
   for (auto const &add : _additions) {
     if (p.get_x() < -200 || p.get_y() < -200 || p.get_z() < -200) {
-      String msg = "Point is outside the boundary! Bounds are from -200 to 100";
+      String msg = "Point is outside the boundary! Bounds are from -200 to 100\n"
+                    "x: " + std::to_string(p.get_x()) + ", y: " +
+                    std::to_string(p.get_y()) + ", z: " + std::to_string(p.get_z());
       base::log_and_throw<base::MathException>(msg);
     }
     if (p.get_x() > 100 || p.get_y() > 100 || p.get_z() > 100) {
-      String msg = "Point is outside the boundary! Bounds are from -200 to 100";
+      String msg = "Point is outside the boundary! Bounds are from -200 to 100\n"
+                    "x: " + std::to_string(p.get_x()) + ", y: " +
+                    std::to_string(p.get_y()) + ", z: " + std::to_string(p.get_z());
       base::log_and_throw<base::MathException>(msg);
     }
     _dummy = p + add;

@@ -36,7 +36,9 @@ public:
     //                                    VVVVV
 
     if (_end_ids.size() != _end_indexes.size()) {
-      String msg = "Poses must have the same number of ends!";
+      String msg = "Poses must have the same number of ends! "
+                    "This object has " + std::to_string(_end_indexes.size()) + " ends and " +
+                    std::to_string(end_ids.size()) + " end ids";;
       ::base::log_and_throw<base::StructureException>(msg);
     }
   }
@@ -182,7 +184,7 @@ public:
     }
 
     if (bps.size() > 1) {
-      String msg = "Got more than one basepair matching this uuid";
+      String msg = "Got " + bps.size() + " basepairs matching this uuid, can only have one.";
       ::base::log_and_throw<base::StructureException>(msg);
     } else if (bps.size() == 1) {
       return *bps[0];
@@ -205,7 +207,7 @@ public:
       }
     }
     if (bps.size() > 1) {
-      String msg = "got more than one basepair matching residue uuids";
+      String msg = "Got " + bps.size() + " basepairs matching this uuid, can only have one.";
       ::base::log_and_throw<base::StructureException>(msg);
     }
     if (bps.size() == 1) {
@@ -223,7 +225,7 @@ public:
       }
     }
     if (bps.size() > 1) {
-      String msg = "Got more than one basepair matching this name: " + name;
+      String msg = "Got " + bps.size() + " basepairs for " + name + ", can only have one.";
       ::base::log_and_throw<base::StructureException>(msg);
     } else if (bps.size() == 1) {
       return *bps[0];
@@ -264,7 +266,7 @@ public:
       }
     }
     if (bps.size() > 1) {
-      String msg = "got more than one basepair matching this uuid";
+      String msg = "Got " + bps.size() + " basepairs matching this uuid, can only have one.";
       ::base::log_and_throw<base::StructureException>(msg);
     } else if (bps.size() == 1) {
       return *bps[0];
@@ -288,7 +290,7 @@ public:
       }
     }
     if (bps.size() > 1) {
-      String msg = "got more than one end matching residue uuids";
+      String msg = "Got " + bps.size() + " basepairs matching this uuid, can only have one.";
       ::base::log_and_throw<base::StructureException>(msg);
     }
     if (bps.size() == 1) {
@@ -309,7 +311,7 @@ public:
     }
 
     if (bps.size() > 1) {
-      String msg = "got more than one basepair matching this name: " + name;
+      String msg = "Got " + bps.size() + " basepairs for " + name + ", can only have one.";
       ::base::log_and_throw<base::StructureException>(msg);
     }
     if (bps.size() == 1) {
