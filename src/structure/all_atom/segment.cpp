@@ -73,7 +73,7 @@ Segment get_segment_from_str(const String &str) {
   for (auto const &strs : end_index_strs) {
     end_indexes.emplace_back(std::stoi(strs));
   }
-  Strings end_ids = ::base::string::split(spl[8], ";");
+  Strings end_ids = ::base::string::split(spl[8], " ");
   Strings ss_motif_str = ::base::string::split(spl[9], "!");
   String dot_bracket;
   for (auto const &chain_str : ::base::string::split(ss_motif_str[3], "|")) {
