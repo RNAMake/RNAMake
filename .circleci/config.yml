@@ -12,7 +12,7 @@ jobs:
       - docker/build:
           attach-at: ./
           debug: true
-          dockerfile: devDockerfile 
+          dockerfile: devDockerfile
           image: rnamake_dev
           tag: latest
           path: ./docker/
@@ -21,7 +21,7 @@ jobs:
           command: docker run -d -i --name rnamake_dev rnamake_dev
       - run:
           name: Test
-          command: docker exec rnamake_dev ctest -V --test-dir RNAMake/cmake/build
+          command: docker exec rnamake_dev ctest -V --test-dir /RNAMake/cmake/build
 
 workflows:
   validate_changes:

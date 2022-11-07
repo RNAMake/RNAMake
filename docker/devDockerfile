@@ -5,22 +5,23 @@ RUN     dnf -y --disablerepo '*' --enablerepo=extras swap centos-linux-repos cen
 RUN     dnf -y distro-sync
 RUN     dnf -y install scl-utils scl-utils-build git python3 'dnf-command(config-manager)'
 RUN     dnf config-manager --enable powertools
-RUN     dnf install -y gcc-toolset-9 ninja-build cmake
-RUN     dnf install -y -q glibc-static
+RUN     dnf -y install clang
+RUN     dnf -y install sqlite
+RUN     dnf install -y ninja-build cmake
 RUN     dnf install -y lldb
-
-SHELL ["/usr/bin/scl", "enable", "gcc-toolset-9"]
+RUN     dnf install -y -q glibc-static
 
 # Build RNAMake
 RUN mkdir /RNAMake
 ADD . /RNAMake
 ENV RNAMAKE=/RNAMake
 ENV X3DNA=$RNAMAKE/resources/x3dna/linux
-RUN cd /RNAMake/cmake/build/ && \
-    python3 ../make_project.py -target linux && \
-    cmake -DCMAKE_BUILD_TYPE=Debug -G Ninja && \
-    ninja -d stats -d explain -d keepdepfile -d keeprsp && \
-    chmod +x ./*
-
+WORKDIR /RNAMake/cmake/build/
+ENV CXX=/usr/bin/clang++
+ENV CC=/usr/bin/clang
+RUN python3 ../make_project.py -target linux
+RUN cmake -G Ninja
+RUN ninja
+RUN chmod +x ./*
 # Prepare test dat for evaluation in Linux
 RUN sed -i.bak 's/\r$//' /RNAMake/unittests/unittest_resources/base/path/test.csv

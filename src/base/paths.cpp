@@ -36,7 +36,7 @@ String parent_dir(const String &str_path) {
 String rnamake_path() {
   char *base_path = std::getenv("RNAMAKE");
   if (base_path == nullptr) {
-    String msg = "cannot find environmental path RNAMAKE, please set it"
+    String msg = "cannot find environmental path RNAMAKE, please set it. "
                  "should be set to $PATH/RNAMake where $PATH is where you "
                  "installed RNAMake";
     base::log_and_throw<base::ResourceException>(msg);
