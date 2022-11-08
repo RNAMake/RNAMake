@@ -5,11 +5,16 @@ RNAMake
 -----------
 (c)  J.Yesselman, Stanford University, 2014-2018
 
-**RNAMake** is a toolkit for designing and optimizing RNA 3D structure. It allows 
-the alignment between RNA motifs. These motif are small modular pieces of RNA that are 
-believed to fold independently, thus attaching them together with helix flanking both 
-sides allows users of **RNAMake** to build large segments of RNA with a high success 
+**RNAMake** is a toolkit for designing and optimizing RNA 3D structure. It allows
+the alignment between RNA motifs. These motif are small modular pieces of RNA that are
+believed to fold independently, thus attaching them together with helix flanking both
+sides allows users of **RNAMake** to build large segments of RNA with a high success
 rate of forming the predicted structure _in vitro_.
+
+## Development
+
+Trying to make code changes to `RNAMake`? Check out the [development guide](CONTRIBUTING.md).
+
 
 Install
 -------
@@ -22,22 +27,22 @@ Make sure to have a valid c++ compiler either g++ (> 4.6) or clang as well as py
 
 ```shell
 # location to RNAMake directory used by RNAMake
-export RNAMAKE=<RNAMake Path> 
+export RNAMAKE=<RNAMake Path>
 ```
 [OPTIONAL] but useful
 
 ```shell
-# location of RNAMake c++ executables 
-export PATH=$PATH:$RNAMAKE/rnamake/lib/RNAMake/cmake/build/ 
-# location of python executable scripts  
-export PATH=$PATH:$RNAMAKE/rnamake/bin/                                                                     
+# location of RNAMake c++ executables
+export PATH=$PATH:$RNAMAKE/rnamake/lib/RNAMake/cmake/build/
+# location of python executable scripts
+export PATH=$PATH:$RNAMAKE/rnamake/bin/
 ```
 
 note if you are using c shell or another non bash shell you will need to use the equivalent commands
 
 
 Compile
-------- 
+-------
 requires `cmake` and `ninja`
 
 cmake: https://github.com/Kitware/CMake <br>
@@ -62,7 +67,7 @@ Applications
 
 design_rna_scaffold
 -----------
-Generates segments are RNA between two Watson-Crick basepairs can also perform sequence optimization for helical sequences. 
+Generates segments are RNA between two Watson-Crick basepairs can also perform sequence optimization for helical sequences.
 
 ```
 DesignRNAScaffold
@@ -102,7 +107,7 @@ Search Parameters:
   --search_max_size INT:POSITIVE=999999                                         maximum number of steps for a design search
   --search_type TEXT:{exhaustive,mc,path_finding}=path_finding                  search type for traversing motif space
   --solution_filter TEXT:{NoFilter,RemoveDuplicateHelices}=RemoveDuplicateHelices
-                                                                                TODO                                                         
+                                                                                TODO
   --starting_helix TEXT                                                         starting helix for design solution. Format = [TODO]
     --no_sterics                                                                turns off sterics checks againsts supplied RNA structure
   --only_tether_opt                                                             ignore supplied structure other than sterics
@@ -120,7 +125,7 @@ Thermo Fluc Parameters:
 Argument  | Description
 ------------- | -------------
 --pdb		    | PDB file containing starting RNA, make sure that both the start basepair and end basepair are watson and crick base pairs that are end at RNA chains. Must supply both `-start_bp` and `-end_bp`. See figure below.
---start_bp			    | The Watson-Crick basepair to start building the RNA segment from. Example "A194-A252" the base pair between resiudes 192 and 252 both on chain A. 
+--start_bp			    | The Watson-Crick basepair to start building the RNA segment from. Example "A194-A252" the base pair between resiudes 192 and 252 both on chain A.
 --end_bp			 |	The Watson-Crick basepair to end the RNA segment. Same naming convention as `start_bp`. See examples below.
 
 #### Example of Basepair Ends that can be connected with `design_rna`
@@ -137,5 +142,5 @@ start.pdb:
 
 examples in $RNAMAKE/tests/design_ran_scaffold/
 
-each directory has a cmd/COMMAND which gives a functioning command to explore the different options available. 
+each directory has a cmd/COMMAND which gives a functioning command to explore the different options available.
 
