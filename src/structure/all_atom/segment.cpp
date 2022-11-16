@@ -170,13 +170,13 @@ void write_segment_to_pdb(const String &fname, const Segment &seg) {
     for (auto const &a : r) {
       char buffer[200];
       math::Vector3 c = a.get_coords();
-      //std::sprintf(
-      //    buffer,
-      //    "%-6s%5d %-4s%1s%-4c%1c%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f     "
-      //    " %4s%2s\n",
-      //    "ATOM", acount, a.get_name().c_str(), "", r.get_name(), chain_id,
-      //    rnum, "", c.get_x(), c.get_y(), c.get_z(), 1.00, 0.00, "", "");
-      //out << buffer;
+      std::sprintf(
+         buffer,
+         "%-6s%5d %-4s%1s%-4c%1c%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f     "
+         " %4s%2s\n",
+         "ATOM", acount, a.get_name().c_str(), "", r.get_name(), chain_id,
+         rnum, "", c.get_x(), c.get_y(), c.get_z(), 1.00, 0.00, "", "");
+      out << buffer;
       acount += 1;
     }
     rnum += 1;
