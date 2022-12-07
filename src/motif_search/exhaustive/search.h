@@ -49,6 +49,7 @@ class Search : public motif_search::Search {
     if (lookup_ != nullptr) {
       using_lookup_ = true;
     }
+    count_ = 0;
   }
 
   void start() {}
@@ -58,17 +59,26 @@ class Search : public motif_search::Search {
   SolutionOP next() {
     auto best = 1000.0f;
     while (!enumerator_.finished()) {
+      count_ += 1;
+      if(count_ % 1000000 == 0) {
+        std::cout << count_ << std::endl;
+      }
+      if(count_ < 1314000000) {
+        enumerator_.next();
+        continue;
+      }
       current_ = enumerator_.top_state();
       score_ = scorer_->score(*current_->end_states()[1]);
 
       if (score_ < parameters_.accept_score) {
         auto msg = _get_graph_from_solution();
         if(_steric_clash(msg)) {
+          enumerator_.next();
           continue;
         }
-        enumerator_.next();
         _get_solution_motif_names(msg);
         if (!filter_->accept(motif_names_)) {
+          enumerator_.next();
           continue;
         }
 
@@ -122,6 +132,7 @@ class Search : public motif_search::Search {
   bool finished_;
   bool using_lookup_;
   Strings motif_names_;
+  int64_t count_;
 };
 
 }  // namespace exhaustive

@@ -292,6 +292,8 @@ private:
             motif_states.push_back(std::make_shared<motif::MotifState>(*ms));
             energies.push_back(1);
         }
+        LOG_DEBUG << library->get_name() << " has " << motif_states.size() <<
+            " states!";
         if(motif_states.size() == 0) {
             LOG_ERROR << library->get_name() << " has no motifs! ";
             if(is_helix_lib) {

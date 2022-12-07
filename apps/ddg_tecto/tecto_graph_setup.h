@@ -129,6 +129,7 @@ public:
         auto mg = std::make_shared<motif_data_structure::MotifGraph>();
         mg->set_option_value("sterics", false);
         mg->add_motif(rm.bp_step("GG_LL_CC_RR"));
+        std::cout << mg->get_node(0)->data()->name() << std::endl;
         mg->add_motif(rm.motif("GGAA_tetraloop", "", "A14-A15"));
         mg->add_motif(flow_motifs[1], 1,  "A7-A22");
         //std::cout << mg->get_node(1)->data()->ends()[1]->name() << std::endl;

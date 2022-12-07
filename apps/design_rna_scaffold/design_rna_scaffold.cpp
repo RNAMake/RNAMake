@@ -337,6 +337,10 @@ motif_search::SearchOP DesignRNAScaffold::_setup_search() {
           _setup_sol_template_from_path(parameters_.search.motif_path);
     }
     auto factory = motif_search::SolutionToplogyFactory();
+    factory.set_option_value("max_helix_size",
+                             parameters_.search.max_helix_length);
+    factory.set_option_value("min_helix_size",
+                             parameters_.search.min_helix_length);
     auto sol_toplogy = factory.generate_toplogy(*sol_template);
     auto e_search = std::make_shared<Search>(scorer, *sol_toplogy, filter);
     search = motif_search::SearchOP(e_search->clone());
@@ -444,6 +448,7 @@ DesignRNAScaffold::_setup_sol_template_from_path(String const &motif_path) {
       for (auto j = 0; j < ms->end_names().size(); j++) {
         try {
           auto state = rm_.motif_state(ms->name(), "", ms->end_names()[j]);
+          state->new_uuids();
           states.push_back(state);
           floats.push_back(1);
         } catch (resources::ResourceManagerException const &e) {
@@ -567,18 +572,26 @@ motif_data_structure::MotifGraphOP DesignRNAScaffold::_perform_sequence_opt(
           bp_step_indexes.start.node_index, bp_step_indexes.start.edge_index,
           bp_step_indexes.end.node_index, bp_step_indexes.end.edge_index,
           problem_->target_an_aligned_end);
-  auto mg_seq_opt =
-      std::make_shared<motif_data_structure::MotifGraph>(mg_w_sol);
-  auto sols =
-      seq_optimizer_->get_optimized_sequences(mg_seq_opt, opt_seq_scorer);
-  if (sols.empty()) {
-    LOG_DEBUG << "No viable solutions sequence solutions founds!";
-    return nullptr;
+  // trying to catch error in _get_designable_bps
+  try {
+    auto mg_seq_opt =
+        std::make_shared<motif_data_structure::MotifGraph>(mg_w_sol);
+    auto sols =
+        seq_optimizer_->get_optimized_sequences(mg_seq_opt, opt_seq_scorer);
+    if (sols.empty()) {
+      LOG_DEBUG << "No viable solutions sequence solutions founds!";
+      return nullptr;
+    }
+    mg_seq_opt->replace_helical_sequence(sols[0]->sequence);
+    sol_info_.sequence = sols[0]->sequence;
+    sol_info_.sequence_opt_score = sols[0]->dist_score;
+    return mg_seq_opt;
   }
-  mg_seq_opt->replace_helical_sequence(sols[0]->sequence);
-  sol_info_.sequence = sols[0]->sequence;
-  sol_info_.sequence_opt_score = sols[0]->dist_score;
-  return mg_seq_opt;
+  catch(...) {
+    auto mg_seq_opt =
+        std::make_shared<motif_data_structure::MotifGraph>(mg_w_sol);
+    return mg_seq_opt;
+  }
 }
 
 motif_data_structure::MotifGraphOP DesignRNAScaffold::_perform_thermo_fluc_sim(

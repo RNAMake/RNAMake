@@ -176,7 +176,7 @@ SequenceOptimizer3D::DesignableBPOPs SequenceOptimizer3D::_get_designable_bps(
     find_seq_violations(ss, next_violations_);
     next_gc_stretches_ = find_gc_helix_stretches(ss);
     while (new_seq_violations()) {
-      auto state = get_random_bp();
+      state = get_random_bp();
       d_bp->bp->res1()->name(state[0]);
       d_bp->bp->res2()->name(state[1]);
       find_seq_violations(ss, next_violations_);

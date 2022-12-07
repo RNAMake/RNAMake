@@ -64,6 +64,31 @@ class SelectiveSterics : public Sterics {
   float steric_radius_;
 };
 
+class AllSterics : public Sterics {
+ public:
+  AllSterics() : Sterics() {}
+
+  [[nodiscard]] Sterics* clone() const override { return new AllSterics(*this); }
+  
+ public:
+  bool clash(motif_data_structure::MotifStateGraphOP msg) override {
+    for(auto const & n1 : *msg) {
+      for(auto const & n2: *msg) {
+        if(n1->index() >= n2->index()) { continue; }
+        for(auto const & b1 : n1->data()->cur_state->beads()) {
+          for(auto const & b2 : n2->data()->cur_state->beads()) {
+            if(b1.distance(b2) < 2.2f) {
+              return true;
+            }
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+};
+
 class SelectiveStericsLookup : public Sterics {
   
 };

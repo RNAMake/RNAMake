@@ -78,19 +78,19 @@ void BuildMotifGraph::run() {
   auto end_name = spl[1];
   auto nie = _mg.get_node(ni)->data()->get_end_index(end_name);
   _mg.add_connection(_mg.last_node()->index(), std::stoi(spl[0]),
-                    _mg.last_node()->data()->end_name(1), spl[1]);
+                     _mg.last_node()->data()->end_name(1), spl[1]);
 
   if (_parameters.sequence.empty() && _parameters.resample_sequence == -1) {
-    LOG_INFO << "completed, writing pdb to \"test.pdb\"";
+    // LOG_INFO << "completed, writing pdb to \"test.pdb\"";
     std::cout << _mg.sequence() << std::endl;
     std::cout << _mg.dot_bracket() << std::endl;
-    _mg.to_pdb("test.pdb", 1, 1);
-    exit(0);
+    //_mg.to_pdb("test.pdb", 1, 1);
+    // exit(0);
+    _parameters.sequence = _mg.sequence();
   }
 
   _mg.replace_ideal_helices();
   _run_thermo_fluc(_mg);
-
 
   // best_mg->write_pdbs();
   // mg.to_pdb("test.pdb", 1, 1);
@@ -165,8 +165,7 @@ void BuildMotifGraph::_build_motif_graph_from_csv(
   }
 }
 
-void BuildMotifGraph::_run_thermo_fluc(
-    motif_data_structure::MotifGraph & mg) {
+void BuildMotifGraph::_run_thermo_fluc(motif_data_structure::MotifGraph& mg) {
   // save some characters with namespace
   namespace tfg = thermo_fluctuation::graph;
   auto spl = base::split_str_by_delimiter(_parameters.connect, ",");
@@ -197,6 +196,8 @@ void BuildMotifGraph::_run_thermo_fluc(
     sterics = tfg::sterics::StericsOP(
         std::make_shared<tfg::sterics::SelectiveSterics>(
             Ints{0}, Ints{index_hash[last_m->index()]}, 2.2f));
+    // sterics =
+    // tfg::sterics::StericsOP(std::make_shared<tfg::sterics::AllSterics>());
   } else {
     sterics =
         tfg::sterics::StericsOP(std::make_shared<tfg::sterics::NoSterics>());
@@ -214,6 +215,12 @@ void BuildMotifGraph::_run_thermo_fluc(
     }
     auto count = 0;
     auto best = thermo_sim_->get_score();
+    if (best < 1.0) {
+      thermo_sim_ = std::make_shared<tfg::Simulation>(thermo_scorer, sterics);
+      thermo_sim_->set_option_value("cutoff", _parameters.cutoff);
+      thermo_sim_->setup(mseg, start, end);
+      thermo_sim_->next();
+    }
     std::cout << best << std::endl;
     auto under_cutoff = 0;
 
