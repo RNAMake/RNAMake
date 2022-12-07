@@ -215,13 +215,14 @@ void BuildMotifGraph::_run_thermo_fluc(motif_data_structure::MotifGraph& mg) {
     }
     auto count = 0;
     auto best = thermo_sim_->get_score();
+    double avg_score = 0.0f;
     if (best < 1.0) {
       thermo_sim_ = std::make_shared<tfg::Simulation>(thermo_scorer, sterics);
       thermo_sim_->set_option_value("cutoff", _parameters.cutoff);
       thermo_sim_->setup(mseg, start, end);
       thermo_sim_->next();
     }
-    std::cout << best << std::endl;
+    LOG_INFO << "start distance:" << best;
     auto under_cutoff = 0;
 
     for (int s = 0; s < _parameters.steps; s++) {
@@ -229,8 +230,8 @@ void BuildMotifGraph::_run_thermo_fluc(motif_data_structure::MotifGraph& mg) {
       if (under_cutoff) {
         count += 1;
       }
-      if (thermo_sim_->get_score() < best && _parameters.output_pdb) {
-        // LOG_INFO << "best dist score: " << best;
+      avg_score += thermo_sim_->get_score();
+      if (thermo_sim_->get_score() < best) {
         best = thermo_sim_->get_score();
         if (_parameters.output_pdb) {
           best_mg = thermo_sim_->get_motif_graph();
@@ -238,8 +239,9 @@ void BuildMotifGraph::_run_thermo_fluc(motif_data_structure::MotifGraph& mg) {
       }
     }
     avg += count;
+    std::cout << count << " " << best << " " << avg_score / _parameters.steps
+              << std::endl;
   }
-  std::cout << avg / _parameters.runs << std::endl;
   // connection is not perserved through simulation ... bring it back
   if (_parameters.output_pdb) {
     best_mg->add_connection(start.node_index, end.node_index,
