@@ -9,12 +9,13 @@
 
 using namespace std;
 using namespace segment_data_structure;
+using namespace structure::all_atom;
 
 namespace persistence {
   class Persistence {
     public:
-      static void save_to_database(SegmentGraphAllAtom);
-      static void save_to_database(SegmentGraphAllAtom, String);
+      static void save_to_database(const SegmentGraphAllAtom);
+      static void save_to_database(const SegmentGraphAllAtom, String);
       static SegmentGraphAllAtom retrieve_from_database(String);
       static SegmentGraphAllAtom retrieve_from_database(String, String);
     private:
@@ -24,6 +25,8 @@ namespace persistence {
       static String segment_graph_table_sql();
       static String segment_map_table_sql();
       static void create_table(String, sqlite3*);
+      static String insert_statement(const SegmentGraphAllAtom&);
+      static String pdb_data(const Segment&);
   };
 
   class PersistenceException : public std::exception {

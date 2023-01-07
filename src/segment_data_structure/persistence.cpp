@@ -11,11 +11,11 @@ using namespace segment_data_structure;
 using namespace std;
 
 namespace persistence {
-  void Persistence::save_to_database(SegmentGraphAllAtom sg) {
+  void Persistence::save_to_database(const SegmentGraphAllAtom sg) {
     Persistence::save_to_database(sg, "user_database");
   }
 
-  void Persistence::save_to_database(SegmentGraphAllAtom sg, String name) {
+  void Persistence::save_to_database(const SegmentGraphAllAtom sg, String name) {
     // Create directory if it doesn't exist
     filesystem::path current_dir = filesystem::current_path();
     String directory_name = name + "_dir";
@@ -90,8 +90,19 @@ namespace persistence {
                                       "coord_y       FLOAT,"
                                       "coord_z       FLOAT"
                                     ");";
+                                    // matrix code
                                     // Matrix data for rotation 3x3
     return segment_map_table_sql;
+  }
+
+  String Persistence::insert_statement(const SegmentGraphAllAtom &sg) {
+    String sql = "INSERT INTO segments (name, context, end_id, end_name, data) VALUES (" \
+                    "" \
+                    "motif_libraries_new" \
+                    "" \
+                    "" \
+                    "" \ // <-- to_str from master branch
+                  ");";
   }
 
   bool Persistence::record_exists(sqlite3 *db, String context, String name) {

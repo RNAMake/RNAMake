@@ -157,8 +157,62 @@ private:
       _aligner.align(*_graph.get_node_data(parent_index),
                      *_graph.get_node_data(n->get_index()), parent_end_index);
     }
+
+    String to_string(String name, int mytpe) {
+      std::stringstream ss;
+      // ss << path_ << "&" << name_ << "&" << score_ << "&" << block_end_add_ << "&" << (int) mtype_;
+      ss << "no/path" << "&" << name << "&" << block_end << "&" << mtype;
+      // String s
+      // for each c in structure.chains
+      //    s += c.to_str() + ":"
+      // ss << "&" << s << "&"
+      //
+      // for each bp in basepairs
+      //   std::stringstream bpss
+      //   bpss << bp.res1->chain_id() << bp.res1->num << bp.res1->i_code() << "-"
+      //   bpss << bp.res2->chain_id() << bp.res2->num << bp.res2->i_code()
+      //   bpss << "," << bp_state.to_str() << "," << bp_type_ << ",0," << flipped_i
+      //   ss << bpss << "@"
+      //
+      // ss << "&"
+      //
+      // for each end in ends
+      //   pos = 0
+      //   int i = 0
+      //   for each bp in basepairs
+      //     if end == bp
+      //       pos = i
+      //       break
+      //     i++
+      //   ss << pos << " "
+      //
+      // ss << "&"
+      //
+      // for each end_id in end_ids
+      //   ss << end_id << " "
+      //
+      // ss << "&"
+      // String ss_string = "";
+      // ss_string.append(std::to_string((int)mtype_***motif_type***) + "!" + name_ + "!" + path_ + "!");
+      // ss_string.append(structure->to_str() + "!")
+      // auto res = structure_->residues()
+      //
+      // for each bp in secondary_structure.motif.basepairs:
+      //   int res1_pos = (int)(find(res.begin(), res.end(), bp->res1()) - res.begin())
+      //   int res2_pos = (int)(find(res.begin(), res.end(), bp->res2()) - res.begin())
+      //   ss_string.append(res1_pos + " " + res2_pos + "@")
+      //
+      // ss_string.append("!")
+      //
+      //
+      //
+      // below is what I'm copying above
+      // ss << secondary_structure->to_str()
+      // ss << "&"
+      //
+    }
   }
-  
+
 private:
   AlignerType _aligner;
   FixedEdgeDirectedGraph<SegmentTypeOP> _graph;
