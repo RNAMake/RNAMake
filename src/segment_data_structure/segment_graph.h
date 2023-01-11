@@ -158,10 +158,10 @@ private:
                      *_graph.get_node_data(n->get_index()), parent_end_index);
     }
 
-    String to_string(String name, int mytpe) {
-      std::stringstream ss;
+    // String to_string(String name, int mytpe) {
+    //   std::stringstream ss;
       // ss << path_ << "&" << name_ << "&" << score_ << "&" << block_end_add_ << "&" << (int) mtype_;
-      ss << "no/path" << "&" << name << "&" << block_end << "&" << mtype;
+      // ss << "no/path" << "&" << name << "&" << block_end << "&" << mtype;
       // String s
       // for each c in structure.chains
       //    s += c.to_str() + ":"
@@ -210,7 +210,7 @@ private:
       // ss << secondary_structure->to_str()
       // ss << "&"
       //
-    }
+    // }
   }
 
 private:

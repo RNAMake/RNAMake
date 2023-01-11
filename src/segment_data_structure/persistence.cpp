@@ -101,7 +101,7 @@ namespace persistence {
                     "motif_libraries_new" \
                     "" \
                     "" \
-                    "" \ // <-- to_str from master branch
+                    "" \
                   ");";
   }
 
