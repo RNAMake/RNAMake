@@ -71,14 +71,12 @@ public:
   /// @brief - stringifies the residue
   [[nodiscard]] inline String get_str() const {
     std::stringstream ss;
-    // ss << _name << "," << dot_bracket_ << "," << _num << "," << _chain_id <<
-    //     ","
-    //    << _i_code;
+    ss << _name << "," << _structure_code << "," << _num << "," << _chain_id << ","
+       << _i_code;
     return ss.str();
   }
 
 public: // getters
-
   /// @brief - gets the structure code
   [[nodiscard]] inline char get_structure_code() const {
     return _structure_code;
@@ -88,7 +86,6 @@ public: // getters
   [[nodiscard]] inline int get_res_code() const { return _res_code; }
 
 public: // setters
-
   /// @brief - sets the name of the residue code
   inline void set_name(char name) {
     _name = name;

@@ -7,8 +7,8 @@
 // RNAMake Headers
 #include <base/exception.hpp>
 #include <base/types.hpp>
-#include <math/rotation.hpp>
 #include <math/numerical.hpp>
+#include <math/rotation.hpp>
 #include <util/uuid.h>
 
 namespace structure::all_atom {
@@ -45,7 +45,7 @@ public:
       return false;
     }
     if (!math::are_points_equal(_coords, a._coords)) {
-       return false;
+      return false;
     }
     return true;
   }
@@ -57,9 +57,7 @@ public: // non const methods //////////////////////////////////////////////////
   inline void move(const math::Vector3 &p) { _coords = _coords + p; }
 
   /// @brief - rotates a point by a degree defined by a rotation matrix
-  inline void rotate(const math::Matrix3x3 &rot) {
-    _coords = rot.dot(_coords);
-  }
+  inline void rotate(const math::Matrix3x3 &rot) { _coords = rot.dot(_coords); }
 
 public: // trival getters /////////////////////////////////////////////////////
   /// @brief - gets the name of the atom
@@ -77,6 +75,8 @@ public: // coord getters //////////////////////////////////////////////////////
   [[nodiscard]] inline double get_y() const { return _coords.get_y(); }
   /// @brief - gets z coordinate of the atom
   [[nodiscard]] inline double get_z() const { return _coords.get_z(); }
+  /// @brief - gets a stringified version of an atom
+  [[nodiscard]] String get_str() const;
 
 private:
   String _name;

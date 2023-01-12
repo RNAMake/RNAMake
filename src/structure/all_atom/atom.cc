@@ -7,10 +7,13 @@
 //
 
 // RNAMake Headers
-#include <structure/all_atom/atom.h>
 #include <math/vector_3.hpp>
+#include <structure/all_atom/atom.h>
 
 namespace structure::all_atom {
 
-
+String Atom::get_str() const {
+  return _name + " " + _coords.get_str();
 }
+
+} // namespace structure::all_atom

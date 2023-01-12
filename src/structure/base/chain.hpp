@@ -29,10 +29,7 @@ public: // iterator ///////////////////////////////////////////////////////////
   const_iterator begin() const noexcept { return _residues.begin(); }
   const_iterator end() const noexcept { return _residues.end(); }
 
-public:
-
-  // getters
-
+public: // getters ////////////////////////////////////////////////////////////
   /// @brief - gets the length of the residue
   [[nodiscard]] inline size_t get_length() const {
     return (int)_residues.size();
@@ -40,7 +37,6 @@ public:
 
   /// @brief - gets the first residue in the chain
   [[nodiscard]] inline const Residue &get_first() const { return _residues[0]; }
-
 
   /// @brief - gets the last residue in the chain
   [[nodiscard]] inline const Residue &get_last() const {
@@ -52,7 +48,6 @@ public:
     return _residues[index];
   }
 
-
   inline int contain_res(const Residue &r) const {
     for (auto const &res : _residues) {
       if (res == r) {
@@ -62,10 +57,18 @@ public:
     return 1;
   }
 
+  [[nodiscard]] String get_str() const {
+    String str;
+    for(auto const & r : _residues) {
+      str += r.get_str() + ";";
+    }
+    return str;
+  }
+
 private:
   Residues _residues;
 };
 
-}
+} // namespace structure::base
 
 #endif // RNAMAKE_SRC_STRUCTURE_BASE_CHAIN_HPP_

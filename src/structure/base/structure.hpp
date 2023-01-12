@@ -85,7 +85,7 @@ public: // get_residue interface
                              std::to_string(res.get_num()));
   }
 
-public:
+public: // getters /////////////////////////////////////////////////////////////
   /// @brief -
   ChainsOP get_chains() const {
     auto pos = 0;
@@ -132,6 +132,15 @@ public:
       seq += r.get_name();
     }
     return seq;
+  }
+
+  /// @brief - get string representation
+  [[nodiscard]] String get_str() const {
+    String str;
+    for(auto const & c : get_chains()) {
+        str += c.get_str() + ":";
+    }
+    return str;
   }
 
   /// @brief - checks if the residue is the start of a chain
