@@ -136,6 +136,25 @@ TEST_CASE("test all atom ") {
       CHECK(basepair_1.get_str() == test_string);
     }
 
+    SUBCASE("test 2ndary structure basepair get_str method") {
+      String path = base::path::resources_path() + "motifs/ref.motif";
+      auto lines = Strings();
+      base::path::get_lines_from_file(path, lines);
+      Segment seg = get_segment_from_str(lines[0]);
+      structure::secondary_structure::Segment ss_seg = get_secondary_structure(seg);
+      auto res1 = ss_seg.get_residue(0);
+      auto res2 = ss_seg.get_residue(1);
+      auto ssbp = structure::secondary_structure::Basepair(
+        res1.get_uuid(),
+        res2.get_uuid(),
+        util::generate_uuid(),
+        structure::base::BasepairType::GU
+      );
+      String bp_string = ssbp.get_str(res1, res2);
+      std::cout << bp_string << std::endl;
+      CHECK(bp_string == "A132-B232");
+    }
+
     /*SUBCASE("test basepair move") {
       math::Vector3 vector_1 = {4, -1, 2};
       basepair_1.move(vector_1);

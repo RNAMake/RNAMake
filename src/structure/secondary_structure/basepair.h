@@ -7,6 +7,7 @@
 
 #include <base/string.hpp>
 #include <structure/base/base.hpp>
+#include <structure/secondary_structure/residue.h>
 
 namespace structure::secondary_structure {
 
@@ -69,6 +70,27 @@ public: // getters ////////////////////////////////////////////////////////////
       return _res2_uuid;
     } else {
       return _res1_uuid;
+    }
+  }
+
+  String get_str(Residue &res1, Residue &res2) const {
+    // The old code on `main` branch doesn't have a `get_str` method
+    // defined for secondary_structure::basepair. Using the old
+    // `name` function as a stand-in until I get more clarity.
+    return name(res1, res2);
+  }
+
+  String name(Residue &res1, Residue &res2) const {
+    std::stringstream ss;
+    ss << res1.get_chain_id() << res1.get_num() << res1.get_i_code();
+    String str1 = ss.str();
+    std::stringstream ss2;
+    ss2 << res2.get_chain_id() << res2.get_num() << res2.get_i_code();
+    String str2 = ss2.str();
+    if (str1 < str2) {
+      return str1 + "-" + str2;
+    } else {
+      return str2 + "-" + str1;
     }
   }
 

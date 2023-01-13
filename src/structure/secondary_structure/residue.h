@@ -85,6 +85,18 @@ public: // getters
   /// @brief - gets the residue code
   [[nodiscard]] inline int get_res_code() const { return _res_code; }
 
+  /// @brief - gets chain ID
+  [[nodiscard]] inline String get_chain_id() const { return _chain_id; }
+
+  /// @brief - gets I Code
+  [[nodiscard]] inline int get_i_code() const { return _i_code; }
+
+  /// @brief - gets num
+  [[nodiscard]] inline int get_num() const { return _num; }
+
+  /// @brief - gets UUID
+  [[nodiscard]] inline util::Uuid get_uuid() const { return _uuid; }
+
 public: // setters
   /// @brief - sets the name of the residue code
   inline void set_name(char name) {
