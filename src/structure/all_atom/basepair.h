@@ -94,14 +94,23 @@ public: // non const methods //////////////////////////////////////////////////
   }
 
 public:
-  /*String get_str() const {
+  String get_str() const {
     String str = "";
-    str += _center.get_str() + " " + _ref_frame.get_str() + " " +
-           _c1_prime_coords[0].get_str() + " " + _c1_prime_coords[1].get_str() +
-           " " + std::to_string(_bp_type) + " " +
-           std::to_string((int)_x3dna_type) + " " + _name->get_str();
+    str += _center.get_str() +
+           " " +
+           _ref_frame.get_str() +
+           " " +
+           _c1_prime_coords[0].get_str() +
+           " " +
+           _c1_prime_coords[1].get_str() +
+           " " +
+           structure::base::BasepairTypeStrings[(int)_bp_type] +
+           " " +
+           std::to_string((int)_x3dna_type) +
+           " " +
+           _name;
     return str;
-  } */
+  }
 
 public: // getters
   /// @brief - returns the uuid of the opposite base in the pair

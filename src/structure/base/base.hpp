@@ -26,6 +26,7 @@ public:
 };
 
 enum class BasepairType { WC, GU, NC };
+static const char *BasepairTypeStrings[] = { "WC", "GU", "NC" };
 
 enum class ResidueType { RNA, PROTEIN, OTHER };
 
