@@ -3,6 +3,7 @@
 //
 #include "../common.hpp"
 #include <../structure/base/structure.hpp>
+#include <../structure/secondary_structure/segment.hpp>
 
 /*
 // TODO list of tests needed here (from structure.hpp):
@@ -12,7 +13,24 @@
 
 TEST_CASE("brief test of primitive functionality ") {
   SUBCASE("test constructor") {
-    // TODO test constructor
+    // Make residue constructor params:
+    String chain_id = "chain_id";
+    const char &i_code = 'i';
+    util::Uuid const &uuid = util::generate_uuid();
+    // Make residue
+    // structure::secondary_structure::Residue residue = structure::secondary_structure::Residue(
+    //   'a',
+    //   'b',
+    //   1,
+    //   chain_id,
+    //   i_code,
+    //   uuid,
+    //   structure::base::BasepairType(1)
+    // );
+    structure::secondary_structure::Residues residues;
+    // residues.push_back(residue);
+    structure::secondary_structure::Chain chain = structure::secondary_structure::Chain(residues);
+    std::cout << "SS Chain get_str(): " << chain.get_str() << std::endl;
   }
   SUBCASE("test begin") {
     // TODO test begin
