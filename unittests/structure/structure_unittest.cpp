@@ -12,25 +12,29 @@
 */
 
 TEST_CASE("brief test of primitive functionality ") {
-  SUBCASE("test constructor") {
+  SUBCASE("test chain") {
     // Make residue constructor params:
     String chain_id = "chain_id";
-    const char &i_code = 'i';
-    util::Uuid const &uuid = util::generate_uuid();
+    const char i_code = 'i';
+    util::Uuid const uuid = util::generate_uuid();
     // Make residue
-    // structure::secondary_structure::Residue residue = structure::secondary_structure::Residue(
-    //   'a',
-    //   'b',
-    //   1,
-    //   chain_id,
-    //   i_code,
-    //   uuid,
-    //   structure::base::BasepairType(1)
-    // );
+    structure::secondary_structure::Residue residue(
+      'A',
+      'b',
+      1,
+      chain_id,
+      i_code,
+      uuid,
+      structure::base::ResidueType::RNA
+    );
     structure::secondary_structure::Residues residues;
-    // residues.push_back(residue);
+    residues.push_back(residue);
     structure::secondary_structure::Chain chain = structure::secondary_structure::Chain(residues);
-    std::cout << "SS Chain get_str(): " << chain.get_str() << std::endl;
+    String chain_str = chain.get_str();
+    CHECK(chain_str == "Hi");
+  }
+  SUBCASE("test constructor") {
+    // TODO test constructor
   }
   SUBCASE("test begin") {
     // TODO test begin
