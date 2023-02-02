@@ -74,10 +74,11 @@ public: // getters ////////////////////////////////////////////////////////////
   }
 
   String get_str(Residue &res1, Residue &res2) const {
-    // The old code on `main` branch doesn't have a `get_str` method
-    // defined for secondary_structure::basepair. Using the old
-    // `name` function as a stand-in until I get more clarity.
-    return name(res1, res2);
+    // The way the old code wrote this is hidden in
+    // secondary_structure::Motif::to_str
+    String s;
+    // Get residue positions
+    // return "res1.position res2.position"
   }
 
   String name(Residue &res1, Residue &res2) const {
