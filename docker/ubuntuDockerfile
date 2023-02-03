@@ -1,0 +1,19 @@
+FROM ubuntu:20.04
+
+# stops ubuntu for querying questions
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update
+RUN apt-get install wget gcc g++ python3 build-essential ninja-build sqlite cmake clang -y
+
+# INSTALL RNAMAKE #########################################################################
+RUN mkdir /bin/RNAMake
+ADD . /bin/RNAMake
+ENV RNAMAKE=/bin/RNAMake
+ENV X3DNA=$RNAMAKE/resources/x3dna/linux
+WORKDIR /bin/RNAMake/cmake/build/
+ENV CXX=/usr/bin/clang++
+ENV CC=/usr/bin/clang
+RUN python3 ../make_project.py -target linux
+RUN cmake -G Ninja
+RUN ninja build_motif_graph
+RUN chmod +x ./*

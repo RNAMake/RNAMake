@@ -162,6 +162,12 @@ void BuildMotifGraph::_build_motif_graph_from_csv(
     } else {
       mg.add_motif(m);
     }
+    String s = std::to_string(mg.last_node()->index()) + " " +
+               mg.last_node()->data()->name() + " ENDS: ";
+    for (auto const& end : mg.last_node()->data()->ends()) {
+      s += end->name() + " ";
+    }
+    LOG_INFO << s;
   }
 }
 

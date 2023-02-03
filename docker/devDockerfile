@@ -1,0 +1,32 @@
+FROM centos:8 as build
+
+# Get all build files
+RUN     dnf -y --disablerepo '*' --enablerepo=extras swap centos-linux-repos centos-stream-repos
+RUN     dnf -y distro-sync
+RUN     dnf -y install scl-utils scl-utils-build git python3 'dnf-command(config-manager)'
+RUN     dnf config-manager --enable powertools
+RUN     dnf -y install clang
+RUN     dnf -y install sqlite
+RUN     dnf install -y ninja-build cmake
+RUN     dnf install -y lldb
+RUN     dnf install -y -q glibc-static
+
+USER root
+
+# Build RNAMake
+RUN mkdir /data
+RUN mkdir /bin/RNAMake
+ADD . /bin/RNAMake
+ENV RNAMAKE=/bin/RNAMake
+ENV X3DNA=$RNAMAKE/resources/x3dna/linux
+WORKDIR /bin/RNAMake/cmake/build/
+ENV CXX=/usr/bin/clang++
+ENV CC=/usr/bin/clang
+RUN python3 ../make_project.py -target linux
+RUN cmake -G Ninja
+RUN ninja build_motif_graph
+RUN chmod +x ./*
+ENV PATH="/bin/RNAMake/cmake/build/:${PATH}"
+RUN /bin/bash -c "source ~/.bashrc"
+WORKDIR /data
+CMD build_motif_graph
