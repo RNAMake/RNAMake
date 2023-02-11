@@ -16,10 +16,9 @@ public:
 
 public:
   inline explicit Chain(Residues const &residues) : _residues(residues) {
-    // if (_residues.empty()) {
-    //   throw StructureException("cannot initiate an empty chain");
-    // }
-    std::cout << ":)" << std::endl;
+    if (_residues.empty()) {
+      throw StructureException("cannot initiate an empty chain");
+    }
   }
 
   ~Chain() = default;

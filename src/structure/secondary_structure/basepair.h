@@ -7,7 +7,6 @@
 
 #include <base/string.hpp>
 #include <structure/base/base.hpp>
-#include <structure/secondary_structure/residue.h>
 
 namespace structure::secondary_structure {
 
