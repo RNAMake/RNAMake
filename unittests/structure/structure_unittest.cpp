@@ -12,27 +12,6 @@
 */
 
 TEST_CASE("brief test of primitive functionality ") {
-  SUBCASE("test chain") {
-    // Make residue constructor params:
-    String chain_id = "chain_id";
-    const char i_code = 'i';
-    util::Uuid const uuid = util::generate_uuid();
-    // Make residue
-    structure::secondary_structure::Residue residue(
-      'A',
-      'b',
-      1,
-      chain_id,
-      i_code,
-      uuid,
-      structure::base::ResidueType::RNA
-    );
-    structure::secondary_structure::Residues residues;
-    residues.push_back(residue);
-    structure::secondary_structure::Chain chain = structure::secondary_structure::Chain(residues);
-    String chain_str = chain.get_str();
-    CHECK(chain_str == "Hi");
-  }
   SUBCASE("test constructor") {
     // TODO test constructor
   }

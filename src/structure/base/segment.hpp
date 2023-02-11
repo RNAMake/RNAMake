@@ -46,6 +46,44 @@ public: // trival getters ////////////////////////////////////////////////////
     return this->_basepairs[this->_end_indexes[_aligned_end_index]];
   }
 
+  String ss_to_str() {
+    String s = String("");
+    s += std::to_string((int)_segment_type); // e.g., "99"
+    s += "!";
+    s += this->_name; // e.g., "assembled"
+    s += "!";
+    // Structure to string:
+    s += this->_structure.get_str();
+    s += "|";
+    // Basepairs to string:
+    s += bp_to_str();
+    s += "!";
+    // Ends to string:
+    //
+    s += "!";
+    // End IDs to string
+    //
+    s += "!";
+    return s;
+  }
+
+  String bp_to_str() {
+    String s = String("");
+    for (auto bp : this->_basepairs) {
+      auto res1_uuid = bp.get_res1_uuid();
+      auto res2_uuid = bp.get_res2_uuid();
+      int res1_pos, res2_pos;
+      int cursor = 0;
+      for (auto residue : this->_structure.get_residues()) {
+        if (residue.get_uuid() == res1_uuid) { res1_pos = cursor; }
+        if (residue.get_uuid() == res2_uuid) { res2_pos = cursor; }
+        cursor++;
+      }
+      s += std::to_string(res1_pos) + " " + std::to_string(res2_pos) + "@";
+    }
+    return s;
+  }
+
 private:
   util::MotifType _segment_type;
   Index _aligned_end_index;
