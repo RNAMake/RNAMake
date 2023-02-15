@@ -106,7 +106,7 @@ public: // getters /////////////////////////////////////////////////////////////
     if (res.size() > 0) {
       chains.push_back(Chain(res));
     }
-    return std::make_shared<Chains>(chains);
+    return chains;
   }
 
   /// @brief - retuns cutpoints

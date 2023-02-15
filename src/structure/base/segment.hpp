@@ -46,7 +46,14 @@ public: // trival getters ////////////////////////////////////////////////////
     return this->_basepairs[this->_end_indexes[_aligned_end_index]];
   }
 
-  String ss_to_str() {
+  String to_str(Segment secondary_structure) {
+    String s = this->to_str();
+    s += "!";
+    s += secondary_structure->to_str();
+    s += "&&";
+  }
+
+  String to_str() {
     String s = String("");
     s += std::to_string((int)_segment_type); // e.g., "99"
     s += "!";
@@ -59,11 +66,15 @@ public: // trival getters ////////////////////////////////////////////////////
     s += bp_to_str();
     s += "!";
     // Ends to string:
-    //
+    for (Index end_index : this->_end_indexes) {
+      s += std::to_string(end_index);
+    }
     s += "!";
     // End IDs to string
-    //
-    s += "!";
+    for (auto end_id : this->_end_ids) {
+      s += end_id;
+      s += " ";
+    }
     return s;
   }
 
