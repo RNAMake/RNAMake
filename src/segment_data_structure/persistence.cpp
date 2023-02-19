@@ -11,6 +11,10 @@ using namespace segment_data_structure;
 using namespace std;
 
 namespace persistence {
+  // For ensuring we unwrap databases with the same
+  // algorithm they were persisted with:
+  const String PERSISTENCE_VERSION = "1";
+
   void Persistence::save_to_database(const SegmentGraphAllAtom sg) {
     Persistence::save_to_database(sg, "user_database");
   }
@@ -62,12 +66,13 @@ namespace persistence {
 
   String Persistence::segment_table_sql() {
     String segment_table_sql = "CREATE TABLE segments (" \
-                                  "id       INT PRIMARY KEY NOT NULL," \
-                                  "name     TEXT," \
-                                  "context  TEXT," \
-                                  "end_id   TEXT," \
-                                  "end_name TEXT," \
-                                  "data     TEXT" \
+                                  "id                   INT PRIMARY KEY NOT NULL," \
+                                  "name                 TEXT," \
+                                  "context              TEXT," \
+                                  "end_id               TEXT," \
+                                  "end_name             TEXT," \
+                                  "data                 TEXT" \
+                                  "persistence_version  TEXT" \
                                 ");";
     return segment_table_sql;
   }
@@ -96,13 +101,15 @@ namespace persistence {
   }
 
   String Persistence::insert_statement(const SegmentGraphAllAtom &sg) {
-    String sql = "INSERT INTO segments (name, context, end_id, end_name, data) VALUES (" \
-                    "" \
-                    "motif_libraries_new" \
-                    "" \
-                    "" \
-                    "" \
-                  ");";
+    String sql = "INSERT INTO segments (name, context, end_id, end_name, data, persistence_version) VALUES (";
+    sql += "";
+    sql += "motif_libraries_new, ";
+    sql += " ,";
+    sql += " ,";
+    sql += " ,";
+    sql += PERSISTENCE_VERSION + " ,";
+    sql += ");";
+    return sql;
   }
 
   bool Persistence::record_exists(sqlite3 *db, String context, String name) {
