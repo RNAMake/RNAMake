@@ -46,18 +46,12 @@ public: // trival getters ////////////////////////////////////////////////////
     return this->_basepairs[this->_end_indexes[_aligned_end_index]];
   }
 
-  String to_str(Segment secondary_structure) {
-    String s = this->to_str();
-    s += "!";
-    s += secondary_structure->to_str();
-    s += "&&";
-  }
-
   String to_str() {
     String s = String("");
-    s += std::to_string((int)_segment_type); // e.g., "99"
+    // Skipping path
+    s += std::to_string((int)_segment_type); // e.g., "HELIX.IDEAL.2"
     s += "!";
-    s += this->_name; // e.g., "assembled"
+    s += this->_name; // e.g., "HELIX.IDEAL.2"
     s += "!";
     // Structure to string:
     s += this->_structure.get_str();
@@ -75,6 +69,46 @@ public: // trival getters ////////////////////////////////////////////////////
       s += end_id;
       s += " ";
     }
+    s += "&";
+    s += secondary_structure_to_str();
+    return s;
+  }
+
+  String secondary_structure_to_str() {
+    String s = String("");
+    s += "assembled!assembled!"; // Hardcoded to match old code, isn't required
+    int index = 0;
+    String dot_bracket = this->get_dot_bracket();
+    for (auto residue : this->_structure.get_residues()) {
+      auto bracket = dot_bracket[index];
+      if (bracket == '&') { bracket = '|'; }
+      s += residue.get_name();
+      s += ",";
+      s += bracket;
+      s += ",";
+      s += std::to_string(residue.get_num());
+      s += ",";
+      s += residue.get_chain_id();
+      s += ",;";
+      index++;
+    }
+    // This part is outputting:
+    // assembled!assembled!G,(,5,A,;G,(,6,A,;G,(,7,A,;G,(,8,A,;C,|,1,A,;C,),2,A,;C,),3,A,;C,),4,A,;
+    s += "|!";
+    s += bp_to_str();
+    s += "!";
+    // Ends to string:
+    for (Index end_index : this->_end_indexes) {
+      s += std::to_string(end_index);
+      s += " ";
+    }
+    s += "!";
+    // End IDs to string
+    for (auto end_id : this->_end_ids) {
+      s += end_id;
+      s += " ";
+    }
+    s += "&&";
     return s;
   }
 
