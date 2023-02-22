@@ -100,16 +100,27 @@ namespace persistence {
     return segment_map_table_sql;
   }
 
-  String Persistence::insert_statement(const SegmentGraphAllAtom &sg) {
-    String sql = "INSERT INTO segments (name, context, end_id, end_name, data, persistence_version) VALUES (";
-    sql += "";
-    sql += "motif_libraries_new, ";
-    sql += " ,";
-    sql += " ,";
-    sql += " ,";
-    sql += PERSISTENCE_VERSION + " ,";
-    sql += ");";
-    return sql;
+  Strings Persistence::insert_statement(const SegmentGraphAllAtom &sg) {
+    int number_of_segments = sg.get_num_segments();
+    Strings sql_commands;
+    for (int i = 0; i < number_of_segments; i++) {
+      // Check existence of segment here, skip if it does
+      auto segment = sg.get_segment_connections(i);
+      String sql = "INSERT INTO segments (name, context, end_id, end_name, data, persistence_version) VALUES (";
+      sql += "";
+      sql += "motif_libraries_new, ";
+      sql += " ,";
+      sql += " ,";
+
+      // sql += sg.to_str
+      Index index = Index(i);
+      // auto segment = sg[index];
+      sql += " ,";
+      sql += PERSISTENCE_VERSION + " ,";
+      sql += ");";
+      sql_commands.push_back(sql);
+    }
+    return sql_commands;
   }
 
   bool Persistence::record_exists(sqlite3 *db, String context, String name) {

@@ -25,7 +25,7 @@ namespace persistence {
       static String segment_graph_table_sql();
       static String segment_map_table_sql();
       static void create_table(String, sqlite3*);
-      static String insert_statement(const SegmentGraphAllAtom&);
+      static Strings insert_statement(const SegmentGraphAllAtom&);
       static String pdb_data(const Segment&);
   };
 

@@ -45,7 +45,27 @@ TEST_CASE("Test graph persistence") {
   }
 
   SUBCASE("Writes data to database") {
+    SUBCASE("Writes new segment graph to database") {
+    // Write to database the sg object
+    // Query the database, call it sg_db or something
+    // Ensure sg_db == sg
+    }
 
+    SUBCASE("Does not write existing segment to databse") {
+      // Write segments of sg to database
+      // Ensure the segment table has 2 records
+      // Create an identical segment graph object called sg2
+      // Write segments of sg2 to databse
+      // Ensure the segment table has only 2 records
+    }
+
+    SUBCASE("Writes new segment and doesn't write old segment") {
+      // Write sg to databse
+      // Ensure the segment table has 2 records
+      // Create sg2 object with seg1 and new segment
+      // Write sg2 to database
+      // Ensure the segment table has only 3 records
+    }
   }
 
   SUBCASE("Does not override existing database") {

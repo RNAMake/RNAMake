@@ -126,6 +126,10 @@ public:
     return _graph.get_node_data(n_index)->get_end(end_index).get_name();
   }
 
+  [[nodiscard]] const FixedEdgeDirectedGraph<SegmentTypeOP> get_graph() {
+    return _graph;
+  }
+
 
 private:
   void _update_default_transveral() {
