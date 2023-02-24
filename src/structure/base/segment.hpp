@@ -81,7 +81,11 @@ public: // trival getters ////////////////////////////////////////////////////
     String dot_bracket = this->get_dot_bracket();
     for (auto residue : this->_structure.get_residues()) {
       auto bracket = dot_bracket[index];
-      if (bracket == '&') { bracket = '|'; }
+      if (bracket == '&') {
+        s += "|";
+        index++;
+        bracket = dot_bracket[index];
+      }
       s += residue.get_name();
       s += ",";
       s += bracket;
@@ -92,8 +96,6 @@ public: // trival getters ////////////////////////////////////////////////////
       s += ",;";
       index++;
     }
-    // This part is outputting:
-    // assembled!assembled!G,(,5,A,;G,(,6,A,;G,(,7,A,;G,(,8,A,;C,|,1,A,;C,),2,A,;C,),3,A,;C,),4,A,;
     s += "|!";
     s += bp_to_str();
     s += "!";

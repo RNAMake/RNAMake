@@ -22,7 +22,7 @@ TEST_CASE("Test Segment") {
 
   SUBCASE("Secondary structure string method") {
     ResourceManager rm;
-    auto seg1 = rm.get_segment(SegmentInfo{"HELIX.IDEAL.2"});
+    auto seg1 = rm.get_segment(SegmentInfo{"HELIX.IDEAL.4"});
     String s = seg1->secondary_structure_to_str();
     std::cout << s << std::endl;
   }
