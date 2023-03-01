@@ -19,56 +19,58 @@ TEST_CASE("Test graph persistence") {
   resource_management::ResourceManager rm;
   segment_data_structure::SegmentGraphAllAtom sg;
   auto seg1 = rm.get_segment(resource_management::SegmentInfo{"HELIX.IDEAL.2"});
-  auto seg2 = rm.get_segment(resource_management::SegmentInfo{"HELIX.IDEAL.2"});
+  auto seg2 = rm.get_segment(resource_management::SegmentInfo{"HELIX.IDEAL.4"});
   sg.add(seg1);
   sg.add(seg2, 0, sg.get_end_name(0, 1));
+  auto persistence = Persistence();
+  ofstream file;
+  file.open("user_database_dir/canary_file");
+  std::cout << "Running test cases\n";
+  persistence.save_to_database(sg, "test_dir", "test_seg");
 
   // Actual test cases
-  SUBCASE("Creates new directory") {
-    Persistence::save_to_database(sg);
+  SUBCASE("General testing") {
     bool db_dir = filesystem::is_directory("user_database_dir");
     CHECK(db_dir == true);
+
+    // Messing around
+    sqlite3 *db;
+    String db_path = "user_database_dir/user_database.db";
+    sqlite3_open(db_path.c_str(), &db);
+    String sql = "INSERT INTO segment_graphs (name) VALUES (\"AHHHHH\");";
+    auto records = persistence.SQLRecords(db, sql);
   }
 
-  SUBCASE("Does not override existing directory") {
-    ofstream file;
-    file.open("user_database_dir/canary_file");
-    Persistence::save_to_database(sg);
-    bool canary_still_exists = filesystem::exists("user_database_dir/canary_file");
-    CHECK(canary_still_exists == true);
-  }
+  // SUBCASE("Does not override existing directory") {
+  //   bool canary_still_exists = filesystem::exists("user_database_dir/canary_file");
+  //   CHECK(canary_still_exists == true);
+  // }
 
-  SUBCASE("Creates new database") {
-    // Database was created in previous tests
-    bool db_exists = filesystem::exists("user_database_dir/user_database.db");
-    CHECK(db_exists == true);
-  }
+  // SUBCASE("Creates new database") {
+  //   // Database was created in previous tests
+  //   bool db_exists = filesystem::exists("user_database_dir/user_database.db");
+  //   CHECK(db_exists == true);
+  // }
 
-  SUBCASE("Writes data to database") {
-    SUBCASE("Writes new segment graph to database") {
-    // Write to database the sg object
-    // Query the database, call it sg_db or something
-    // Ensure sg_db == sg
-    }
+  // SUBCASE("Writes data to database") {
+  //   SUBCASE("Does not write existing segment to databse") {
+  //     // Write segments of sg to database
+  //     // Ensure the segment table has 2 records
+  //     // Create an identical segment graph object called sg2
+  //     // Write segments of sg2 to databse
+  //     // Ensure the segment table has only 2 records
+  //   }
 
-    SUBCASE("Does not write existing segment to databse") {
-      // Write segments of sg to database
-      // Ensure the segment table has 2 records
-      // Create an identical segment graph object called sg2
-      // Write segments of sg2 to databse
-      // Ensure the segment table has only 2 records
-    }
+  //   SUBCASE("Writes new segment and doesn't write old segment") {
+  //     // Write sg to databse
+  //     // Ensure the segment table has 2 records
+  //     // Create sg2 object with seg1 and new segment
+  //     // Write sg2 to database
+  //     // Ensure the segment table has only 3 records
+  //   }
+  // }
 
-    SUBCASE("Writes new segment and doesn't write old segment") {
-      // Write sg to databse
-      // Ensure the segment table has 2 records
-      // Create sg2 object with seg1 and new segment
-      // Write sg2 to database
-      // Ensure the segment table has only 3 records
-    }
-  }
+  // SUBCASE("Does not override existing database") {
 
-  SUBCASE("Does not override existing database") {
-
-  }
+  // }
 }

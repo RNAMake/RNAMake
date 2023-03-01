@@ -46,10 +46,11 @@ public: // trival getters ////////////////////////////////////////////////////
     return this->_basepairs[this->_end_indexes[_aligned_end_index]];
   }
 
-  String to_str() {
+  String to_str() const {
+    // Make sure all of the methods are const methods
     String s = String("");
     // Skipping path
-    s += std::to_string((int)_segment_type); // e.g., "HELIX.IDEAL.2"
+    s += util::type_to_str(this->_segment_type); // e.g., "HELIX.IDEAL.2"
     s += "!";
     s += this->_name; // e.g., "HELIX.IDEAL.2"
     s += "!";
@@ -74,7 +75,7 @@ public: // trival getters ////////////////////////////////////////////////////
     return s;
   }
 
-  String secondary_structure_to_str() {
+  String secondary_structure_to_str() const {
     String s = String("");
     s += "assembled!assembled!"; // Hardcoded to match old code, isn't required
     int index = 0;
@@ -114,7 +115,7 @@ public: // trival getters ////////////////////////////////////////////////////
     return s;
   }
 
-  String bp_to_str() {
+  String bp_to_str() const {
     String s = String("");
     for (auto bp : this->_basepairs) {
       auto res1_uuid = bp.get_res1_uuid();

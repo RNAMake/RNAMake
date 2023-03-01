@@ -116,7 +116,7 @@ public: // getters /////////////////////////////////////////////////////////////
   [[nodiscard]] size_t get_num_residues() const { return _residues.size(); }
 
   /// @brief - returns residues
-  [[nodiscard]] const Residues get_residues() { return _residues; }
+  [[nodiscard]] const Residues get_residues() const { return _residues; }
 
   /// @brief - counts and returns the number of chains
   [[nodiscard]] size_t get_num_chains() const { return _cut_points.size(); }
