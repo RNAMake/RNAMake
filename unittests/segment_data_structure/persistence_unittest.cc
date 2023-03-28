@@ -24,27 +24,20 @@ TEST_CASE("Test graph persistence") {
   sg.add(seg2, 0, sg.get_end_name(0, 1));
   auto persistence = Persistence();
   ofstream file;
-  file.open("user_database_dir/canary_file");
+  file.open("test_dir/canary_file");
   std::cout << "Running test cases\n";
-  persistence.save_to_database(sg, "test_dir", "test_seg");
+  persistence.save_to_database(sg, "test", "test_seg");
 
   // Actual test cases
   SUBCASE("General testing") {
-    bool db_dir = filesystem::is_directory("user_database_dir");
+    bool db_dir = filesystem::is_directory("test_dir");
     CHECK(db_dir == true);
-
-    // Messing around
-    sqlite3 *db;
-    String db_path = "user_database_dir/user_database.db";
-    sqlite3_open(db_path.c_str(), &db);
-    String sql = "INSERT INTO segment_graphs (name) VALUES (\"AHHHHH\");";
-    auto records = persistence.SQLRecords(db, sql);
   }
 
-  // SUBCASE("Does not override existing directory") {
-  //   bool canary_still_exists = filesystem::exists("user_database_dir/canary_file");
-  //   CHECK(canary_still_exists == true);
-  // }
+  SUBCASE("Does not override existing directory") {
+    bool canary_still_exists = filesystem::exists("test_dir/canary_file");
+    CHECK(canary_still_exists == true);
+  }
 
   // SUBCASE("Creates new database") {
   //   // Database was created in previous tests
