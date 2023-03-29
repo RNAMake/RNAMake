@@ -132,8 +132,44 @@ namespace persistence {
     std::cout << "Retrieve stuff\n";
   }
 
-  SegmentGraphAllAtom Persistence::retrieve_from_database(String name, String path) const {
-    std::cout << "Retrieve specific stuff\n";
+  SegmentOP Persistence::retrieve_segment_from_database(String name, String db_path) const {
+    sqlite3 *db;
+    bool db_exists = filesystem::exists(db_path);
+    int conn_failure = sqlite3_open(db_path.c_str(), &db);
+    if (conn_failure) {
+      throw PersistenceException("Can't connect to database");
+    }
+    String sql = "SELECT * FROM segments WHERE name = \"name\";";
+    auto segment_data = SQLRecords(db, sql)[0][2];
+    return make_shared<Segment>(get_segment_from_str(segment_data));
+  }
+
+  SegmentGraphAllAtom Persistence::retrieve_segment_graph_from_database(String name, String db_path) const {
+    sqlite3 *db;
+    bool db_exists = filesystem::exists(db_path);
+    int conn_failure = sqlite3_open(db_path.c_str(), &db);
+    if (conn_failure) {
+      throw PersistenceException("Can't connect to database");
+    }
+    String sql = "SELECT segments.data FROM segment_graphs "\
+                 "JOIN segment_maps ON segment_maps.segment_id = segment_graphs.id " \
+                 "JOIN segments ON segment_maps.segment_id = segments.id " \
+                 "WHERE segment_graphs.name = \"" + name + "\";";
+    auto segment_strings = SQLRecords(db, sql);
+    std::vector<SegmentOP> segments;
+    for (auto results : segment_strings) {
+      for (auto result : results) {
+        // Get segment from string
+        auto seg = structure::all_atom::get_segment_from_str(result);
+        segments.push_back(make_shared<Segment>(seg));
+      }
+    }
+    segment_data_structure::SegmentGraphAllAtom sg;
+    sg.add(segments[0]);
+    for (int i = 1; i < segments.size(); i++) {
+      sg.add(segments[i], 0, sg.get_end_name(0, 1));
+    }
+    return sg;
   }
 
   void Persistence::create_table(const String sql, sqlite3 *db) const {

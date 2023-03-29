@@ -37,6 +37,7 @@ TEST_CASE("Test graph persistence") {
   SUBCASE("Does not override existing directory") {
     bool canary_still_exists = filesystem::exists("test_dir/canary_file");
     CHECK(canary_still_exists == true);
+    auto test_seg = persistence.retrieve_segment_from_database("HELIX.IDEAL.2", "test_dir/test_seg.db");
   }
 
   // SUBCASE("Creates new database") {
