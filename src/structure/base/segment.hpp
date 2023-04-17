@@ -48,23 +48,28 @@ public: // trival getters ////////////////////////////////////////////////////
 
   String to_str() const {
     // Make sure all of the methods are const methods
-    String s = String("");
+    String s = String("&");
     // Skipping path
-    s += util::type_to_str(this->_segment_type); // e.g., "HELIX.IDEAL.2"
-    s += "!";
     s += this->_name; // e.g., "HELIX.IDEAL.2"
-    s += "!";
+    s += "&";
+    // Need to add ???? plus &... actually, I don't think it's used
+    s += "&";
+    s += std::to_string(get_aligned_end_index());
+    s += "&";
+    s += std::to_string((int)get_segment_type());
+    s += "&";
     // Structure to string:
     s += this->_structure.get_str();
-    s += "|";
+    // More detailed basepair to string (?):
+    s += "&";
+    s += basepair_strings();
     // Basepairs to string:
-    s += bp_to_str();
-    s += "!";
+    s += "&";
     // Ends to string:
     for (Index end_index : this->_end_indexes) {
-      s += std::to_string(end_index);
+      s += std::to_string(end_index) + " ";
     }
-    s += "!";
+    s += "&";
     // End IDs to string
     for (auto end_id : this->_end_ids) {
       s += end_id;
@@ -77,7 +82,7 @@ public: // trival getters ////////////////////////////////////////////////////
 
   String secondary_structure_to_str() const {
     String s = String("");
-    s += "assembled!assembled!"; // Hardcoded to match old code, isn't required
+    s += "99!assembled!assembled!"; // Hardcoded to match old code, isn't required
     int index = 0;
     String dot_bracket = this->get_dot_bracket();
     for (auto residue : this->_structure.get_residues()) {
@@ -112,6 +117,14 @@ public: // trival getters ////////////////////////////////////////////////////
       s += " ";
     }
     s += "&&";
+    return s;
+  }
+
+  String basepair_strings() const {
+    String s = String("");
+    for (auto bp : this->_basepairs) {
+      s += bp.get_name() + "," + bp.get_str() + "@";
+    }
     return s;
   }
 
