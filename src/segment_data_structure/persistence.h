@@ -19,7 +19,7 @@ namespace persistence {
       void save_to_database(SegmentGraphAllAtom&) const;
       void save_to_database(SegmentGraphAllAtom&, const String) const;
       void save_to_database(SegmentGraphAllAtom&, const String, const String) const;
-      void save_segment_to_database(const SegmentOP&, String, String, int) const;
+      void save_segment_to_database(const Segment&, String, String, int) const;
       void save_segment_map_to_database(String, sqlite3*) const;
       const int save_segment_graph_to_database(const String, const String, const String) const;
       SegmentGraphAllAtom retrieve_from_database(String) const;
@@ -34,7 +34,7 @@ namespace persistence {
       void create_table(const String, sqlite3*) const;
       const String insert_segment_sql(const String, const String) const;
       const String insert_segment_graph_sql(const String) const;
-      const String insert_segment_map_sql(const int, const int, math::Vector3s&) const;
+      const String insert_segment_map_sql(const int, const int, const string, const string) const;
   };
 
   class PersistenceException : public std::exception {

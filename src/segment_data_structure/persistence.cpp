@@ -37,7 +37,7 @@ namespace persistence {
     // Create database
     sqlite3 *db;
     String db_path = directory_name + "/" + db_name + ".db";
-    bool db_exists = filesystem::exists(db_path);;
+    bool db_exists = filesystem::exists(db_path);
     int conn_failure = sqlite3_open(db_path.c_str(), &db);
     if (conn_failure) {
       throw PersistenceException("Can't connect to database");
@@ -54,9 +54,9 @@ namespace persistence {
     auto graph = sg.get_graph(); // When sg is a constant, this method doesn't work
     // Use get_node_data to get the node
     // Write a function for that in SegmentGraphAllAtom (whatever sg is)
-    for (auto & i : sg) {
-      auto segment = graph.get_node_data(i);
-      save_segment_to_database(segment, directory_name, db_name, sg_id);
+    int index = 1;
+    for (auto &i : sg) {
+      save_segment_to_database(sg[i], directory_name, db_name, sg_id);
     }
     sqlite3_close(db);
   }
@@ -85,7 +85,7 @@ namespace persistence {
   }
 
   void Persistence::save_segment_to_database(
-    const SegmentOP &segment, String directory_name, String database_name, int sg_id
+    const Segment &segment, String directory_name, String database_name, int sg_id
     ) const {
     sqlite3 *db;
     String db_path = directory_name + "/" + database_name + ".db";
@@ -95,9 +95,9 @@ namespace persistence {
       throw PersistenceException("Can't connect to database");
     }
     // Write segment to database, but not if it's already in there
-    String segment_data = segment->to_str();
+    String segment_data = segment.to_str();
     if (!record_exists(db, segment_data, PERSISTENCE_VERSION)) {
-      String sql = insert_segment_sql(segment_data, segment->get_name());
+      String sql = insert_segment_sql(segment_data, segment.get_name());
       char *error_msg = 0;
       sqlite3_exec(
         db,
@@ -106,13 +106,15 @@ namespace persistence {
         0,
         &error_msg
       );
-      math::Vector3s segment_coordinates;
-      for (auto const &r : *segment) {
-        for (auto const &atom : r) {
-          segment_coordinates.push_back(atom.get_coords());
-        }
-      }
-      String map_sql = insert_segment_map_sql(sg_id, sqlite3_last_insert_rowid(db), segment_coordinates);
+      // Once loaded back in, apply the rotation, then apply rotation
+      auto coords_string = segment.get_end_center(0).get_str();
+      auto rf_string = segment.get_end_ref_frame(0).get_str();
+      String map_sql = insert_segment_map_sql(
+        sg_id,
+        sqlite3_last_insert_rowid(db),
+        coords_string,
+        rf_string
+      );
       save_segment_map_to_database(map_sql, db);
     }
   }
@@ -139,9 +141,10 @@ namespace persistence {
     if (conn_failure) {
       throw PersistenceException("Can't connect to database");
     }
-    String sql = "SELECT * FROM segments WHERE name = \"name\";";
-    auto segment_data = SQLRecords(db, sql)[0][2];
-    return make_shared<Segment>(get_segment_from_str(segment_data));
+    String sql = "SELECT * FROM segments WHERE name = \"" + name + "\";";
+    auto segment_data = SQLRecords(db, sql);
+    auto seg = get_segment_from_str(segment_data[0][2]);
+    return make_shared<Segment>(seg);
   }
 
   SegmentGraphAllAtom Persistence::retrieve_segment_graph_from_database(String name, String db_path) const {
@@ -168,6 +171,7 @@ namespace persistence {
     sg.add(segments[0]);
     for (int i = 1; i < segments.size(); i++) {
       sg.add(segments[i], 0, sg.get_end_name(0, 1));
+      // Transverse the graph
     }
     return sg;
   }
@@ -206,18 +210,25 @@ namespace persistence {
   }
 
   const string Persistence::segment_map_table_sql() const {
+    // "Save the connectivity"
     String segment_map_table_sql = "CREATE TABLE segment_maps (" \
                                       "id               INTEGER PRIMARY KEY AUTOINCREMENT," \
                                       "segment_id       INT NOT NULL," \
                                       "segment_graph_id INT NOT NULL," \
-                                      "coord_x       FLOAT,"
-                                      "coord_y       FLOAT,"
-                                      "coord_z       FLOAT"
+                                      "is_root          INT," \
+                                      "coord_data       TEXT," \
+                                      "ref_frame        TEXT" \
                                     ");";
                                     // matrix code
                                     // Matrix data for rotation 3x3
                                     // Do we even need coordinates? They are recorded in
                                     // the segments table data (get_str output) column.
+                                    // Need coordinates, translate rotation as well
+                                    // root is first node without a parent (is not aligned)
+                                    // look for get_roots
+                                    // end[0] contains rotation and translation
+                                    // align_segment when you get the data and are ready to apply it
+                                    // "I think it's in segment"
     return segment_map_table_sql;
   }
 
@@ -238,10 +249,13 @@ namespace persistence {
     return sql;
   }
 
-  const String Persistence::insert_segment_map_sql(const int segment_id, const int segment_graph_id, math::Vector3s& coordinates) const {
-    String sql = "INSERT INTO segment_maps (segment_id, segment_graph_id) VALUES (";
-    sql += std::to_string(segment_id) + ", " + std::to_string(segment_graph_id) + ");";
-    // Ask about coordinates here
+  const String Persistence::insert_segment_map_sql(
+    const int segment_id, const int segment_graph_id,
+    const string coord_data, const string ref_frame
+  ) const {
+    String sql = "INSERT INTO segment_maps (segment_id, segment_graph_id, coord_data, ref_frame) VALUES (";
+    sql += std::to_string(segment_id) + ", " + std::to_string(segment_graph_id);
+    sql += ", \"" + coord_data + "\", \"" + ref_frame + "\");";
     return sql;
   }
 

@@ -3,7 +3,8 @@
 //
 
 #include <structure/all_atom/aligner.hpp>
-
+// This is how you do alignment between two references
+// after you get the data from db. Do it before adding to segment graph
 namespace structure::all_atom {
 
 void Aligner::align(const Segment &ref, Segment &seg, Index end_index) {

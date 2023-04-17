@@ -15,6 +15,8 @@ using namespace persistence;
 using namespace std;
 
 TEST_CASE("Test graph persistence") {
+  // When testing the object out of the user database, ignore
+  // the difference in center when testing the segment objects
   // Test setup stuff
   resource_management::ResourceManager rm;
   segment_data_structure::SegmentGraphAllAtom sg;
@@ -25,11 +27,11 @@ TEST_CASE("Test graph persistence") {
   auto persistence = Persistence();
   ofstream file;
   file.open("test_dir/canary_file");
-  std::cout << "Running test cases\n";
-  persistence.save_to_database(sg, "test", "test_seg");
+  std::cout << "Running test cases\n\n\n";
 
   // Actual test cases
   SUBCASE("General testing") {
+    persistence.save_to_database(sg, "test", "test_seg");
     bool db_dir = filesystem::is_directory("test_dir");
     CHECK(db_dir == true);
   }
@@ -37,7 +39,11 @@ TEST_CASE("Test graph persistence") {
   SUBCASE("Does not override existing directory") {
     bool canary_still_exists = filesystem::exists("test_dir/canary_file");
     CHECK(canary_still_exists == true);
-    auto test_seg = persistence.retrieve_segment_from_database("HELIX.IDEAL.2", "test_dir/test_seg.db");
+  }
+
+  SUBCASE("Builds segment object from database") {
+    std::cout << "About to run retireve_segment_from_database method\n";
+    auto test_seg = persistence.retrieve_segment_from_database("HELIX.IDEAL.2", "test_dir/test.db");
   }
 
   // SUBCASE("Creates new database") {

@@ -130,6 +130,9 @@ public:
     return _graph;
   }
 
+  [[nodiscard]] SegmentTypeOP get_node_data(Index pos) {
+    return _graph.get_node_data(pos);
+  }
 
 private:
   void _update_default_transveral() {
