@@ -52,7 +52,7 @@ String Residue::get_str() const {
   } else {
     name = std::to_string(_name);
   }
-  str += name + "," + name + "," + std::to_string(_num) + "," + _chain_id +
+  str += name + "," + _name + "," + std::to_string(_num) + "," + _chain_id +
          "," + std::to_string(_i_code) + ",";
   for(auto const & a : _atoms) {
     str += a.get_str() + ",";
