@@ -97,18 +97,14 @@ public:
   String get_str() const {
     String str = "";
     str += _center.get_str() +
-           " " +
+           ";" +
            _ref_frame.get_str() +
-           " " +
+           " ;" +
            _c1_prime_coords[0].get_str() +
            " " +
            _c1_prime_coords[1].get_str() +
-           " " +
-           structure::base::BasepairTypeStrings[(int)_bp_type] +
-           " " +
-           std::to_string((int)_x3dna_type) +
-           " " +
-           _name;
+           " ," +
+           util::x3dna::get_str_from_x3dna_type(_x3dna_type);
     return str;
   }
 
