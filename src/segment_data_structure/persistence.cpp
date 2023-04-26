@@ -110,8 +110,8 @@ namespace persistence {
       auto coords_string = segment.get_end_center(0).get_str();
       auto rf_string = segment.get_end_ref_frame(0).get_str();
       String map_sql = insert_segment_map_sql(
-        sg_id,
         sqlite3_last_insert_rowid(db),
+        sg_id,
         coords_string,
         rf_string
       );
@@ -130,10 +130,6 @@ namespace persistence {
     );
   }
 
-  SegmentGraphAllAtom Persistence::retrieve_from_database(String name) const {
-    std::cout << "Retrieve stuff\n";
-  }
-
   SegmentOP Persistence::retrieve_segment_from_database(String name, String db_path) const {
     sqlite3 *db;
     bool db_exists = filesystem::exists(db_path);
@@ -147,7 +143,7 @@ namespace persistence {
     return make_shared<Segment>(seg);
   }
 
-  SegmentGraphAllAtom Persistence::retrieve_segment_graph_from_database(String name, String db_path) const {
+  const SegmentGraphAllAtom Persistence::retrieve_segment_graph_from_database(String name, String db_path) const {
     sqlite3 *db;
     bool db_exists = filesystem::exists(db_path);
     int conn_failure = sqlite3_open(db_path.c_str(), &db);

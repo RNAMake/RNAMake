@@ -22,9 +22,8 @@ namespace persistence {
       void save_segment_to_database(const Segment&, String, String, int) const;
       void save_segment_map_to_database(String, sqlite3*) const;
       const int save_segment_graph_to_database(const String, const String, const String) const;
-      SegmentGraphAllAtom retrieve_from_database(String) const;
       SegmentOP retrieve_segment_from_database(String, String) const;
-      SegmentGraphAllAtom retrieve_segment_graph_from_database(String, String) const;
+      const SegmentGraphAllAtom retrieve_segment_graph_from_database(String, String) const;
       vector<vector<String>> SQLRecords(sqlite3*, String) const;
     private:
       bool record_exists(sqlite3*, const String, const String) const;
