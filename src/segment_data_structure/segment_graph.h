@@ -126,12 +126,35 @@ public:
     return _graph.get_node_data(n_index)->get_end(end_index).get_name();
   }
 
-  [[nodiscard]] const FixedEdgeDirectedGraph<SegmentTypeOP> get_graph() {
+  [[nodiscard]] const FixedEdgeDirectedGraph<SegmentTypeOP> get_graph() const {
     return _graph;
   }
 
   [[nodiscard]] SegmentTypeOP get_node_data(Index pos) {
     return _graph.get_node_data(pos);
+  }
+
+  inline bool operator==(const SegmentGraph &sg) {
+    std::cout << "\nStarting == method in segment_data_structure\n";
+    // Check number of nodes
+    auto roots = _graph.get_root_indexes_const();
+    auto rhs_roots = sg.get_graph().get_root_indexes_const();
+    std::cout << "Checking root size\n";
+    std::cout << "Is " << roots.size() << " different than " << rhs_roots.size() << "?\n";
+    if (roots.size() != rhs_roots.size()) {
+      return false;
+    }
+    // Check number of connections are equal
+    auto rhs_connections = sg.get_num_segments();
+    std::cout << "Checking segment number\n";
+    std::cout << "Is " << get_num_segments() << " different than " << rhs_connections << "?\n";
+    if (get_num_segments() != rhs_connections) {
+      return false;
+    }
+    // Loop through each connection, make sure each connection in one exists in the other
+    // Loop through each segment, make sure each segment in one exists in the other
+    std::cout << "Returning true\n";
+    return true;
   }
 
 private:

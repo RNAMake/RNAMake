@@ -145,6 +145,10 @@ public: // trival getters ////////////////////////////////////////////////////
     return s;
   }
 
+  inline bool operator==(const Segment &s) {
+    return true;
+  }
+
 private:
   util::MotifType _segment_type;
   Index _aligned_end_index;

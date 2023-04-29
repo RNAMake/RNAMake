@@ -188,6 +188,16 @@ public:
     }
     return roots;
   }
+
+  Indexes get_root_indexes_const() const {
+    auto roots = Indexes();
+    for (auto const &kv : this->adjacency_list_) {
+      if (!this->adjacency_list_.has_parent(kv.first)) {
+        roots.push_back(kv.first);
+      }
+    }
+    return roots;
+  }
 };
 
 template <typename DataType>
