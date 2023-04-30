@@ -12,7 +12,7 @@ jobs:
       - docker/build:
           attach-at: ./
           debug: true
-          dockerfile: devDockerfile
+          dockerfile: ciDockerfile
           image: rnamake_dev
           tag: latest
           path: ./docker/
