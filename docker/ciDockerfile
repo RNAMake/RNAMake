@@ -13,7 +13,7 @@ RUN     dnf install -y -q glibc-static
 
 # Build RNAMake
 RUN mkdir /RNAMake
-# ADD . /RNAMake
+ADD . /RNAMake
 ENV RNAMAKE=/RNAMake
 ENV X3DNA=$RNAMAKE/resources/x3dna/linux
 WORKDIR /RNAMake/cmake/build/
