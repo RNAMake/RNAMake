@@ -12,10 +12,13 @@ jobs:
       - docker/build:
           attach-at: ./
           debug: true
-          dockerfile: devDockerfile
+          dockerfile: ciDockerfile
           image: rnamake_dev
           tag: latest
           path: ./docker/
+      - run:
+          name: Debug statment
+          command: pwd
       - run:
           name: Run
           command: docker run -d -i --name rnamake_dev rnamake_dev

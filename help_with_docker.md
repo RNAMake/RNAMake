@@ -17,6 +17,30 @@ $> docker build -t rnamake_dev -f docker/devDockerfile .
 
 This will build the development image. Basically, Docker will spin up a CentOS machine, install all the things listed in that file, and then build and compile the project. The build takes anywhere between 5 and 10 minutes. Please note, the `-t` flag stands for "tag" and is what you name the image. You can call it whatever you want.
 
+### Using `docker-compose`
+
+The `docker-compose` command line tool helps coordinate your docker-based applications. You use it by creating a `docker-compose` file that configures your images, volumes, and so on. In this project, once you've created the `rnamake_dev` container, you can run the following command in the terminal:
+
+```sh
+$> docker-compose up -d
+```
+
+This will start the docker container and will also mirror all your local files with the files inside of the container. This means that you can update code files locally in your IDE and expect them to show up in the container without having to rebuild the whole image.
+
+To recompile, you can use the following command:
+
+```sh
+$> docker exec rnamake_dev ninja
+```
+
+To run the test suite, run:
+
+```sh
+$> docker exec rnamake_dev_ ctest
+```
+
+### Using Traditional `docker-run`
+
 Once the image is done building, you then have to *run* the image before you can do anything with it:
 
 ```sh
@@ -32,10 +56,6 @@ $> docker exec -i -t RNAMake_dev bash
 ```
 
 Note that the second to last argument is the name of the container from your `run` command. The above command tells Docker to execute the command "bash" against the container `RNAMake_dev` and keep the connection open. `bash` is the command line utility for most Linux distros, so this is similar to SSHing into a server.
-
-Be advised, any changes you make to files while inside the container *will not persist* in the code. Once that Docker container is deleted, your changes are gone. If you want to make permanent changes to the container, you have to rebuild it.
-
-> I am currently working on fixing this pain in the neck. Rebuilding the image every time you make a change is too much of a time commitment and I'm trying to find a better way.
 
 ### Did you get an error on the `build` command?
 
