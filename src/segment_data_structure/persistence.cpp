@@ -151,7 +151,7 @@ namespace persistence {
       throw PersistenceException("Can't connect to database");
     }
     String sql = "SELECT segments.data FROM segment_graphs "\
-                 "JOIN segment_maps ON segment_maps.segment_id = segment_graphs.id " \
+                 "JOIN segment_maps ON segment_maps.segment_graph_id = segment_graphs.id " \
                  "JOIN segments ON segment_maps.segment_id = segments.id " \
                  "WHERE segment_graphs.name = \"" + name + "\";";
     auto segment_strings = SQLRecords(db, sql);

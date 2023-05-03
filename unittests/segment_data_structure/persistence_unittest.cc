@@ -65,6 +65,12 @@ TEST_CASE("Test graph persistence") {
 
     SUBCASE("Segment graph fidelity") {
       const segment_data_structure::SegmentGraphAllAtom db_graph = persistence.retrieve_segment_graph_from_database("test_seg", "test_dir/test.db");
+      std::cout << "Is new graph the same as itself?\n";
+      CHECK(db_graph == db_graph);
+      std::cout << "Is new graph same when pulled from database again?\n";
+      const segment_data_structure::SegmentGraphAllAtom second_db_graph = persistence.retrieve_segment_graph_from_database("test_seg", "test_dir/test.db");
+      CHECK(db_graph == second_db_graph);
+      std::cout << "Is in-memory graph same as db graph?\n";
       CHECK(sg == db_graph);
     }
   }
