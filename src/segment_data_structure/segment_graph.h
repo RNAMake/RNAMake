@@ -53,7 +53,7 @@ public:
 
   [[nodiscard]] inline Connections const &
   get_segment_connections(Index ni) const {
-    return _graph.get_node_edges(ni);
+    return _graph.get_node_connections(ni);
   }
 
 public:
@@ -135,20 +135,45 @@ public:
   }
 
   inline bool operator==(const SegmentGraph &sg) const {
-    // Check number of nodes are equal
-    auto rhs_connections = sg.get_num_segments();
+    // Check number of segments are equal
     std::cout << "Checking segment number\n";
-    if (get_num_segments() != rhs_connections) {
+    if (get_num_segments() != sg.get_num_segments()) {
       return false;
     }
     // Check number of nodes
+    auto const other_graph = sg.get_graph(); // This doesn't make a copy, right?
     auto roots = _graph.get_root_indexes_const();
-    auto rhs_roots = sg.get_graph().get_root_indexes_const();
+    auto rhs_roots = other_graph.get_root_indexes_const();
     std::cout << "Checking root size\n";
     if (roots.size() != rhs_roots.size()) {
       return false;
     }
     // Loop through each connection, make sure each connection in one exists in the other
+    std::cout << "Compare graphs\n";
+    for (auto index : roots) {
+      const Connections & these_connections = _graph.get_node_connections(index);
+      const Connections & other_connections = other_graph.get_node_connections(index);
+      std::cout << "Connection size: " << these_connections.size() << "\n";
+      for (auto connection : these_connections) {
+        std::cout << "Connection: " << connection->get_str() << "\n"; // <-- The connection->get_str() method segfaults
+      }
+      // Connections might not be in the same order, use a hash/dictionary object
+      for (int i = 0; i < these_connections.size(); i++) {
+        std::cout << "Start Iteration #" << i << "\n";
+        // std::cout << &these_connections[i]->get_str() << "\n"; // The crash is here **
+        // std::cout << &other_connections[i]->get_str() << "\n"; // * This has "segmentaiton violation signal"
+        std::cout << "End Iteration #" << i << "\n";
+      }
+      // bool connections_are_equal = std::equal(
+      //   these_connections.begin(),
+      //   these_connections.end(),
+      //   other_connections.begin(),
+      //   other_connections.end(),
+      //   [](
+      //     const Connection *lhs_connection, Connection *rhs_connection
+      //   ) { return *lhs_connection == *rhs_connection; }
+      // );
+    }
     // Loop through each segment, make sure each segment in one exists in the other
     std::cout << "Returning true\n";
     return true;
