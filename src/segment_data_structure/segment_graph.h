@@ -10,6 +10,7 @@
 #include <data_structure/graph/graph.h>
 #include <resource_management/resource_manager.h>
 #include <structure/all_atom/aligner.hpp>
+#include <map>
 //#include <structure/aligner.h>
 
 using namespace data_structure::graph;
@@ -53,7 +54,7 @@ public:
 
   [[nodiscard]] inline Connections const &
   get_segment_connections(Index ni) const {
-    return _graph.get_node_edges(ni);
+    return _graph.get_node_connections(ni);
   }
 
 public:
@@ -135,21 +136,52 @@ public:
   }
 
   inline bool operator==(const SegmentGraph &sg) const {
-    // Check number of nodes are equal
-    auto rhs_connections = sg.get_num_segments();
-    std::cout << "Checking segment number\n";
-    if (get_num_segments() != rhs_connections) {
+    // Check number of segments
+    if (get_num_segments() != sg.get_num_segments()) {
       return false;
     }
-    // Check number of nodes
+
+    // Compare graphs
+    auto const other_graph = sg.get_graph(); // This doesn't make a copy, right?
     auto roots = _graph.get_root_indexes_const();
-    auto rhs_roots = sg.get_graph().get_root_indexes_const();
-    std::cout << "Checking root size\n";
+    auto rhs_roots = other_graph.get_root_indexes_const();
+    // Check roots
     if (roots.size() != rhs_roots.size()) {
+      // Can't be equal because there's more roots in one graph than the other
       return false;
     }
     // Loop through each connection, make sure each connection in one exists in the other
-    // Loop through each segment, make sure each segment in one exists in the other
+    for (auto index : roots) {
+      const Connections & these_connections = _graph.get_node_connections(index);
+      const Connections & other_connections = other_graph.get_node_connections(index);
+
+      if (these_connections.size() != other_connections.size()) {
+        // Can't be equal because there's more connections in one than the other
+        return false;
+      }
+
+      // Check connections
+      std::map<std::string, const Connection*> these_connections_hash;
+      for (auto connection : these_connections) {
+        if (connection == nullptr) {
+          continue;
+        } else {
+          these_connections_hash[connection->get_str()] = connection;
+        }
+      }
+
+      for (auto connection : other_connections) {
+        if (connection == nullptr) {
+          continue;
+        } else {
+          if (*these_connections_hash[connection->get_str()] == *connection) {
+            continue;
+          } else { return false; } // Cannot use != operator, so using this convention
+        }
+      }
+      // TODO
+      // Loop through each segment, make sure each segment in one exists in the other
+    }
     std::cout << "Returning true\n";
     return true;
   }
