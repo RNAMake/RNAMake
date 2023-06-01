@@ -45,21 +45,6 @@ Index Connection::get_edge_index(Index index) const {
 }
 
 String Connection::get_str() const {
-  // std::cout << "cp1.ni" << cp1.ni << "\n";
-  // std::cout << "cp2.ni" << cp2.ni << "\n";
-  // std::cout << "cp1.ei" << cp1.ei << "\n";
-  // std::cout << "cp2.ei" << cp2.ei << "\n";
-  //
-  // ^^ As soon as `cp1.n1` is reached, we get:
-  // /RNAMake/unittests/segment_data_structure/persistence_unittest.cc:17: FATAL ERROR: test case CRASHED: SIGSEGV - Segmentation violation signal
-  //
-  // This doesn't kill the test but it doesn't print what you'd think
-  // Also, you can't pass &cp1.ni to std::to_string anyway so I don't know what the problem is here
-  std::cout << "cp1.ni " << &cp1.ni << "\n"; // Prints "0"
-  std::cout << "cp2.ni " << &cp2.ni << "\n"; // Prints an address
-  std::cout << "cp1.ei " << &cp1.ei << "\n"; // Prints an address
-  std::cout << "cp2.ei " << &cp2.ei << "\n"; // Prints an address
-  std::cout << "Pre return\n";
   return "ni: " + std::to_string(cp1.ni) + " nj: " + std::to_string(cp1.ei) +
          " ei: " + std::to_string(cp2.ni) + " ej: " + std::to_string(cp2.ei);
 }

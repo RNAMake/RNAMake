@@ -10,6 +10,7 @@
 #include <data_structure/graph/graph.h>
 #include <resource_management/resource_manager.h>
 #include <structure/all_atom/aligner.hpp>
+#include <map>
 //#include <structure/aligner.h>
 
 using namespace data_structure::graph;
@@ -135,46 +136,52 @@ public:
   }
 
   inline bool operator==(const SegmentGraph &sg) const {
-    // Check number of segments are equal
-    std::cout << "Checking segment number\n";
+    // Check number of segments
     if (get_num_segments() != sg.get_num_segments()) {
       return false;
     }
-    // Check number of nodes
+
+    // Compare graphs
     auto const other_graph = sg.get_graph(); // This doesn't make a copy, right?
     auto roots = _graph.get_root_indexes_const();
     auto rhs_roots = other_graph.get_root_indexes_const();
-    std::cout << "Checking root size\n";
+    // Check roots
     if (roots.size() != rhs_roots.size()) {
+      // Can't be equal because there's more roots in one graph than the other
       return false;
     }
     // Loop through each connection, make sure each connection in one exists in the other
-    std::cout << "Compare graphs\n";
     for (auto index : roots) {
       const Connections & these_connections = _graph.get_node_connections(index);
       const Connections & other_connections = other_graph.get_node_connections(index);
-      std::cout << "Connection size: " << these_connections.size() << "\n";
+
+      if (these_connections.size() != other_connections.size()) {
+        // Can't be equal because there's more connections in one than the other
+        return false;
+      }
+
+      // Check connections
+      std::map<std::string, const Connection*> these_connections_hash;
       for (auto connection : these_connections) {
-        std::cout << "Connection: " << connection->get_str() << "\n"; // <-- The connection->get_str() method segfaults
+        if (connection == nullptr) {
+          continue;
+        } else {
+          these_connections_hash[connection->get_str()] = connection;
+        }
       }
-      // Connections might not be in the same order, use a hash/dictionary object
-      for (int i = 0; i < these_connections.size(); i++) {
-        std::cout << "Start Iteration #" << i << "\n";
-        // std::cout << &these_connections[i]->get_str() << "\n"; // The crash is here **
-        // std::cout << &other_connections[i]->get_str() << "\n"; // * This has "segmentaiton violation signal"
-        std::cout << "End Iteration #" << i << "\n";
+
+      for (auto connection : other_connections) {
+        if (connection == nullptr) {
+          continue;
+        } else {
+          if (*these_connections_hash[connection->get_str()] == *connection) {
+            continue;
+          } else { return false; } // Cannot use != operator, so using this convention
+        }
       }
-      // bool connections_are_equal = std::equal(
-      //   these_connections.begin(),
-      //   these_connections.end(),
-      //   other_connections.begin(),
-      //   other_connections.end(),
-      //   [](
-      //     const Connection *lhs_connection, Connection *rhs_connection
-      //   ) { return *lhs_connection == *rhs_connection; }
-      // );
+      // TODO
+      // Loop through each segment, make sure each segment in one exists in the other
     }
-    // Loop through each segment, make sure each segment in one exists in the other
     std::cout << "Returning true\n";
     return true;
   }
