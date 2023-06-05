@@ -146,7 +146,10 @@ public: // trival getters ////////////////////////////////////////////////////
   }
 
   inline bool operator==(const Segment &s) {
-    return true;
+    // Need to test atom coordinates here (or something) within
+    // a threshold. I already know that the numbers won't be the
+    // same, just have to define a compare coordinates.
+    return this->get_name() == s.get_name();
   }
 
 private:

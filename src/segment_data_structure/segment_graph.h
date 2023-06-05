@@ -11,6 +11,7 @@
 #include <resource_management/resource_manager.h>
 #include <structure/all_atom/aligner.hpp>
 #include <map>
+#include <iostream>
 //#include <structure/aligner.h>
 
 using namespace data_structure::graph;
@@ -151,6 +152,8 @@ public:
       return false;
     }
     // Loop through each connection, make sure each connection in one exists in the other
+    std::map<std::string, int> segments_in_this_graph;
+    std::map<std::string, int> segments_in_the_other_graph;
     for (auto index : roots) {
       const Connections & these_connections = _graph.get_node_connections(index);
       const Connections & other_connections = other_graph.get_node_connections(index);
@@ -179,8 +182,36 @@ public:
           } else { return false; } // Cannot use != operator, so using this convention
         }
       }
-      // TODO
-      // Loop through each segment, make sure each segment in one exists in the other
+
+      // Loop through each segment, make sure each segment in one exists in the other.
+      // The order of segments may or may not matter, I'm not sure. If they don't,
+      // this approach checks if the number of segments with a particular string
+      // representation are the same in each of the segment graphs.
+      auto const seg = *_graph.get_node_data(index);
+      if (segments_in_this_graph[seg.to_str()]) {
+        segments_in_this_graph[seg.to_str()] += 1;
+      } else {
+        segments_in_this_graph[seg.to_str()] = 1;
+      }
+
+      auto const other = *other_graph.get_node_data(index);
+      if (segments_in_the_other_graph[other.to_str()]) {
+        segments_in_the_other_graph[other.to_str()] += 1;
+      } else {
+        segments_in_the_other_graph[other.to_str()] = 1;
+      }
+    }
+    // See if the graph has the same number of segments
+    // with a particular string representation
+    std::map<std::string, int>::iterator it = segments_in_this_graph.begin();
+    while (it != segments_in_this_graph.end()) {
+      auto key = it->first;
+      std::cout << "Count for key in these segments: " << segments_in_this_graph[key] << "\n";
+      std::cout << "Count for key in other segments: " << segments_in_the_other_graph[key] << "\n";
+      if (segments_in_this_graph[key] != segments_in_the_other_graph[key]) {
+        return false;
+      }
+      it++;
     }
     std::cout << "Returning true\n";
     return true;
