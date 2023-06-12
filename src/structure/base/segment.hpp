@@ -51,9 +51,7 @@ public: // trival getters ////////////////////////////////////////////////////
     String s = String("&");
     // Skipping path
     s += this->_name; // e.g., "HELIX.IDEAL.2"
-    s += "&";
-    // Need to add ???? plus &... actually, I don't think it's used
-    s += "&";
+    s += "&&";
     s += std::to_string(get_aligned_end_index());
     s += "&";
     s += std::to_string((int)get_segment_type());
@@ -145,11 +143,36 @@ public: // trival getters ////////////////////////////////////////////////////
     return s;
   }
 
+  const Structure &get_structure() const {
+    return this->_structure;
+  }
+
+  inline bool compare_segments(const Segment &s) {
+    if (this->get_dot_bracket() != s.get_dot_bracket()) {
+      std::cout << "dot-bracket mismatch\n";
+      return false;
+    }
+    const auto &this_structure = this->get_structure();
+    const auto &other_structure = s.get_structure();
+    if (this_structure != other_structure) {
+      std::cout << "structure mismatch\n";
+      return false;
+    }
+    return true;
+  }
+
   inline bool operator==(const Segment &s) {
-    // Need to test atom coordinates here (or something) within
-    // a threshold. I already know that the numbers won't be the
-    // same, just have to define a compare coordinates.
-    return this->get_name() == s.get_name();
+    if (compare_segments(s)) {
+      return true;
+    }
+    return false;
+  }
+
+  inline bool operator!=(const Segment &s) {
+    if (compare_segments(s)) {
+      return false;
+    }
+    return true;
   }
 
 private:

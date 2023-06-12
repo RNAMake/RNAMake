@@ -13,26 +13,17 @@ using namespace structure::base;
 using namespace resource_management;
 
 TEST_CASE("Test Segment") {
-  SUBCASE("Segmet to_str Method") {
+  SUBCASE("Equality operator") {
     ResourceManager rm;
     auto seg1 = rm.get_segment(SegmentInfo{"HELIX.IDEAL.2"});
-    String s = seg1->to_str();
-    std::cout << s << "\n\n";
+    auto seg2 = rm.get_segment(SegmentInfo{"HELIX.IDEAL.2"});
+    CHECK(*seg1 == *seg2);
   }
 
-  SUBCASE("Secondary structure string method") {
+  SUBCASE("Inequality operator") {
     ResourceManager rm;
-    auto seg1 = rm.get_segment(SegmentInfo{"HELIX.IDEAL.4"});
-    String s = seg1->secondary_structure_to_str();
-    std::cout << s << std::endl;
+    auto seg1 = rm.get_segment(SegmentInfo{"HELIX.IDEAL.2"});
+    auto seg2 = rm.get_segment(SegmentInfo{"HELIX.IDEAL.4"});
+    CHECK(*seg1 != *seg2);
   }
-
-  // SUBCASE("to_str is true to get_str") {
-  //   ResourceManager rm;
-  //   auto seg1 = rm.get_segment(SegmentInfo{"HELIX.IDEAL.2"});
-  //   String segment_string = seg1->to_str();
-  //   auto seg2 = structure::all_atom::get_segment_from_str(segment_string);
-  //   // May need to implement an `operator==` method
-  //   // CHECK(seg1 == seg2);
-  // }
 }

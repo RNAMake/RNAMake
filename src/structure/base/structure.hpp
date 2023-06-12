@@ -186,6 +186,92 @@ public:
     }
   }
 
+
+  inline bool compare_structures(const Structure &structure) const {
+    std::vector<std::vector<std::string>> this_atom_coords;
+    for(auto const &c : get_chains()) {
+      auto chain_str = ::base::string::split(c.get_str(), ",");
+      for (auto chain_data : chain_str) {
+        auto chain_datum = ::base::string::split(chain_data, " ");
+        if (chain_datum.size() > 1) {
+          std::vector<std::string> coords;
+          coords.push_back(chain_datum[0]);
+          coords.push_back(chain_datum[1]);
+          coords.push_back(chain_datum[2]);
+          coords.push_back(chain_datum[3]);
+          this_atom_coords.push_back(coords);
+        }
+      }
+    }
+
+    auto other_chains = structure.get_chains();
+    std::vector<std::vector<std::string>> other_atom_coords;
+    for (auto const &c : other_chains) {
+      auto chain_str = ::base::string::split(c.get_str(), ",");
+      for (auto chain_data : chain_str) {
+        auto chain_datum = ::base::string::split(chain_data, " ");
+        if (chain_datum.size() > 1) {
+          std::vector<std::string> coords;
+          coords.push_back(chain_datum[0]);
+          coords.push_back(chain_datum[1]);
+          coords.push_back(chain_datum[2]);
+          coords.push_back(chain_datum[3]);
+          other_atom_coords.push_back(coords);
+        }
+      }
+    }
+
+    if (this_atom_coords.size() != other_atom_coords.size()) {
+      std::cout << "Coordinate size mismatch\n";
+      return false;
+    }
+
+    const float threshold = 0.1; // Tweak this?
+    for (int i = 0; i < this_atom_coords.size(); i++) {
+      auto these = this_atom_coords[i];
+      auto those = other_atom_coords[i];
+
+      // Check atom name
+      if (these[0] != those[0]) {
+        std::cout << "Atom mismatch in structure: " << these[0] << " != " << those[0] << "\n";
+        return false;
+      }
+
+      // Check x coordinates
+      float x_diff = std::stof(these[1]) - std::stof(those[1]);
+      if (abs(x_diff) > threshold) {
+        std::cout << these[0] << " X Ccoordinate mismatch: " << these[1] << " - " << those[1] << " > threshold\n";
+      }
+
+      // Check y coordinates
+      float y_diff = std::stof(these[2]) - std::stof(those[2]);
+      if (abs(y_diff) > threshold) {
+        std::cout << these[0] << " Y Ccoordinate mismatch: " << these[2] << " - " << those[2] << " > threshold\n";
+      }
+
+      // Check z coordinates
+      float z_diff = std::stof(these[3]) - std::stof(those[3]);
+      if (abs(z_diff) > threshold) {
+        std::cout << these[0] << " Z Ccoordinate mismatch: " << these[3] << " - " << those[3] << " > threshold\n";
+      }
+    }
+    return true;
+  }
+
+  inline bool operator==(const Structure &structure) const {
+    if (compare_structures(structure)) {
+      return true;
+    }
+    return false;
+  }
+
+  inline bool operator!=(const Structure &structure) const {
+    if (compare_structures(structure)) {
+      return false;
+    }
+    return true;
+  }
+
 private:
   Residues _residues;
   Cutpoints _cut_points;
