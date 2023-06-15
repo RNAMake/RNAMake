@@ -148,6 +148,7 @@ public: // trival getters ////////////////////////////////////////////////////
   }
 
   inline bool compare_segments(const Segment &s) {
+    std::cout << "Comparing segments\n";
     if (this->get_dot_bracket() != s.get_dot_bracket()) {
       std::cout << "dot-bracket mismatch\n";
       return false;
