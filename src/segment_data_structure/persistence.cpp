@@ -86,7 +86,17 @@ namespace persistence {
 
   void Persistence::save_segment_to_database(
     const Segment &segment, String directory_name, String database_name, int sg_id
+  ) const {
+    Persistence::save_segment_to_database(
+      segment, directory_name, database_name, sg_id, segment.get_name()
+    );
+  }
+
+  void Persistence::save_segment_to_database(
+    const Segment &segment, String directory_name, String database_name, int sg_id, String name
     ) const {
+    // Call this method directly if you want to give the
+    // segment object its own name in the database
     sqlite3 *db;
     String db_path = directory_name + "/" + database_name + ".db";
     bool db_exists = filesystem::exists(db_path);
@@ -97,7 +107,7 @@ namespace persistence {
     // Write segment to database, but not if it's already in there
     String segment_data = segment.to_str();
     if (!record_exists(db, segment_data, PERSISTENCE_VERSION)) {
-      String sql = insert_segment_sql(segment_data, segment.get_name());
+      String sql = insert_segment_sql(segment_data, name);
       char *error_msg = 0;
       sqlite3_exec(
         db,

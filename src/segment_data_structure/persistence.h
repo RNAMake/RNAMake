@@ -20,6 +20,7 @@ namespace persistence {
       void save_to_database(SegmentGraphAllAtom&, const String) const;
       void save_to_database(SegmentGraphAllAtom&, const String, const String) const;
       void save_segment_to_database(const Segment&, String, String, int) const;
+      void save_segment_to_database(const Segment&, String, String, int, String) const;
       void save_segment_map_to_database(String, sqlite3*) const;
       const int save_segment_graph_to_database(const String, const String, const String) const;
       SegmentOP retrieve_segment_from_database(String, String) const;
