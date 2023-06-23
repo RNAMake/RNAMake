@@ -14,6 +14,31 @@
 using namespace persistence;
 using namespace std;
 
+float compare_segment_coordinates(const Segment &s1, const Segment &s2) {
+  const auto &structure1 = s1.get_structure();
+  const auto &structure2 = s2.get_structure();
+  std::vector<std::vector<std::string>> s1_coords;
+  std::vector<std::vector<std::string>> s2_coords;
+
+  // Was going to use this as a helper method to compare the differences
+  // in coordinates for two segments. Delete this or work off of it.
+  //
+  // for (auto const &c : &s1.get_chains()) {
+  //   auto chain_str = ::base::string::split(c.get_str(), ",");
+  //   for (auto chain_data : chain_str) {
+  //     auto chain_datum = ::base::string::split(chain_data, " ");
+  //   }
+  // }
+
+  // for (auto const &c : &s2.get_chains()) {
+  //   auto chain_str = ::base::string::split(c.get_str(), ",");
+  //   for (auto chain_data : chain_str) {
+  //     auto chain_datum = ::base::string::split(chain_data, " ");
+  //   }
+  // }
+  return 0.0f;
+}
+
 TEST_CASE("Test graph persistence") {
   // When testing the object out of the user database, ignore
   // the difference in center when testing the segment objects
@@ -73,6 +98,19 @@ TEST_CASE("Test graph persistence") {
       std::cout << "Is in-memory graph same as db graph?\n";
       CHECK(sg == db_graph);
     }
+
+    SUBCASE("Test coordinate drift") {
+      const auto mem_seg1 = rm.get_segment(resource_management::SegmentInfo{"HELIX.IDEAL.6"});
+      persistence.save_segment_to_database(
+        *mem_seg1, "test_dir", "test", 999, "DatabaseSegment1"
+      );
+      const auto mem_seg2 = persistence.retrieve_segment_from_database("DatabaseSegment1", "test_dir/test.db");
+      // Compare the coordinates
+      // The plan here was to check the difference between each coordinate and then
+      // to save mem_seg2 into the database, pull it out into a mem_seg3, and check
+      // the difference there. Was going to do that repeatedly to see how much the
+      // coordinates change each time they're saved to the database
+    }
   }
 
   // Tests!!!!
@@ -116,34 +154,4 @@ TEST_CASE("Test graph persistence") {
   // Want to add connections (I can just make shit up)
   // Add many different roots, things that aren't going to be added to the next one.
   // Just don't supply a connection. Think of edge cases.
-  //
-  // Ox DNA, this is 3D structure.
-
-  // SUBCASE("Creates new database") {
-  //   // Database was created in previous tests
-  //   bool db_exists = filesystem::exists("user_database_dir/user_database.db");
-  //   CHECK(db_exists == true);
-  // }
-
-  // SUBCASE("Writes data to database") {
-  //   SUBCASE("Does not write existing segment to databse") {
-  //     // Write segments of sg to database
-  //     // Ensure the segment table has 2 records
-  //     // Create an identical segment graph object called sg2
-  //     // Write segments of sg2 to databse
-  //     // Ensure the segment table has only 2 records
-  //   }
-
-  //   SUBCASE("Writes new segment and doesn't write old segment") {
-  //     // Write sg to databse
-  //     // Ensure the segment table has 2 records
-  //     // Create sg2 object with seg1 and new segment
-  //     // Write sg2 to database
-  //     // Ensure the segment table has only 3 records
-  //   }
-  // }
-
-  // SUBCASE("Does not override existing database") {
-
-  // }
 }
