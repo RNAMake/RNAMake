@@ -10,6 +10,8 @@
 #include <data_structure/graph/graph.h>
 #include <resource_management/resource_manager.h>
 #include <structure/all_atom/aligner.hpp>
+#include <map>
+#include <iostream>
 //#include <structure/aligner.h>
 
 using namespace data_structure::graph;
@@ -53,7 +55,7 @@ public:
 
   [[nodiscard]] inline Connections const &
   get_segment_connections(Index ni) const {
-    return _graph.get_node_edges(ni);
+    return _graph.get_node_connections(ni);
   }
 
 public:
@@ -126,6 +128,75 @@ public:
     return _graph.get_node_data(n_index)->get_end(end_index).get_name();
   }
 
+  [[nodiscard]] const FixedEdgeDirectedGraph<SegmentTypeOP> get_graph() const {
+    return _graph;
+  }
+
+  [[nodiscard]] SegmentTypeOP get_node_data(Index pos) {
+    return _graph.get_node_data(pos);
+  }
+
+  inline bool operator==(const SegmentGraph &sg) const {
+    // Check number of segments
+    if (get_num_segments() != sg.get_num_segments()) {
+      return false;
+    }
+
+    // Compare graphs
+    auto const other_graph = sg.get_graph(); // This doesn't make a copy, right?
+    auto roots = _graph.get_root_indexes_const();
+    auto rhs_roots = other_graph.get_root_indexes_const();
+    // Check roots
+    if (roots.size() != rhs_roots.size()) {
+      // Can't be equal because there's more roots in one graph than the other
+      return false;
+    }
+    // Loop through each connection, make sure each connection in one exists in the other
+    std::map<std::string, int> segments_in_this_graph;
+    std::map<std::string, int> segments_in_the_other_graph;
+    for (auto index : roots) {
+      const Connections & these_connections = _graph.get_node_connections(index);
+      const Connections & other_connections = other_graph.get_node_connections(index);
+
+      if (these_connections.size() != other_connections.size()) {
+        // Can't be equal because there's more connections in one than the other
+        return false;
+      }
+
+      // Check connections
+      std::map<std::string, const Connection*> these_connections_hash;
+      for (auto connection : these_connections) {
+        if (connection == nullptr) {
+          continue;
+        } else {
+          these_connections_hash[connection->get_str()] = connection;
+        }
+      }
+
+      for (auto connection : other_connections) {
+        if (connection == nullptr) {
+          continue;
+        } else {
+          if (*these_connections_hash[connection->get_str()] == *connection) {
+            continue;
+          } else { return false; } // Cannot use != operator, so using this convention
+        }
+      }
+
+      // Loop through each segment, make sure each segment in one exists in the other.
+      // The order of segments may or may not matter, I'm not sure. If they don't,
+      // this approach checks if the number of segments with a particular string
+      // representation are the same in each of the segment graphs.
+      auto const seg = *_graph.get_node_data(index);
+      auto const other = *other_graph.get_node_data(index);
+      // if (&seg != &other) {
+      //   std::cout << "Segment mismatch in " << seg.get_name() << "\n";
+      //   return false;
+      // } Have to come back to this, cannot figure out the segment class stuff
+    }
+    std::cout << "Returning true\n";
+    return true;
+  }
 
 private:
   void _update_default_transveral() {
@@ -158,7 +229,7 @@ private:
                      *_graph.get_node_data(n->get_index()), parent_end_index);
     }
   }
-  
+
 private:
   AlignerType _aligner;
   FixedEdgeDirectedGraph<SegmentTypeOP> _graph;

@@ -192,7 +192,7 @@ public: // getters ////////////////////////////////////////////////////////////
   // inline SetType get_res_set_type() const { return _res_type.get_set_type();
   // }
 
-  // String get_str() const;
+  [[nodiscard]] String get_str() const;
 
 private:
   void _build_beads();

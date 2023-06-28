@@ -38,6 +38,7 @@ coverage.xml
 
 # builds
 cmake/build_*/*
+cmake/build/*
 
 #tests
 tests/design_rna_scaffold/*/outputs/*

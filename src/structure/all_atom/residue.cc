@@ -36,6 +36,30 @@ double Residue::get_center_y() const { return center_of_atoms(_atoms).get_y(); }
 /// @brief - returns the z-coordinate of the center
 double Residue::get_center_z() const { return center_of_atoms(_atoms).get_z(); }
 
+String Residue::get_str() const {
+  String str;
+  String name;
+  if (_name == 'G') {
+    name = "GUA";
+  } else if (_name == 'C') {
+    name = "CYT";
+  } else if (_name == 'U') {
+    name = "URA";
+  } else if (_name == 'T') {
+    name = "THY";
+  } else if (_name == 'A') {
+    name = "ADE";
+  } else {
+    name = std::to_string(_name);
+  }
+  str += name + "," + _name + "," + std::to_string(_num) + "," + _chain_id +
+         "," + std::to_string(_i_code) + ",";
+  for(auto const & a : _atoms) {
+    str += a.get_str() + ",";
+  }
+  return str;
+}
+
 /// @brief - builds RNA
 void Residue::_build_beads() {
   if (_rtype == structure::base::ResidueType::RNA) {
@@ -89,7 +113,6 @@ Residue get_residue_from_str(const String &s) {
   if (spl.size() < 6) {
     String msg = "String is too short! Not enough arguments";
     ::base::log_and_throw<::base::InputException>(msg);
-
   }
   // the name of the residue is the second space in the .dat file
   char name = spl[1][0];

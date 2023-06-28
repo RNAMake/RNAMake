@@ -10,11 +10,10 @@
 #include <structure/secondary_structure/basepair.h>
 
 namespace structure::secondary_structure {
-typedef structure::base::Chain<Residue> Chain;
-typedef structure::base::Structure<Chain, Residue> Structure;
-typedef structure::base::Pose<Basepair, Structure, Chain, Residue> Pose;
-typedef structure::base::Segment<Basepair, Structure, Chain, Residue> Segment;
-
+  typedef structure::base::Chain<Residue> Chain;
+  typedef structure::base::Structure<Chain, Residue> Structure;
+  typedef structure::base::Pose<Basepair, Structure, Chain, Residue> Pose;
+  typedef structure::base::Segment<Basepair, Structure, Chain, Residue> Segment;
 }
 
 #endif // RNAMAKE_SRC_STRUCTURE_SECONDARY_STRUCTURE_SEGMENT_HPP_

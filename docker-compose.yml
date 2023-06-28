@@ -1,0 +1,19 @@
+services:
+  rna_make:
+    image: rnamake_dev
+    container_name: rnamake_dev
+    volumes:
+      - ./cmake:/RNAMake/cmake
+      - ./src:/RNAMake/src
+      - ./unittests:/RNAMake/unittests
+      - ./resources:/RNAMake/resources
+    command: tail -F anything
+volumes:
+  cmake:
+    driver: local
+  src:
+    driver: local
+  unittests:
+    driver: local
+  resources:
+    driver: local

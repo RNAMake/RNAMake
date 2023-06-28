@@ -120,6 +120,15 @@ TEST_CASE("test all atom ") {
         basepair_type, basepair_x3dna_type, basepair_1_name, basepair_1_center,
         c1_prime_coords, basepair_ref_frame);
 
+    SUBCASE("test bp type strings") {
+      int wc_index = (int)structure::base::BasepairType::WC;
+      int gu_index = (int)structure::base::BasepairType::GU;
+      int nc_index = (int)structure::base::BasepairType::NC;
+      CHECK(structure::base::BasepairTypeStrings[wc_index] == "WC");
+      CHECK(structure::base::BasepairTypeStrings[gu_index] == "GU");
+      CHECK(structure::base::BasepairTypeStrings[nc_index] == "NC");
+    }
+
     /*SUBCASE("test basepair move") {
       math::Vector3 vector_1 = {4, -1, 2};
       basepair_1.move(vector_1);

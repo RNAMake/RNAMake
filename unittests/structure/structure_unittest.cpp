@@ -3,6 +3,7 @@
 //
 #include "../common.hpp"
 #include <../structure/base/structure.hpp>
+#include <../structure/secondary_structure/segment.hpp>
 
 /*
 // TODO list of tests needed here (from structure.hpp):
