@@ -579,38 +579,41 @@ int dangle5_dH[NBPAIRS + 1][5] = {
     {310, 160, 220, 70, 310},   {690, -50, 690, 60, 60},
     {310, 160, 220, 70, 310},   {690, 160, 690, 80, 310}};
 
-char Triloops[241] = "CAACG "
-                     "GUUAC ";
+char Triloops[241] =
+    "CAACG "
+    "GUUAC ";
 
 int Triloop37[40] = {680, 690};
 int TriloopdH[40] = {2370, 1080};
 
-char Tetraloops[281] = "CAACGG "
-                       "CCAAGG "
-                       "CCACGG "
-                       "CCCAGG "
-                       "CCGAGG "
-                       "CCGCGG "
-                       "CCUAGG "
-                       "CCUCGG "
-                       "CUAAGG "
-                       "CUACGG "
-                       "CUCAGG "
-                       "CUCCGG "
-                       "CUGCGG "
-                       "CUUAGG "
-                       "CUUCGG "
-                       "CUUUGG ";
+char Tetraloops[281] =
+    "CAACGG "
+    "CCAAGG "
+    "CCACGG "
+    "CCCAGG "
+    "CCGAGG "
+    "CCGCGG "
+    "CCUAGG "
+    "CCUCGG "
+    "CUAAGG "
+    "CUACGG "
+    "CUCAGG "
+    "CUCCGG "
+    "CUGCGG "
+    "CUUAGG "
+    "CUUCGG "
+    "CUUUGG ";
 
 int Tetraloop37[40] = {550, 330, 370, 340, 350, 360, 370, 250,
                        360, 280, 370, 270, 280, 350, 370, 370};
 int TetraloopdH[40] = {690,  -1030, -330, -890,  -660,  -750, -350,  -1390,
                        -760, -1070, -660, -1290, -1070, -620, -1530, -680};
 
-char Hexaloops[361] = "ACAGUACU "
-                      "ACAGUGAU "
-                      "ACAGUGCU "
-                      "ACAGUGUU ";
+char Hexaloops[361] =
+    "ACAGUACU "
+    "ACAGUGAU "
+    "ACAGUGCU "
+    "ACAGUGUU ";
 
 int Hexaloop37[40] = {280, 360, 290, 180};
 int HexaloopdH[40] = {-1680, -1140, -1280, -1540};
@@ -20466,4 +20469,4 @@ int int22_dH[NBPAIRS + 1][NBPAIRS + 1][5][5][5][5] = {
         {1080, 1060, 1080, 1060, 270},
         {140, 120, 140, 120, -670}}}}}};
 
-} // namespace vienna
+}  // namespace vienna

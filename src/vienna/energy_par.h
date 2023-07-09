@@ -105,6 +105,6 @@ extern int HexaloopdH[40];  /* Bonus energy for special Triloops */
 
 extern double Tmeasure;
 
-} // namespace vienna
+}  // namespace vienna
 
 #endif /* defined(__RNAMake__energy_par__) */

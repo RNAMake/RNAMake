@@ -6,139 +6,182 @@
 #define TEST_MOTIF_STATE_MONTE_CARLO_H
 
 #include <base/option.h>
-#include <motif_data_structure/motif_state_graph.hpp>
-#include <motif_data_structure/motif_state_tree.h>
-#include <util/monte_carlo.h>
 #include <util/steric_lookup.hpp>
+#include <util/monte_carlo.h>
+#include <motif_data_structure/motif_state_tree.h>
+#include <motif_data_structure/motif_state_graph.hpp>
 
 namespace motif_search {
 
 struct MotifStateMonteCarloSolution {
-  inline MotifStateMonteCarloSolution(motif_data_structure::MotifGraphOP n_mg,
-                                      float n_score)
-      : mg(n_mg), score(n_score) {}
+    inline
+    MotifStateMonteCarloSolution(
+            motif_data_structure::MotifGraphOP n_mg,
+            float n_score) :
+            mg(n_mg),
+            score(n_score) {}
 
-  motif_data_structure::MotifGraphOP mg;
-  float score;
+    motif_data_structure::MotifGraphOP mg;
+    float score;
 };
 
 struct MotifStateMonteCarloSolutionNew {
-  inline MotifStateMonteCarloSolutionNew(
-      motif_data_structure::MotifStateGraphOP n_msg, float n_score)
-      : msg(n_msg), score(n_score) {}
+    inline
+    MotifStateMonteCarloSolutionNew(
+            motif_data_structure::MotifStateGraphOP n_msg,
+            float n_score) :
+            msg(n_msg),
+            score(n_score) {}
 
-  motif_data_structure::MotifStateGraphOP msg;
-  float score;
+    motif_data_structure::MotifStateGraphOP msg;
+    float score;
 };
 
-typedef std::shared_ptr<MotifStateMonteCarloSolution>
-    MotifStateMonteCarloSolutionOP;
-typedef std::shared_ptr<MotifStateMonteCarloSolutionNew>
-    MotifStateMonteCarloSolutionNewOP;
+
+typedef std::shared_ptr<MotifStateMonteCarloSolution> MotifStateMonteCarloSolutionOP;
+typedef std::shared_ptr<MotifStateMonteCarloSolutionNew> MotifStateMonteCarloSolutionNewOP;
 
 class MotifStateMonteCarlo {
 public:
-  MotifStateMonteCarlo(std::vector<motif::MotifStateOPs> const &mses)
-      : mses_(mses), mc_(util::MonteCarlo(0.5f)),
-        rng_(util::RandomNumberGenerator()), options_(base::Options()) {
-    using_lookup_ = 0;
-    setup_options();
-  }
+    MotifStateMonteCarlo(
+            std::vector<motif::MotifStateOPs> const & mses) :
+            mses_(mses),
+            mc_(util::MonteCarlo(0.5f)),
+            rng_(util::RandomNumberGenerator()),
+            options_(base::Options()) {
+        using_lookup_ = 0;
+        setup_options();
+    }
 
 public:
-  void setup(motif_data_structure::MotifStateGraphOP msg, int, int, int, int,
-             bool);
+    void
+    setup(
+            motif_data_structure::MotifStateGraphOP msg,
+            int,
+            int,
+            int,
+            int,
+            bool);
 
-  void run();
+    void
+    run();
 
-  void start();
+    void
+    start();
 
-  MotifStateMonteCarloSolutionOP next();
+    MotifStateMonteCarloSolutionOP
+    next();
 
-  MotifStateMonteCarloSolutionNewOP next_state();
+    MotifStateMonteCarloSolutionNewOP
+    next_state();
 
-  bool finished();
+    bool
+    finished();
 
 public:
-  inline void lookup(util::StericLookupNew const &sl) {
-    using_lookup_ = 1;
-    lookup_ = sl;
-  }
+
+    inline
+    void
+    lookup(
+            util::StericLookupNew const & sl) {
+        using_lookup_ = 1;
+        lookup_ = sl;
+    }
 
 private:
-  double get_score(structure::BasepairStateOP);
 
-  float perform_motif_swap(float);
+    double
+    get_score(
+            structure::BasepairStateOP);
 
-  void perform_motif_swap_no_clash();
+    float
+    perform_motif_swap(
+            float);
 
-  bool _steric_clash(motif_data_structure::MotifStateGraphOP);
+    void
+    perform_motif_swap_no_clash();
 
-  bool _seen_solution(motif_data_structure::MotifStateGraphOP);
+
+    bool
+    _steric_clash(
+            motif_data_structure::MotifStateGraphOP);
+
+    bool
+    _seen_solution(
+            motif_data_structure::MotifStateGraphOP);
 
 protected:
-  void setup_options();
 
-  void update_var_options();
+    void
+    setup_options();
 
-public: // option wrappers
-  inline base::Options &options() { return _options; }
-
-  inline float get_int_option(String const &name) {
-    return _options.get_int(name);
-  }
-
-  inline float get_float_option(String const &name) {
-    return _options.get_float(name);
-  }
-
-  inline String get_string_option(String const &name) {
-    return _options.get_string(name);
-  }
-
-  inline bool get_bool_option(String const &name) {
-    return _options.get_bool(name);
-  }
-
-  inline bool has_option(String const &name) {
-    return _options.has_option(name);
-  }
-
-  template <typename T>
-  void set_option_value(String const &name, T const &val) {
-    _options.set_value(name, val);
+    void
     update_var_options();
-  }
+
+public: //option wrappers
+
+    inline
+    base::Options &
+    options() { return options_; }
+
+    inline
+    float
+    get_int_option(String const & name) { return options_.get_int(name); }
+
+    inline
+    float
+    get_float_option(String const & name) { return options_.get_float(name); }
+
+    inline
+    String
+    get_string_option(String const & name) { return options_.get_string(name); }
+
+    inline
+    bool
+    get_bool_option(String const & name) { return options_.get_bool(name); }
+
+    inline
+    bool
+    has_option(String const & name) { return options_.has_option(name); }
+
+    template<typename T>
+    void
+    set_option_value(
+            String const & name,
+            T const & val) {
+        options_.set_value(name, val);
+        update_var_options();
+    }
 
 private:
-  util::MonteCarlo _mc;
-  util::RandomNumberGenerator _rng;
-  util::StericLookup _lookup;
-  math::Vector3s _beads;
-  base::Options _options;
-  std::vector<motif::MotifStateOPs> _mses;
-  structure::BasepairStateOP _end, _end_flip;
-  motif::MotifStateOP _start_m;
-  motif_data_structure::MotifStateGraphOP _msg;
-  double _score, _r_diff, _r_diff_flip;
-  int _ni, _nj, _ei, _ej;
-  int _org_num;
-  int _stage;
-  int _step;
-  bool _target_an_aligned_end;
-  StringIntMap _seen;
-  bool _enumerating;
-  int _using_lookup;
-  // options
-  bool _sterics;
-  int _max_solutions;
-  int _stages;
-  int _steps;
-  float _accept_score;
+    util::MonteCarlo mc_;
+    util::RandomNumberGenerator rng_;
+    util::StericLookupNew lookup_;
+    math::Points beads_;
+    base::Options options_;
+    std::vector<motif::MotifStateOPs> mses_;
+    structure::BasepairStateOP end_, end_flip_;
+    motif::MotifStateOP start_m_;
+    motif_data_structure::MotifStateGraphOP msg_;
+    double score_, r_diff_, r_diff_flip_;
+    int ni_, nj_, ei_, ej_;
+    int org_num_;
+    int stage_;
+    int step_;
+    bool target_an_aligned_end_;
+    StringIntMap seen_;
+    bool enumerating_;
+    int using_lookup_;
+    // options
+    bool sterics_;
+    int max_solutions_;
+    int stages_;
+    int steps_;
+    float accept_score_;
 };
 
 typedef std::shared_ptr<MotifStateMonteCarlo> MotifStateMonteCarloOP;
 
-} // namespace motif_search
+}
 
-#endif // TEST_MOTIF_STATE_MONTE_CARLO_H
+#endif //TEST_MOTIF_STATE_MONTE_CARLO_H

@@ -11,89 +11,86 @@
 #include <array>
 #include <map>
 
-#include <math/vector_3.hpp>
+#include "math/xyz_vector.h"
 
 namespace math {
 
-template <typename T> class _BoundingBox {
+template <typename T>
+class _BoundingBox {
+ public:  // types
+  typedef T PointPosition;
 
-public: // types
-  typedef T PointPosition; // PointPosition is a synonym for T
-
-public: // construct/destruct
+ public:  // construct/destruct
   inline _BoundingBox() = default;
 
-  inline _BoundingBox(PointPosition const &pp) : _lower(pp), _upper(pp) {}
+  inline _BoundingBox(PointPosition const &pp) : lower_(pp), upper_(pp) {}
 
   inline _BoundingBox(PointPosition const &lower, PointPosition const &upper)
-      : _lower(lower), _upper(upper) {
-    if (lower == upper) {
-      String msg = "Boundaries are the same! Try different bounds.";
-      base::log_and_throw<base::MathException>(msg);
-    }
-  }
+      : lower_(lower), upper_(upper) {}
 
   /// @brief copy constructor
   inline _BoundingBox(_BoundingBox const &bb)
-      : _lower(bb._lower), _upper(bb._upper) {}
+      : lower_(bb.lower_), upper_(bb.upper_) {}
 
   /// @brief default destructor
   inline ~_BoundingBox() = default;
 
-public: // assignment
+ public:  // assignment
   /// @brief copy assignment
   inline _BoundingBox &operator=(_BoundingBox const &bb) {
     if (this != &bb) {
-      _lower = bb._lower;
-      _upper = bb._upper;
+      lower_ = bb.lower_;
+      upper_ = bb.upper_;
     }
     return *this;
   }
 
-public: // box management
+ public:  // box management
   /// @brief add a point, expands bounds if necessary
   inline void add(PointPosition const &pp) {
-    _lower.min(pp);
-    _upper.max(pp);
+    lower_.min(pp);
+    upper_.max(pp);
   }
 
   /// @brief reset corners
   inline void reset(PointPosition const &p = PointPosition()) {
-    _lower = p;
-    _upper = p;
+    lower_ = p;
+    upper_ = p;
   }
 
   /// @brief expand box corners (additive)
-  template <typename U> inline void expand(U const &scalar) {
-    _lower -= scalar;
-    _upper += scalar;
+  template <typename U>
+  inline void expand(U const &scalar) {
+    lower_ -= scalar;
+    upper_ += scalar;
   }
 
-  /// @brief contract box corners (subtractive)
-  template <typename U> inline void contract(U const &scalar) {
-    _lower += scalar;
-    _upper -= scalar;
+  // @brief contract box corners (subtractive)
+  template <typename U>
+  inline void contract(U const &scalar) {
+    lower_ += scalar;
+    upper_ -= scalar;
   }
 
   /// @brief translate bounding box
   inline void translate(PointPosition const &t) {
-    _lower += t;
-    _upper += t;
+    lower_ += t;
+    upper_ += t;
   }
 
-public: // box query
+ public:  // box query
   /// @brief intersects another bounding box?
   inline bool intersects(_BoundingBox const &bb) const {
-    return !(_lower.x() > bb._upper.x() || bb._lower.x() > _upper.x() ||
-             _lower.y() > bb._upper.y() || bb._lower.y() > _upper.y() ||
-             _lower.z() > bb._upper.z() || bb._lower.z() > _upper.z());
+    return !(lower_.x() > bb.upper_.x() || bb.lower_.x() > upper_.x() ||
+             lower_.y() > bb.upper_.y() || bb.lower_.y() > upper_.y() ||
+             lower_.z() > bb.upper_.z() || bb.lower_.z() > upper_.z());
   }
 
   /// @brief is point contained within this bounding box?
   template <typename U>
   inline bool contains(U const &x, U const &y, U const &z) const {
-    return _lower.x() <= x && _lower.y() <= y && _lower.z() <= z &&
-           x <= _upper.x() && y <= _upper.y() && z <= _upper.z();
+    return lower_.x() <= x && lower_.y() <= y && lower_.z() <= z &&
+           x <= upper_.x() && y <= upper_.y() && z <= upper_.z();
   }
 
   /// @brief is point contained within this bounding box?
@@ -101,26 +98,26 @@ public: // box query
     return contains(p.x(), p.y(), p.z());
   }
 
-public: // setters
+ public:  // setters
   /// @brief set lower corner
-  inline void set_lower(PointPosition const &p) { _lower = p; }
+  inline void set_lower(PointPosition const &p) { lower_ = p; }
 
   /// @brief set upper corner
-  inline void set_upper(PointPosition const &p) { _upper = p; }
+  inline void set_upper(PointPosition const &p) { upper_ = p; }
 
-public: // getters
+ public:  // getters
   /// @brief get lower corner
-  inline PointPosition const &lower() const { return _lower; }
+  inline PointPosition const &lower() const { return lower_; }
 
   /// @brief get upper corner
-  inline PointPosition const &upper() const { return _upper; }
+  inline PointPosition const &upper() const { return upper_; }
 
-private:                // data
-  PointPosition _lower; // lower corner
-  PointPosition _upper; // upper corner
+ private:                // data
+  PointPosition lower_;  // lower corner
+  PointPosition upper_;  // upper corner
 };
 
-typedef _BoundingBox<Vector3> BoundingBox;
+typedef _BoundingBox<Point> BoundingBox;
 typedef std::array<size_t, 3> Size3;
 typedef std::array<size_t, 6> Size6;
 typedef std::array<double, 2> Real2;
@@ -129,133 +126,120 @@ typedef std::array<double, 6> Real6;
 typedef std::array<double, 6> Bin6D;
 
 class SixDCoordinateBinner {
-public:
+ public:
   SixDCoordinateBinner(BoundingBox const &bounding_box, Real6 const &bin_widths)
-      : _bounding_box(bounding_box), _bin_widths(bin_widths),
-        _bin_values(Real6()) {
-    auto span = _bounding_box.upper() - _bounding_box.lower();
-    auto new_upper = _bounding_box.upper();
+      : bounding_box_(bounding_box),
+        bin_widths_(bin_widths),
+        bin_values_(Real6()) {
+    auto span = bounding_box_.upper() - bounding_box_.lower();
+    auto new_upper = bounding_box_.upper();
 
-    _dimsizes[0] = static_cast<size_t>(span.get_x() / _bin_widths[0]);
-    _dimsizes[1] = static_cast<size_t>(span.get_y() / _bin_widths[1]);
-    _dimsizes[2] = static_cast<size_t>(span.get_z() / _bin_widths[2]);
-
-    if (_dimsizes[0] * _bin_widths[0] < span.get_x()) {
-      _dimsizes[0] += 1;
-      new_upper.set_x(_bounding_box.lower().get_x() +
-                      _dimsizes[0] * _bin_widths[0]);
-    } else if (_dimsizes[1] * _bin_widths[1] < span.get_y()) {
-      _dimsizes[1] += 1;
-      new_upper.set_y(_bounding_box.lower().get_y() +
-                      _dimsizes[1] * _bin_widths[1]);
-    } else if (_dimsizes[2] * _bin_widths[2] < span.get_z()) {
-      _dimsizes[2] += 1;
-      new_upper.set_z(_bounding_box.lower().get_z() +
-                      _dimsizes[2] * _bin_widths[2]);
+    for (int ii = 0; ii < 3; ++ii) {
+      dimsizes_[ii] = static_cast<size_t>(span[ii] / bin_widths_[ii]);
+      if (dimsizes_[ii] * bin_widths_[ii] < span[ii]) {
+        dimsizes_[ii] += 1;
+        new_upper[ii] =
+            bounding_box_.lower()[ii] + dimsizes_[ii] * bin_widths_[ii];
+      }
     }
-    _bounding_box.set_upper(new_upper);
+    bounding_box_.set_upper(new_upper);
 
     for (int ii = 3; ii <= 5; ++ii) {
-      _dimsizes[ii] = static_cast<size_t>(360.0 / _bin_widths[ii]);
+      dimsizes_[ii] = static_cast<size_t>(360.0 / bin_widths_[ii]);
     }
-    if (_dimsizes[5] == 0) {
-      _dimsizes[5] = 1;
+    if (dimsizes_[5] == 0) {
+      dimsizes_[5] = 1;
     }
 
-    _dimprods[5] = 1;
+    dimprods_[5] = 1;
     for (int ii = 4; ii >= 0; --ii) {
-      _dimprods[ii] = _dimprods[ii + 1] * _dimsizes[ii + 1];
+      dimprods_[ii] = dimprods_[ii + 1] * dimsizes_[ii + 1];
     }
 
     for (int ii = 0; ii < 6; ++ii) {
-      _halfbin_widths[ii] = _bin_widths[ii] / 2;
+      halfbin_widths_[ii] = bin_widths_[ii] / 2;
     }
   }
 
   Bin6D bin6(Real6 const &values) const {
-    auto xyzcoord = Vector3(values[0], values[1], values[2]);
-    assert(_bounding_box.contains(xyzcoord));
+    auto xyzcoord = Point(values[0], values[1], values[2]);
+    assert(bounding_box_.contains(xyzcoord));
 
-    auto from_corner = xyzcoord - _bounding_box.lower();
+    auto from_corner = xyzcoord - bounding_box_.lower();
     Bin6D bins;
 
-    bins[0] = static_cast<size_t>(from_corner.get_x() / _bin_widths[0]);
-    if (bins[0] == _dimsizes[0]) {
+    bins[0] = static_cast<size_t>(from_corner.x() / bin_widths_[0]);
+    if (bins[0] == dimsizes_[0]) {
       bins[0] -= 1;
     }
 
-    bins[1] = static_cast<size_t>(from_corner.get_y() / _bin_widths[1]);
-    if (bins[1] == _dimsizes[1]) {
+    bins[1] = static_cast<size_t>(from_corner.y() / bin_widths_[1]);
+    if (bins[1] == dimsizes_[1]) {
       bins[1] -= 1;
     }
 
-    bins[2] = static_cast<size_t>(from_corner.get_z() / _bin_widths[2]);
-    if (bins[2] == _dimsizes[2]) {
+    bins[2] = static_cast<size_t>(from_corner.z() / bin_widths_[2]);
+    if (bins[2] == dimsizes_[2]) {
       bins[2] -= 1;
     }
 
     auto euler = _wrap_euler_angles(values);
 
-    bins[3] = static_cast<size_t>(euler[0] / _bin_widths[3]) % _dimsizes[3];
-    bins[4] = static_cast<size_t>(euler[1] / _bin_widths[4]) % _dimsizes[4];
-    bins[5] = static_cast<size_t>(euler[2] / _bin_widths[5]) % _dimsizes[5];
+    bins[3] = static_cast<size_t>(euler[0] / bin_widths_[3]) % dimsizes_[3];
+    bins[4] = static_cast<size_t>(euler[1] / bin_widths_[4]) % dimsizes_[4];
+    bins[5] = static_cast<size_t>(euler[2] / bin_widths_[5]) % dimsizes_[5];
     return bins;
   }
 
   Real6 bin_center_point(Bin6D const &bin) const {
     Real6 center;
-
-    center[0] = _bounding_box.lower().get_x() + bin[0] * _bin_widths[0] +
-                _halfbin_widths[0];
-    center[1] = _bounding_box.lower().get_y() + bin[1] * _bin_widths[1] +
-                _halfbin_widths[1];
-    center[2] = _bounding_box.lower().get_z() + bin[2] * _bin_widths[2] +
-                _halfbin_widths[2];
-    center[3] = bin[3] * _bin_widths[3] + _halfbin_widths[3];
-    center[4] = bin[4] * _bin_widths[4] + _halfbin_widths[4];
-    center[5] = bin[5] * _bin_widths[5] + _halfbin_widths[5];
-
+    for (int ii = 0; ii < 3; ++ii) {
+      center[ii] = bounding_box_.lower()[ii] + bin[ii] * bin_widths_[ii] +
+                   halfbin_widths_[ii];
+    }
+    for (int ii = 0; ii < 3; ++ii) {
+      center[ii + 3] =
+          bin[ii + 3] * bin_widths_[ii + 3] + halfbin_widths_[ii + 3];
+    }
     return center;
   }
 
   Real6 bin_to_values(Bin6D const &bin) const {
     Real6 values;
-
-    values[0] = _bounding_box.lower().get_x() + bin[0] * _bin_widths[0];
-    values[1] = _bounding_box.lower().get_y() + bin[1] * _bin_widths[1];
-    values[2] = _bounding_box.lower().get_z() + bin[2] * _bin_widths[2];
-    values[3] = bin[3] * _bin_widths[3];
-    values[4] = bin[4] * _bin_widths[4];
-    values[5] = bin[5] * _bin_widths[5];
-
+    for (int ii = 0; ii < 3; ++ii) {
+      values[ii] = bounding_box_.lower()[ii] + bin[ii] * bin_widths_[ii];
+    }
+    for (int ii = 0; ii < 3; ++ii) {
+      values[ii + 3] = bin[ii + 3] * bin_widths_[ii + 3];
+    }
     return values;
   }
 
   uint64_t bin_index(Real6 const &values) const {
     auto bin = bin6(values);
 
-    uint64_t const A = bin[0] * _dimprods[0] + bin[1] * _dimprods[1] +
-                       bin[2] * _dimprods[2] + bin[3] * _dimprods[3] +
-                       bin[4] * _dimprods[4] + bin[5] * _dimprods[5];
+    uint64_t const A = bin[0] * dimprods_[0] + bin[1] * dimprods_[1] +
+                       bin[2] * dimprods_[2] + bin[3] * dimprods_[3] +
+                       bin[4] * dimprods_[4] + bin[5] * dimprods_[5];
     return A;
   }
 
   Bin6D bin_from_index(uint64_t bin_index) {
     Bin6D bin;
     for (int ii = 0; ii < 6; ++ii) {
-      bin[ii] = bin_index / _dimprods[ii];
-      bin_index = bin_index % _dimprods[ii];
+      bin[ii] = bin_index / dimprods_[ii];
+      bin_index = bin_index % dimprods_[ii];
     }
 
     return bin;
   }
 
-public: // getters
-  BoundingBox const &get_bounding_box() { return _bounding_box; }
+ public:  // getters
+  BoundingBox const &get_bounding_box() { return bounding_box_; }
 
-  Real6 const &get_bin_widths() { return _bin_widths; }
+  Real6 const &get_bin_widths() { return bin_widths_; }
 
-private:
+ private:
   Real3 _wrap_euler_angles(Real6 const &values) const {
     auto euler = Real3{values[3], values[4], values[5]};
     for (int i = 0; i < euler.size(); i++) {
@@ -266,81 +250,68 @@ private:
         euler[i] += 360;
       }
     }
+
     return euler;
   }
 
-private:
-  BoundingBox _bounding_box;
-  Size6 _dimsizes;
-  Size6 _dimprods;
-  Real6 _bin_widths;
-  Real6 _halfbin_widths;
-  Real6 _bin_values;
+ private:
+  BoundingBox bounding_box_;
+  Size6 dimsizes_;
+  Size6 dimprods_;
+  Real6 bin_widths_;
+  Real6 halfbin_widths_;
+  Real6 bin_values_;
 };
 
 class ThreeDCoordinateBinner {
-public:
-
-  /// @brief - constructor
+ public:
   ThreeDCoordinateBinner(BoundingBox const &bounding_box,
                          Real3 const &bin_widths)
-      : _bounding_box(bounding_box), _bin_widths(bin_widths) {
-    auto span = _bounding_box.upper() - _bounding_box.lower();
-    auto new_upper = _bounding_box.upper();
+      : bounding_box_(bounding_box), bin_widths_(bin_widths) {
+    auto span = bounding_box_.upper() - bounding_box_.lower();
+    auto new_upper = bounding_box_.upper();
 
-    _dimsizes[0] = static_cast<size_t>(span.get_x() / _bin_widths[0]);
-    _dimsizes[1] = static_cast<size_t>(span.get_y() / _bin_widths[1]);
-    _dimsizes[2] = static_cast<size_t>(span.get_z() / _bin_widths[2]);
-
-    if (_dimsizes[0] * _bin_widths[0] < span.get_x()) {
-      _dimsizes[0] += 1;
-      new_upper.set_x(_bounding_box.lower().get_x() +
-                      _dimsizes[0] * _bin_widths[0]);
-    } else if (_dimsizes[1] * _bin_widths[1] < span.get_y()) {
-      _dimsizes[1] += 1;
-      new_upper.set_y(_bounding_box.lower().get_y() +
-                      _dimsizes[1] * _bin_widths[1]);
-    } else if (_dimsizes[2] * _bin_widths[2] < span.get_z()) {
-      _dimsizes[2] += 1;
-      new_upper.set_z(_bounding_box.lower().get_z() +
-                      _dimsizes[2] * _bin_widths[2]);
+    for (int ii = 0; ii < 3; ++ii) {
+      dimsizes_[ii] = static_cast<size_t>(span[ii] / bin_widths_[ii]);
+      if (dimsizes_[ii] * bin_widths_[ii] < span[ii]) {
+        dimsizes_[ii] += 1;
+        new_upper[ii] =
+            bounding_box_.lower()[ii] + dimsizes_[ii] * bin_widths_[ii];
+      }
     }
-    _bounding_box.set_upper(new_upper);
+    bounding_box_.set_upper(new_upper);
 
-    if (_dimsizes[2] == 0) {
-      _dimsizes[2] = 1;
+    if (dimsizes_[2] == 0) {
+      dimsizes_[2] = 1;
     }
-    _dimprods[2] = 1;
+    dimprods_[2] = 1;
     for (int ii = 1; ii >= 0; --ii) {
-      _dimprods[ii] = _dimprods[ii + 1] * _dimsizes[ii + 1];
+      dimprods_[ii] = dimprods_[ii + 1] * dimsizes_[ii + 1];
     }
 
     for (int ii = 0; ii < 3; ++ii) {
-      _halfbin_widths[ii] = _bin_widths[ii] / 2;
+      halfbin_widths_[ii] = bin_widths_[ii] / 2;
     }
   }
 
-  Real3 bin3(Vector3 const &values) const {
-    // assert(_bounding_box.contains(values));
+  Real3 bin3(Point const &values) const {
+    assert(bounding_box_.contains(values));
 
-    auto from_corner = values - _bounding_box.lower();
+    auto from_corner = values - bounding_box_.lower();
     Real3 bins;
 
-    bins[0] = static_cast<size_t>(from_corner.get_x() / _bin_widths[0]);
-
-    if (bins[0] == _dimsizes[0]) {
+    bins[0] = static_cast<size_t>(from_corner.x() / bin_widths_[0]);
+    if (bins[0] == dimsizes_[0]) {
       bins[0] -= 1;
     }
 
-    bins[1] = static_cast<size_t>(from_corner.get_y() / _bin_widths[1]);
-
-    if (bins[1] == _dimsizes[1]) {
+    bins[1] = static_cast<size_t>(from_corner.y() / bin_widths_[1]);
+    if (bins[1] == dimsizes_[1]) {
       bins[1] -= 1;
     }
 
-    bins[2] = static_cast<size_t>(from_corner.get_z() / _bin_widths[2]);
-
-    if (bins[2] == _dimsizes[2]) {
+    bins[2] = static_cast<size_t>(from_corner.z() / bin_widths_[2]);
+    if (bins[2] == dimsizes_[2]) {
       bins[2] -= 1;
     }
 
@@ -349,135 +320,133 @@ public:
 
   Real3 bin_center_point(Real3 const &bin) const {
     Real3 center;
-    center[0] = _bounding_box.lower().get_x() + bin[0] * _bin_widths[0] +
-                _halfbin_widths[0];
-    center[1] = _bounding_box.lower().get_y() + bin[1] * _bin_widths[1] +
-                _halfbin_widths[1];
-    center[2] = _bounding_box.lower().get_z() + bin[2] * _bin_widths[2] +
-                _halfbin_widths[2];
+    for (int ii = 0; ii < 3; ++ii) {
+      center[ii] = bounding_box_.lower()[ii] + bin[ii] * bin_widths_[ii] +
+                   halfbin_widths_[ii];
+    }
     return center;
   }
 
   Real3 bin_to_values(Bin6D const &bin) const {
     Real3 values;
-    values[0] = _bounding_box.lower().get_x() + bin[0] * _bin_widths[0];
-    values[1] = _bounding_box.lower().get_y() + bin[1] * _bin_widths[1];
-    values[2] = _bounding_box.lower().get_z() + bin[2] * _bin_widths[2];
+    for (int ii = 0; ii < 3; ++ii) {
+      values[ii] = bounding_box_.lower()[ii] + bin[ii] * bin_widths_[ii];
+    }
     return values;
   }
 
-  uint32_t bin_index(Vector3 const &values) const {
+  uint32_t bin_index(Point const &values) const {
     auto bin = bin3(values);
 
     uint32_t const A =
-        bin[0] * _dimprods[0] + bin[1] * _dimprods[1] + bin[2] * _dimprods[2];
+        bin[0] * dimprods_[0] + bin[1] * dimprods_[1] + bin[2] * dimprods_[2];
     return A;
   }
 
   Real3 bin_from_index(uint32_t bin_index) {
     Real3 bin;
     for (int ii = 0; ii < 3; ++ii) {
-      bin[ii] = bin_index / _dimprods[ii];
-      bin_index = bin_index % _dimprods[ii];
+      bin[ii] = bin_index / dimprods_[ii];
+      bin_index = bin_index % dimprods_[ii];
     }
 
     return bin;
   }
 
-public: // getters
-  BoundingBox const &get_bounding_box() { return _bounding_box; }
+ public:  // getters
+  BoundingBox const &get_bounding_box() { return bounding_box_; }
 
-  Real3 const &get_bin_widths() { return _bin_widths; }
+  Real3 const &get_bin_widths() { return bin_widths_; }
 
-private:
-  BoundingBox _bounding_box;
-  Size3 _dimsizes;
-  Size3 _dimprods;
-  Real3 _bin_widths;
-  Real3 _halfbin_widths;
+ private:
+  BoundingBox bounding_box_;
+  Size3 dimsizes_;
+  Size3 dimprods_;
+  Real3 bin_widths_;
+  Real3 halfbin_widths_;
 };
 
 enum class SixDHistogramStrType { TEXT, BINARY };
 
 class SixDHistogram {
-public:
+ public:
   SixDHistogram(BoundingBox const &bounding_box, Real6 const &bin_widths)
-      : _binner(SixDCoordinateBinner(bounding_box, bin_widths)) {}
+      : binner_(SixDCoordinateBinner(bounding_box, bin_widths)) {}
 
   SixDHistogram(Strings const &s, SixDHistogramStrType const &type)
-      : _binner(BoundingBox(), Real6{0.1, 0.1, 0.1, 0.1, 0.1, 0.1}) {
+      : binner_(BoundingBox(), Real6{0.1, 0.1, 0.1, 0.1, 0.1, 0.1}) {
     if (type == SixDHistogramStrType::TEXT) {
       _setup_from_text(s);
     }
   }
 
   SixDHistogram(std::ifstream &in)
-      : _binner(BoundingBox(), Real6{0.1, 0.1, 0.1, 0.1, 0.1, 0.1}) {
+      : binner_(BoundingBox(), Real6{0.1, 0.1, 0.1, 0.1, 0.1, 0.1}) {
     auto datas = Real3();
     for (int i = 0; i < 3; i++) {
       in.read(reinterpret_cast<char *>(&datas[i]), sizeof(datas[i]));
     }
-    auto lower = Vector3(datas[0], datas[1], datas[2]);
+    auto lower = Point(datas[0], datas[1], datas[2]);
     for (int i = 0; i < 3; i++) {
       in.read(reinterpret_cast<char *>(&datas[i]), sizeof(datas[i]));
     }
-    auto upper = Vector3(datas[0], datas[1], datas[2]);
+    auto upper = Point(datas[0], datas[1], datas[2]);
     auto bin_widths = Real6();
     for (int i = 0; i < 6; i++) {
       in.read(reinterpret_cast<char *>(&bin_widths[i]), sizeof(bin_widths[i]));
     }
-    _binner = SixDCoordinateBinner(BoundingBox(lower, upper), bin_widths);
+    binner_ = SixDCoordinateBinner(BoundingBox(lower, upper), bin_widths);
     uint64_t num;
     uint64_t key, count;
     in.read(reinterpret_cast<char *>(&num), sizeof(num));
     for (int i = 0; i < num; i++) {
       in.read(reinterpret_cast<char *>(&key), sizeof(key));
       in.read(reinterpret_cast<char *>(&count), sizeof(count));
-      _stored_values[key] = count;
+      stored_values_[key] = count;
     }
   }
 
-private:
+ private:
   void _setup_from_text(Strings const &s) {
     auto lower = vector_from_str(s[0]);
     auto upper = vector_from_str(s[1]);
-    auto spl = base::string::split(s[2], " ");
+    auto spl = base::split_str_by_delimiter(s[2], " ");
     auto bin_widths = Real6();
     auto bb = BoundingBox(lower, upper);
     for (int i = 0; i < 6; i++) {
       bin_widths[i] = std::stod(spl[i]);
     }
-    _binner = SixDCoordinateBinner(bb, bin_widths);
+    binner_ = SixDCoordinateBinner(bb, bin_widths);
     auto values = Real6();
     for (int i = 4; i < s.size(); i++) {
       if (s[i].length() < 5) {
         break;
       }
-      spl = base::string::split(s[i], ",");
+      spl = base::split_str_by_delimiter(s[i], ",");
       for (int i = 0; i < 6; i++) {
         values[i] = std::stod(spl[i]);
       }
-      auto bin_index = _binner.bin_index(values);
-      _stored_values[bin_index] = std::stoull(spl[6]);
+      auto bin_index = binner_.bin_index(values);
+      stored_values_[bin_index] = std::stoull(spl[6]);
     }
   }
 
-public:
-  inline size_t size() { return _stored_values.size(); }
+ public:
+  inline size_t size() { return stored_values_.size(); }
 
-public:
+ public:
   void add(Real6 const &values) {
-    auto bin_index = _binner.bin_index(values);
-    if (_stored_values.find(bin_index) == _stored_values.end()) {
-      _stored_values[bin_index] = 0;
+    auto bin_index = binner_.bin_index(values);
+    if (stored_values_.find(bin_index) == stored_values_.end()) {
+      stored_values_[bin_index] = 0;
     }
-    _stored_values[bin_index] += 1;
+    stored_values_[bin_index] += 1;
   }
 
-public:
+ public:
   bool contains(Real6 const &values) {
-    auto bin_index = _binner.bin_index(values);
-    if (_stored_values.find(bin_index) == _stored_values.end()) {
+    auto bin_index = binner_.bin_index(values);
+    if (stored_values_.find(bin_index) == stored_values_.end()) {
       return false;
     } else {
       return true;
@@ -485,8 +454,8 @@ public:
   }
 
   uint64_t get(Real6 const &values) {
-    auto bin_index = _binner.bin_index(values);
-    return _stored_values[bin_index];
+    auto bin_index = binner_.bin_index(values);
+    return stored_values_[bin_index];
   }
 
   uint64_t within_constraints(std::array<Real2, 6> const &constraints) {
@@ -496,9 +465,9 @@ public:
     auto fail = 0;
     double max_distance = 6;
     double dist = 0;
-    for (auto const &kv : _stored_values) {
-      bins = _binner.bin_from_index(kv.first);
-      values = _binner.bin_to_values(bins);
+    for (auto const &kv : stored_values_) {
+      bins = binner_.bin_from_index(kv.first);
+      values = binner_.bin_to_values(bins);
 
       fail = 0;
       for (int i = 0; i < 6; i++) {
@@ -525,29 +494,29 @@ public:
 
   uint64_t total_count() {
     uint64_t count = 0;
-    for (auto const &kv : _stored_values) {
+    for (auto const &kv : stored_values_) {
       count += kv.second;
     }
     return count;
   }
 
-public:
+ public:
   void to_text_file(String const &fname) {
     std::ofstream out;
     out.open(fname);
-    auto &bb = _binner.get_bounding_box();
-    out << bb.lower().get_str() << std::endl;
-    out << bb.upper().get_str() << std::endl;
-    for (auto const &bin_width : _binner.get_bin_widths()) {
+    auto &bb = binner_.get_bounding_box();
+    out << bb.lower().to_str() << std::endl;
+    out << bb.upper().to_str() << std::endl;
+    for (auto const &bin_width : binner_.get_bin_widths()) {
       out << bin_width << " ";
     }
     out << std::endl;
 
     out << "x,y,z,a,b,g,count\n";
-    for (auto const &kv : _stored_values) {
+    for (auto const &kv : stored_values_) {
       auto bin_index = kv.first;
-      auto bin = _binner.bin_from_index(bin_index);
-      auto values = _binner.bin_to_values(bin);
+      auto bin = binner_.bin_from_index(bin_index);
+      auto values = binner_.bin_to_values(bin);
       for (auto const &v : values) {
         out << v << ",";
       }
@@ -564,90 +533,86 @@ public:
   }
 
   void output_binary(std::ofstream &out, uint64_t cuttoff) {
-    auto lower = _binner.get_bounding_box().lower();
-    auto upper = _binner.get_bounding_box().upper();
-    double x = lower.get_x();
-    double y = lower.get_y();
-    double z = lower.get_z();
-    double x1 = upper.get_x();
-    double y1 = upper.get_y();
-    double z1 = upper.get_z();
-    out.write((const char *)(&x), sizeof(lower.get_x()));
-    out.write((const char *)(&y), sizeof(lower.get_y()));
-    out.write((const char *)(&z), sizeof(lower.get_z()));
-    out.write((const char *)(&x1), sizeof(upper.get_x()));
-    out.write((const char *)(&y1), sizeof(upper.get_y()));
-    out.write((const char *)(&z1), sizeof(upper.get_z()));
-
+    auto lower = binner_.get_bounding_box().lower();
+    auto upper = binner_.get_bounding_box().upper();
+    out.write((const char *)&lower.x(), sizeof(lower.x()));
+    out.write((const char *)&lower.y(), sizeof(lower.y()));
+    out.write((const char *)&lower.z(), sizeof(lower.z()));
+    out.write((const char *)&upper.x(), sizeof(upper.x()));
+    out.write((const char *)&upper.y(), sizeof(upper.y()));
+    out.write((const char *)&upper.z(), sizeof(upper.z()));
     for (int i = 0; i < 6; i++) {
-      out.write((const char *)&_binner.get_bin_widths()[i],
-                sizeof(_binner.get_bin_widths()[i]));
+      out.write((const char *)&binner_.get_bin_widths()[i],
+                sizeof(binner_.get_bin_widths()[i]));
     }
-
     uint64_t num = 0;
-    for (auto const &kv : _stored_values) {
+    for (auto const &kv : stored_values_) {
       // if(kv.second <= cuttoff) { continue; }
       num += 1;
     }
     out.write((const char *)&num, sizeof(num));
-    for (auto const &kv : _stored_values) {
+    for (auto const &kv : stored_values_) {
       // if(kv.second <= cuttoff) { continue; }
       out.write((const char *)&kv.first, sizeof(kv.first));
       out.write((const char *)&kv.second, sizeof(kv.second));
     }
   }
 
-private:
-  SixDCoordinateBinner _binner;
-  std::map<uint64_t, uint64_t> _stored_values;
+ private:
+  SixDCoordinateBinner binner_;
+  std::map<uint64_t, uint64_t> stored_values_;
 };
 
 class ThreeDHistogram {
-public:
+ public:
   ThreeDHistogram() {}
 
   ThreeDHistogram(BoundingBox const &bounding_box, Real3 const &bin_widths)
-      : _binner(std::make_shared<ThreeDCoordinateBinner>(bounding_box,
+      : binner_(std::make_shared<ThreeDCoordinateBinner>(bounding_box,
                                                          bin_widths)) {}
 
+ public:
   void setup(BoundingBox const &bounding_box, Real3 const &bin_widths) {
-    _binner =
+    binner_ =
         std::make_shared<ThreeDCoordinateBinner>(bounding_box, bin_widths);
   }
 
-  inline size_t size() { return _stored_values.size(); }
+  inline size_t size() { return stored_values_.size(); }
 
-  void add(Vector3 const &values) {
-    auto bin_index = _binner->bin_index(values);
-    if (_stored_values.find(bin_index) == _stored_values.end()) {
-      _stored_values[bin_index] = 0;
+ public:
+  void add(Point const &values) {
+    auto bin_index = binner_->bin_index(values);
+    if (stored_values_.find(bin_index) == stored_values_.end()) {
+      stored_values_[bin_index] = 0;
     }
-    _stored_values[bin_index] += 1;
+    stored_values_[bin_index] += 1;
   }
 
-  bool contains(Vector3 const &values) {
-    auto bin_index = _binner->bin_index(values);
-    if (_stored_values.find(bin_index) == _stored_values.end()) {
+ public:
+  bool contains(Point const &values) {
+    auto bin_index = binner_->bin_index(values);
+    if (stored_values_.find(bin_index) == stored_values_.end()) {
       return false;
     } else {
       return true;
     }
   }
 
-  uint32_t get(Vector3 const &values) {
-    auto bin_index = _binner->bin_index(values);
-    return _stored_values[bin_index];
+  uint32_t get(Point const &values) {
+    auto bin_index = binner_->bin_index(values);
+    return stored_values_[bin_index];
   }
 
+ public:
   void write_histo_to_pdb(String const &pdb_name) {
     int i = 1;
     std::ofstream out;
     out.open(pdb_name);
     auto bins = Real3();
     auto p = Real3();
-    for (auto const &kv : _stored_values) {
-      bins = _binner->bin_from_index(kv.first);
-      p = _binner->bin_center_point(bins);
+    for (auto const &kv : stored_values_) {
+      bins = binner_->bin_from_index(kv.first);
+      p = binner_->bin_center_point(bins);
       char buffer[200];
       std::sprintf(
           buffer,
@@ -659,11 +624,11 @@ public:
     out.close();
   }
 
-private:
-  std::shared_ptr<ThreeDCoordinateBinner> _binner;
-  std::map<uint32_t, int> _stored_values;
+ private:
+  std::shared_ptr<ThreeDCoordinateBinner> binner_;
+  std::map<uint32_t, int> stored_values_;
 };
 
-} // namespace math
+}  // namespace math
 
-#endif // TEST_HASHING_H
+#endif  // TEST_HASHING_H

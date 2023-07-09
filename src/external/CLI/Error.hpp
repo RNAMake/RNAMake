@@ -19,22 +19,22 @@ namespace CLI {
 
 // Use one of these on all error classes.
 // These are temporary and are undef'd at the end of this file.
-#define CLI11_ERROR_DEF(parent, name)                                          \
-protected:                                                                     \
-  name(std::string ename, std::string msg, int exit_code)                      \
-      : parent(std::move(ename), std::move(msg), exit_code) {}                 \
-  name(std::string ename, std::string msg, ExitCodes exit_code)                \
-      : parent(std::move(ename), std::move(msg), exit_code) {}                 \
-                                                                               \
-public:                                                                        \
-  name(std::string msg, ExitCodes exit_code)                                   \
-      : parent(#name, std::move(msg), exit_code) {}                            \
-  name(std::string msg, int exit_code)                                         \
+#define CLI11_ERROR_DEF(parent, name)                           \
+ protected:                                                     \
+  name(std::string ename, std::string msg, int exit_code)       \
+      : parent(std::move(ename), std::move(msg), exit_code) {}  \
+  name(std::string ename, std::string msg, ExitCodes exit_code) \
+      : parent(std::move(ename), std::move(msg), exit_code) {}  \
+                                                                \
+ public:                                                        \
+  name(std::string msg, ExitCodes exit_code)                    \
+      : parent(#name, std::move(msg), exit_code) {}             \
+  name(std::string msg, int exit_code)                          \
       : parent(#name, std::move(msg), exit_code) {}
 
 // This is added after the one above if a class is used directly and builds its
 // own message
-#define CLI11_ERROR_SIMPLE(name)                                               \
+#define CLI11_ERROR_SIMPLE(name) \
   explicit name(std::string msg) : name(#name, msg, ExitCodes::name) {}
 
 /// These codes are part of every error in CLI. They can be obtained from e
@@ -74,14 +74,15 @@ class Error : public std::runtime_error {
   int actual_exit_code;
   std::string error_name{"Error"};
 
-public:
+ public:
   int get_exit_code() const { return actual_exit_code; }
 
   std::string get_name() const { return error_name; }
 
   Error(std::string name, std::string msg,
         int exit_code = static_cast<int>(ExitCodes::BaseClass))
-      : runtime_error(msg), actual_exit_code(exit_code),
+      : runtime_error(msg),
+        actual_exit_code(exit_code),
         error_name(std::move(name)) {}
 
   Error(std::string name, std::string msg, ExitCodes exit_code)
@@ -260,9 +261,9 @@ class RequiredError : public ParseError {
     if (min_subcom == 1) {
       return RequiredError("A subcommand");
     }
-    return RequiredError("Requires at least " + std::to_string(min_subcom) +
-                             " subcommands",
-                         ExitCodes::RequiredError);
+    return RequiredError(
+        "Requires at least " + std::to_string(min_subcom) + " subcommands",
+        ExitCodes::RequiredError);
   }
   static RequiredError Option(std::size_t min_option, std::size_t max_option,
                               std::size_t used,
@@ -285,9 +286,9 @@ class RequiredError : public ParseError {
                            ExitCodes::RequiredError);
     }
     if (max_option == 1)
-      return RequiredError("Requires at most 1 options be given from [" +
-                               option_list + "]",
-                           ExitCodes::RequiredError);
+      return RequiredError(
+          "Requires at most 1 options be given from [" + option_list + "]",
+          ExitCodes::RequiredError);
 
     return RequiredError("Requires at most " + std::to_string(max_option) +
                              " options be used and " + std::to_string(used) +
@@ -352,18 +353,18 @@ class ExcludesError : public ParseError {
 class ExtrasError : public ParseError {
   CLI11_ERROR_DEF(ParseError, ExtrasError)
   explicit ExtrasError(std::vector<std::string> args)
-      : ExtrasError((args.size() > 1
-                         ? "The following arguments were not expected: "
-                         : "The following argument was not expected: ") +
-                        detail::rjoin(args, " "),
-                    ExitCodes::ExtrasError) {}
+      : ExtrasError(
+            (args.size() > 1 ? "The following arguments were not expected: "
+                             : "The following argument was not expected: ") +
+                detail::rjoin(args, " "),
+            ExitCodes::ExtrasError) {}
   ExtrasError(const std::string &name, std::vector<std::string> args)
-      : ExtrasError(name,
-                    (args.size() > 1
-                         ? "The following arguments were not expected: "
-                         : "The following argument was not expected: ") +
-                        detail::rjoin(args, " "),
-                    ExitCodes::ExtrasError) {}
+      : ExtrasError(
+            name,
+            (args.size() > 1 ? "The following arguments were not expected: "
+                             : "The following argument was not expected: ") +
+                detail::rjoin(args, " "),
+            ExitCodes::ExtrasError) {}
 };
 
 /// Thrown when extra values are found in an INI file
@@ -411,4 +412,4 @@ class OptionNotFound : public Error {
 
 /// @}
 
-} // namespace CLI
+}  // namespace CLI

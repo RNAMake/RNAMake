@@ -251,7 +251,7 @@ TEST_CASE( "Test Searching Motif States" ) {
         auto centers = math::Points();
 
         for (auto const &b : beads) {
-            if (b.btype() != util:BeadType::PHOS) {
+            if (b.btype() != structure::BeadType::PHOS) {
                 centers.push_back(b.center());
             }
         }

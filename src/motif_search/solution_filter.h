@@ -7,71 +7,119 @@
 
 #include <memory>
 
-#include <base/string.hpp>
-#include <base/types.hpp>
+#include <base/types.h>
+#include <base/string.h>
 
 namespace motif_search {
 
 class SolutionFilter {
 public:
-  SolutionFilter() {}
+    SolutionFilter() {}
 
-  virtual ~SolutionFilter() {}
+    virtual
+    ~SolutionFilter() {}
 
-  virtual SolutionFilter *clone() const = 0;
+    virtual
+    SolutionFilter *
+    clone() const = 0;
 
 public:
-  virtual bool accept(Strings const &) = 0;
+
+    virtual
+    bool
+    accept(Strings const &) = 0;
 };
 
 typedef std::shared_ptr<SolutionFilter> SolutionFilterOP;
 
-class NoExclusionFilter : public SolutionFilter {
+class NoExclusionFilter : public  SolutionFilter {
 public:
-  NoExclusionFilter() : SolutionFilter() {}
+    NoExclusionFilter(): SolutionFilter() {}
 
-  ~NoExclusionFilter() {}
+    ~NoExclusionFilter() {}
 
-  SolutionFilter *clone() const { return new NoExclusionFilter(*this); }
+    SolutionFilter *
+    clone() const {
+        return new NoExclusionFilter(*this);
+    }
 
 public:
-  bool accept(Strings const &motif_names) { return true; }
+
+    bool
+    accept(
+            Strings const & motif_names) { return true; }
 };
 
-// removes helices in the same position of the same length mostly useful for
-// flex helices
-class RemoveDuplicateHelices : public SolutionFilter {
+// removes helices in the same position of the same length mostly useful for flex helices
+class RemoveDuplicateHelices : public  SolutionFilter {
 public:
-  RemoveDuplicateHelices() : SolutionFilter() { _seen = StringIntMap(); }
+    RemoveDuplicateHelices(): SolutionFilter() {
+        seen_ = StringIntMap();
+    }
 
-  ~RemoveDuplicateHelices() {}
+    ~RemoveDuplicateHelices() {}
 
-  SolutionFilter *clone() const { return new RemoveDuplicateHelices(*this); }
+    SolutionFilter *
+    clone() const {
+        return new RemoveDuplicateHelices(*this);
+    }
 
 public:
-  bool accept(Strings const &motif_names) {
-    _key = "";
-    for (auto const &m_name : motif_names) {
-      if (m_name.substr(0, 10) == "HELIX.FLEX") {
-        auto spl = base::string::split(m_name, ".");
-        _key += spl[0] + "." + spl[1] + "." + spl[2] + ";";
-      } else {
-        _key += m_name + ";";
-      }
-    }
-    if (_seen.find(_key) != _seen.end()) {
-      return false;
-    }
-    _seen[_key] = 1;
 
-    return true;
-  }
+    bool
+    accept(
+            Strings const & motif_names) {
+        key_ = "";
+        for(auto const & m_name : motif_names) {
+            if(m_name.substr(0, 10) == "HELIX.FLEX") {
+                auto spl = base::split_str_by_delimiter(m_name, ".");
+                key_ += spl[0] + "." + spl[1] + "." + spl[2] + ";";
+            }
+            else {
+                key_ += m_name + ";";
+            }
+        }
+        if(seen_.find(key_) != seen_.end()) { return false; }
+        seen_[key_] = 1;
+
+        return true;
+    }
 
 private:
-  StringIntMap _seen;
-  String _key;
+    StringIntMap seen_;
+    String key_;
 };
 
-} // namespace motif_search
+}
 
-#endif // RNAMAKE_NEW_SOLUTION_FILTER_H
+#endif //RNAMAKE_NEW_SOLUTION_FILTER_H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

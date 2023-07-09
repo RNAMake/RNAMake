@@ -28,6 +28,7 @@ struct Parameters {
 		int designs = 1;
 		String log_level = "info";
 		String extra_pdbs = "";
+		String ensembles = "";
 	};
 
 	struct IO{
@@ -63,6 +64,7 @@ struct Parameters {
 	struct SequenceOpt{
 		bool skip = false;
 		int sequences_per_design = 1;
+		float cutoff = 7;
 		int steps = 10000;
 	};
 
@@ -111,6 +113,10 @@ DesignRNAScaffold::setup_options () {
 		->group("core");
 
 	app_.add_option("--extra_pdbs", parameters_.core.extra_pdbs, "deliminted list of other pdbs used in building")
+		->default_val("")
+		->group("core");
+
+	app_.add_option("--ensembles", parameters_.core.ensembles, "deliminted list of other ensembles")
 		->default_val("")
 		->group("core");
 
@@ -216,6 +222,10 @@ DesignRNAScaffold::setup_options () {
 
 	app_.add_option("--sequences_per_design", parameters_.seq_opt.sequences_per_design, "number of sequences to try per motif design")
 		->default_val(1)
+		->group("seq_opt");
+
+	app_.add_option("--seq_opt_cutoff", parameters_.seq_opt.cutoff, "TODO")
+		->default_val(7)
 		->group("seq_opt");
 
 	app_.add_option("--seq_opt_steps", parameters_.seq_opt.steps, "TODO")

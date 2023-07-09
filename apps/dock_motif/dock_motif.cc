@@ -56,7 +56,7 @@ DockMotifApp::run() {
     lookup_ = util::StericLookupNew();
     auto bead_centers = math::Points();
     for(auto const & b: scaffold->atoms()) {
-        bead_centers.push_back(b->get_coords());
+        bead_centers.push_back(b->coords());
     }
     lookup_.add_points(bead_centers);
 

@@ -39,9 +39,9 @@ def make_file_list(raw_file_names):
     # all source files go into the output file set
     output_file_set = set(source_files.values())
     # and the header files that are not already included as source
-    #for name, file_path in header_files.items():
-    #    if name not in source_files:
-    #        output_file_set.add(file_path)
+    for name, file_path in header_files.items():
+        if name not in source_files:
+            output_file_set.add(file_path)
     return list(output_file_set)
 
 

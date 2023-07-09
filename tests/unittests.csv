@@ -42,7 +42,7 @@ motif,motif_state_unittest
 motif,motif_scorer_unittest
 motif_tools,segmenter_unittest
 resources,motif_sqlite_connection_unittest
-resources,resource_manager_unittest
+resources,resource_mananger_unittest
 resources,motif_sqlite_library_unittest
 resources,motif_ensemble_sqlite_connection_unittest
 resources,motif_state_sqlite_library_unittest

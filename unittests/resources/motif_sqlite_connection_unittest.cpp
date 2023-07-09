@@ -6,7 +6,7 @@
 //RNAMake Headers
 #include "base/settings.h"
 #include "motif/motif.h"
-#include "resources/segment_sqlite_connection.h"
+#include "resources/motif_sqlite_connection.h"
 
 TEST_CASE( "Test Motif Sqlite3 Connection" ) {
     auto path = base::resources_path() + "motif_libraries_new/ideal_helices.db";

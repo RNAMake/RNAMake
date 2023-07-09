@@ -11,81 +11,109 @@
 
 #include <stdio.h>
 
+
 #include <stdio.h>
 
+#include "util/random_number_generator.h"
 #include "motif/motif_state_ensemble.h"
 #include "resources/motif_ensemble_sqlite_connection.h"
 #include "resources/motif_sqlite_library.h"
-#include "util/random_number_generator.h"
 
 namespace resources {
 
 class MotifStateEnsembleSqliteLibrary : public SqliteLibrary {
 public:
-  MotifStateEnsembleSqliteLibrary(String const &libname) {
 
-    _libnames = get_libnames();
-    _rng = util::RandomNumberGenerator();
-    auto path = _get_path(libname);
-    MotifEnsembleSqliteConnection conn(path);
-    _connection = conn;
-    _max_size = _connection.count();
-  }
+    MotifStateEnsembleSqliteLibrary(
+            String const & libname) {
 
-  ~MotifStateEnsembleSqliteLibrary() {}
-
-public: // iterator stuff
-  class iterator {
-  public:
-    iterator(std::map<String, motif::MotifStateEnsembleOP>::iterator const &i)
-        : _i(i) {}
-
-    iterator operator++() {
-      ++_i;
-      return *this;
+        libnames_ = get_libnames();
+        rng_ = util::RandomNumberGenerator();
+        auto path = _get_path(libname);
+        MotifEnsembleSqliteConnection conn(path);
+        connection_ = conn;
+        max_size_ = connection_.count();
     }
 
-    motif::MotifStateEnsembleOP const &operator*() { return _i->second; }
+    ~MotifStateEnsembleSqliteLibrary() {}
 
-    bool operator==(iterator const &rhs) const { return _i == rhs._i; }
+public: //iterator stuff
 
-    bool operator!=(iterator const &rhs) const { return _i != rhs._i; }
+    class iterator {
+    public:
+        iterator(
+                std::map<String, motif::MotifStateEnsembleOP>::iterator const & i) :
+                i_(i) {}
 
-  private:
-    std::map<String, motif::MotifStateEnsembleOP>::iterator _i;
-  };
+        iterator operator++() {
+            ++i_;
+            return *this;
+        }
 
-  iterator begin() { return iterator(_data.begin()); }
+        motif::MotifStateEnsembleOP const & operator*() { return i_->second; }
 
-  iterator end() { return iterator(_data.end()); }
+        bool operator==(iterator const & rhs) const { return i_ == rhs.i_; }
+
+        bool operator!=(iterator const & rhs) const { return i_ != rhs.i_; }
+
+    private:
+        std::map<String, motif::MotifStateEnsembleOP>::iterator i_;
+
+    };
+
+
+    iterator begin() { return iterator(data_.begin()); }
+
+    iterator end() { return iterator(data_.end()); }
+
 
 public:
-  static StringStringMap get_libnames();
 
-  motif::MotifStateEnsembleOP get(String const &name = dummy_name,
-                                  String const &id = dummy_id);
+    static
+    StringStringMap
+    get_libnames();
 
-  motif::MotifStateEnsembleOPs get_multi(String const &name = dummy_name,
-                                         String const &id = dummy_id);
+    motif::MotifStateEnsembleOP
+    get(
+            String const & name = dummy_name,
+            String const & id = dummy_id);
 
-  int contains(String const &name = dummy_name, String const &id = dummy_id);
+    motif::MotifStateEnsembleOPs
+    get_multi(
+            String const & name = dummy_name,
+            String const & id = dummy_id);
 
-  motif::MotifStateEnsembleOP get_random();
+    int
+    contains(
+            String const & name = dummy_name,
+            String const & id = dummy_id);
 
-  void load_all(int limit = 99999);
+    motif::MotifStateEnsembleOP
+    get_random();
+
+    void
+    load_all(
+            int limit = 99999);
+
 
 private:
-  String _generate_query(String const &, String const &);
+
+    String
+    _generate_query(
+            String const &,
+            String const &);
 
 private:
-  MotifEnsembleSqliteConnection _connection;
-  std::map<String, motif::MotifStateEnsembleOP> _data;
-  util::RandomNumberGenerator _rng;
+
+    MotifEnsembleSqliteConnection connection_;
+    std::map<String, motif::MotifStateEnsembleOP> data_;
+    util::RandomNumberGenerator rng_;
+
 };
 
-typedef std::shared_ptr<MotifStateEnsembleSqliteLibrary>
-    MotifStateEnsembleSqliteLibraryOP;
 
-} // namespace resources
+typedef std::shared_ptr<MotifStateEnsembleSqliteLibrary> MotifStateEnsembleSqliteLibraryOP;
+
+}
 
 #endif /* defined(__RNAMake__motif_state_ensemble_sqlite_library__) */

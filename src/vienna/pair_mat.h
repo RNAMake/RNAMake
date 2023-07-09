@@ -10,7 +10,7 @@
 #define RNAMake_pair_mat_h
 
 // RNAMake Headers
-#include "base/types.hpp"
+#include "base/types.h"
 
 namespace vienna {
 
@@ -47,10 +47,8 @@ static int encode_char(char c) {
       code = 0;
     else
       code = (int)(pos - Law_and_Order);
-    if (code > 5)
-      code = 0;
-    if (code > 4)
-      code--; /* make T and U equivalent */
+    if (code > 5) code = 0;
+    if (code > 4) code--; /* make T and U equivalent */
   }
   return code;
 }
@@ -70,21 +68,18 @@ static void make_pair_matrix(void) {
         pair[i][j] = BP_pair[i][j];
       }
     }
-    if (noGU)
-      pair[3][4] = pair[4][3] = 0;
+    if (noGU) pair[3][4] = pair[4][3] = 0;
     if (nonstandards != NULL) {
       for (i = 0; i < (int)strlen(nonstandards); i += 2)
         pair[encode_char(nonstandards[i])][encode_char(nonstandards[i + 1])] =
             7;
     }
     for (i = 0; i < NBASES; i++) {
-      for (j = 0; j < NBASES; j++)
-        rtype[pair[i][j]] = pair[j][i];
+      for (j = 0; j < NBASES; j++) rtype[pair[i][j]] = pair[j][i];
     }
   } else {
     for (i = 0; i <= MAXALPHA; i++) {
-      for (j = 0; j <= MAXALPHA; j++)
-        pair[i][j] = 0;
+      for (j = 0; j <= MAXALPHA; j++) pair[i][j] = 0;
     }
     if (energy_set == 1) {
       for (i = 1; i < MAXALPHA;) {
@@ -124,8 +119,7 @@ static void make_pair_matrix(void) {
       }
     }
     for (i = 0; i <= MAXALPHA; i++) {
-      for (j = 0; j <= MAXALPHA; j++)
-        rtype[pair[i][j]] = pair[j][i];
+      for (j = 0; j <= MAXALPHA; j++) rtype[pair[i][j]] = pair[j][i];
     }
   }
 }
@@ -134,27 +128,27 @@ static void encode_sequence(String const &sequence, Shorts &S, short how) {
   unsigned int i, l = (unsigned int)sequence.length();
 
   switch (how) {
-    /* standard encoding as always used for S */
-  case 0:
-    for (i = 1; i <= l; i++) { /* make numerical encoding of sequence */
-      S[i] = (short)encode_char(toupper(sequence[i - 1]));
-    }
-    S[l + 1] = S[1];
-    S[0] = (short)l;
-    break;
-    /* encoding for mismatches of nostandard bases (normally used for S1) */
-  case 1:
-    for (i = 1; i <= l; i++)
-      S[i] = alias[(short)encode_char(toupper(sequence[i - 1]))];
+      /* standard encoding as always used for S */
+    case 0:
+      for (i = 1; i <= l; i++) { /* make numerical encoding of sequence */
+        S[i] = (short)encode_char(toupper(sequence[i - 1]));
+      }
+      S[l + 1] = S[1];
+      S[0] = (short)l;
+      break;
+      /* encoding for mismatches of nostandard bases (normally used for S1) */
+    case 1:
+      for (i = 1; i <= l; i++)
+        S[i] = alias[(short)encode_char(toupper(sequence[i - 1]))];
 
-    S[l + 1] = S[1];
-    S[0] = S[l];
-    // for(i=0;i<S.size();i++) { S[i]=0; }
+      S[l + 1] = S[1];
+      S[0] = S[l];
+      // for(i=0;i<S.size();i++) { S[i]=0; }
 
-    break;
+      break;
   }
 }
 
-} // namespace vienna
+}  // namespace vienna
 
 #endif

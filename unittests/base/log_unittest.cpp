@@ -3,16 +3,16 @@
 //
 
 
+
 #include <iostream>
-
 #include "../common.hpp"
+#include "base/log.h"
 
-#include "base/log.hpp"
+TEST_CASE( "Test logging functions") {
+    base::init_logging(base::LogLevel::INFO);
 
-TEST_CASE("Test logging functions") {
-  base::init_logging(base::LogLevel::INFO);
+    //LOGI << "Hello log!"; // short macro
+    //LOG_ERROR << "Hello log!"; // long macro
+    //LOG(plog::debug) << "Hello log!"; // function-style macro
 
-  // LOGI << "Hello log!"; // short macro
-  // LOG_ERROR << "Hello log!"; // long macro
-  // LOG(plog::debug) << "Hello log!"; // function-style macro
 }

@@ -20,7 +20,8 @@ set_source_files_properties(
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     add_library(sqlite3 STATIC ${RNAMAKE}/src/external/sqlite/sqlite3.c )
-    target_link_libraries(sqlite3 -static -ldl)
+    target_link_libraries(sqlite3 -ldl)
+    #target_link_libraries(sqlite3 -static -ldl)
 
 else()
 

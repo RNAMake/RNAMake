@@ -11,35 +11,42 @@
 
 #include <stdio.h>
 
-// RNAMake Libraries
-#include "base/types.hpp"
-#include "util/sqlite/connection.hpp"
+//RNAMake Libraries
+#include "base/types.h"
+#include "util/sqlite3_connection.h"
 
 namespace resources {
 
 struct MotifEnsembleSqliteData {
-  MotifEnsembleSqliteData() : data(""), name(""), id("0") {}
+    MotifEnsembleSqliteData() :
+            data(""), name(""), id("0") {}
 
-  String data, name, id;
+    String data, name, id;
+
 };
 
 typedef std::shared_ptr<MotifEnsembleSqliteData> MotifEnsembleSqliteDataOP;
 
-class MotifEnsembleSqliteConnection : public util::sqlite::Connection {
+class MotifEnsembleSqliteConnection : public util::Sqlite3Connection {
 public:
-  MotifEnsembleSqliteConnection() {}
+    MotifEnsembleSqliteConnection() {}
 
-  MotifEnsembleSqliteConnection(String const &path)
-      : util::sqlite::Connection(path),
-        _data(std::make_shared<MotifEnsembleSqliteData>()) {}
+    MotifEnsembleSqliteConnection(String const & path) :
+            util::Sqlite3Connection(path),
+            data_(std::make_shared<MotifEnsembleSqliteData>()) {}
+
 
 public:
-  MotifEnsembleSqliteDataOP const &next();
+
+    MotifEnsembleSqliteDataOP const &
+    next();
 
 private:
-  MotifEnsembleSqliteDataOP _data;
+    MotifEnsembleSqliteDataOP data_;
+
+
 };
 
-} // namespace resources
+}
 
 #endif /* defined(__RNAMake__motif_ensemble_sqlite_connection__) */

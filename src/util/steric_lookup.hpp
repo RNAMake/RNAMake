@@ -12,56 +12,139 @@
 #include <map>
 #include <stdio.h>
 
-#include <math/hashing.h>
-#include <math/vector_3.hpp>
+#include "math/xyz_vector.h"
+#include "math/hashing.h"
 
 namespace util {
 
 class StericLookup {
 public:
-  StericLookup();
+    StericLookup();
 
-  StericLookup(float grid_size, float cutoff /*, float radius */ );
+    StericLookup(
+            float,
+            float,
+            int);
 
-  ~StericLookup() {}
-
-public:
-  void add_point(math::Vector3 const &);
-
-  void add_points(math::Vector3s const &);
-
-  bool clash(math::Vector3 const &);
-
-  bool clash(math::Vector3s const &);
-
-  int total_clash(math::Vector3s const &points);
+    ~StericLookup() {}
 
 public:
-  void to_pdb(String const &);
+    void
+    add_point(
+            math::Point const &);
 
-  int size() { return _histo.size(); }
+    void
+    add_points(
+            math::Points const &);
 
-  inline auto get_grid_size() const { return _grid_size; }
+    int
+    clash(
+            math::Point const &);
 
-  inline auto get_cutoff() const { return _cutoff; }
+    int
+    clash(
+            math::Points const &);
 
-  inline auto get_radius() { return _radius; }
+    int
+    better_clash(
+            math::Point const &);
 
+    int
+    total_clash(
+            math::Point const &);
+
+    int
+    total_clash(
+            math::Points const &);
 
 private:
-  void _setup_additions();
+    void
+    _setup_additions();
 
 private:
-  float _grid_size;
-  float _cutoff;
-  int _radius;
-  math::Vector3s _additions;
-  math::ThreeDHistogram _histo;
-  math::Vector3 _dummy;
+    std::map<double, int> bhash_;
+    math::Points additions_, check_additions_;
+    math::Point rounded_;
+    math::Point p_;
+    float grid_size_;
+    float cutoff_;
+    int radius_;
+    double k_;
+
+
 };
 
-typedef std::shared_ptr<StericLookup> StericLookupNewOP;
+class StericLookupNew {
+public:
+    StericLookupNew();
 
-} // namespace util
+public:
+    void
+    add_point(
+            math::Point const &);
+
+    void
+    add_points(
+            math::Points const &);
+
+    bool
+    clash(
+            math::Point const &);
+
+    bool
+    clash(
+            math::Points const &);
+
+public:
+    void
+    to_pdb(
+            String const &);
+
+    int
+    size() {
+        return histo_.size(); }
+
+private:
+    void
+    _setup_additions();
+
+private:
+    float grid_size_;
+    float cutoff_;
+    int radius_;
+    math::Points additions_;
+    math::ThreeDHistogram histo_;
+    math::Point dummy_;
+};
+
+typedef std::shared_ptr<StericLookup> StericLookupOP;
+typedef std::shared_ptr<StericLookupNew> StericLookupNewOP;
+
+}
 
 #endif /* steric_lookup_hpp */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

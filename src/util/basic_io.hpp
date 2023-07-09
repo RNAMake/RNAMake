@@ -11,14 +11,14 @@
 
 #include <stdio.h>
 
-#include "math/vector_3.hpp"
+#include "math/xyz_vector.h"
 
 namespace util {
 
-String points_to_pdb_str(math::Vector3s const &);
+String points_to_pdb_str(math::Points const &);
 
-void points_to_pdb(String const &, math::Vector3s const &);
+void points_to_pdb(String const &, math::Points const &);
 
-} // namespace util
+}  // namespace util
 
 #endif /* basic_io_hpp */

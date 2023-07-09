@@ -8,7 +8,7 @@
 
 // On GCC < 4.8, the following define is often missing. Due to the
 // fact that this library only uses sleep_for, this should be safe
-#if defined(__GNUC__) && !defined(__clang__) && __GNUC__ < 5 &&                \
+#if defined(__GNUC__) && !defined(__clang__) && __GNUC__ < 5 && \
     __GNUC_MINOR__ < 8
 #define _GLIBCXX_USE_NANOSLEEP
 #endif
@@ -25,7 +25,7 @@ namespace CLI {
 /// This is a simple timer with pretty printing. Creating the timer starts
 /// counting.
 class Timer {
-protected:
+ protected:
   /// This is a typedef to make clocks easier to use
   using clock = std::chrono::steady_clock;
 
@@ -47,7 +47,7 @@ protected:
   /// This is the number of times cycles (print divides by this number)
   std::size_t cycles{1};
 
-public:
+ public:
   /// Standard print function, this one is set by default
   static std::string Simple(std::string title, std::string time) {
     return title + ": " + time;
@@ -60,10 +60,11 @@ public:
            "-----------------------------------------";
   }
 
-public:
+ public:
   /// Standard constructor, can set title and print function
   explicit Timer(std::string title = "Timer", time_print_t time_print = Simple)
-      : title_(std::move(title)), time_print_(std::move(time_print)),
+      : title_(std::move(title)),
+        time_print_(std::move(time_print)),
         start_(clock::now()) {}
 
   /// Time a function by running it multiple times. Target time is the len to
@@ -127,7 +128,7 @@ public:
 
 /// This class prints out the time upon destruction
 class AutoTimer : public Timer {
-public:
+ public:
   /// Reimplementing the constructor is required in GCC 4.7
   explicit AutoTimer(std::string title = "Timer",
                      time_print_t time_print = Simple)
@@ -138,7 +139,7 @@ public:
   ~AutoTimer() { std::cout << to_string() << std::endl; }
 };
 
-} // namespace CLI
+}  // namespace CLI
 
 /// This prints out the time if shifted into a std::cout like stream.
 inline std::ostream &operator<<(std::ostream &in, const CLI::Timer &timer) {

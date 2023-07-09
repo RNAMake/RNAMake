@@ -15,7 +15,7 @@ namespace motif_search {
 namespace exhaustive {
 
 class Search : public motif_search::Search {
-public:
+ public:
   struct Parameters {
     bool sterics, helix_end;
     int max_node_level, min_size, max_size, max_solutions, min_node_level;
@@ -23,82 +23,119 @@ public:
     bool return_best;
   };
 
-public:
-  Search(ScorerOP scorer, SolutionToplogy const &sol_top,
+ public:
+  Search(ScorerOP scorer, SolutionToplogy const& sol_top,
          SolutionFilterOP filter)
-      : motif_search::Search("exhaustive"), _scorer(scorer->clone()),
-        _enumerator(MotifStateEnumerator(sol_top)), _filter(filter->clone()),
-        _parameters(Parameters()) {
-    _finished = false;
+      : motif_search::Search("exhaustive"),
+        scorer_(scorer->clone()),
+        enumerator_(MotifStateEnumerator(sol_top)),
+        filter_(filter->clone()),
+        parameters_(Parameters()) {
+    finished_ = false;
     setup_options();
     update_var_options();
   }
 
   ~Search() {}
 
-  motif_search::Search *clone() const { return new Search(*this); };
+  motif_search::Search* clone() const { return new Search(*this); };
 
-public:
+ public:
   void setup(ProblemOP p) {
-    _enumerator.set_size_limit(get_int_option("max_size"));
-    _enumerator.start(p->start);
-    _scorer->set_target(p->end, p->target_an_aligned_end);
+    enumerator_.set_size_limit(get_int_option("max_size"));
+    enumerator_.start(p->start);
+    scorer_->set_target(p->end, p->target_an_aligned_end);
+    lookup_ = p->lookup;
+    if (lookup_ != nullptr) {
+      using_lookup_ = true;
+    }
+    count_ = 0;
   }
 
   void start() {}
 
-  bool finished() { return _finished; }
+  bool finished() { return finished_; }
 
   SolutionOP next() {
     auto best = 1000.0f;
-    while (!_enumerator.finished()) {
-      _current = _enumerator.top_state();
-      _score = _scorer->score(*_scorer->end_states()[1]);
+    while (!enumerator_.finished()) {
+      count_ += 1;
+      if(count_ % 1000000 == 0) {
+        std::cout << count_ << std::endl;
+      }
+      if(count_ < 1314000000) {
+        enumerator_.next();
+        continue;
+      }
+      current_ = enumerator_.top_state();
+      score_ = scorer_->score(*current_->end_states()[1]);
 
-      if (_score < _parameters.accept_score) {
+      if (score_ < parameters_.accept_score) {
         auto msg = _get_graph_from_solution();
-        _enumerator.next();
+        if(_steric_clash(msg)) {
+          enumerator_.next();
+          continue;
+        }
         _get_solution_motif_names(msg);
-        if (!_filter->accept(_motif_names)) {
+        if (!filter_->accept(motif_names_)) {
+          enumerator_.next();
           continue;
         }
 
-        return std::make_shared<motif_search::Solution>(msg, _score);
+        return std::make_shared<motif_search::Solution>(msg, score_);
       }
-      _enumerator.next();
+      enumerator_.next();
     }
 
-    _finished = true;
+    finished_ = true;
     return SolutionOP(nullptr);
   }
 
-private:
+ private:
+  bool _steric_clash(motif_data_structure::MotifStateGraphOP msg) {
+    auto clash = false;
+    if (using_lookup_) {
+      for (auto const& n : *msg) {
+        for (auto const& b : n->data()->cur_state->beads()) {
+          clash = lookup_->clash(b);
+          if (clash) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
   void _get_solution_motif_names(motif_data_structure::MotifStateGraphOP msg) {
-    _motif_names.resize(0);
-    for (auto const &n : *msg) {
-      _motif_names.push_back(n->data()->name());
+    motif_names_.resize(0);
+    for (auto const& n : *msg) {
+      motif_names_.push_back(n->data()->name());
     }
   }
 
   motif_data_structure::MotifStateGraphOP _get_graph_from_solution();
 
-protected:
+ protected:
   void setup_options();
 
   void update_var_options();
 
-private:
-  Parameters _parameters;
-  ScorerOP _scorer;
-  SolutionFilterOP _filter;
-  MotifStateEnumerator _enumerator;
-  motif::MotifStateOP _current;
-  float _score;
-  bool _finished;
-  Strings _motif_names;
+ private:
+  Parameters parameters_;
+  ScorerOP scorer_;
+  SolutionFilterOP filter_;
+  MotifStateEnumerator enumerator_;
+  motif::MotifStateOP current_;
+  util::StericLookupNewOP lookup_;
+  float score_;
+  bool finished_;
+  bool using_lookup_;
+  Strings motif_names_;
+  int64_t count_;
 };
 
-} // namespace exhaustive
-} // namespace motif_search
+}  // namespace exhaustive
+}  // namespace motif_search
 
-#endif // RNAMAKE_NEW_EXHAUSTIVE_SEARCH_H
+#endif  // RNAMAKE_NEW_EXHAUSTIVE_SEARCH_H

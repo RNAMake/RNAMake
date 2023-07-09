@@ -11,32 +11,32 @@ def build_libraries(lib_list, dependencies, base_dir, static):
     library_declarations = "#" * 100 + "\n# Library declarations \n" + "#" * 100 + "\n"
     for library in lib_list:
         library_declarations += (
-                "#" * 75 + "\n# {NAME}\n".format(NAME=library) + "#" * 75 + "\n"
+            "#" * 75 + "\n# {NAME}\n".format(NAME=library) + "#" * 75 + "\n"
         )
         library_declarations += "set({LIB}_files\n\t{FILES} \n)\n".format(
-                LIB=library,
-                FILES="\n\t".join(
-                        Utils.make_file_list(
-                                [str(fp) for fp in Path(base_dir + "/" + library).rglob("*")]
-                        )
+            LIB=library,
+            FILES="\n\t".join(
+                Utils.make_file_list(
+                    [str(fp) for fp in Path(base_dir + "/" + library).rglob("*")]
                 )
+            )
         )
         library_declarations += "add_library({LIB}_lib {BUILD} ${{{LIB}_files}})\n".format(
-                LIB=library, BUILD="STATIC" if static else ""
-        )
+            LIB=library, BUILD="STATIC" if static else ""
+        ) 
         library_declarations += "target_link_libraries({LIB}_lib {DEPENDS} {BUILD})\n".format(
-                LIB=library,
-                DEPENDS=" ".join(
-                        [lib + "_lib" for lib in dependencies[library]]
-                        + ["sqlite3" if library == "util" else ""]
-                ),
-                BUILD="-static" if static else "",
+            LIB=library,
+            DEPENDS=" ".join(
+                [lib + "_lib" for lib in dependencies[library]]
+                + ["sqlite3" if library == "util" else ""]
+            ),
+            BUILD="" if static else "",
         )
     library_declarations += "add_library(all_lib {BUILD} {DIR}/main.cpp)\ntarget_link_libraries(all_lib {LIBS} {LINK})\n".format(
-            LIBS=" ".join([lib + "_lib" for lib in dependencies["all"]]),
-            DIR=base_dir,
-            BUILD="STATIC" if static else "",
-            LINK="-static" if static else "",
+        LIBS=" ".join([lib + "_lib" for lib in dependencies["all"]]),
+        DIR=base_dir,
+        BUILD="STATIC" if static else "",
+        LINK="" if static else "",
     )
     library_declarations += "#" * 100 + "\n"
     return library_declarations
@@ -45,28 +45,27 @@ def build_libraries(lib_list, dependencies, base_dir, static):
 def build_unittests(lib_list, base_dir, static):
     """Method that builds out the declarations for the unittests"""
     unittest_declarations = (
-            "#" * 100 + "\n# Unittest Declarations \n" + "#" * 100 + "\n"
+        "#" * 100 + "\n# Unittest Declarations \n" + "#" * 100 + "\n"
     )
     for library in lib_list:
         unittest_declarations += (
-                "#" * 75 + "\n# {MODULE} Tests \n".format(MODULE=library) + "#" * 75 + "\n"
+            "#" * 75 + "\n# {MODULE} Tests \n".format(MODULE=library) + "#" * 75 + "\n"
         )
         for source_file in Utils.make_file_list(
-                glob.glob(base_dir + "/" + library + "/*")
+            glob.glob(base_dir + "/" + library + "/*")
         ):
             unittest_name = source_file.split("/")[-1].split(".")[0]
             unittest_declarations += "\tadd_executable({TEST} {SRC})\n".format(
-                    TEST=unittest_name, SRC=source_file
+                TEST=unittest_name, SRC=source_file
             )
             unittest_declarations += "\ttarget_link_libraries({TEST} {LIB}_lib {BUILD} )\n".format(
-                    TEST=unittest_name, LIB=library, BUILD="-static" if static else ""
+                TEST=unittest_name, LIB=library, BUILD="" if static else ""
             )
             unittest_declarations += "\tadd_test({TEST} {TEST})\n".format(
-                    TEST=unittest_name
+                TEST=unittest_name
             )
     unittest_declarations += "#" * 100 + "\n"
     return unittest_declarations
-
 
 def build_integration_tests(base_dir, static):
     """Method that builds out the declarations for the integration_tests"""
@@ -75,17 +74,17 @@ def build_integration_tests(base_dir, static):
     )
 
     for source_file in Utils.make_file_list(glob.glob(base_dir + '/**', recursive=True)):
-        unittest_name = source_file.split("/")[-1].split(".")[0]
-        integration_tests_declarations += "\tadd_executable({TEST} {SRC})\n".format(
+            unittest_name = source_file.split("/")[-1].split(".")[0]
+            integration_tests_declarations += "\tadd_executable({TEST} {SRC})\n".format(
                 TEST=unittest_name, SRC=source_file
-        )
-        integration_tests_declarations += "\ttarget_link_libraries({TEST} all_lib {BUILD} )\n".format(
-                TEST=unittest_name, BUILD="-static" if static else ""
-        )
-        integration_tests_declarations += "\tadd_test({TEST} {TEST})\n".format(
+            )
+            integration_tests_declarations += "\ttarget_link_libraries({TEST} all_lib {BUILD} )\n".format(
+                TEST=unittest_name, BUILD="" if static else ""
+            )
+            integration_tests_declarations += "\tadd_test({TEST} {TEST})\n".format(
                 TEST=unittest_name
-        )
-        integration_tests_declarations += "#" * 100 + "\n"
+            )
+            integration_tests_declarations += "#" * 100 + "\n"
     return integration_tests_declarations
 
 
@@ -98,24 +97,25 @@ def write_CML_file(content_list):
 
 def build_apps(base_dir, static):
     """Method that creates declarations for the applications"""
-    hundred_dashes = "#" * 100
-    seventyfive_dashes = "#" * 75
-
+    hundred_dashes = "#"*100
+    seventyfive_dashes = "#"*75
+    
     application_text = f"{hundred_dashes}\n# App declarations\n{hundred_dashes}\n"
-
+    
     with open(base_dir + "/cmake/build/apps.txt", "r") as infile:
-
+        
         for app_declaration in infile.readlines():
-
-            if len(re.findall("^ #", app_declaration)) > 0:
+            
+            if len(re.findall("^ #",app_declaration)) > 0:
                 continue
-
+            
             app_tokens = app_declaration.split()
-            for full_path in Utils.make_file_list(
-                    [str(fp) for fp in Path(f"{base_dir}/apps/{app_tokens[0]}/").rglob(app_tokens[0] + '.*')]
-            ):
+            for full_path in  Utils.make_file_list(
+                [str(fp) for fp in Path(f"{base_dir}/apps/{app_tokens[0]}/").rglob(app_tokens[0] + '.*')]
+                                                    ):
                 source_file = re.sub("\.\./", "", full_path)
                 app_name = source_file.split('/')[-1].split('.')[0]
+
 
                 application_text += f"{seventyfive_dashes}\n# {app_name}\n{seventyfive_dashes}\n"
                 if len(app_tokens) == 3:
@@ -124,11 +124,11 @@ def build_apps(base_dir, static):
                 else:
                     application_text += f"\tadd_executable( {app_name} {full_path})\n"
                 application_text += "\ttarget_link_libraries({NAME} all_lib {LINK}  )\n".format(
-                        NAME=app_name, LINK="-static" if static else ""
+                    NAME=app_name, LINK="" if static else ""
                 )
-
+    
     application_text += f"{hundred_dashes}\n"
-
+    
     return application_text
 
 
@@ -159,14 +159,14 @@ include_directories({INTEGRATION})
 include_directories({APPS})
 include({SQLITE})
  """.format(
-            RNAMAKE=base_dir,
-            SQLITE=base_dir + "/cmake/build/sqlite.cmake",
-            CMAKE=base_dir + "/cmake/build/compiler.cmake",
-            EXTERN=base_dir + "/src/external/",
-            BASE=base_dir + "/src/",
-            UNITTESTS=base_dir + "/unittests/",
-            INTEGRATION=base_dir + "/integration_tests",
-            APPS=base_dir + "/apps/",
+        RNAMAKE=base_dir,
+        SQLITE=base_dir + "/cmake/build/sqlite.cmake",
+        CMAKE=base_dir + "/cmake/build/compiler.cmake",
+        EXTERN=base_dir + "/src/external/",
+        BASE=base_dir + "/src/",
+        UNITTESTS=base_dir + "/unittests/",
+        INTEGRATION=base_dir + "/integration_tests",
+        APPS=base_dir + "/apps/",
     )
     header_contents += "#" * 100 + "\n"
     return header_contents
@@ -182,10 +182,10 @@ def get_base_dir():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-            "-target",
-            help='enter the target system you are compiling for. Valid choices are: "mac", "windows", or "linux"',
-            type=str,
-            required=True,
+        "-target",
+        help='enter the target system you are compiling for. Valid choices are: "mac", "windows", or "linux"',
+        type=str,
+        required=True,
     )
 
     args = parser.parse_args()
@@ -199,28 +199,26 @@ if __name__ == "__main__":
         # static=True #TODO this needs to change
     else:
         raise Exception(
-                'Invalid value for "-target" flag. Acceptable values are "mac","windows" and "linux"'
+            'Invalid value for "-target" flag. Acceptable values are "mac","windows" and "linux"'
         )
 
     depends = {
-        "base"                  : [],
-        "math"                  : ["base"],
-        "data_structure"        : ["base"],
-        "util"                  : ["math"],
-        "vienna"                : ["base"],
-        "secondary_structure"   : ["util"],
-        "eternabot"             : ["vienna", "secondary_structure"],
-        "primitives"            : ["util"],
-        "structure"             : ["util"],
-        "motif"                 : ["structure", "secondary_structure"],
-        "segment_data_structure": ["resource_management", "data_structure"],
-        "motif_tools"           : ["motif"],
-        "resource_management"   : ["structure"],
-        "motif_data_structure"  : ["resources", "data_structure"],
-        "thermo_fluctuation"    : ["motif_data_structure"],
-        "motif_search"          : ["motif_data_structure"],
-        "sequence_optimization" : ["motif_data_structure", "eternabot"],
-        "all"                   : [
+        "base": [],
+        "math": ["base"],
+        "data_structure": ["base"],
+        "util": ["math"],
+        "vienna": ["base"],
+        "secondary_structure": ["util"],
+        "eternabot": ["vienna", "secondary_structure"],
+        "structure": ["util"],
+        "motif": ["structure", "secondary_structure"],
+        "motif_tools": ["motif"],
+        "resources": ["motif"],
+        "motif_data_structure": ["resources", "data_structure"],
+        "thermo_fluctuation": ["motif_data_structure"],
+        "motif_search": ["motif_data_structure"],
+        "sequence_optimization": ["motif_data_structure", "eternabot"],
+        "all": [
             "motif_tools",
             "thermo_fluctuation",
             "motif_search",
@@ -228,20 +226,18 @@ if __name__ == "__main__":
         ],
     }
 
-    # libs = "base math data_structure util vienna secondary_structure eternabot structure motif motif_tools resources primitives motif_data_structure segment_data_structure thermo_fluctuation motif_search sequence_optimization".split()
-    libs = "base math data_structure util structure resource_management segment_data_structure".split()
-    #libs = "base math data_structure".split()
+    libs = "base math data_structure util vienna secondary_structure eternabot structure motif motif_tools resources motif_data_structure thermo_fluctuation motif_search sequence_optimization".split()
     base_dir = get_base_dir()
-
+    
     write_CML_file(
-            [
-                build_header(
-                        base_dir, static, args.target if args.target == "windows" else "NONE"
-                ),
-                build_libraries(libs, depends, base_dir + "/src", static),
-                build_unittests(libs, base_dir + "/unittests", static),
-                # build_integration_tests(base_dir + "/integration_tests", static),
-                # build_apps(base_dir, static),
-            ]
+        [
+            build_header(
+                base_dir, static, args.target if args.target == "windows" else "NONE"
+            ),
+            build_libraries(libs, depends, base_dir + "/src", static),
+            build_unittests(libs, base_dir + "/unittests", static),
+            build_integration_tests(base_dir + "/integration_tests", static),
+            build_apps(base_dir, static),
+        ]
     )
 #

@@ -14,7 +14,7 @@
 #include <string.h>
 
 // RNAMake Headers
-#include "base/types.hpp"
+#include "base/types.h"
 #include "vienna/energy_par.h"
 #include "vienna/pair_mat.h"
 
@@ -161,27 +161,27 @@ typedef std::vector<sect> sects;
 typedef std::vector<plist> plists;
 
 class Vienna {
-public:
+ public:
   inline Vienna() {
     size_ = 1000;
-    c = Indexes((size_ * (size_ + 1) / 2 + 2));
-    fML = Indexes((size_ * (size_ + 1) / 2 + 2));
-    Fmi = Indexes((size_ * (size_ + 1) / 2 + 2));
-    fM1 = Indexes(size_);
-    f5 = Indexes(size_);
-    f53 = Indexes(size_);
-    cc = Indexes(size_);
-    cc1 = Indexes(size_);
-    DMLi = Indexes(size_);
-    DMLi1 = Indexes(size_);
-    DMLi2 = Indexes(size_);
+    c = Ints((size_ * (size_ + 1) / 2 + 2));
+    fML = Ints((size_ * (size_ + 1) / 2 + 2));
+    Fmi = Ints((size_ * (size_ + 1) / 2 + 2));
+    fM1 = Ints(size_);
+    f5 = Ints(size_);
+    f53 = Ints(size_);
+    cc = Ints(size_);
+    cc1 = Ints(size_);
+    DMLi = Ints(size_);
+    DMLi1 = Ints(size_);
+    DMLi2 = Ints(size_);
     temp = 37.0;
     ptype = Chars((size_ * (size_ + 1) / 2 + 2));
     base_pair2 = bondTs(4 * (1 + size_ / 2));
-    indx = Indexes(size_);
+    indx = Ints(size_);
     S = Shorts(size_);
     S1 = Shorts(size_);
-    BP = Indexes(size_);
+    BP = Ints(size_);
     params = paramT();
     setup_part_func();
     uniq_ML = 0;
@@ -189,7 +189,7 @@ public:
     structure = String();
     structure.resize(1000);
     backtrack_type = 'F';
-    diindx = Indexes(size_);
+    diindx = Ints(size_);
 
     params.model_details.dangles = 2;
     params.model_details.special_hp = 1;
@@ -211,7 +211,6 @@ public:
   }
 
   void init_fold(int length) {
-
     // get_arrays(length);
     get_indx(indx);
     update_fold_params_par();
@@ -222,37 +221,37 @@ public:
 
   plists const &bp_probabilities(String const &);
 
-public:
+ public:
   inline String get_structure() { return structure.substr(0, actual_size_); }
 
   inline float const &free_energy() { return free_energy_; }
 
-private:
+ private:
   inline void setup_part_func() {
     int size = ((size_ + 1) * (size_ + 2) / 2);
 
-    q = Reals(size);
-    qb = Reals(size);
-    qm = Reals(size);
-    probs = Reals(size);
-    qm1 = Reals(size_ + 1);
-    q1k = Reals(size_ + 1);
-    qln = Reals(size_ + 2);
-    qq = Reals(size_ + 2);
-    qq1 = Reals(size_ + 2);
-    qqm = Reals(size_ + 2);
-    qqm1 = Reals(size_ + 2);
-    prm_l = Reals(size_ + 2);
-    prm_l1 = Reals(size_ + 2);
-    prml = Reals(size_ + 2);
-    expMLbase = Reals(size_ + 1);
-    scale = Reals(size_ + 1);
-    Gj = Reals(size_ + 2);
-    Gj1 = Reals(size_ + 2);
+    q = Floats(size);
+    qb = Floats(size);
+    qm = Floats(size);
+    probs = Floats(size);
+    qm1 = Floats(size_ + 1);
+    q1k = Floats(size_ + 1);
+    qln = Floats(size_ + 2);
+    qq = Floats(size_ + 2);
+    qq1 = Floats(size_ + 2);
+    qqm = Floats(size_ + 2);
+    qqm1 = Floats(size_ + 2);
+    prm_l = Floats(size_ + 2);
+    prm_l1 = Floats(size_ + 2);
+    prml = Floats(size_ + 2);
+    expMLbase = Floats(size_ + 1);
+    scale = Floats(size_ + 1);
+    Gj = Floats(size_ + 2);
+    Gj1 = Floats(size_ + 2);
 
-    my_iindx = Indexes(size_);
-    iindx = Indexes(size_);
-    jindx = Indexes(size_);
+    my_iindx = Ints(size_);
+    iindx = Ints(size_);
+    jindx = Ints(size_);
 
     get_iindx(my_iindx, size_);
     get_iindx(iindx, size_);
@@ -312,13 +311,13 @@ private:
     get_indx(jindx);
   }
 
-  inline void get_indx(Indexes &c_idx) {
+  inline void get_indx(Ints &c_idx) {
     for (int i = 1; i < size_; i++) {
       c_idx[i] = (i * (i - 1)) >> 1;
     }
   }
 
-  inline void get_iindx(Indexes &c_idx, int length) {
+  inline void get_iindx(Ints &c_idx, int length) {
     unsigned int i;
     for (i = 1; i < length; i++) {
       c_idx[i] = (((length + 1 - i) * (length - i)) >> 1) + length + 1;
@@ -504,16 +503,15 @@ private:
 
   void pf_create_bppm(String const &);
 
-  void bppm_to_structure(String &, Reals &, unsigned int);
+  void bppm_to_structure(String &, Floats &, unsigned int);
 
   char bppm_symbol(const float *x);
 
   void assign_plist_from_pr(int, double);
 
-private: // Energy calculations
+ private:  // Energy calculations
   inline int E_Hairpin(int size, int type, int si1, int sj1,
                        const char *string) {
-
     int energy = (size <= 30) ? params.hairpin[size]
                               : params.hairpin[30] +
                                     (int)(params.lxc * log((size) / 30.));
@@ -567,10 +565,8 @@ private: // Energy calculations
       if (nl == 1)
         energy += params.stack[type][type_2];
       else {
-        if (type > 2)
-          energy += params.TerminalAU;
-        if (type_2 > 2)
-          energy += params.TerminalAU;
+        if (type > 2) energy += params.TerminalAU;
+        if (type_2 > 2) energy += params.TerminalAU;
       }
 
       return energy;
@@ -620,7 +616,6 @@ private: // Energy calculations
   }
 
   inline int E_MLstem(int type, int si1, int sj1) {
-
     int energy = 0;
     if (si1 >= 0 && sj1 >= 0) {
       energy += params.mismatchM[type][si1][sj1];
@@ -630,8 +625,7 @@ private: // Energy calculations
       energy += params.dangle3[type][sj1];
     }
 
-    if (type > 2)
-      energy += params.TerminalAU;
+    if (type > 2) energy += params.TerminalAU;
 
     energy += params.MLintern[type];
 
@@ -639,7 +633,6 @@ private: // Energy calculations
   }
 
   inline int E_ExtLoop(int type, int si1, int sj1) {
-
     int energy = 0;
     if (si1 >= 0 && sj1 >= 0) {
       energy += params.mismatchExt[type][si1][sj1];
@@ -649,15 +642,13 @@ private: // Energy calculations
       energy += params.dangle3[type][sj1];
     }
 
-    if (type > 2)
-      energy += params.TerminalAU;
+    if (type > 2) energy += params.TerminalAU;
 
     return energy;
   }
 
   inline double exp_E_Hairpin(int u, int type, short si1, short sj1,
                               const char *string) {
-
     double q, kT;
     kT = pf.kT; /* kT in cal/mol  */
 
@@ -667,8 +658,7 @@ private: // Energy calculations
       q = pf.exphairpin[30] * exp(-(pf.lxc * log(u / 30.)) * 10. / kT);
     }
 
-    if (u < 3)
-      return q; /* should only be the case when folding alignments */
+    if (u < 3) return q; /* should only be the case when folding alignments */
 
     if (pf.model_details.special_hp) {
       if (u == 4) {
@@ -709,7 +699,6 @@ private: // Energy calculations
 
   inline double exp_E_IntLoop(int u1, int u2, int type, int type2, short si1,
                               short sj1, short sp1, short sq1) {
-
     int ul, us, no_close = 0;
     double z = 0.;
     int no_closingGU = 0;
@@ -731,16 +720,13 @@ private: // Energy calculations
     }
 
     else if (!no_close) {
-
       if (us == 0) { /* bulge */
         z = pf.expbulge[ul];
         if (ul == 1)
           z *= pf.expstack[type][type2];
         else {
-          if (type > 2)
-            z *= pf.expTermAU;
-          if (type2 > 2)
-            z *= pf.expTermAU;
+          if (type > 2) z *= pf.expTermAU;
+          if (type2 > 2) z *= pf.expTermAU;
         }
         return z;
       } else if (us == 1) {
@@ -785,8 +771,7 @@ private: // Energy calculations
       energy *= pf.expdangle3[type][sj1];
     }
 
-    if (type > 2)
-      energy *= pf.expTermAU;
+    if (type > 2) energy *= pf.expTermAU;
 
     energy *= pf.expMLintern[type];
     return energy;
@@ -802,16 +787,15 @@ private: // Energy calculations
       energy *= pf.expdangle3[type][sj1];
     }
 
-    if (type > 2)
-      energy *= pf.expTermAU;
+    if (type > 2) energy *= pf.expTermAU;
 
     return energy;
   }
 
-private:
+ private:
   // variables from fold
-  Indexes c, fML, fM1, f5, f53, cc, cc1, Fmi, DMLi, DMLi1, DMLi2;
-  Indexes indx, BP;
+  Ints c, fML, fM1, f5, f53, cc, cc1, Fmi, DMLi, DMLi1, DMLi2;
+  Ints indx, BP;
   String structure, pf_structure;
   Chars ptype;
   bondTs base_pair2;
@@ -825,13 +809,13 @@ private:
   sects sector;
   char backtrack_type;
   // varibles from part_func
-  Reals q, qb, qm, probs, q1k, qln, qq, qq1, qqm, qqm1, prml, prm_l, prm_l1,
+  Floats q, qb, qm, probs, q1k, qln, qq, qq1, qqm, qqm1, prml, prm_l, prm_l1,
       qm1;
-  Reals expMLbase, scale, Gj, Gj1;
-  Indexes my_iindx, iindx, jindx, diindx;
+  Floats expMLbase, scale, Gj, Gj1;
+  Ints my_iindx, iindx, jindx, diindx;
   plists pl;
 };
 
-} // namespace vienna
+}  // namespace vienna
 
 #endif /* defined(__RNAMake__vienna_clone__) */

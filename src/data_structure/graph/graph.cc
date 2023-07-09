@@ -1,7 +1,9 @@
 //
-// Created by Joseph Yesselman on 1/14/18.
+//  graph.cc
+//  RNAMake
+//
+//  Created by Joseph Yesselman on 6/2/15.
+//  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include <data_structure/graph/graph.h>
-
-namespace data_structure::graph {}
+#include "graph.h"

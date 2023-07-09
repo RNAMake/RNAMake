@@ -7,34 +7,36 @@
 //
 
 #include "sequence_optimization/sequence_optimizer_3d.hpp"
+
+#include <base/log.h>
+
 #include "secondary_structure/util.h"
 #include "util/monte_carlo.h"
-#include <base/log.hpp>
 
-/*
 namespace sequence_optimization {
 
 SequenceOptimizer3D::SequenceOptimizer3D()
-    : _eterna_scorer(eternabot::Scorer()), _scorer(nullptr),
-      _rng(util::RandomNumberGenerator()) {
-  _possible_bps =
-      std::vector<Strings>({{"A", "U"}, {"U", "A"}, {"G", "C"}, {"C", "G"}});
+    : eterna_scorer_(eternabot::Scorer()),
+      scorer_(nullptr),
+      rng_(util::RandomNumberGenerator()) {
+  possible_bps_ = std::vector<Strings>(
+      {{"A", "U"}, {"U", "A"}, {"G", "C"}, {"C", "G"}});
 
-  _disallowed_sequences = Strings();
-  _disallowed_sequences.push_back(String("AAAA"));
-  _disallowed_sequences.push_back(String("CCCC"));
-  _disallowed_sequences.push_back(String("GGGG"));
-  _disallowed_sequences.push_back(String("UUUU"));
+  disallowed_sequences_ = Strings();
+  disallowed_sequences_.push_back(String("AAAA"));
+  disallowed_sequences_.push_back(String("CCCC"));
+  disallowed_sequences_.push_back(String("GGGG"));
+  disallowed_sequences_.push_back(String("UUUU"));
 
-  _disallowed_res_types_sequences =
+  disallowed_res_types_sequences_ =
       std::vector<secondary_structure::ResTypes>();
-  for (auto const &seq : _disallowed_sequences) {
+  for (auto const& seq : disallowed_sequences_) {
     auto disallowed_types = secondary_structure::ResTypes();
     secondary_structure::get_res_types_from_sequence(seq, disallowed_types);
-    _disallowed_res_types_sequences.push_back(disallowed_types);
+    disallowed_res_types_sequences_.push_back(disallowed_types);
   }
-  _current_violations = Indexes(_disallowed_res_types_sequences.size());
-  _next_violations = Indexes(_disallowed_res_types_sequences.size());
+  current_violations_ = Ints(disallowed_res_types_sequences_.size());
+  next_violations_ = Ints(disallowed_res_types_sequences_.size());
 
   setup_options();
 }
@@ -43,9 +45,8 @@ SequenceOptimizer3D::SequenceOptimizer3D()
 // //////////////////////////////////////////////////////////////////
 
 void SequenceOptimizer3D::_update_designable_bp(
-    DesignableBPOP const &d_bp, motif_data_structure::MotifStateGraphOP &msg,
-    secondary_structure::PoseOP &ss) {
-
+    DesignableBPOP const& d_bp, motif_data_structure::MotifStateGraphOP& msg,
+    secondary_structure::PoseOP& ss) {
   if (d_bp->m_id_bot != nullptr) {
     ss->update_motif(*d_bp->m_id_bot);
     auto m = ss->motif(*d_bp->m_id_bot);
@@ -63,9 +64,8 @@ void SequenceOptimizer3D::_update_designable_bp(
 }
 
 String SequenceOptimizer3D::_validate_sequence(
-    motif_data_structure::MotifStateGraphOP const &msg,
-    secondary_structure::PoseOP const &ss) {
-
+    motif_data_structure::MotifStateGraphOP const& msg,
+    secondary_structure::PoseOP const& ss) {
   auto s1 = msg->to_motif_graph()->secondary_structure()->sequence();
   auto s2 = ss->sequence();
 
@@ -82,7 +82,7 @@ String SequenceOptimizer3D::_validate_sequence(
 }
 
 void SequenceOptimizer3D::find_seq_violations(secondary_structure::PoseOP ss,
-                                              Indexes &violations) {
+                                              Ints& violations) {
   auto pos = 0;
   for (int i = 0; i < violations.size(); i++) {
     violations[i] = 0;
@@ -90,16 +90,16 @@ void SequenceOptimizer3D::find_seq_violations(secondary_structure::PoseOP ss,
 
   // TODO go back and see if this works!!, maybe right a sub class to test
   // seperately
-  for (auto const &c : ss->chains()) {
-    auto &res = c->residues();
+  for (auto const& c : ss->chains()) {
+    auto& res = c->residues();
     for (int i = 0; i < res.size(); i++) {
-      for (int j = 0; j < _disallowed_res_types_sequences.size(); j++) {
-        if (i < _disallowed_res_types_sequences[j].size()) {
+      for (int j = 0; j < disallowed_res_types_sequences_.size(); j++) {
+        if (i < disallowed_res_types_sequences_[j].size()) {
           continue;
         }
         auto match = true;
-        pos = i - _disallowed_res_types_sequences[j].size();
-        for (auto const &e : _disallowed_res_types_sequences[j]) {
+        pos = i - disallowed_res_types_sequences_[j].size();
+        for (auto const& e : disallowed_res_types_sequences_[j]) {
           if (res[pos]->res_type() != e) {
             match = false;
             break;
@@ -118,11 +118,17 @@ int SequenceOptimizer3D::find_gc_helix_stretches(
     secondary_structure::PoseOP ss) {
   int count = 0;
   int violations = 0;
-  for (auto const &h : ss->helices()) {
+  int pos = 0;
+  for (auto const& h : ss->helices()) {
     count = 0;
-    for (auto const &r : h->chains()[0]->residues()) {
-      if (r->res_type() == secondary_structure::ResType::GUA ||
-          r->res_type() == secondary_structure::ResType::CYT) {
+    pos = h->chains()[1]->residues().size() - 1;
+    for (auto const& r : h->chains()[0]->residues()) {
+      auto& r2 = h->chains()[1]->residues()[pos];
+      if (r->res_type() == secondary_structure::ResType::GUA &&
+          r2->res_type() == secondary_structure::ResType::CYT) {
+        count += 1;
+      } else if (r->res_type() == secondary_structure::ResType::CYT &&
+                 r2->res_type() == secondary_structure::ResType::GUA) {
         count += 1;
       } else {
         count = 0;
@@ -131,28 +137,28 @@ int SequenceOptimizer3D::find_gc_helix_stretches(
         violations += 1;
         break;
       }
+      pos -= 1;
     }
   }
   return violations;
 }
 
-SequenceOptimizer3D::DesignableBPOPs
-SequenceOptimizer3D::_get_designable_bps(secondary_structure::PoseOP &ss) {
-
+SequenceOptimizer3D::DesignableBPOPs SequenceOptimizer3D::_get_designable_bps(
+    secondary_structure::PoseOP& ss) {
   auto designable_bps = DesignableBPOPs();
-  for (auto const &bp : ss->basepairs()) {
+  for (auto const& bp : ss->basepairs()) {
     auto bp_name = bp->res1()->name() + bp->res2()->name();
     if (bp_name == "NN") {
       designable_bps.push_back(std::make_shared<DesignableBP>(bp));
     }
   }
 
-  find_seq_violations(ss, _current_violations);
-  _current_gc_stretches = find_gc_helix_stretches(ss);
+  find_seq_violations(ss, current_violations_);
+  current_gc_stretches_ = find_gc_helix_stretches(ss);
   int count = 0;
 
-  for (auto const &d_bp : designable_bps) {
-    for (auto const &m : ss->motifs()) {
+  for (auto const& d_bp : designable_bps) {
+    for (auto const& m : ss->motifs()) {
       if (m->name() != "HELIX.IDEAL") {
         continue;
       }
@@ -164,25 +170,26 @@ SequenceOptimizer3D::_get_designable_bps(secondary_structure::PoseOP &ss) {
       }
     }
 
-    auto state = _possible_bps[_rng.randrange(_possible_bps.size())];
+    auto state = get_random_bp();
     d_bp->bp->res1()->name(state[0]);
     d_bp->bp->res2()->name(state[1]);
-    find_seq_violations(ss, _next_violations);
-    _next_gc_stretches = find_gc_helix_stretches(ss);
+    find_seq_violations(ss, next_violations_);
+    next_gc_stretches_ = find_gc_helix_stretches(ss);
     while (new_seq_violations()) {
-      auto state = _possible_bps[_rng.randrange(_possible_bps.size())];
+      state = get_random_bp();
       d_bp->bp->res1()->name(state[0]);
       d_bp->bp->res2()->name(state[1]);
-      find_seq_violations(ss, _next_violations);
-      _next_gc_stretches = find_gc_helix_stretches(ss);
+      find_seq_violations(ss, next_violations_);
+      next_gc_stretches_ = find_gc_helix_stretches(ss);
       count++;
-      if (count > 100) {
-        _current_violations = _next_violations;
-        _current_gc_stretches = _next_gc_stretches;
+      if (count > 1000) {
+        LOG_WARNING << "cannot satisify sequence design constraints!!!";
+        current_violations_ = next_violations_;
+        current_gc_stretches_ = next_gc_stretches_;
       }
     }
   }
-  for (auto &m : ss->motifs()) {
+  for (auto& m : ss->motifs()) {
     ss->update_motif(m->id());
   }
 
@@ -190,10 +197,9 @@ SequenceOptimizer3D::_get_designable_bps(secondary_structure::PoseOP &ss) {
 }
 
 void SequenceOptimizer3D::_initiate_sequence_in_msg(
-    motif_data_structure::MotifStateGraphOP &msg,
-    secondary_structure::PoseOP const &ss) {
-
-  for (auto const &m : ss->motifs()) {
+    motif_data_structure::MotifStateGraphOP& msg,
+    secondary_structure::PoseOP const& ss) {
+  for (auto const& m : ss->motifs()) {
     if (m->name() != "HELIX.IDEAL") {
       continue;
     }
@@ -211,10 +217,10 @@ void SequenceOptimizer3D::_initiate_sequence_in_msg(
 // /////////////////////////////////////////////////////////////////////////////
 
 OptimizedSequenceOPs SequenceOptimizer3D::get_optimized_sequences(
-    motif_data_structure::MotifGraphOP const &mg) {
+    motif_data_structure::MotifGraphOP const& mg) {
   update_var_options();
 
-  if (_scorer == nullptr) {
+  if (scorer_ == nullptr) {
     throw std::runtime_error(
         "cannot run get_optimized_sequences without scorer, either supply here "
         "or use set_scorer");
@@ -224,16 +230,16 @@ OptimizedSequenceOPs SequenceOptimizer3D::get_optimized_sequences(
   auto ss = mg->designable_secondary_structure();
   auto msg = std::make_shared<motif_data_structure::MotifStateGraph>(mg);
 
-  //if(ss->chains().size() > 1) {
-  //    throw std::runtime_error(
-  //        "cannot perform sequence optmization with more than one chain");
-  //}
+  /*if(ss->chains().size() > 1) {
+      throw std::runtime_error(
+          "cannot perform sequence optmization with more than one chain");
+  }*/
 
   auto designable_bps = _get_designable_bps(ss);
   _initiate_sequence_in_msg(msg, ss);
-  _eterna_scorer.setup(ss);
+  eterna_scorer_.setup(ss);
 
-  auto last_score = _scorer->score(msg);
+  auto last_score = scorer_->score(msg);
   auto new_score = 0.0f, eterna_score = 0.0f;
 
   // std::cout << designable_bps.size() << std::endl;
@@ -245,14 +251,14 @@ OptimizedSequenceOPs SequenceOptimizer3D::get_optimized_sequences(
   int i = -1;
   auto d_bp = DesignableBPOP(nullptr);
   auto new_bp_state = Strings();
-  while (i < _steps) {
+  while (i < steps_) {
     i++;
-    d_bp = designable_bps[_rng.randrange(designable_bps.size())];
-    new_bp_state = _possible_bps[_rng.randrange(_possible_bps.size())];
+    d_bp = designable_bps[rng_.randrange(designable_bps.size())];
+    new_bp_state = possible_bps_[rng_.randrange(possible_bps_.size())];
     d_bp->update_state(new_bp_state);
 
-    find_seq_violations(ss, _next_violations);
-    _next_gc_stretches = find_gc_helix_stretches(ss);
+    find_seq_violations(ss, next_violations_);
+    next_gc_stretches_ = find_gc_helix_stretches(ss);
 
     if (new_seq_violations()) {
       d_bp->revert_state();
@@ -261,7 +267,7 @@ OptimizedSequenceOPs SequenceOptimizer3D::get_optimized_sequences(
 
     _update_designable_bp(d_bp, msg, ss);
 
-    new_score = _scorer->score(msg);
+    new_score = scorer_->score(msg);
 
     if (mc.accept(last_score, new_score)) {
       last_score = new_score;
@@ -277,28 +283,28 @@ OptimizedSequenceOPs SequenceOptimizer3D::get_optimized_sequences(
       LOG_VERBOSE << "best_score=" << best;
     }
 
-    if (_cutoff < new_score) {
+    if (cutoff_ < new_score) {
       continue;
     }
 
-    eterna_score = _eterna_scorer.score_secondary_structure(ss);
-    if (eterna_score > _eterna_cutoff) {
+    eterna_score = eterna_scorer_.score_secondary_structure(ss);
+    if (eterna_score > eterna_cutoff_) {
       auto seq = _validate_sequence(msg, ss);
       sols.push_back(std::make_shared<OptimizedSequence>(
           OptimizedSequence{seq, new_score, eterna_score}));
       LOG_DEBUG << "found solution! score=" << new_score;
       LOG_DEBUG << seq;
-      if (sols.size() >= _solutions) {
+      if (sols.size() >= solutions_) {
         return sols;
       }
     }
   }
 
-  if (sols.size() == 0 && _return_lowest) {
+  if (sols.size() == 0 && return_lowest_) {
     LOG_DEBUG << "could not reach cutoff but returning best solution=" << best;
     LOG_DEBUG << best_seq;
     ss->replace_sequence(best_seq);
-    eterna_score = _eterna_scorer.score_secondary_structure(ss);
+    eterna_score = eterna_scorer_.score_secondary_structure(ss);
     sols.push_back(std::make_shared<OptimizedSequence>(
         OptimizedSequence{best_seq, best, eterna_score}));
   }
@@ -307,10 +313,10 @@ OptimizedSequenceOPs SequenceOptimizer3D::get_optimized_sequences(
 }
 
 motif_data_structure::MotifGraphOP SequenceOptimizer3D::get_optimized_mg(
-    motif_data_structure::MotifGraphOP const &mg) {
+    motif_data_structure::MotifGraphOP const& mg) {
   update_var_options();
 
-  if (_scorer == nullptr) {
+  if (scorer_ == nullptr) {
     throw std::runtime_error(
         "cannot run get_optimized_sequences without scorer, either supply here "
         "or use set_scorer");
@@ -326,9 +332,9 @@ motif_data_structure::MotifGraphOP SequenceOptimizer3D::get_optimized_mg(
 
   auto designable_bps = _get_designable_bps(ss);
   _initiate_sequence_in_msg(msg, ss);
-  _eterna_scorer.setup(ss);
+  eterna_scorer_.setup(ss);
 
-  auto last_score = _scorer->score(msg);
+  auto last_score = scorer_->score(msg);
   auto new_score = 0.0f, eterna_score = 0.0f;
 
   auto mc = util::MonteCarlo(1.0f);
@@ -339,16 +345,16 @@ motif_data_structure::MotifGraphOP SequenceOptimizer3D::get_optimized_mg(
   auto d_bp = DesignableBPOP(nullptr);
   auto new_bp_state = Strings();
   auto best_msg = std::make_shared<motif_data_structure::MotifStateGraph>();
-  while (i < _steps) {
+  while (i < steps_) {
     i++;
 
-    d_bp = designable_bps[_rng.randrange(designable_bps.size())];
-    new_bp_state = _possible_bps[_rng.randrange(_possible_bps.size())];
+    d_bp = designable_bps[rng_.randrange(designable_bps.size())];
+    new_bp_state = possible_bps_[rng_.randrange(possible_bps_.size())];
     d_bp->update_state(new_bp_state);
 
     _update_designable_bp(d_bp, msg, ss);
 
-    new_score = _scorer->score(msg);
+    new_score = scorer_->score(msg);
 
     if (mc.accept(last_score, new_score)) {
       last_score = new_score;
@@ -361,22 +367,21 @@ motif_data_structure::MotifGraphOP SequenceOptimizer3D::get_optimized_mg(
     if (best > new_score) {
       best = new_score;
       best_msg = std::make_shared<motif_data_structure::MotifStateGraph>(*msg);
-      if (_verbose) {
+      if (verbose_) {
         std::cout << "SEQUENCE OPTIMIZER: best_score=" << best << std::endl;
       }
     }
 
-    if (_cutoff < new_score) {
+    if (cutoff_ < new_score) {
       continue;
     }
 
-    eterna_score = _eterna_scorer.score_secondary_structure(ss);
-    if (eterna_score > _eterna_cutoff) {
-
+    eterna_score = eterna_scorer_.score_secondary_structure(ss);
+    if (eterna_score > eterna_cutoff_) {
       auto seq = _validate_sequence(msg, ss);
       return msg->to_motif_graph();
 
-      if (_verbose) {
+      if (verbose_) {
         std::cout << "SEQUENCE OPTIMIZER: found solution! score=" << new_score;
         std::cout << " eterna_score=" << eterna_score << std::endl;
       }
@@ -390,24 +395,23 @@ motif_data_structure::MotifGraphOP SequenceOptimizer3D::get_optimized_mg(
 // //////////////////////////////////////////////////////////////////////////////////////////
 
 void SequenceOptimizer3D::setup_options() {
-  _options.add_option("cutoff", 5.0f, base::OptionType::FLOAT);
-  _options.add_option("solutions", 1, base::OptionType::INT);
-  _options.add_option("eterna_cutoff", -1.0f, base::OptionType::FLOAT);
-  _options.add_option("verbose", false, base::OptionType::BOOL);
-  _options.add_option("return_lowest", true, base::OptionType::BOOL);
-  _options.add_option("steps", 10000, base::OptionType::INT);
-  _options.lock_option_adding();
+  options_.add_option("cutoff", 5.0f, base::OptionType::FLOAT);
+  options_.add_option("solutions", 1, base::OptionType::INT);
+  options_.add_option("eterna_cutoff", -1.0f, base::OptionType::FLOAT);
+  options_.add_option("verbose", false, base::OptionType::BOOL);
+  options_.add_option("return_lowest", true, base::OptionType::BOOL);
+  options_.add_option("steps", 10000, base::OptionType::INT);
+  options_.lock_option_adding();
   update_var_options();
 }
 
 void SequenceOptimizer3D::update_var_options() {
-  _cutoff = _options.get_float("cutoff");
-  _solutions = _options.get_int("solutions");
-  _eterna_cutoff = _options.get_float("eterna_cutoff");
-  _verbose = _options.get_bool("verbose");
-  _return_lowest = _options.get_bool("return_lowest");
-  _steps = _options.get_int("steps");
+  cutoff_ = options_.get_float("cutoff");
+  solutions_ = options_.get_int("solutions");
+  eterna_cutoff_ = options_.get_float("eterna_cutoff");
+  verbose_ = options_.get_bool("verbose");
+  return_lowest_ = options_.get_bool("return_lowest");
+  steps_ = options_.get_int("steps");
 }
 
-} // namespace sequence_optimization
-*/
+}  // namespace sequence_optimization

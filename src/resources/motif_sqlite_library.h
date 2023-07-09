@@ -9,105 +9,135 @@
 #ifndef __RNAMake__motif_sqlite_library__
 #define __RNAMake__motif_sqlite_library__
 
-#include <filesystem>
-#include <iostream>
 #include <stdio.h>
+#include <iostream>
+#include <filesystem>
 
-#include "base/settings.h"
+#include "util/random_number_generator.h"
 #include "motif/motif.h"
 #include "resources/motif_sqlite_connection.h"
 #include "resources/sqlite_library.h"
-#include "util/random_number_generator.h"
+#include "base/settings.h"
 
 namespace resources {
 
-static String dummy_name = "", dummy_end_id = "", dummy_end_name = "",
-              dummy_id = "";
+static String dummy_name = "", dummy_end_id = "", dummy_end_name = "", dummy_id = "";
 
 class MotifSqliteLibrary : public SqliteLibrary {
 public:
-  MotifSqliteLibrary(String const &libname) {
 
-    _libnames = get_libnames();
-    _rng = util::RandomNumberGenerator();
-    auto path = _get_path(libname);
-    MotifSqliteConnection conn(path);
-    _connection = conn;
-    _max_size = _connection.count();
-    // max_size_ = 1; // Does this matter? CJ
-  }
-  // added by CJ for validation purposes
-  MotifSqliteLibrary(int i, // something to change the overloading
-                     std::filesystem::path const &path) {
+    MotifSqliteLibrary(
+            String const & libname) {
 
-    _libnames = get_libnames();
-    _rng = util::RandomNumberGenerator();
-
-    MotifSqliteConnection conn(path);
-    _connection = conn;
-    _max_size = _connection.count();
-    // max_size_ = 1; // Does this matter? CJ
-  }
-  ~MotifSqliteLibrary() {}
-
-public: // iterator stuff
-  class iterator {
-  public:
-    iterator(std::map<String, motif::MotifOP>::iterator const &i) : _i(i) {}
-
-    iterator operator++() {
-      _i++;
-      return *this;
+        libnames_ = get_libnames();
+        rng_ = util::RandomNumberGenerator();
+        auto path = _get_path(libname);
+        MotifSqliteConnection conn(path);
+        connection_ = conn;
+        max_size_ = connection_.count();
+        //max_size_ = 1; // Does this matter? CJ
     }
+    // added by CJ for validation purposes
+    MotifSqliteLibrary(
+            int i, // something to change the overloading
+            std::filesystem::path const & path) {
 
-    motif::MotifOP const &operator*() { return _i->second; }
+        libnames_ = get_libnames();
+        rng_ = util::RandomNumberGenerator();
 
-    bool operator==(iterator const &rhs) const { return _i == rhs._i; }
+        MotifSqliteConnection conn(path);
+        connection_ = conn;
+        max_size_ = connection_.count();
+        //max_size_ = 1; // Does this matter? CJ
+    }
+    ~MotifSqliteLibrary() {}
 
-    bool operator!=(iterator const &rhs) const { return _i != rhs._i; }
+public: //iterator stuff
 
-  private:
-    std::map<String, motif::MotifOP>::iterator _i;
-  };
+    class iterator {
+    public:
+        iterator(
+                std::map<String, motif::MotifOP>::iterator const & i) :
+                i_(i) {}
 
-  iterator begin() { return iterator(_data.begin()); }
+        iterator operator++() {
+            i_++;
+            return *this;
+        }
 
-  iterator end() { return iterator(_data.end()); }
+        motif::MotifOP const & operator*() { return i_->second; }
+
+        bool operator==(iterator const & rhs) const { return i_ == rhs.i_; }
+
+        bool operator!=(iterator const & rhs) const { return i_ != rhs.i_; }
+
+    private:
+        std::map<String, motif::MotifOP>::iterator i_;
+
+    };
+
+
+    iterator begin() { return iterator(data_.begin()); }
+
+    iterator end() { return iterator(data_.end()); }
+
 
 public:
-  static StringStringMap get_libnames();
 
-  motif::MotifOP get(String const &name = dummy_name,
-                     String const &end_id = dummy_end_id,
-                     String const &end_name = dummy_name,
-                     String const &id = dummy_id);
+    static
+    StringStringMap
+    get_libnames();
 
-  motif::MotifOPs get_multi(String const &name = dummy_name,
-                            String const &end_id = dummy_end_id,
-                            String const &end_name = dummy_name,
-                            String const &id = dummy_id);
+    motif::MotifOP
+    get(
+            String const & name = dummy_name,
+            String const & end_id = dummy_end_id,
+            String const & end_name = dummy_name,
+            String const & id = dummy_id);
 
-  int contains(String const &name = dummy_name,
-               String const &end_id = dummy_end_id,
-               String const &end_name = dummy_name,
-               String const &id = dummy_id);
+    motif::MotifOPs
+    get_multi(
+            String const & name = dummy_name,
+            String const & end_id = dummy_end_id,
+            String const & end_name = dummy_name,
+            String const & id = dummy_id);
 
-  motif::MotifOP get_random();
+    int
+    contains(
+            String const & name = dummy_name,
+            String const & end_id = dummy_end_id,
+            String const & end_name = dummy_name,
+            String const & id = dummy_id);
 
-  void load_all(int limit = 99999);
+    motif::MotifOP
+    get_random();
+
+    void
+    load_all(
+            int limit = 99999);
+
 
 private:
-  static String _generate_query(String const &, String const &, String const &,
-                                String const &);
+
+    static String
+    _generate_query(
+            String const &,
+            String const &,
+            String const &,
+            String const &);
+
 
 private:
-  MotifSqliteConnection _connection;
-  std::map<String, motif::MotifOP> _data;
-  util::RandomNumberGenerator _rng;
+
+    MotifSqliteConnection connection_;
+    std::map<String, motif::MotifOP> data_;
+    util::RandomNumberGenerator rng_;
+
 };
+
 
 typedef std::shared_ptr<MotifSqliteLibrary> MotifSqliteLibraryOP;
 
-} // namespace resources
+}
 
 #endif /* defined(__RNAMake__motif_sqlite_library__) */

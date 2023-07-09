@@ -1131,8 +1131,8 @@ BuildSqliteLibraries::_build_helix_ensembles() {
 
             for (const auto &bp : m_a->basepairs()) {
                 // possible area to check things out
-                const auto vec1 = bp->res1()->get_atom("C2'")->get_coords() - bp->res1()->get_atom("O4'")->get_coords();
-                const auto vec2 = bp->res2()->get_atom("C2'")->get_coords() - bp->res2()->get_atom("O4'")->get_coords();
+                const auto vec1 = bp->res1()->get_atom("C2'")->coords() - bp->res1()->get_atom("O4'")->coords();
+                const auto vec2 = bp->res2()->get_atom("C2'")->coords() - bp->res2()->get_atom("O4'")->coords();
 
                 if (vec1.dot(vec2) > 2.f) {
                     fail = 1;

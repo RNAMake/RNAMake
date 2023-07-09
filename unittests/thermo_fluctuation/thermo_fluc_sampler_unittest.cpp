@@ -60,9 +60,9 @@ rmsd_between_basepairs(
         structure::Basepair const & bp2) {
     auto sum = 0.0f;
     for(int i = 0; i < bp1.atoms().size(); i++) {
-        sum += (bp1.atoms()[i]->get_coords().get_x() - bp2.atoms()[i]->get_coords().get_x())*(bp1.atoms()[i]->get_coords().get_x() - bp2.atoms()[i]->get_coords().get_x());
-        sum += (bp1.atoms()[i]->get_coords().get_y() - bp2.atoms()[i]->get_coords().get_y())*(bp1.atoms()[i]->get_coords().get_y() - bp2.atoms()[i]->get_coords().get_y());
-        sum += (bp1.atoms()[i]->get_coords().get_z() - bp2.atoms()[i]->get_coords().get_z())*(bp1.atoms()[i]->get_coords().get_z() - bp2.atoms()[i]->get_coords().get_z());
+        sum += (bp1.atoms()[i]->coords().x() - bp2.atoms()[i]->coords().x())*(bp1.atoms()[i]->coords().x() - bp2.atoms()[i]->coords().x());
+        sum += (bp1.atoms()[i]->coords().y() - bp2.atoms()[i]->coords().y())*(bp1.atoms()[i]->coords().y() - bp2.atoms()[i]->coords().y());
+        sum += (bp1.atoms()[i]->coords().z() - bp2.atoms()[i]->coords().z())*(bp1.atoms()[i]->coords().z() - bp2.atoms()[i]->coords().z());
     }
     sum /= bp1.atoms().size();
     sum = sqrt(sum);

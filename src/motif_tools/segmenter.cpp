@@ -8,201 +8,205 @@
 
 #include <algorithm>
 
-#include "motif_tools/segmenter.h"
 #include "structure/chain.h"
+#include "motif_tools/segmenter.h"
 
 namespace motif_tools {
 
-void Segmenter::_get_pairs(structure::RNAStructureOP const &m,
-                           structure::ResidueOPs const &res) {
+void
+Segmenter::_get_pairs(
+        structure::RNAStructureOP const & m,
+        structure::ResidueOPs const & res) {
 
-  _pairs = PairOPs();
-  _end_pairs = PairOPs();
+    pairs_ = PairOPs();
+    end_pairs_ = PairOPs();
 
-  structure::ChainOP sc, sc1, sc2;
-  float dist;
+    structure::ChainOP sc, sc1, sc2;
+    float dist;
 
-  for (auto const &c : m->chains()) {
-    int i = -1;
-    for (auto const &res1 : res) {
-      i++;
-      int j = -1;
-      for (auto const &res2 : res) {
-        j++;
-        if (i >= j) {
-          continue;
+    for (auto const & c : m->chains()) {
+        int i = -1;
+        for (auto const & res1 : res) {
+            i++;
+            int j = -1;
+            for (auto const & res2 : res) {
+                j++;
+                if (i >= j) { continue; }
+                try {
+                    sc = c->subchain(res1, res2);
+                } catch (structure::ChainException) { continue; }
+                dist = (int) sc->length();
+                pairs_.push_back(std::make_shared<Pair>(res1, res2, dist));
+            }
+            try {
+                sc1 = c->subchain(res1, c->last());
+            } catch (structure::ChainException) { continue; }
+            try {
+                sc2 = c->subchain(c->first(), res1);
+            } catch (structure::ChainException) { continue; }
+            if (res1 != c->last() &&
+                std::find(res.begin(), res.end(), c->last()) == res.end()) {
+                auto pair = std::make_shared<Pair>(res1, c->last(), sc1->length());
+                end_pairs_.push_back(pair);
+            }
+            if (res1 != c->first() &&
+                std::find(res.begin(), res.end(), c->first()) == res.end()) {
+                auto pair = std::make_shared<Pair>(res1, c->first(), sc2->length());
+                end_pairs_.push_back(pair);
+            }
         }
+    }
+}
+
+
+structure::ChainOP
+Segmenter::_get_subchain(
+        structure::RNAStructureOP const & m,
+        PairOP const & pair) {
+
+    for (auto const & c : m->chains()) {
         try {
-          sc = c->subchain(res1, res2);
-        } catch (structure::ChainException) {
-          continue;
+            auto sc = c->subchain(pair->res1, pair->res2);
+            return sc;
         }
-        dist = (int)sc->length();
-        _pairs.push_back(std::make_shared<Pair>(res1, res2, dist));
-      }
-      try {
-        sc1 = c->subchain(res1, c->last());
-      } catch (structure::ChainException) {
-        continue;
-      }
-      try {
-        sc2 = c->subchain(c->first(), res1);
-      } catch (structure::ChainException) {
-        continue;
-      }
-      if (res1 != c->last() &&
-          std::find(res.begin(), res.end(), c->last()) == res.end()) {
-        auto pair = std::make_shared<Pair>(res1, c->last(), sc1->length());
-        _end_pairs.push_back(pair);
-      }
-      if (res1 != c->first() &&
-          std::find(res.begin(), res.end(), c->first()) == res.end()) {
-        auto pair = std::make_shared<Pair>(res1, c->first(), sc2->length());
-        _end_pairs.push_back(pair);
-      }
+        catch (structure::ChainException) { continue; }
     }
-  }
+
+    throw SegmenterException("cannot get sub chain");
+
 }
 
-structure::ChainOP Segmenter::_get_subchain(structure::RNAStructureOP const &m,
-                                            PairOP const &pair) {
 
-  for (auto const &c : m->chains()) {
-    try {
-      auto sc = c->subchain(pair->res1, pair->res2);
-      return sc;
-    } catch (structure::ChainException) {
-      continue;
+SegmentsOP
+Segmenter::_get_segments(
+        structure::RNAStructureOP const & m,
+        structure::ResidueOPs & res,
+        structure::BasepairOPs const & bps,
+        structure::ResidueOPs const & cutpoints,
+        structure::BasepairOPs const & cut_bps) {
+
+    auto other_res = structure::ResidueOPs();
+    for (auto const & r : cutpoints) { other_res.push_back(r); }
+    for (auto const & r : m->residues()) {
+        int found = 0;
+        for (auto const & r2 : res) {
+            if (r->uuid() == r2->uuid()) {
+                found = 1;
+                break;
+            }
+        }
+        if (found == 0) { other_res.push_back(r); }
+
     }
-  }
 
-  throw SegmenterException("cannot get sub chain");
+    auto res_uuids = std::map<util::Uuid, int, util::UuidCompare>();
+
+    for (auto const & r : other_res) {
+        res_uuids[r->uuid()] = 1;
+    }
+
+    auto removed = mf_.motif_from_res(res, bps);
+    removed->name(m->name() + ".removed");
+    mf_.standardize_rna_structure_ends(removed);
+
+    auto other_bps = structure::BasepairOPs();
+
+    for (auto const & bp : m->basepairs()) {
+        if (res_uuids.find(bp->res1()->uuid()) != res_uuids.end() &&
+            res_uuids.find(bp->res2()->uuid()) != res_uuids.end()) {
+            other_bps.push_back(bp);
+        }
+    }
+
+    auto remaining = mf_.motif_from_res(other_res, other_bps);
+    remaining->name(m->name() + ".remaining");
+    mf_.standardize_rna_structure_ends(remaining);
+
+    for (auto & end : remaining->ends()) {
+        int flip_res = 0;
+        for (auto const & c : remaining->chains()) {
+            if (c->first() == end->res2()) {
+                flip_res = 1;
+                break;
+            }
+        }
+
+        if (!flip_res) { continue; }
+
+        auto temp = end->res1();
+        end->res1(end->res2());
+        end->res2(temp);
+    }
+
+
+    return std::make_shared<Segments>(removed, remaining);
+
 }
 
-SegmentsOP Segmenter::_get_segments(structure::RNAStructureOP const &m,
-                                    structure::ResidueOPs &res,
-                                    structure::BasepairOPs const &bps,
-                                    structure::ResidueOPs const &cutpoints,
-                                    structure::BasepairOPs const &cut_bps) {
 
-  auto other_res = structure::ResidueOPs();
-  for (auto const &r : cutpoints) {
-    other_res.push_back(r);
-  }
-  for (auto const &r : m->residues()) {
-    int found = 0;
-    for (auto const &r2 : res) {
-      if (r->uuid() == r2->uuid()) {
-        found = 1;
-        break;
-      }
-    }
-    if (found == 0) {
-      other_res.push_back(r);
-    }
-  }
+SegmentsOP
+Segmenter::apply(
+        structure::RNAStructureOP const & m,
+        structure::BasepairOPs const & bps) {
 
-  auto res_uuids = std::map<util::Uuid, int, util::UuidCompare>();
-
-  for (auto const &r : other_res) {
-    res_uuids[r->uuid()] = 1;
-  }
-
-  auto removed = _mf.motif_from_res(res, bps);
-  removed->name(m->name() + ".removed");
-  _mf.standardize_rna_structure_ends(removed);
-
-  auto other_bps = structure::BasepairOPs();
-
-  for (auto const &bp : m->basepairs()) {
-    if (res_uuids.find(bp->res1()->uuid()) != res_uuids.end() &&
-        res_uuids.find(bp->res2()->uuid()) != res_uuids.end()) {
-      other_bps.push_back(bp);
-    }
-  }
-
-  auto remaining = _mf.motif_from_res(other_res, other_bps);
-  remaining->name(m->name() + ".remaining");
-  _mf.standardize_rna_structure_ends(remaining);
-
-  for (auto &end : remaining->ends()) {
-    int flip_res = 0;
-    for (auto const &c : remaining->chains()) {
-      if (c->first() == end->res2()) {
-        flip_res = 1;
-        break;
-      }
+    structure::ResidueOPs res;
+    for (auto const & bp : bps) {
+        for (auto const & r : bp->residues()) {
+            res.push_back(r);
+        }
     }
 
-    if (!flip_res) {
-      continue;
+    _get_pairs(m, res);
+    auto pair_search = PairSearch();
+    auto sols = pair_search.search(res, pairs_, end_pairs_);
+
+    for (auto const & s : sols) {
+        auto subchains = structure::ChainOPs();
+        auto sub_res = std::map<util::Uuid, int, util::UuidCompare>();
+        auto sub_res_array = structure::ResidueOPs();
+
+        for (auto const & r: res) {
+            sub_res[r->uuid()] = 1;
+            sub_res_array.push_back(r);
+        }
+
+        for (auto const & p : s.pairs) {
+            auto sc = _get_subchain(m, p);
+            subchains.push_back(sc);
+            for (auto const & r : sc->residues()) {
+                sub_res[r->uuid()] = 1;
+                sub_res_array.push_back(r);
+            }
+        }
+
+        auto basepairs = structure::BasepairOPs();
+        int missed_bps = 0;
+
+        for (auto const & bp : m->basepairs()) {
+            if (bp->bp_type() != "cW-W") { continue; }
+            if (sub_res.find(bp->res1()->uuid()) != sub_res.end() &&
+                sub_res.find(bp->res2()->uuid()) != sub_res.end()) {
+                basepairs.push_back(bp);
+            } else if (sub_res.find(bp->res1()->uuid()) != sub_res.end()) { missed_bps += 1; }
+            else if (sub_res.find(bp->res2()->uuid()) != sub_res.end()) { missed_bps += 1; }
+        }
+
+        if (missed_bps > 2) { continue; }
+        return _get_segments(m, sub_res_array, basepairs, res, bps);
     }
 
-    auto temp = end->res1();
-    end->res1(end->res2());
-    end->res2(temp);
-  }
-
-  return std::make_shared<Segments>(removed, remaining);
+    throw SegmenterException("failed to segment rna structure");
 }
 
-SegmentsOP Segmenter::apply(structure::RNAStructureOP const &m,
-                            structure::BasepairOPs const &bps) {
-
-  structure::ResidueOPs res;
-  for (auto const &bp : bps) {
-    for (auto const &r : bp->residues()) {
-      res.push_back(r);
-    }
-  }
-
-  _get_pairs(m, res);
-  auto pair_search = PairSearch();
-  auto sols = pair_search.search(res, _pairs, _end_pairs);
-
-  for (auto const &s : sols) {
-    auto subchains = structure::ChainOPs();
-    auto sub_res = std::map<util::Uuid, int, util::UuidCompare>();
-    auto sub_res_array = structure::ResidueOPs();
-
-    for (auto const &r : res) {
-      sub_res[r->uuid()] = 1;
-      sub_res_array.push_back(r);
-    }
-
-    for (auto const &p : s.pairs) {
-      auto sc = _get_subchain(m, p);
-      subchains.push_back(sc);
-      for (auto const &r : sc->residues()) {
-        sub_res[r->uuid()] = 1;
-        sub_res_array.push_back(r);
-      }
-    }
-
-    auto basepairs = structure::BasepairOPs();
-    int missed_bps = 0;
-
-    for (auto const &bp : m->basepairs()) {
-      if (bp->bp_type() != "cW-W") {
-        continue;
-      }
-      if (sub_res.find(bp->res1()->uuid()) != sub_res.end() &&
-          sub_res.find(bp->res2()->uuid()) != sub_res.end()) {
-        basepairs.push_back(bp);
-      } else if (sub_res.find(bp->res1()->uuid()) != sub_res.end()) {
-        missed_bps += 1;
-      } else if (sub_res.find(bp->res2()->uuid()) != sub_res.end()) {
-        missed_bps += 1;
-      }
-    }
-
-    if (missed_bps > 2) {
-      continue;
-    }
-    return _get_segments(m, sub_res_array, basepairs, res, bps);
-  }
-
-  throw SegmenterException("failed to segment rna structure");
 }
 
-} // namespace motif_tools
+
+
+
+
+
+
+
+
+
+

@@ -4,24 +4,24 @@
 #ifndef __FIND_PAIR_H__
 #define __FIND_PAIR_H__
 
-#include <math/numerical.hpp>
-#include <util/x3dna/x3dna.h>
+#include <math/numerical.h>
+#include <util/x3dna.h>
+#include <util/x3dna_src.h>
 
 namespace util {
 
 class PairFinder {
+ public:
+  PairFinder(std::string pdb);
 
-public:
-  explicit PairFinder(std::string pdb);
-
-  void find_pair(util::x3dna::X3dna::X3Basepairs &basepairs);
+  void find_pair(X3dna::X3Basepairs &basepairs);
 
   // private functions
-private:
+ private:
   void _handle_str();
 
   void _write_fpmst(double *morg, double *morien, FILE *rframe,
-                    util::x3dna::X3dna::X3BPInfo *bp_info);
+                    X3dna::X3BPInfo *bp_info);
 
   void _write_bestpairs(long num_bp, long **base_pairs, long *bp_idx,
                         char *bseq, long **seidx, char **AtomName,
@@ -34,29 +34,28 @@ private:
                char **Miscs, double **xyz, char *parfile, miscPars *misc_pars);
 
   // Private variables
-private:
+ private:
   char **nt_info;
 
-  std::vector<x3dna::X3dna::X3Basepair> _bps;
-
-  std::map<std::pair<int, std::string>, math::Vector3> _atoms;
+  std::vector<X3dna::X3Basepair> bps;
 
   struct Args {
-    String pdbfile;
+    char pdbfile[BUF512];
     char outfile[BUF512];
     long ds = 2;
+    long curves = false;
+    long curves_plus = false;
     long divide = false;
     long hetatm = true;
     long pairs = false;
     long detailed = false;
     long waters = false;
+    long hjb = false;
   };
 
-  math::Vector3s vectors;
-
-  Args _args = Args();
+  Args args = Args();
 };
 
-} // namespace util
+}  // namespace util
 
 #endif

@@ -6,7 +6,6 @@ Message
 "score file that contains summary information about solutions -> default.scores can be set with --score_file"
 "search type -> mc"
 "search solution filter -> RemoveDuplicateHelices"
-"search cutoff -> 7.500000"
 "*** finished design: 0 ***"
 "*** finished design: 1 ***"
 "*** finished design: 2 ***"

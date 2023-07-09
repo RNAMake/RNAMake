@@ -6,12 +6,10 @@
 //  Copyright © 2016 Joseph Yesselman. All rights reserved.
 //
 
-#include <base/backtrace.hpp>
+#include <base/backtrace.h>
 
-namespace base {
-
-inline String demangle(String trace) {
-  String::size_type begin, end;
+inline std::string base::demangle(std::string trace) {
+  std::string::size_type begin, end;
 
   // find the beginning and the end of the useful part of the trace
 
@@ -24,25 +22,25 @@ inline String demangle(String trace) {
   // How it looks for Linux, with parentheses around part to be demangled.
   //  /home/rhiju/src/rosetta/main/source/cmake/build_release/libutility.so(_Z15print_backtracev+0x23)
   //  [0x7fb75e081a3]
-  if (begin == String::npos || end == String::npos) {
+  if (begin == std::string::npos || end == std::string::npos) {
     begin = trace.find("(_") + 1;
     end = trace.find("+", begin);
   }
 
   // if begina and end were found, we'll go ahead and demangle
-  if (begin != String::npos && end != String::npos) {
-    String mangled_trace = trace.substr(begin, end - begin);
-    Size maxName = 1024;
+  if (begin != std::string::npos && end != std::string::npos) {
+    std::string mangled_trace = trace.substr(begin, end - begin);
+    size_t maxName = 1024;
     int demangleStatus;
 
-    char *demangledName = (char *)malloc(maxName);
+    char* demangledName = (char*)malloc(maxName);
     if ((demangledName =
              abi::__cxa_demangle(mangled_trace.c_str(), demangledName, &maxName,
                                  &demangleStatus)) &&
         demangleStatus == 0) {
       trace =
           trace.substr(0, begin) + demangledName +
-          trace.substr(end); // the demangled name is now in our trace string
+          trace.substr(end);  // the demangled name is now in our trace string
     }
     free(demangledName);
   }
@@ -64,7 +62,7 @@ inline String demangle(String trace) {
 //   -- rhiju, 2014.
 ////////////////////////////////////////////////////////////////////
 
-void print_backtrace() {
+void base::print_backtrace() {
 #if defined(_WIN32) || defined(_WIN64)
   LoadLibraryA("backtrace.dll");
 #else
@@ -73,9 +71,8 @@ void print_backtrace() {
   try {
     // try once to re-throw currently active exception
     tried_throw++;
-    if (tried_throw == 0)
-      throw;
-  } catch (const std::exception &e) {
+    if (tried_throw == 0) throw;
+  } catch (const std::exception& e) {
     std::cerr << __FUNCTION__
               << " caught unhandled exception. what(): " << e.what()
               << std::endl;
@@ -85,12 +82,12 @@ void print_backtrace() {
   }
 
   size_t const callstack_size = 128;
-  void *callstack[callstack_size];
+  void* callstack[callstack_size];
   const int nMaxFrames = sizeof(callstack) / sizeof(callstack[0]);
   int i = 0;
   int frames = backtrace(callstack, nMaxFrames);
   std::cout << frames << std::endl;
-  char **strs = backtrace_symbols(callstack, frames);
+  char** strs = backtrace_symbols(callstack, frames);
   // std::cerr << utility::CSI_Magenta; // set color of cerr to magenta
   for (i = 3; i < frames; ++i) {
     std::cerr << demangle(strs[i]).c_str() << std::endl;
@@ -100,11 +97,10 @@ void print_backtrace() {
 #endif
 }
 
-void save_backtrace() {
+void base::save_backtrace() {
   auto ii(0);
   auto outfile_name = String{"stack.0"};
-  // TODO fix
-  while (std::filesystem::exists(outfile_name)) {
+  while (base::file_exists(outfile_name)) {
     outfile_name = String{"stack."} + std::to_string(++ii);
   }
   auto outfile = std::ofstream(outfile_name);
@@ -113,9 +109,8 @@ void save_backtrace() {
   try {
     // try once to re-throw currently active exception
     tried_throw++;
-    if (tried_throw == 0)
-      throw;
-  } catch (const std::exception &e) {
+    if (tried_throw == 0) throw;
+  } catch (const std::exception& e) {
     outfile << __FUNCTION__
             << " caught unhandled exception. what(): " << e.what() << std::endl;
   } catch (...) {
@@ -124,11 +119,11 @@ void save_backtrace() {
   }
 
   size_t const callstack_size = 128;
-  void *callstack[callstack_size];
+  void* callstack[callstack_size];
   const int nMaxFrames = sizeof(callstack) / sizeof(callstack[0]);
   int i = 0;
   int frames = backtrace(callstack, nMaxFrames);
-  char **strs = backtrace_symbols(callstack, frames);
+  char** strs = backtrace_symbols(callstack, frames);
 
   for (i = 3; i < frames; ++i) {
     outfile << demangle(strs[i]).c_str() << std::endl;
@@ -138,5 +133,3 @@ void save_backtrace() {
   LOGF << "Fatal error encountered. Stack trace can be found in "
        << outfile_name;
 }
-
-} // namespace base

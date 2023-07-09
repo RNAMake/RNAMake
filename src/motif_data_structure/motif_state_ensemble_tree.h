@@ -11,26 +11,26 @@
 
 #include <stdio.h>
 
-// RNAMAke Headers
+//RNAMAke Headers
 
 #include "data_structure/tree/tree.h"
 #include "data_structure/tree/tree_node.h"
-#include "math/euler.h"
 #include "motif/motif_state_ensemble.h"
-#include "motif_data_structure/motif_connection.h"
-#include "motif_data_structure/motif_state_tree.h"
 #include "motif_data_structure/motif_tree.h"
+#include "motif_data_structure/motif_state_tree.h"
+#include "motif_data_structure/motif_connection.h"
+#include "math/euler.h"
 
 namespace motif_data_structure {
 
 class MotifStateTreeEnsembleException : public std::runtime_error {
 public:
-  MotifStateTreeEnsembleException(String const &message)
-      : std::runtime_error(message) {}
+    MotifStateTreeEnsembleException(
+            String const & message) :
+            std::runtime_error(message) {}
 };
 
-typedef data_structure::tree::TreeNodeOP<motif::MotifStateEnsembleOP>
-    MotifStateEnsembleTreeNodeOP;
+typedef data_structure::tree::TreeNodeOP<motif::MotifStateEnsembleOP> MotifStateEnsembleTreeNodeOP;
 
 /*const double _EPS = 2.22044604925e-16 * 4.0;
 
@@ -40,16 +40,16 @@ void
 math::calc_euler2(
     math::Matrix & M,
     math::Vector & euler) {
-
-    double cy = sqrt(M.get_xx()*M.get_xx() + M.get_yx()*M.get_yx());
+    
+    double cy = sqrt(M.xx()*M.xx() + M.yx()*M.yx());
     if(cy > _EPS) {
-        euler[0] = atan2( M.get_zy(), M.get_zz());
-        euler[1] = atan2(-M.get_zx(), cy);
-        euler[2] = atan2( M.get_yx(), M.get_xx());
+        euler[0] = atan2( M.zy(), M.zz());
+        euler[1] = atan2(-M.zx(), cy);
+        euler[2] = atan2( M.yx(), M.xx());
     }
     else {
-        euler[0] = atan2( M.get_yz(), M.get_yy());
-        euler[1] = atan2(-M.get_zx(), cy);
+        euler[0] = atan2( M.yz(), M.yy());
+        euler[1] = atan2(-M.zx(), cy);
         euler[2] = 0.0;
     }
     for(int i = 0; i < 3; i++){
@@ -60,74 +60,95 @@ math::calc_euler2(
             euler[i] += 6.14;
         }
     }
-
+    
     //'sxyz': (0, 0, 0, 0)
     //_NEXT_AXIS = [1, 2, 0, 1]
-
+    
 }*/
+
 
 class MotifStateEnsembleTree {
 public:
-  MotifStateEnsembleTree();
 
-  MotifStateEnsembleTree(MotifTreeOP const &);
+    MotifStateEnsembleTree();
 
-  MotifStateEnsembleTree(MotifStateTreeOP const &);
+    MotifStateEnsembleTree(
+            MotifTreeOP const &);
 
-  ~MotifStateEnsembleTree() {}
+    MotifStateEnsembleTree(
+            MotifStateTreeOP const &);
 
-public: // iterators
-  typedef typename data_structure::tree::TreeStatic<
-      motif::MotifStateEnsembleOP>::iterator iterator;
-  typedef typename data_structure::tree::TreeStatic<
-      motif::MotifStateEnsembleOP>::const_iterator const_iterator;
+    ~MotifStateEnsembleTree() {}
 
-  iterator begin() { return _tree.begin(); }
+public: //iterators
 
-  iterator end() { return _tree.end(); }
+    typedef typename data_structure::tree::TreeStatic<motif::MotifStateEnsembleOP>::iterator iterator;
+    typedef typename data_structure::tree::TreeStatic<motif::MotifStateEnsembleOP>::const_iterator const_iterator;
 
-  const_iterator begin() const { return _tree.begin(); }
+    iterator begin() { return tree_.begin(); }
 
-  const_iterator end() const { return _tree.end(); }
+    iterator end() { return tree_.end(); }
+
+    const_iterator begin() const { return tree_.begin(); }
+
+    const_iterator end() const { return tree_.end(); }
 
 public: // add functions
-  int add_ensemble(motif::MotifStateEnsembleOP const &ensemble,
-                   int parent_index = -1, int parent_end_index = -1);
 
-  MotifStateTreeOP to_mst();
+    int
+    add_ensemble(
+            motif::MotifStateEnsembleOP const & ensemble,
+            int parent_index = -1,
+            int parent_end_index = -1);
+
+    MotifStateTreeOP
+    to_mst();
+
 
 public:
-  size_t size() { return _tree.size(); }
 
-  MotifStateEnsembleTreeNodeOP const &get_node(int i) {
-    return _tree.get_node(i);
-  }
+    size_t
+    size() { return tree_.size(); }
 
-  inline MotifStateEnsembleTreeNodeOP const &last_node() {
-    return _tree.last_node();
-  }
+    MotifStateEnsembleTreeNodeOP const &
+    get_node(
+            int i) {
+        return tree_.get_node(i);
+    }
+
+    inline
+    MotifStateEnsembleTreeNodeOP const &
+    last_node() { return tree_.last_node(); }
+
 
 private:
-  data_structure::tree::TreeStatic<motif::MotifStateEnsembleOP> _tree;
-  MotifConnections _connections;
+    data_structure::tree::TreeStatic<motif::MotifStateEnsembleOP> tree_;
+    MotifConnections connections_;
+
 };
 
 typedef std::shared_ptr<MotifStateEnsembleTree> MotifStateEnsembleTreeOP;
 
 class MotifStateEnsembleTreeEnumerator {
 public:
-  MotifStateEnsembleTreeEnumerator(MotifStateEnsembleTreeOP const &mtst)
-      : _mtst(mtst) {}
+    MotifStateEnsembleTreeEnumerator(
+            MotifStateEnsembleTreeOP const & mtst) :
+            mtst_(mtst) {}
 
-  ~MotifStateEnsembleTreeEnumerator() {}
-
-public:
-  void record(String fname = "test");
+    ~MotifStateEnsembleTreeEnumerator() {}
 
 public:
-  MotifStateEnsembleTreeOP _mtst;
+
+    void
+    record(
+            String fname = "test");
+
+public:
+    MotifStateEnsembleTreeOP mtst_;
+
 };
 
-} // namespace motif_data_structure
+}
+
 
 #endif /* defined(__RNAMake__motif_state_ensemble_tree__) */

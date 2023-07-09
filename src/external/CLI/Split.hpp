@@ -79,18 +79,19 @@ inline std::vector<std::string> split_names(std::string current) {
 }
 
 /// extract default flag values either {def} or starting with a !
-inline std::vector<std::pair<std::string, std::string>>
-get_default_flag_values(const std::string &str) {
+inline std::vector<std::pair<std::string, std::string>> get_default_flag_values(
+    const std::string &str) {
   std::vector<std::string> flags = split_names(str);
-  flags.erase(std::remove_if(flags.begin(), flags.end(),
-                             [](const std::string &name) {
-                               return ((name.empty()) ||
-                                       (!(((name.find_first_of('{') !=
-                                            std::string::npos) &&
-                                           (name.back() == '}')) ||
-                                          (name[0] == '!'))));
-                             }),
-              flags.end());
+  flags.erase(
+      std::remove_if(flags.begin(), flags.end(),
+                     [](const std::string &name) {
+                       return (
+                           (name.empty()) ||
+                           (!(((name.find_first_of('{') != std::string::npos) &&
+                               (name.back() == '}')) ||
+                              (name[0] == '!'))));
+                     }),
+      flags.end());
   std::vector<std::pair<std::string, std::string>> output;
   output.reserve(flags.size());
   for (auto &flag : flags) {
@@ -111,7 +112,6 @@ get_default_flag_values(const std::string &str) {
 inline std::tuple<std::vector<std::string>, std::vector<std::string>,
                   std::string>
 get_names(const std::vector<std::string> &input) {
-
   std::vector<std::string> short_names;
   std::vector<std::string> long_names;
   std::string pos_name;
@@ -144,5 +144,5 @@ get_names(const std::vector<std::string> &input) {
                     std::string>(short_names, long_names, pos_name);
 }
 
-} // namespace detail
-} // namespace CLI
+}  // namespace detail
+}  // namespace CLI

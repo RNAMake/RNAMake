@@ -6,12 +6,14 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+#include "vienna.h"
+
 #include <float.h>
-#include <iostream>
 #include <string.h>
 
+#include <iostream>
+
 #include "pair_mat.h"
-#include "vienna.h"
 
 namespace vienna {
 
@@ -24,16 +26,15 @@ namespace vienna {
  *** we use a*(sin(x+b)+1)^2, with a=2/(3*sqrt(3)), b=Pi/6-sqrt(3)/2,
  *** in the interval b<x<sqrt(3)/2
  */
-#define SMOOTH(X)                                                              \
-  ((X) / SCALE < -1.2283697)                                                   \
-      ? 0                                                                      \
-      : (((X) / SCALE > 0.8660254)                                             \
-             ? (X)                                                             \
-             : SCALE * 0.38490018 * (sin((X) / SCALE - 0.34242663) + 1) *      \
+#define SMOOTH(X)                                                         \
+  ((X) / SCALE < -1.2283697)                                              \
+      ? 0                                                                 \
+      : (((X) / SCALE > 0.8660254)                                        \
+             ? (X)                                                        \
+             : SCALE * 0.38490018 * (sin((X) / SCALE - 0.34242663) + 1) * \
                    (sin((X) / SCALE - 0.34242663) + 1))
 
 float Vienna::fold(String const &string) {
-
   actual_size_ = (int)string.length();
 
   for (int i = 0; i < S1.size(); i++) {
@@ -54,7 +55,6 @@ float Vienna::fold(String const &string) {
 }
 
 plists const &Vienna::bp_probabilities(String const &sequence) {
-
   get_iindx(my_iindx, (int)sequence.size());
   get_iindx(iindx, (int)sequence.size());
 
@@ -92,7 +92,6 @@ plists const &Vienna::bp_probabilities(String const &sequence) {
 }
 
 void Vienna::assign_plist_from_pr(int length, double cut_off) {
-
   int i, j, n, count;
   count = 0;
   n = 2;
@@ -106,7 +105,7 @@ void Vienna::assign_plist_from_pr(int length, double cut_off) {
       }
       pl[count].i = i;
       pl[count].j = j;
-      pl[count].p = sqrt(probs[diindx[i] - j]); // added sqrt to match dot.ps
+      pl[count].p = sqrt(probs[diindx[i] - j]);  // added sqrt to match dot.ps
       pl[count].type = 0;
       count++;
     }
@@ -114,11 +113,10 @@ void Vienna::assign_plist_from_pr(int length, double cut_off) {
 }
 
 void Vienna::pf_create_bppm(String const &sequence) {
-
   int n, i, j, k, l, ij, kl, ii, i1, ll, type, type_2, tt, u1, ov = 0, qo = 0.;
   double temp, Qmax = 0, prm_MLb;
   double prmt, prmt1;
-  Reals tmp, G;
+  Floats tmp, G;
   double tmp2;
   double expMLclosing = pf.expMLclosing;
   double max_real;
@@ -151,8 +149,7 @@ void Vienna::pf_create_bppm(String const &sequence) {
     /* 1. exterior pair i,j and initialization of pr array */
     if (circular) {
       for (i = 1; i <= n; i++) {
-        for (j = i; j <= MIN2(i + TURN, n); j++)
-          probs[my_iindx[i] - j] = 0;
+        for (j = i; j <= MIN2(i + TURN, n); j++) probs[my_iindx[i] - j] = 0;
         for (j = i + TURN + 1; j <= n; j++) {
           ij = my_iindx[i] - j;
           type = ptype[ij];
@@ -177,19 +174,15 @@ void Vienna::pf_create_bppm(String const &sequence) {
             for (k = 1; k < i - TURN - 1; k++) {
               int ln1, lstart;
               ln1 = k + n - j - 1;
-              if (ln1 > MAXLOOP)
-                break;
+              if (ln1 > MAXLOOP) break;
               lstart = ln1 + i - 1 - MAXLOOP;
-              if (lstart < k + TURN + 1)
-                lstart = k + TURN + 1;
+              if (lstart < k + TURN + 1) lstart = k + TURN + 1;
               for (l = lstart; l < i; l++) {
                 int ln2, type_2;
                 type_2 = ptype[my_iindx[k] - l];
-                if (type_2 == 0)
-                  continue;
+                if (type_2 == 0) continue;
                 ln2 = i - l - 1;
-                if (ln1 + ln2 > MAXLOOP)
-                  continue;
+                if (ln1 + ln2 > MAXLOOP) continue;
                 tmp2 += qb[my_iindx[k] - l] *
                         exp_E_IntLoop(ln1, ln2, rt, rtype[type_2], S1[j + 1],
                                       S1[i - 1], S1[k - 1], S1[l + 1]) *
@@ -200,19 +193,15 @@ void Vienna::pf_create_bppm(String const &sequence) {
             for (k = j + 1; k < n - TURN; k++) {
               int ln1, lstart;
               ln1 = k - j - 1;
-              if ((ln1 + i - 1) > MAXLOOP)
-                break;
+              if ((ln1 + i - 1) > MAXLOOP) break;
               lstart = ln1 + i - 1 + n - MAXLOOP;
-              if (lstart < k + TURN + 1)
-                lstart = k + TURN + 1;
+              if (lstart < k + TURN + 1) lstart = k + TURN + 1;
               for (l = lstart; l <= n; l++) {
                 int ln2, type_2;
                 type_2 = ptype[my_iindx[k] - l];
-                if (type_2 == 0)
-                  continue;
+                if (type_2 == 0) continue;
                 ln2 = i - 1 + n - l;
-                if (ln1 + ln2 > MAXLOOP)
-                  continue;
+                if (ln1 + ln2 > MAXLOOP) continue;
                 tmp2 += qb[my_iindx[k] - l] *
                         exp_E_IntLoop(ln2, ln1, rtype[type_2], rt, S1[l + 1],
                                       S1[k - 1], S1[i - 1], S1[j + 1]) *
@@ -247,8 +236,7 @@ void Vienna::pf_create_bppm(String const &sequence) {
     } /* end if(circular)  */
     else {
       for (i = 1; i <= n; i++) {
-        for (j = i; j <= MIN2(i + TURN, n); j++)
-          probs[my_iindx[i] - j] = 0;
+        for (j = i; j <= MIN2(i + TURN, n); j++) probs[my_iindx[i] - j] = 0;
         for (j = i + TURN + 1; j <= n; j++) {
           ij = my_iindx[i] - j;
           type = ptype[ij];
@@ -263,16 +251,13 @@ void Vienna::pf_create_bppm(String const &sequence) {
     } /* end if(!circular)  */
 
     for (l = n; l > TURN + 1; l--) {
-
       /* 2. bonding k,l as substem of 2:loop enclosed by i,j */
       for (k = 1; k < l - TURN; k++) {
         kl = my_iindx[k] - l;
         type_2 = ptype[kl];
-        if (type_2 == 0)
-          continue;
+        if (type_2 == 0) continue;
         type_2 = rtype[type_2];
-        if (qb[kl] == 0.)
-          continue;
+        if (qb[kl] == 0.) continue;
 
         tmp2 = 0.;
         for (i = MAX2(1, k - MAXLOOP - 1); i <= k - 1; i++)
@@ -292,21 +277,19 @@ void Vienna::pf_create_bppm(String const &sequence) {
 
       if (with_gquad) {
         /* 2.5. bonding k,l as gquad enclosed by i,j */
-        Reals expintern;
+        Floats expintern;
         double qe;
 
         if (l < n - 3) {
           for (k = 2; k <= l - VRNA_GQUAD_MIN_BOX_SIZE; k++) {
             kl = my_iindx[k] - l;
-            if (G[kl] == 0.)
-              continue;
+            if (G[kl] == 0.) continue;
             tmp2 = 0.;
             i = k - 1;
             for (j = MIN2(l + MAXLOOP + 1, n); j > l + 3; j--) {
               ij = my_iindx[i] - j;
               type = ptype[ij];
-              if (!type)
-                continue;
+              if (!type) continue;
               qe = (type > 2) ? pf.expTermAU : 1.;
               tmp2 += probs[ij] * qe * expintern[j - l - 1] *
                       pf.expmismatchI[type][S1[i + 1]][S1[j - 1]] * scale[2];
@@ -318,16 +301,14 @@ void Vienna::pf_create_bppm(String const &sequence) {
         if (l < n - 1) {
           for (k = 3; k <= l - VRNA_GQUAD_MIN_BOX_SIZE; k++) {
             kl = my_iindx[k] - l;
-            if (G[kl] == 0.)
-              continue;
+            if (G[kl] == 0.) continue;
             tmp2 = 0.;
             for (i = MAX2(1, k - MAXLOOP - 1); i <= k - 2; i++) {
               u1 = k - i - 1;
               for (j = l + 2; j <= MIN2(l + MAXLOOP - u1 + 1, n); j++) {
                 ij = my_iindx[i] - j;
                 type = ptype[ij];
-                if (!type)
-                  continue;
+                if (!type) continue;
                 qe = (type > 2) ? pf.expTermAU : 1.;
                 tmp2 += probs[ij] * qe * expintern[u1 + j - l - 1] *
                         pf.expmismatchI[type][S1[i + 1]][S1[j - 1]] * scale[2];
@@ -340,15 +321,13 @@ void Vienna::pf_create_bppm(String const &sequence) {
         if (l < n) {
           for (k = 4; k <= l - VRNA_GQUAD_MIN_BOX_SIZE; k++) {
             kl = my_iindx[k] - l;
-            if (G[kl] == 0.)
-              continue;
+            if (G[kl] == 0.) continue;
             tmp2 = 0.;
             j = l + 1;
             for (i = MAX2(1, k - MAXLOOP - 1); i < k - 3; i++) {
               ij = my_iindx[i] - j;
               type = ptype[ij];
-              if (!type)
-                continue;
+              if (!type) continue;
               qe = (type > 2) ? pf.expTermAU : 1.;
               tmp2 += probs[ij] * qe * expintern[k - i - 1] *
                       pf.expmismatchI[type][S1[i + 1]][S1[j - 1]] * scale[2];
@@ -395,11 +374,9 @@ void Vienna::pf_create_bppm(String const &sequence) {
           prml[i] = prml[i] + prm_l[i];
 
           if (with_gquad) {
-            if ((!tt) && (G[kl] == 0.))
-              continue;
+            if ((!tt) && (G[kl] == 0.)) continue;
           } else {
-            if (qb[kl] == 0.)
-              continue;
+            if (qb[kl] == 0.) continue;
           }
 
           temp = prm_MLb;
@@ -445,19 +422,16 @@ void Vienna::pf_create_bppm(String const &sequence) {
         ij = my_iindx[i] - j;
 
         if (with_gquad) {
-          if (qb[ij] > 0.)
-            probs[ij] *= qb[ij];
+          if (qb[ij] > 0.) probs[ij] *= qb[ij];
           if (G[ij] > 0.) {
             probs[ij] += q1k[i - 1] * G[ij] * qln[j + 1] / q1k[n];
           }
         } else {
-          if (qb[ij] > 0.)
-            probs[ij] *= qb[ij];
+          if (qb[ij] > 0.) probs[ij] *= qb[ij];
         }
       }
 
-    if (pf_structure.size() == 0)
-      bppm_to_structure(structure, probs, n);
+    if (pf_structure.size() == 0) bppm_to_structure(structure, probs, n);
     if (ov > 0)
       fprintf(stderr,
               "%d overflows occurred while backtracking;\n"
@@ -471,28 +445,22 @@ void Vienna::pf_create_bppm(String const &sequence) {
 }
 
 char Vienna::bppm_symbol(const float *x) {
-  if (x[0] > 0.667)
-    return '.';
-  if (x[1] > 0.667)
-    return '(';
-  if (x[2] > 0.667)
-    return ')';
+  if (x[0] > 0.667) return '.';
+  if (x[1] > 0.667) return '(';
+  if (x[2] > 0.667) return ')';
   if ((x[1] + x[2]) > x[0]) {
-    if ((x[1] / (x[1] + x[2])) > 0.667)
-      return '{';
+    if ((x[1] / (x[1] + x[2])) > 0.667) return '{';
     if ((x[2] / (x[1] + x[2])) > 0.667)
       return '}';
     else
       return '|';
   }
-  if (x[0] > (x[1] + x[2]))
-    return ',';
+  if (x[0] > (x[1] + x[2])) return ',';
   return ':';
 }
 
-void Vienna::bppm_to_structure(String &structure, Reals &p,
+void Vienna::bppm_to_structure(String &structure, Floats &p,
                                unsigned int length) {
-
   int i, j;
   get_iindx(diindx, length);
   float P[3]; /* P[][0] unpaired, P[][1] upstream p, P[][2] downstream p */
@@ -515,7 +483,6 @@ void Vienna::bppm_to_structure(String &structure, Reals &p,
 
 void Vienna::get_boltzmann_factors(float temp, float betaScale,
                                    model_detailsT const &md, float pf_scale) {
-
   unsigned int i, j, k, l;
   double kT, TT;
   double GT;
@@ -692,7 +659,6 @@ void Vienna::get_boltzmann_factors(float temp, float betaScale,
 }
 
 void Vienna::scale_pf_params(int length) {
-
   unsigned int i;
   double scaling_factor;
 
@@ -702,8 +668,7 @@ void Vienna::scale_pf_params(int length) {
   if (scaling_factor ==
       -1) { /* mean energy for random sequences: 184.3*length cal */
     scaling_factor = exp(-(-185 + (pf.temperature - 37.) * 7.27) / pf.kT);
-    if (scaling_factor < 1)
-      scaling_factor = 1;
+    if (scaling_factor < 1) scaling_factor = 1;
     pf.pf_scale = scaling_factor;
   }
   scale[0] = 1.;
@@ -717,7 +682,6 @@ void Vienna::scale_pf_params(int length) {
 }
 
 void Vienna::pf_linear(String const &sequence) {
-
   const char *s = sequence.c_str();
   int n, i, j, k, l, ij, u, u1, d, ii, type, type_2, tt, minl, maxl;
   int noGUclosure;
@@ -726,7 +690,7 @@ void Vienna::pf_linear(String const &sequence) {
 
   float temp, Qmax = 0;
   float qbt1;
-  Reals tmp;
+  Floats tmp;
 
   float expMLclosing = pf.expMLclosing;
   float max_real = FLT_MAX;
@@ -779,8 +743,7 @@ void Vienna::pf_linear(String const &sequence) {
         /*multiple stem loop contribution*/
         ii = my_iindx[i + 1]; /* ii-k=[i+1,k-1] */
         temp = 0.0;
-        for (k = i + 2; k <= j - 1; k++)
-          temp += qm[ii - (k - 1)] * qqm1[k];
+        for (k = i + 2; k <= j - 1; k++) temp += qm[ii - (k - 1)] * qqm1[k];
         tt = rtype[type];
         qbt1 += temp * expMLclosing * exp_E_MLstem(tt, S1[j - 1], S1[i + 1]) *
                 scale[2];
@@ -821,8 +784,7 @@ void Vienna::pf_linear(String const &sequence) {
 
       /*construction of partition function for segment i,j */
       temp = 1.0 * scale[1 + j - i] + qq[i];
-      for (k = i; k <= j - 1; k++)
-        temp += q[ii - k] * qq[k + 1];
+      for (k = i; k <= j - 1; k++) temp += q[ii - k] * qq[k + 1];
       q[ij] = temp;
       if (temp > Qmax) {
         Qmax = temp;
@@ -849,7 +811,6 @@ void Vienna::pf_linear(String const &sequence) {
 }
 
 void Vienna::backtrack(String const &string, int s) {
-
   int i, j, ij, k, l1, mm5, mm3, length, energy, en, nnew;
   int no_close, type, type_2, tt, minq, maxq, c0, c1, c2, c3;
   int bonus;
@@ -886,8 +847,7 @@ void Vienna::backtrack(String const &string, int s) {
                         /* actually, do something here */
     }
 
-    if (j < i + TURN + 1)
-      continue; /* no more pairs in this interval */
+    if (j < i + TURN + 1) continue; /* no more pairs in this interval */
 
     fij = (ml == 1) ? fML[indx[j] + i] : f5[j];
     fi = (ml == 1) ? (fML[indx[j - 1] + i] + params.MLbase) : f5[j - 1];
@@ -901,86 +861,82 @@ void Vienna::backtrack(String const &string, int s) {
 
     if (ml == 0) { /* backtrack in f5 */
       switch (dangle_model) {
-      case 0: /* j is paired. Find pairing partner */
-        for (k = j - TURN - 1, traced = 0; k >= 1; k--) {
+        case 0: /* j is paired. Find pairing partner */
+          for (k = j - TURN - 1, traced = 0; k >= 1; k--) {
+            type = ptype[indx[j] + k];
+            if (type)
+              if (fij == E_ExtLoop(type, -1, -1) + c[indx[j] + k] + f5[k - 1]) {
+                traced = j;
+                jj = k - 1;
+                break;
+              }
+          }
+          break;
 
-          type = ptype[indx[j] + k];
-          if (type)
-            if (fij == E_ExtLoop(type, -1, -1) + c[indx[j] + k] + f5[k - 1]) {
-              traced = j;
-              jj = k - 1;
-              break;
+        case 2:
+          mm3 = (j < length) ? S1[j + 1] : -1;
+          for (k = j - TURN - 1, traced = 0; k >= 1; k--) {
+            type = ptype[indx[j] + k];
+            if (type)
+              if (fij == E_ExtLoop(type, (k > 1) ? S1[k - 1] : -1, mm3) +
+                             c[indx[j] + k] + f5[k - 1]) {
+                traced = j;
+                jj = k - 1;
+                break;
+              }
+          }
+          break;
+
+        default:
+          for (traced = 0, k = j - TURN - 1; k > 1; k--) {
+            type = ptype[indx[j] + k];
+            if (type) {
+              en = c[indx[j] + k];
+              if (fij == f5[k - 1] + en + E_ExtLoop(type, -1, -1)) {
+                traced = j;
+                jj = k - 1;
+                break;
+              }
+              if (fij == f5[k - 2] + en + E_ExtLoop(type, S1[k - 1], -1)) {
+                traced = j;
+                jj = k - 2;
+                break;
+              }
             }
-        }
-        break;
-
-      case 2:
-        mm3 = (j < length) ? S1[j + 1] : -1;
-        for (k = j - TURN - 1, traced = 0; k >= 1; k--) {
-
-          type = ptype[indx[j] + k];
-          if (type)
-            if (fij == E_ExtLoop(type, (k > 1) ? S1[k - 1] : -1, mm3) +
-                           c[indx[j] + k] + f5[k - 1]) {
-              traced = j;
-              jj = k - 1;
-              break;
-            }
-        }
-        break;
-
-      default:
-        for (traced = 0, k = j - TURN - 1; k > 1; k--) {
-
-          type = ptype[indx[j] + k];
-          if (type) {
-            en = c[indx[j] + k];
-            if (fij == f5[k - 1] + en + E_ExtLoop(type, -1, -1)) {
-              traced = j;
-              jj = k - 1;
-              break;
-            }
-            if (fij == f5[k - 2] + en + E_ExtLoop(type, S1[k - 1], -1)) {
-              traced = j;
-              jj = k - 2;
-              break;
+            type = ptype[indx[j - 1] + k];
+            if (type) {
+              en = c[indx[j - 1] + k];
+              if (fij == f5[k - 1] + en + E_ExtLoop(type, -1, S1[j])) {
+                traced = j - 1;
+                jj = k - 1;
+                break;
+              }
+              if (fij == f5[k - 2] + en + E_ExtLoop(type, S1[k - 1], S1[j])) {
+                traced = j - 1;
+                jj = k - 2;
+                break;
+              }
             }
           }
-          type = ptype[indx[j - 1] + k];
-          if (type) {
-            en = c[indx[j - 1] + k];
-            if (fij == f5[k - 1] + en + E_ExtLoop(type, -1, S1[j])) {
-              traced = j - 1;
-              jj = k - 1;
-              break;
+          if (!traced) {
+            type = ptype[indx[j] + 1];
+            if (type) {
+              if (fij == c[indx[j] + 1] + E_ExtLoop(type, -1, -1)) {
+                traced = j;
+                jj = 0;
+                break;
+              }
             }
-            if (fij == f5[k - 2] + en + E_ExtLoop(type, S1[k - 1], S1[j])) {
-              traced = j - 1;
-              jj = k - 2;
-              break;
-            }
-          }
-        }
-        if (!traced) {
-
-          type = ptype[indx[j] + 1];
-          if (type) {
-            if (fij == c[indx[j] + 1] + E_ExtLoop(type, -1, -1)) {
-              traced = j;
-              jj = 0;
-              break;
+            type = ptype[indx[j - 1] + 1];
+            if (type) {
+              if (fij == c[indx[j - 1] + 1] + E_ExtLoop(type, -1, S1[j])) {
+                traced = j - 1;
+                jj = 0;
+                break;
+              }
             }
           }
-          type = ptype[indx[j - 1] + 1];
-          if (type) {
-            if (fij == c[indx[j - 1] + 1] + E_ExtLoop(type, -1, S1[j])) {
-              traced = j - 1;
-              jj = 0;
-              break;
-            }
-          }
-        }
-        break;
+          break;
       }
 
       if (!traced) {
@@ -1013,54 +969,53 @@ void Vienna::backtrack(String const &string, int s) {
       tt = ptype[ij];
       en = c[ij];
       switch (dangle_model) {
-      case 0:
-        if (fij == en + E_MLstem(tt, -1, -1)) {
-          base_pair2[++b].i = i;
-          base_pair2[b].j = j;
-          goto repeat1;
-        }
-        break;
+        case 0:
+          if (fij == en + E_MLstem(tt, -1, -1)) {
+            base_pair2[++b].i = i;
+            base_pair2[b].j = j;
+            goto repeat1;
+          }
+          break;
 
-      case 2:
-        if (fij == en + E_MLstem(tt, S1[i - 1], S1[j + 1])) {
-          base_pair2[++b].i = i;
-          base_pair2[b].j = j;
-          goto repeat1;
-        }
-        break;
+        case 2:
+          if (fij == en + E_MLstem(tt, S1[i - 1], S1[j + 1])) {
+            base_pair2[++b].i = i;
+            base_pair2[b].j = j;
+            goto repeat1;
+          }
+          break;
 
-      default:
-        if (fij == en + E_MLstem(tt, -1, -1)) {
-          base_pair2[++b].i = i;
-          base_pair2[b].j = j;
-          goto repeat1;
-        }
-        tt = ptype[ij + 1];
-        if (fij == c[ij + 1] + E_MLstem(tt, S1[i], -1) + params.MLbase) {
-          base_pair2[++b].i = ++i;
-          base_pair2[b].j = j;
-          goto repeat1;
-        }
-        tt = ptype[indx[j - 1] + i];
-        if (fij ==
-            c[indx[j - 1] + i] + E_MLstem(tt, -1, S1[j]) + params.MLbase) {
-          base_pair2[++b].i = i;
-          base_pair2[b].j = --j;
-          goto repeat1;
-        }
-        tt = ptype[indx[j - 1] + i + 1];
-        if (fij == c[indx[j - 1] + i + 1] + E_MLstem(tt, S1[i], S1[j]) +
-                       2 * params.MLbase) {
-          base_pair2[++b].i = ++i;
-          base_pair2[b].j = --j;
-          goto repeat1;
-        }
-        break;
+        default:
+          if (fij == en + E_MLstem(tt, -1, -1)) {
+            base_pair2[++b].i = i;
+            base_pair2[b].j = j;
+            goto repeat1;
+          }
+          tt = ptype[ij + 1];
+          if (fij == c[ij + 1] + E_MLstem(tt, S1[i], -1) + params.MLbase) {
+            base_pair2[++b].i = ++i;
+            base_pair2[b].j = j;
+            goto repeat1;
+          }
+          tt = ptype[indx[j - 1] + i];
+          if (fij ==
+              c[indx[j - 1] + i] + E_MLstem(tt, -1, S1[j]) + params.MLbase) {
+            base_pair2[++b].i = i;
+            base_pair2[b].j = --j;
+            goto repeat1;
+          }
+          tt = ptype[indx[j - 1] + i + 1];
+          if (fij == c[indx[j - 1] + i + 1] + E_MLstem(tt, S1[i], S1[j]) +
+                         2 * params.MLbase) {
+            base_pair2[++b].i = ++i;
+            base_pair2[b].j = --j;
+            goto repeat1;
+          }
+          break;
       }
 
       for (k = i + 1 + TURN; k <= j - 2 - TURN; k++)
-        if (fij == (fML[indx[k] + i] + fML[indx[j] + k + 1]))
-          break;
+        if (fij == (fML[indx[k] + i] + fML[indx[j] + k + 1])) break;
 
       if ((dangle_model == 3) && (k > j - 2 - TURN)) { /* must be coax stack */
         ml = 2;
@@ -1091,8 +1046,7 @@ void Vienna::backtrack(String const &string, int s) {
 
     /*----- begin of "repeat:" -----*/
     ij = indx[j] + i;
-    if (canonical)
-      cij = c[ij];
+    if (canonical) cij = c[ij];
 
     type = ptype[ij];
 
@@ -1115,8 +1069,7 @@ void Vienna::backtrack(String const &string, int s) {
 
     no_close = (((type == 3) || (type == 4)) && no_closingGU && (bonus == 0));
     if (no_close) {
-      if (cij == FORBIDDEN)
-        continue;
+      if (cij == FORBIDDEN) continue;
     } else if (cij ==
                E_Hairpin(j - i - 1, type, S1[i + 1], S1[j - 1], str + i - 1) +
                    bonus)
@@ -1124,13 +1077,10 @@ void Vienna::backtrack(String const &string, int s) {
 
     for (p = i + 1; p <= MIN2(j - 2 - TURN, i + MAXLOOP + 1); p++) {
       minq = j - i + p - MAXLOOP - 2;
-      if (minq < p + 1 + TURN)
-        minq = p + 1 + TURN;
+      if (minq < p + 1 + TURN) minq = p + 1 + TURN;
       for (q = j - 1; q >= minq; q--) {
-
         type_2 = ptype[indx[q] + p];
-        if (type_2 == 0)
-          continue;
+        if (type_2 == 0) continue;
         type_2 = rtype[type_2];
         if (no_closingGU)
           if (no_close || (type_2 == 3) || (type_2 == 4))
@@ -1162,70 +1112,69 @@ void Vienna::backtrack(String const &string, int s) {
     sector[s + 1].ml = sector[s + 2].ml = 1;
 
     switch (dangle_model) {
-    case 0:
-      en = cij - E_MLstem(tt, -1, -1) - params.MLclosing - bonus;
-      for (k = i + 2 + TURN; k < j - 2 - TURN; k++) {
-        if (en == fML[indx[k] + i + 1] + fML[indx[j - 1] + k + 1])
-          break;
-      }
-      break;
-
-    case 2:
-      en = cij - E_MLstem(tt, S1[j - 1], S1[i + 1]) - params.MLclosing - bonus;
-      for (k = i + 2 + TURN; k < j - 2 - TURN; k++) {
-        if (en == fML[indx[k] + i + 1] + fML[indx[j - 1] + k + 1])
-          break;
-      }
-      break;
-
-    default:
-      for (k = i + 2 + TURN; k < j - 2 - TURN; k++) {
-        en = cij - params.MLclosing - bonus;
-        if (en == fML[indx[k] + i + 1] + fML[indx[j - 1] + k + 1] +
-                      E_MLstem(tt, -1, -1)) {
-          break;
-        } else if (en == fML[indx[k] + i + 2] + fML[indx[j - 1] + k + 1] +
-                             E_MLstem(tt, -1, S1[i + 1]) + params.MLbase) {
-          i1 = i + 2;
-          break;
-        } else if (en == fML[indx[k] + i + 1] + fML[indx[j - 2] + k + 1] +
-                             E_MLstem(tt, S1[j - 1], -1) + params.MLbase) {
-          j1 = j - 2;
-          break;
-        } else if (en == fML[indx[k] + i + 2] + fML[indx[j - 2] + k + 1] +
-                             E_MLstem(tt, S1[j - 1], S1[i + 1]) +
-                             2 * params.MLbase) {
-          i1 = i + 2;
-          j1 = j - 2;
-          break;
+      case 0:
+        en = cij - E_MLstem(tt, -1, -1) - params.MLclosing - bonus;
+        for (k = i + 2 + TURN; k < j - 2 - TURN; k++) {
+          if (en == fML[indx[k] + i + 1] + fML[indx[j - 1] + k + 1]) break;
         }
-        /* coaxial stacking of (i.j) with (i+1.k) or (k.j-1) */
-        /* use MLintern[1] since coax stacked pairs don't get TerminalAU */
-        if (dangle_model == 3) {
-          type_2 = rtype[ptype[indx[k] + i + 1]];
-          if (type_2) {
-            en = c[indx[k] + i + 1] + params.stack[type][type_2] +
-                 fML[indx[j - 1] + k + 1];
-            if (cij == en + 2 * params.MLintern[1] + params.MLclosing) {
-              ml = 2;
-              sector[s + 1].ml = 2;
-              traced = 1;
-              break;
+        break;
+
+      case 2:
+        en =
+            cij - E_MLstem(tt, S1[j - 1], S1[i + 1]) - params.MLclosing - bonus;
+        for (k = i + 2 + TURN; k < j - 2 - TURN; k++) {
+          if (en == fML[indx[k] + i + 1] + fML[indx[j - 1] + k + 1]) break;
+        }
+        break;
+
+      default:
+        for (k = i + 2 + TURN; k < j - 2 - TURN; k++) {
+          en = cij - params.MLclosing - bonus;
+          if (en == fML[indx[k] + i + 1] + fML[indx[j - 1] + k + 1] +
+                        E_MLstem(tt, -1, -1)) {
+            break;
+          } else if (en == fML[indx[k] + i + 2] + fML[indx[j - 1] + k + 1] +
+                               E_MLstem(tt, -1, S1[i + 1]) + params.MLbase) {
+            i1 = i + 2;
+            break;
+          } else if (en == fML[indx[k] + i + 1] + fML[indx[j - 2] + k + 1] +
+                               E_MLstem(tt, S1[j - 1], -1) + params.MLbase) {
+            j1 = j - 2;
+            break;
+          } else if (en == fML[indx[k] + i + 2] + fML[indx[j - 2] + k + 1] +
+                               E_MLstem(tt, S1[j - 1], S1[i + 1]) +
+                               2 * params.MLbase) {
+            i1 = i + 2;
+            j1 = j - 2;
+            break;
+          }
+          /* coaxial stacking of (i.j) with (i+1.k) or (k.j-1) */
+          /* use MLintern[1] since coax stacked pairs don't get TerminalAU */
+          if (dangle_model == 3) {
+            type_2 = rtype[ptype[indx[k] + i + 1]];
+            if (type_2) {
+              en = c[indx[k] + i + 1] + params.stack[type][type_2] +
+                   fML[indx[j - 1] + k + 1];
+              if (cij == en + 2 * params.MLintern[1] + params.MLclosing) {
+                ml = 2;
+                sector[s + 1].ml = 2;
+                traced = 1;
+                break;
+              }
+            }
+            type_2 = rtype[ptype[indx[j - 1] + k + 1]];
+            if (type_2) {
+              en = c[indx[j - 1] + k + 1] + params.stack[type][type_2] +
+                   fML[indx[k] + i + 1];
+              if (cij == en + 2 * params.MLintern[1] + params.MLclosing) {
+                sector[s + 2].ml = 2;
+                traced = 1;
+                break;
+              }
             }
           }
-          type_2 = rtype[ptype[indx[j - 1] + k + 1]];
-          if (type_2) {
-            en = c[indx[j - 1] + k + 1] + params.stack[type][type_2] +
-                 fML[indx[k] + i + 1];
-            if (cij == en + 2 * params.MLintern[1] + params.MLclosing) {
-              sector[s + 2].ml = 2;
-              traced = 1;
-              break;
-            }
-          }
         }
-      }
-      break;
+        break;
     }
 
     if (k <= j - 3 - TURN) { /* found the decomposition */
@@ -1277,7 +1226,6 @@ void Vienna::backtrack(String const &string, int s) {
 }
 
 void Vienna::make_ptypes(Shorts const &S, String const &structure) {
-
   int n, i, j, k, l, noLP;
   noLP = params.model_details.noLP;
 
@@ -1287,12 +1235,10 @@ void Vienna::make_ptypes(Shorts const &S, String const &structure) {
       int type, ntype = 0, otype = 0;
       i = k;
       j = i + TURN + l;
-      if (j > n)
-        continue;
+      if (j > n) continue;
       type = BP_pair[S[i]][S[j]];
       while ((i >= 1) && (j <= n)) {
-        if ((i > 1) && (j < n))
-          ntype = BP_pair[S[i - 1]][S[j + 1]];
+        if ((i > 1) && (j < n)) ntype = BP_pair[S[i - 1]][S[j + 1]];
         ptype[indx[j] + i] = (char)type;
         otype = type;
         type = ntype;
@@ -1304,7 +1250,6 @@ void Vienna::make_ptypes(Shorts const &S, String const &structure) {
 }
 
 void Vienna::make_ptypes_2(Shorts const &S, String const &structure) {
-
   int n, i, j, k, l, noLP;
   noLP = params.model_details.noLP;
   n = S[0];
@@ -1314,12 +1259,10 @@ void Vienna::make_ptypes_2(Shorts const &S, String const &structure) {
       int type, ntype = 0, otype = 0;
       i = k;
       j = i + TURN + l;
-      if (j > n)
-        continue;
+      if (j > n) continue;
       type = BP_pair[S[i]][S[j]];
       while ((i >= 1) && (j <= n)) {
-        if ((i > 1) && (j < n))
-          ntype = BP_pair[S[i - 1]][S[j + 1]];
+        if ((i > 1) && (j < n)) ntype = BP_pair[S[i - 1]][S[j + 1]];
         if (noLP && (!otype) && (!ntype))
           type = 0; /* i.j can only form isolated pairs */
         qb[my_iindx[i] - j] = 0.;
@@ -1334,7 +1277,6 @@ void Vienna::make_ptypes_2(Shorts const &S, String const &structure) {
 }
 
 int Vienna::fill_arrays(String const &string) {
-
   const char *s = string.c_str();
 
   int i, j, k, length, energy, en, mm5, mm3;
@@ -1369,12 +1311,10 @@ int Vienna::fill_arrays(String const &string) {
     }
   }
 
-  if (length <= TURN)
-    return 0;
+  if (length <= TURN) return 0;
 
   for (i = length - TURN - 1; i >= 1; i--) { /* i,j in [1..length] */
     for (j = i + TURN + 1; j <= length; j++) {
-
       int p, q, ij, jj, ee;
       int minq, maxq, l1, up, c0, c1, c2, c3;
       int MLenergy;
@@ -1399,13 +1339,11 @@ int Vienna::fill_arrays(String const &string) {
 
         for (p = i + 1; p <= MIN2(j - 2 - TURN, i + MAXLOOP + 1); p++) {
           minq = j - i + p - MAXLOOP - 2;
-          if (minq < p + 1 + TURN)
-            minq = p + 1 + TURN;
+          if (minq < p + 1 + TURN) minq = p + 1 + TURN;
           for (q = minq; q < j; q++) {
             type_2 = ptype[indx[q] + p];
 
-            if (type_2 == 0)
-              continue;
+            if (type_2 == 0) continue;
             type_2 = rtype[type_2];
 
             if (noGUclosure) {
@@ -1431,27 +1369,27 @@ int Vienna::fill_arrays(String const &string) {
           decomp = DMLi1[j - 1];
           tt = rtype[type];
           switch (dangle_model) {
-            /* no dangles */
-          case 0:
-            decomp += E_MLstem(tt, -1, -1);
-            break;
+              /* no dangles */
+            case 0:
+              decomp += E_MLstem(tt, -1, -1);
+              break;
 
-            /* double dangles */
-          case 2:
-            decomp += E_MLstem(tt, S1[j - 1], S1[i + 1]);
-            break;
+              /* double dangles */
+            case 2:
+              decomp += E_MLstem(tt, S1[j - 1], S1[i + 1]);
+              break;
 
-            /* normal dangles, aka dangles = 1 || 3 */
-          default:
-            decomp += E_MLstem(tt, -1, -1);
-            decomp = MIN2(decomp, DMLi2[j - 1] + E_MLstem(tt, -1, S1[i + 1]) +
-                                      params.MLbase);
-            decomp =
-                MIN2(decomp, DMLi2[j - 2] + E_MLstem(tt, S1[j - 1], S1[i + 1]) +
-                                 2 * params.MLbase);
-            decomp = MIN2(decomp, DMLi1[j - 2] + E_MLstem(tt, S1[j - 1], -1) +
-                                      params.MLbase);
-            break;
+              /* normal dangles, aka dangles = 1 || 3 */
+            default:
+              decomp += E_MLstem(tt, -1, -1);
+              decomp = MIN2(decomp, DMLi2[j - 1] + E_MLstem(tt, -1, S1[i + 1]) +
+                                        params.MLbase);
+              decomp = MIN2(decomp, DMLi2[j - 2] +
+                                        E_MLstem(tt, S1[j - 1], S1[i + 1]) +
+                                        2 * params.MLbase);
+              decomp = MIN2(decomp, DMLi1[j - 2] + E_MLstem(tt, S1[j - 1], -1) +
+                                        params.MLbase);
+              break;
           }
           MLenergy = decomp + params.MLclosing;
 
@@ -1477,13 +1415,13 @@ int Vienna::fill_arrays(String const &string) {
       if (type) {
         new_fML = c[ij];
         switch (dangle_model) {
-        case 2:
-          new_fML +=
-              E_MLstem(type, (i == 1) ? S1[length] : S1[i - 1], S1[j + 1]);
-          break;
-        default:
-          new_fML += E_MLstem(type, -1, -1);
-          break;
+          case 2:
+            new_fML +=
+                E_MLstem(type, (i == 1) ? S1[length] : S1[i - 1], S1[j + 1]);
+            break;
+          default:
+            new_fML += E_MLstem(type, -1, -1);
+            break;
         }
       }
 
@@ -1497,38 +1435,38 @@ int Vienna::fill_arrays(String const &string) {
        *   mismatch must be taken!
        */
       switch (dangle_model) {
-        /* no dangles */
-      case 0:
-        new_fML = MIN2(new_fML, fML[ij + 1] + params.MLbase);
-        new_fML = MIN2(fML[indx[j - 1] + i] + params.MLbase, new_fML);
-        break;
+          /* no dangles */
+        case 0:
+          new_fML = MIN2(new_fML, fML[ij + 1] + params.MLbase);
+          new_fML = MIN2(fML[indx[j - 1] + i] + params.MLbase, new_fML);
+          break;
 
-        /* double dangles */
-      case 2:
-        new_fML = MIN2(new_fML, fML[ij + 1] + params.MLbase);
-        new_fML = MIN2(fML[indx[j - 1] + i] + params.MLbase, new_fML);
-        break;
+          /* double dangles */
+        case 2:
+          new_fML = MIN2(new_fML, fML[ij + 1] + params.MLbase);
+          new_fML = MIN2(fML[indx[j - 1] + i] + params.MLbase, new_fML);
+          break;
 
-        /* normal dangles, aka dangle_model = 1 || 3 */
-      default:
-        mm5 = ((i > 1) || circular) ? S1[i] : -1;
-        mm3 = ((j < length) || circular) ? S1[j] : -1;
-        new_fML = MIN2(new_fML, fML[ij + 1] + params.MLbase);
-        new_fML = MIN2(new_fML, fML[indx[j - 1] + i] + params.MLbase);
-        tt = ptype[ij + 1];
-        if (tt)
-          new_fML =
-              MIN2(new_fML, c[ij + 1] + E_MLstem(tt, mm5, -1) + params.MLbase);
-        tt = ptype[indx[j - 1] + i];
-        if (tt)
-          new_fML = MIN2(new_fML, c[indx[j - 1] + i] + E_MLstem(tt, -1, mm3) +
-                                      params.MLbase);
-        tt = ptype[indx[j - 1] + i + 1];
-        if (tt)
-          new_fML =
-              MIN2(new_fML, c[indx[j - 1] + i + 1] + E_MLstem(tt, mm5, mm3) +
-                                2 * params.MLbase);
-        break;
+          /* normal dangles, aka dangle_model = 1 || 3 */
+        default:
+          mm5 = ((i > 1) || circular) ? S1[i] : -1;
+          mm3 = ((j < length) || circular) ? S1[j] : -1;
+          new_fML = MIN2(new_fML, fML[ij + 1] + params.MLbase);
+          new_fML = MIN2(new_fML, fML[indx[j - 1] + i] + params.MLbase);
+          tt = ptype[ij + 1];
+          if (tt)
+            new_fML = MIN2(new_fML,
+                           c[ij + 1] + E_MLstem(tt, mm5, -1) + params.MLbase);
+          tt = ptype[indx[j - 1] + i];
+          if (tt)
+            new_fML = MIN2(new_fML, c[indx[j - 1] + i] + E_MLstem(tt, -1, mm3) +
+                                        params.MLbase);
+          tt = ptype[indx[j - 1] + i + 1];
+          if (tt)
+            new_fML =
+                MIN2(new_fML, c[indx[j - 1] + i + 1] + E_MLstem(tt, mm5, mm3) +
+                                  2 * params.MLbase);
+          break;
       }
 
       /* modular decomposition -------------------------------*/
@@ -1556,7 +1494,7 @@ int Vienna::fill_arrays(String const &string) {
       fML[ij] = Fmi[j] = new_fML; /* substring energy */
     }
 
-    Indexes FF;
+    Ints FF;
     FF = DMLi2;
     DMLi2 = DMLi1;
     DMLi1 = DMLi;
@@ -1573,94 +1511,84 @@ int Vienna::fill_arrays(String const &string) {
   f5[TURN + 1] = 0;
 
   switch (dangle_model) {
-    /* dont use dangling end and mismatch contributions at all */
-  case 0:
-    for (j = TURN + 2; j <= length; j++) {
-      f5[j] = f5[j - 1];
-      for (i = j - TURN - 1; i > 1; i--) {
-
-        type = ptype[indx[j] + i];
-        if (!type)
-          continue;
-        en = c[indx[j] + i];
-        f5[j] = MIN2(f5[j], f5[i - 1] + en + E_ExtLoop(type, -1, -1));
-      }
-
-      type = ptype[indx[j] + 1];
-      if (!type)
-        continue;
-      en = c[indx[j] + 1];
-      f5[j] = MIN2(f5[j], en + E_ExtLoop(type, -1, -1));
-    }
-    break;
-
-    /* always use dangles on both sides */
-  case 2:
-    for (j = TURN + 2; j < length; j++) {
-      f5[j] = f5[j - 1];
-      for (i = j - TURN - 1; i > 1; i--) {
-
-        type = ptype[indx[j] + i];
-        if (!type)
-          continue;
-        en = c[indx[j] + i];
-        f5[j] =
-            MIN2(f5[j], f5[i - 1] + en + E_ExtLoop(type, S1[i - 1], S1[j + 1]));
-      }
-
-      type = ptype[indx[j] + 1];
-      if (!type)
-        continue;
-      en = c[indx[j] + 1];
-      f5[j] = MIN2(f5[j], en + E_ExtLoop(type, -1, S1[j + 1]));
-    }
-    f5[length] = f5[length - 1];
-    for (i = length - TURN - 1; i > 1; i--) {
-
-      type = ptype[indx[length] + i];
-      if (!type)
-        continue;
-      en = c[indx[length] + i];
-      f5[length] =
-          MIN2(f5[length], f5[i - 1] + en + E_ExtLoop(type, S1[i - 1], -1));
-    }
-
-    type = ptype[indx[length] + 1];
-    if (!type)
-      break;
-    en = c[indx[length] + 1];
-    f5[length] = MIN2(f5[length], en + E_ExtLoop(type, -1, -1));
-
-    break;
-
-    /* normal dangles, aka dangle_model = 1 || 3 */
-  default:
-    for (j = TURN + 2; j <= length; j++) {
-      f5[j] = f5[j - 1];
-      for (i = j - TURN - 1; i > 1; i--) {
-
-        type = ptype[indx[j] + i];
-        if (type) {
+      /* dont use dangling end and mismatch contributions at all */
+    case 0:
+      for (j = TURN + 2; j <= length; j++) {
+        f5[j] = f5[j - 1];
+        for (i = j - TURN - 1; i > 1; i--) {
+          type = ptype[indx[j] + i];
+          if (!type) continue;
           en = c[indx[j] + i];
           f5[j] = MIN2(f5[j], f5[i - 1] + en + E_ExtLoop(type, -1, -1));
-          f5[j] = MIN2(f5[j], f5[i - 2] + en + E_ExtLoop(type, S1[i - 1], -1));
         }
-        type = ptype[indx[j - 1] + i];
-        if (type) {
-          en = c[indx[j - 1] + i];
-          f5[j] = MIN2(f5[j], f5[i - 1] + en + E_ExtLoop(type, -1, S1[j]));
-          f5[j] =
-              MIN2(f5[j], f5[i - 2] + en + E_ExtLoop(type, S1[i - 1], S1[j]));
+
+        type = ptype[indx[j] + 1];
+        if (!type) continue;
+        en = c[indx[j] + 1];
+        f5[j] = MIN2(f5[j], en + E_ExtLoop(type, -1, -1));
+      }
+      break;
+
+      /* always use dangles on both sides */
+    case 2:
+      for (j = TURN + 2; j < length; j++) {
+        f5[j] = f5[j - 1];
+        for (i = j - TURN - 1; i > 1; i--) {
+          type = ptype[indx[j] + i];
+          if (!type) continue;
+          en = c[indx[j] + i];
+          f5[j] = MIN2(f5[j],
+                       f5[i - 1] + en + E_ExtLoop(type, S1[i - 1], S1[j + 1]));
         }
+
+        type = ptype[indx[j] + 1];
+        if (!type) continue;
+        en = c[indx[j] + 1];
+        f5[j] = MIN2(f5[j], en + E_ExtLoop(type, -1, S1[j + 1]));
+      }
+      f5[length] = f5[length - 1];
+      for (i = length - TURN - 1; i > 1; i--) {
+        type = ptype[indx[length] + i];
+        if (!type) continue;
+        en = c[indx[length] + i];
+        f5[length] =
+            MIN2(f5[length], f5[i - 1] + en + E_ExtLoop(type, S1[i - 1], -1));
       }
 
-      type = ptype[indx[j] + 1];
-      if (type)
-        f5[j] = MIN2(f5[j], c[indx[j] + 1] + E_ExtLoop(type, -1, -1));
-      type = ptype[indx[j - 1] + 1];
-      if (type)
-        f5[j] = MIN2(f5[j], c[indx[j - 1] + 1] + E_ExtLoop(type, -1, S1[j]));
-    }
+      type = ptype[indx[length] + 1];
+      if (!type) break;
+      en = c[indx[length] + 1];
+      f5[length] = MIN2(f5[length], en + E_ExtLoop(type, -1, -1));
+
+      break;
+
+      /* normal dangles, aka dangle_model = 1 || 3 */
+    default:
+      for (j = TURN + 2; j <= length; j++) {
+        f5[j] = f5[j - 1];
+        for (i = j - TURN - 1; i > 1; i--) {
+          type = ptype[indx[j] + i];
+          if (type) {
+            en = c[indx[j] + i];
+            f5[j] = MIN2(f5[j], f5[i - 1] + en + E_ExtLoop(type, -1, -1));
+            f5[j] =
+                MIN2(f5[j], f5[i - 2] + en + E_ExtLoop(type, S1[i - 1], -1));
+          }
+          type = ptype[indx[j - 1] + i];
+          if (type) {
+            en = c[indx[j - 1] + i];
+            f5[j] = MIN2(f5[j], f5[i - 1] + en + E_ExtLoop(type, -1, S1[j]));
+            f5[j] =
+                MIN2(f5[j], f5[i - 2] + en + E_ExtLoop(type, S1[i - 1], S1[j]));
+          }
+        }
+
+        type = ptype[indx[j] + 1];
+        if (type) f5[j] = MIN2(f5[j], c[indx[j] + 1] + E_ExtLoop(type, -1, -1));
+        type = ptype[indx[j - 1] + 1];
+        if (type)
+          f5[j] = MIN2(f5[j], c[indx[j - 1] + 1] + E_ExtLoop(type, -1, S1[j]));
+      }
   }
 
   s = NULL;
@@ -1669,7 +1597,6 @@ int Vienna::fill_arrays(String const &string) {
 }
 
 void Vienna::parenthesis_structure(int length) {
-
   int n, k;
 
   for (n = 0; n < length; n++) {
@@ -1678,7 +1605,6 @@ void Vienna::parenthesis_structure(int length) {
   structure[length] = '\0';
 
   for (k = 1; k <= base_pair2[0].i; k++) {
-
     // std::cout << "BP i" << base_pair2[k].i << " " << base_pair2[k].j <<
     // std::endl;
     if (base_pair2[k].i ==
@@ -1691,4 +1617,4 @@ void Vienna::parenthesis_structure(int length) {
   }
 }
 
-} // namespace vienna
+}  // namespace vienna
